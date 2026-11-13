@@ -28,7 +28,7 @@ Seen 11 time(s) in 6 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261022T110738_61594063207669**, upload: before.png handed to the file chooser: 200, 8502 ms
+**runs/inspect/20261022T110738_<userId:1>**, upload: before.png handed to the file chooser: 200, 8502 ms
 
 Sent:
 
@@ -50,20 +50,20 @@ Answered:
   "payload": {
     "isSpherical": false,
     "height": 1672,
-    "imageSrc": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/861498281_122127505029468773_7925144315177568439_n.jpg (438 chars)",
+    "imageSrc": "<mediaUrl> (438 chars)",
     "mediaLocation": null,
     "originalPhotoID": "",
-    "photoID": "122127505023468773",
+    "photoID": "<id:1>",
     "sphericalPhotoID": "",
-    "thumbSrc": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/861498281_122127505029468773_7925144315177568439_n.jpg (452 chars)",
+    "thumbSrc": "<mediaUrl> (452 chars)",
     "width": 941,
     "mediaTakenTime": null
   },
-  "lid": "7699448895999228964"
+  "lid": "<id:2>"
 }
 ```
 
-**runs/inspect/20261022T110738_61594063207669**, upload: after.png handed to the file chooser: 200, 5957 ms
+**runs/inspect/20261022T110738_<userId:1>**, upload: after.png handed to the file chooser: 200, 5957 ms
 
 Sent:
 
@@ -85,20 +85,20 @@ Answered:
   "payload": {
     "isSpherical": false,
     "height": 1672,
-    "imageSrc": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/859475432_122127505179468773_5558946944240149402_n.jpg (438 chars)",
+    "imageSrc": "<mediaUrl> (438 chars)",
     "mediaLocation": null,
     "originalPhotoID": "",
-    "photoID": "122127505173468773",
+    "photoID": "<id:3>",
     "sphericalPhotoID": "",
-    "thumbSrc": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/859475432_122127505179468773_5558946944240149402_n.jpg (452 chars)",
+    "thumbSrc": "<mediaUrl> (452 chars)",
     "width": 941,
     "mediaTakenTime": null
   },
-  "lid": "7699448973974069619"
+  "lid": "<id:4>"
 }
 ```
 
-**runs/host/20261024T222706_61593981307720**, setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9: 200, 4455 ms
+**runs/host/20261024T222706_<userId:2>**, setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9: 200, 4455 ms
 
 Sent:
 
@@ -120,16 +120,16 @@ Answered:
   "payload": {
     "isSpherical": false,
     "height": 2048,
-    "imageSrc": "https://scontent.fagc1-1.fna.fbcdn.net/v/t39.30808-6/860041138_122128644183466043_6079151772164129420_n.jpg (442 chars)",
+    "imageSrc": "<mediaUrl> (442 chars)",
     "mediaLocation": null,
     "originalPhotoID": "",
-    "photoID": "122128644177466043",
+    "photoID": "<id:5>",
     "sphericalPhotoID": "",
-    "thumbSrc": "https://scontent.fagc1-1.fna.fbcdn.net/v/t39.30808-6/860041138_122128644183466043_6079151772164129420_n.jpg (456 chars)",
+    "thumbSrc": "<mediaUrl> (456 chars)",
     "width": 962,
     "mediaTakenTime": null
   },
-  "lid": "7700375806570161433"
+  "lid": "<id:6>"
 }
 ```
 

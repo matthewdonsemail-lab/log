@@ -23,7 +23,7 @@ Seen 1 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261022T155857_61594063207669**, step 3: goto /marketplace/inbox: 200, 674 ms
+**runs/inspect/20261022T155857_<userId:1>**, step 3: goto /marketplace/inbox: 200, 674 ms
 
 Sent:
 
@@ -54,11 +54,11 @@ Answered:
           {
             "client_generated_id": "sp5MI2FeHD/hrI1wOQXbKg==",
             "device_type": "HSM",
-            "id": "1127653853075647"
+            "id": "<id:1>"
           }
         ],
         "has_otc_eligible_devices": false,
-        "id": "1127653843075648",
+        "id": "<id:2>",
         "__typename": "XFBEncryptedBackup"
       },
       "viewer": {
@@ -91,7 +91,7 @@ Answered:
       "data": {
         "xfb_backup": {
           "last_sync_time": 1792663634,
-          "id": "1127653843075648"
+          "id": "<id:2>"
         }
       },
       "extensions": {
@@ -104,7 +104,7 @@ Answered:
       "data": {
         "xfb_backup": {
           "last_sync_time": 1792663634,
-          "id": "1127653843075648"
+          "id": "<id:2>"
         },
         "viewer": {
           "messenger_default_encrypted_backup": {
@@ -116,7 +116,7 @@ Answered:
           },
           "encrypted_backup": {
             "has_seen_eb_auto_restore_notice": false,
-            "id": "1127653843075648"
+            "id": "<id:2>"
           }
         }
       },

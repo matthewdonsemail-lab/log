@@ -10,7 +10,7 @@
 | Path | `/svc/shreddit/header-action-item-inbox` |
 | Sends | — |
 | Reads | — |
-| Called from | `runs/inspect/20261025T124815_MaleficentTry8338/script1.js:9 anonymous` |
+| Called from | `runs/inspect/20261025T124815_<name:2>/script1.js:9 anonymous` |
 | rea | `ev_4fd054c78047e8b7fbb4b5c4a6f91280f44d90e4a4a2215e78067135123077cc` |
 
 Seen 7 time(s) in 1 run(s).
@@ -21,7 +21,7 @@ Seen 7 time(s) in 1 run(s).
 | inspect | step 3: goto /r/AskReddit/ | 1 | 200 | 652 ms | 4601 ms | — |
 | inspect | step 5: goto /search/ | 1 | 200 | 403 ms | 1254 ms | — |
 | inspect | step 6: goto /r/AskReddit/comments/1x8sr8s/whats_a_high_paying_but_soul_crushing_career_th | 1 | 200 | 431 ms | 1018 ms | — |
-| inspect | step 10: goto /user/Maleficent-Try-8338/ | 1 | 200 | 645 ms | 1233 ms | — |
+| inspect | step 10: goto /user/<name:1>/ | 1 | 200 | 645 ms | 1233 ms | — |
 | inspect | step 11: goto /notifications | 1 | 200 | 338 ms | 1577 ms | — |
 | inspect | step 12: goto /r/popular/ | 1 | 200 | 371 ms | 787 ms | — |
 
@@ -29,7 +29,7 @@ Seen 7 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 1: goto /: 200, 992 ms
+**runs/inspect/20261025T124815_<name:2>**, step 1: goto /: 200, 992 ms
 
 Sent:
 
@@ -48,7 +48,7 @@ Answered:
 "<faceplate-loader name=\"HeaderActionItemInbox_sYX5P3\" src=\"concat:-STulhAtU4,29NC_PbRqG,4wkaaZVhfb,alxsS3x_LD,Ao1SgzdS5N,B149KXnvS8,B4azaGpu-D,B7KvmUeRnV,BdfpXRmjN5,BEAvJs_C8b,BGZ-nd1DBK,BOXawDZC1L,BpOJq76-SY,BpXCv1GcGG,BQsgkJ4lDx,BUacXktYAc,BvOWmaNPEJ,BVRnlBAoql,BZHTPhFhv1,CbjxY8gDr4,CBwOyNjLvJ,CE3B2GTv4R,COK-wVBdxx,Cp7VcC-uun,Cqu_rhtgcl,CwGbZ5ZxpN,CxdYqUVbFS,CY0XGT8ur2,CylLPexIpe,D9C_VFQ_c2,DCOj… (3067 chars)"
 ```
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 3: goto /r/AskReddit/: 200, 652 ms
+**runs/inspect/20261025T124815_<name:2>**, step 3: goto /r/AskReddit/: 200, 652 ms
 
 Sent:
 
@@ -67,7 +67,7 @@ Answered:
 "<faceplate-loader name=\"HeaderActionItemInbox_sYX5P3\" src=\"concat:-STulhAtU4,29NC_PbRqG,4wkaaZVhfb,alxsS3x_LD,Ao1SgzdS5N,B149KXnvS8,B4azaGpu-D,B7KvmUeRnV,BdfpXRmjN5,BEAvJs_C8b,BGZ-nd1DBK,BOXawDZC1L,BpOJq76-SY,BpXCv1GcGG,BQsgkJ4lDx,BUacXktYAc,BvOWmaNPEJ,BVRnlBAoql,BZHTPhFhv1,CbjxY8gDr4,CBwOyNjLvJ,CE3B2GTv4R,COK-wVBdxx,Cp7VcC-uun,Cqu_rhtgcl,CwGbZ5ZxpN,CxdYqUVbFS,CY0XGT8ur2,CylLPexIpe,D9C_VFQ_c2,DCOj… (3067 chars)"
 ```
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 5: goto /search/: 200, 403 ms
+**runs/inspect/20261025T124815_<name:2>**, step 5: goto /search/: 200, 403 ms
 
 Sent:
 

@@ -27,7 +27,7 @@ Seen 35 time(s) in 13 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261022T110738_61594063207669**, scroll: container +87px in 3 steps: 200, 1668 ms
+**runs/inspect/20261022T110738_<userId:1>**, scroll: container +87px in 3 steps: 200, 1668 ms
 
 Sent:
 
@@ -39,7 +39,7 @@ Sent:
   "server_timestamps": "true",
   "variables": {
     "params": {
-      "category_id": "895487550471874",
+      "category_id": "<id:1>",
       "item_price": {
         "currency": "USD",
         "price": "99"

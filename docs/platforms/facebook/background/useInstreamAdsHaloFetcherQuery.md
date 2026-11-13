@@ -80,7 +80,7 @@ Seen 72 time(s) in 11 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/host/20261026T180628_61594285317994**, scroll: +589px in 14 wheel steps, 950 ms: 200, 348 ms
+**runs/host/20261026T180628_<userId:1>**, scroll: +589px in 14 wheel steps, 950 ms: 200, 348 ms
 
 Sent:
 
@@ -90,7 +90,7 @@ Sent:
   "fb_api_req_friendly_name": "useInstreamAdsHaloFetcherQuery",
   "server_timestamps": "true",
   "variables": {
-    "hostVideoId": "2140038816719447",
+    "hostVideoId": "<id:1>",
     "playerSubOrigin": "fb_reels_video_preview",
     "playerFormat": "inline",
     "tracePolicy": "comet.home",

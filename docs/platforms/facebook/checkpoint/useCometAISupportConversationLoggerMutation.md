@@ -28,7 +28,7 @@ Seen 23 time(s) in 5 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261024T060921_61594063207669**, scroll: +515px in 13 wheel steps, 656 ms: 200, 349 ms
+**runs/inspect/20261024T060921_<userId:1>**, scroll: +515px in 13 wheel steps, 656 ms: 200, 349 ms
 
 Sent:
 
@@ -39,7 +39,7 @@ Sent:
   "server_timestamps": "true",
   "variables": {
     "input": {
-      "actor_id": "61594063207669",
+      "actor_id": "<userId:1>",
       "client_mutation_id": "1",
       "additional_data": [
         {
@@ -54,7 +54,7 @@ Sent:
           "value": "j2n11v:9fde91:20f3pj"
         }
       ],
-      "attempt_token": "Q8CtDAEoCn4qCWgxsluih0G4Yxsz5XkrXIho1J1SOq2E7WLfu2N5GMj9wlNlrKfRoaZrHz7wc1CBC85tdDgKQtudxE4h3fwdfETVzeKGoRaXctkKfyJBzPLEtMLuL5EgjHKdFJdTGOcTnaaENp3VjhMSzzQW0IkXxM2hPF367ZpVNNF47nhvQB0JsufcbbjBpKnCj0kp6FG1qceh0XRisR3HsXQcbwcv7AcPsIy8Qpf-Mwl2dTHzK8V8oq0FN1A-NS5ORAUVDuQJR9tZmxVEndiZXIWMUBe23aAimwSf_mVTAhMHaSaekXLdHHMU7JjKcDgsOz2ET6qkEKM8CvfSi1sdDnV1p9xwCM6sXkNTXlkYvB0L-GROrS-QTBJ-hPRr_k_QOEd7hGX78OkG… (2007 chars)",
+      "attempt_token": "<token>",
       "entry_point": "COMET_AI_HTS_GENPOP_FB_UFAC",
       "event": "START_CHAT_BUTTON_IMPRESSION"
     }

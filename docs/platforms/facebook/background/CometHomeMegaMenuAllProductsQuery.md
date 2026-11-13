@@ -38,7 +38,7 @@ Seen 19 time(s) in 17 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261025T064655_61593981307720**, step 3: goto /marketplace/inbox: 200, 552 ms
+**runs/inspect/20261025T064655_<userId:1>**, step 3: goto /marketplace/inbox: 200, 552 ms
 
 Sent:
 
@@ -62,7 +62,7 @@ Answered:
   "data": {
     "viewer": {
       "social": {
-        "name": "Social",
+        "name": "<name:1>",
         "bookmarks": {
           "nodes": [
             "(9 fields)",
@@ -73,10 +73,10 @@ Answered:
             "(9 fields)"
           ]
         },
-        "id": "2974823256138234"
+        "id": "<id:1>"
       },
       "entertainment": {
-        "name": "Entertainment",
+        "name": "<name:2>",
         "bookmarks": {
           "nodes": [
             "(9 fields)",
@@ -84,20 +84,20 @@ Answered:
             "(9 fields)"
           ]
         },
-        "id": "487279742676481"
+        "id": "<id:2>"
       },
       "shopping": {
-        "name": "Shopping",
+        "name": "<name:3>",
         "bookmarks": {
           "nodes": [
             "(9 fields)",
             "(9 fields)"
           ]
         },
-        "id": "1072767163222607"
+        "id": "<id:3>"
       },
       "personal": {
-        "name": "Personal",
+        "name": "<name:4>",
         "bookmarks": {
           "nodes": [
             "(9 fields)",
@@ -105,26 +105,26 @@ Answered:
             "(9 fields)"
           ]
         },
-        "id": "486958482316132"
+        "id": "<id:4>"
       },
       "professional": {
-        "name": "Professional",
+        "name": "<name:5>",
         "bookmarks": {
           "nodes": [
             "(9 fields)"
           ]
         },
-        "id": "436682174236063"
+        "id": "<id:5>"
       },
       "communityResources": {
-        "name": "Community Resources",
+        "name": "<name:6>",
         "bookmarks": {
           "nodes": []
         },
-        "id": "425122528575951"
+        "id": "<id:6>"
       },
       "appsFromFacebook": {
-        "name": "More from Meta",
+        "name": "<name:7>",
         "bookmarks": {
           "nodes": [
             "(9 fields)",
@@ -133,13 +133,13 @@ Answered:
             "(9 fields)"
           ]
         },
-        "id": "1759291240910861"
+        "id": "<id:7>"
       },
       "actor": {
         "__typename": "User",
         "profile_plus_should_hoist_professional_section_comet_mega_menu": false,
         "should_block_mbs_redirect": false,
-        "id": "61593981307720"
+        "id": "<userId:1>"
       }
     }
   },
@@ -198,7 +198,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261023T045453_61594063207669**, step 6: wait 6s: 200, 732 ms
+**runs/inspect/20261023T045453_<userId:2>**, step 6: wait 6s: 200, 732 ms
 
 Sent:
 
@@ -222,7 +222,7 @@ Answered:
   "data": {
     "viewer": {
       "social": {
-        "name": "Social",
+        "name": "<name:1>",
         "bookmarks": {
           "nodes": [
             "(9 fields)",
@@ -233,10 +233,10 @@ Answered:
             "(9 fields)"
           ]
         },
-        "id": "2974823256138234"
+        "id": "<id:1>"
       },
       "entertainment": {
-        "name": "Entertainment",
+        "name": "<name:2>",
         "bookmarks": {
           "nodes": [
             "(9 fields)",
@@ -244,20 +244,20 @@ Answered:
             "(9 fields)"
           ]
         },
-        "id": "487279742676481"
+        "id": "<id:2>"
       },
       "shopping": {
-        "name": "Shopping",
+        "name": "<name:3>",
         "bookmarks": {
           "nodes": [
             "(9 fields)",
             "(9 fields)"
           ]
         },
-        "id": "1072767163222607"
+        "id": "<id:3>"
       },
       "personal": {
-        "name": "Personal",
+        "name": "<name:4>",
         "bookmarks": {
           "nodes": [
             "(9 fields)",
@@ -265,26 +265,26 @@ Answered:
             "(9 fields)"
           ]
         },
-        "id": "486958482316132"
+        "id": "<id:4>"
       },
       "professional": {
-        "name": "Professional",
+        "name": "<name:5>",
         "bookmarks": {
           "nodes": [
             "(9 fields)"
           ]
         },
-        "id": "436682174236063"
+        "id": "<id:5>"
       },
       "communityResources": {
-        "name": "Community resources",
+        "name": "<name:8>",
         "bookmarks": {
           "nodes": []
         },
-        "id": "425122528575951"
+        "id": "<id:6>"
       },
       "appsFromFacebook": {
-        "name": "More from Meta",
+        "name": "<name:7>",
         "bookmarks": {
           "nodes": [
             "(9 fields)",
@@ -293,13 +293,13 @@ Answered:
             "(9 fields)"
           ]
         },
-        "id": "1759291240910861"
+        "id": "<id:7>"
       },
       "actor": {
         "__typename": "User",
         "profile_plus_should_hoist_professional_section_comet_mega_menu": false,
         "should_block_mbs_redirect": false,
-        "id": "61594063207669"
+        "id": "<userId:2>"
       }
     }
   },
@@ -358,7 +358,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261022T130601_61594063207669**, step 4: goto /marketplace/inbox: 200, 1840 ms
+**runs/inspect/20261022T130601_<userId:2>**, step 4: goto /marketplace/inbox: 200, 1840 ms
 
 Sent:
 
@@ -382,7 +382,7 @@ Answered:
   "data": {
     "viewer": {
       "social": {
-        "name": "Social",
+        "name": "<name:1>",
         "bookmarks": {
           "nodes": [
             "(9 fields)",
@@ -393,10 +393,10 @@ Answered:
             "(9 fields)"
           ]
         },
-        "id": "2974823256138234"
+        "id": "<id:1>"
       },
       "entertainment": {
-        "name": "Entertainment",
+        "name": "<name:2>",
         "bookmarks": {
           "nodes": [
             "(9 fields)",
@@ -404,20 +404,20 @@ Answered:
             "(9 fields)"
           ]
         },
-        "id": "487279742676481"
+        "id": "<id:2>"
       },
       "shopping": {
-        "name": "Shopping",
+        "name": "<name:3>",
         "bookmarks": {
           "nodes": [
             "(9 fields)",
             "(9 fields)"
           ]
         },
-        "id": "1072767163222607"
+        "id": "<id:3>"
       },
       "personal": {
-        "name": "Personal",
+        "name": "<name:4>",
         "bookmarks": {
           "nodes": [
             "(9 fields)",
@@ -425,26 +425,26 @@ Answered:
             "(9 fields)"
           ]
         },
-        "id": "486958482316132"
+        "id": "<id:4>"
       },
       "professional": {
-        "name": "Professional",
+        "name": "<name:5>",
         "bookmarks": {
           "nodes": [
             "(9 fields)"
           ]
         },
-        "id": "436682174236063"
+        "id": "<id:5>"
       },
       "communityResources": {
-        "name": "Community resources",
+        "name": "<name:8>",
         "bookmarks": {
           "nodes": []
         },
-        "id": "425122528575951"
+        "id": "<id:6>"
       },
       "appsFromFacebook": {
-        "name": "More from Meta",
+        "name": "<name:7>",
         "bookmarks": {
           "nodes": [
             "(9 fields)",
@@ -453,13 +453,13 @@ Answered:
             "(9 fields)"
           ]
         },
-        "id": "1759291240910861"
+        "id": "<id:7>"
       },
       "actor": {
         "__typename": "User",
         "profile_plus_should_hoist_professional_section_comet_mega_menu": false,
         "should_block_mbs_redirect": false,
-        "id": "61594063207669"
+        "id": "<userId:2>"
       }
     }
   },

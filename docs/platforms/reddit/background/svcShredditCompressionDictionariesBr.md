@@ -23,7 +23,7 @@ Seen 1 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 1: goto /: 200, 162 ms
+**runs/inspect/20261025T124815_<name:1>**, step 1: goto /: 200, 162 ms
 
 Sent:
 

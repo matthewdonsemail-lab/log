@@ -10,7 +10,7 @@
 | Path | `discord.com/api/partner-sdk/storefront-config` |
 | Sends | — |
 | Reads | `promotional_sku_ids`, `promotion_end_datetime`, `storefronts`, `announcement_modal_config.version`, `announcement_modal_config.application_id` |
-| Called from | `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1036.js:1 parse`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1245.js:2 anonymous` |
+| Called from | `runs/inspect/20261030T222341_<name:1>/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_<name:1>/script1036.js:1 parse`, `runs/inspect/20261030T222341_<name:1>/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_<name:1>/script1245.js:2 anonymous` |
 | rea | `ev_065e7ad37dcb5911d240f9de7d6e2882220c5a8d7c025d92b46a23de59cf297c` |
 
 Seen 6 time(s) in 4 run(s).
@@ -28,7 +28,7 @@ Seen 6 time(s) in 4 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder**, step 2: snapshot: 200, 448 ms
+**runs/inspect/20261030T222341_<name:1>**, step 2: snapshot: 200, 448 ms
 
 Sent:
 
@@ -44,9 +44,9 @@ Answered:
   "promotion_end_datetime": null,
   "storefronts": [
     {
-      "guild_id": "1193841000108531764",
+      "guild_id": "<guildId:1>",
       "application_id": "1346069614634864772",
-      "game_id": "1314395942253756416",
+      "game_id": "<id:1>",
       "collectibles_shop_navigation_enabled": true,
       "excluded_platforms": [
         "playstation"
@@ -56,9 +56,9 @@ Answered:
       "allow_orbs_spending": false
     },
     {
-      "guild_id": "560127830160048128",
+      "guild_id": "<guildId:2>",
       "application_id": "1288512934112264234",
-      "game_id": "1402418594532298837",
+      "game_id": "<id:2>",
       "collectibles_shop_navigation_enabled": true,
       "excluded_platforms": [
         "playstation",
@@ -69,9 +69,9 @@ Answered:
       "allow_orbs_spending": false
     },
     {
-      "guild_id": "187363008610041857",
+      "guild_id": "<guildId:3>",
       "application_id": "614380482620293151",
-      "game_id": "1402418571715543120",
+      "game_id": "<id:3>",
       "collectibles_shop_navigation_enabled": true,
       "excluded_platforms": [
         "amazon kids+",
@@ -93,7 +93,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder**, step 1: goto /login: 200, 631 ms
+**runs/inspect/20261028T074137_<name:1>**, step 1: goto /login: 200, 631 ms
 
 Sent:
 
@@ -109,9 +109,9 @@ Answered:
   "promotion_end_datetime": null,
   "storefronts": [
     {
-      "guild_id": "1193841000108531764",
+      "guild_id": "<guildId:1>",
       "application_id": "1346069614634864772",
-      "game_id": "1314395942253756416",
+      "game_id": "<id:1>",
       "collectibles_shop_navigation_enabled": true,
       "excluded_platforms": [
         "playstation"
@@ -121,9 +121,9 @@ Answered:
       "allow_orbs_spending": false
     },
     {
-      "guild_id": "560127830160048128",
+      "guild_id": "<guildId:2>",
       "application_id": "1288512934112264234",
-      "game_id": "1402418594532298837",
+      "game_id": "<id:2>",
       "collectibles_shop_navigation_enabled": true,
       "excluded_platforms": [
         "playstation",
@@ -134,9 +134,9 @@ Answered:
       "allow_orbs_spending": false
     },
     {
-      "guild_id": "187363008610041857",
+      "guild_id": "<guildId:3>",
       "application_id": "614380482620293151",
-      "game_id": "1402418571715543120",
+      "game_id": "<id:3>",
       "collectibles_shop_navigation_enabled": true,
       "excluded_platforms": [
         "amazon kids+",
@@ -158,7 +158,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261028T065202_sourcedandsoldtothehighestbidder**, step 1: goto /channels/@me/<id>: 200, 294 ms
+**runs/inspect/20261028T065202_<name:1>**, step 1: goto /channels/@me/<id>: 200, 294 ms
 
 Sent:
 
@@ -174,9 +174,9 @@ Answered:
   "promotion_end_datetime": null,
   "storefronts": [
     {
-      "guild_id": "1193841000108531764",
+      "guild_id": "<guildId:1>",
       "application_id": "1346069614634864772",
-      "game_id": "1314395942253756416",
+      "game_id": "<id:1>",
       "collectibles_shop_navigation_enabled": true,
       "excluded_platforms": [
         "playstation"
@@ -186,9 +186,9 @@ Answered:
       "allow_orbs_spending": false
     },
     {
-      "guild_id": "560127830160048128",
+      "guild_id": "<guildId:2>",
       "application_id": "1288512934112264234",
-      "game_id": "1402418594532298837",
+      "game_id": "<id:2>",
       "collectibles_shop_navigation_enabled": true,
       "excluded_platforms": [
         "playstation",
@@ -199,9 +199,9 @@ Answered:
       "allow_orbs_spending": false
     },
     {
-      "guild_id": "187363008610041857",
+      "guild_id": "<guildId:3>",
       "application_id": "614380482620293151",
-      "game_id": "1402418571715543120",
+      "game_id": "<id:3>",
       "collectibles_shop_navigation_enabled": true,
       "excluded_platforms": [
         "amazon kids+",

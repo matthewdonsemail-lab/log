@@ -28,7 +28,7 @@ Seen 6 time(s) in 5 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261111T081957_61593610473511**, signIn: password typed; submitting with Enter: 200, 815 ms
+**runs/inspect/20261111T081957_<userId:1>**, signIn: password typed; submitting with Enter: 200, 815 ms
 
 Sent:
 
@@ -46,11 +46,11 @@ Answered:
   "__ar": 1,
   "rid": "As8GaM1r2Va90w9ZZu0Mpi9",
   "payload": {},
-  "lid": "7706828654168794980"
+  "lid": "<id:1>"
 }
 ```
 
-**runs/inspect/20261111T081957_61593610473511**, step 8: click e53: 200, 1972 ms
+**runs/inspect/20261111T081957_<userId:1>**, step 8: click e53: 200, 1972 ms
 
 Sent:
 
@@ -68,11 +68,11 @@ Answered:
   "__ar": 1,
   "rid": "Atark-jk2ICGq4QVErjXAy0",
   "payload": {},
-  "lid": "7706829316592572123"
+  "lid": "<id:2>"
 }
 ```
 
-**runs/inspect/20261023T000744_61594063207669**, step 1: goto /marketplace/status: 200, 887 ms
+**runs/inspect/20261023T000744_<userId:2>**, step 1: goto /marketplace/status: 200, 887 ms
 
 Sent:
 
@@ -89,7 +89,7 @@ Answered:
   "__ar": 1,
   "rid": "Ae7OC83RspaUO2p68eZxGjc",
   "payload": null,
-  "lid": "7699648432146207398"
+  "lid": "<id:3>"
 }
 ```
 

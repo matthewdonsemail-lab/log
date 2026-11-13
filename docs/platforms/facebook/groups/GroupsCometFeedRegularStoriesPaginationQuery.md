@@ -41,7 +41,7 @@ Seen 20 time(s) in 6 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261024T060921_61594063207669**, step 1: goto /groups/junkremovalwinners: 200, 1172 ms
+**runs/inspect/20261024T060921_<userId:1>**, step 1: goto /groups/junkremovalwinners: 200, 1172 ms
 
 Sent:
 
@@ -66,8 +66,8 @@ Sent:
     "sortingSetting": "TOP_POSTS",
     "stream_initial_count": 1,
     "useDefaultActor": false,
-    "youthIntegrityHostID": "3549906855288164",
-    "id": "3549906855288164",
+    "youthIntegrityHostID": "<id:1>",
+    "id": "<id:1>",
     "__relay_internal__pv__GHLShouldChangeAdIdFieldNamerelayprovider": true,
     "__relay_internal__pv__GHLShouldChangeSponsoredDataFieldNamerelayprovider": true,
     "__relay_internal__pv__CometFeedStory_enable_reactor_facepilerelayprovider": false,
@@ -112,7 +112,7 @@ Answered:
       "node": {
         "__typename": "Group",
         "group_feed": "(1 fields)",
-        "id": "3549906855288164"
+        "id": "<id:1>"
       }
     },
     "extensions": {

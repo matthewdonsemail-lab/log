@@ -30,7 +30,7 @@ Seen 10 time(s) in 8 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/host/20261026T180628_61594285317994**, step 14: setLocation Kamloops, British Columbia: 200, 173 ms
+**runs/host/20261026T180628_<userId:1>**, step 14: setLocation Kamloops, British Columbia: 200, 173 ms
 
 Sent:
 
@@ -54,7 +54,7 @@ Answered:
         "current_marketplace": {
           "__typename": "Marketplace",
           "is_metric_base": true,
-          "id": "1759579680997030"
+          "id": "<id:1>"
         },
         "id": "TWFya2V0cGxhY2VTZXR0aW5nczo2MTU5NDI4NTMxNzk5NA=="
       }

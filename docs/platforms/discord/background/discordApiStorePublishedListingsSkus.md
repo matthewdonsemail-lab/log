@@ -10,7 +10,7 @@
 | Path | `discord.com/api/store/published-listings/skus` |
 | Sends | — |
 | Reads | — |
-| Called from | `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1036.js:1 parse`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1245.js:2 anonymous` |
+| Called from | `runs/inspect/20261030T222341_<name:7>/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_<name:7>/script1036.js:1 parse`, `runs/inspect/20261030T222341_<name:7>/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_<name:7>/script1245.js:2 anonymous` |
 | rea | `ev_065e7ad37dcb5911d240f9de7d6e2882220c5a8d7c025d92b46a23de59cf297c` |
 
 Seen 1 time(s) in 1 run(s).
@@ -23,16 +23,16 @@ Seen 1 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261028T062914_sourcedandsoldtothehighestbidder**, step 8: click e221: 200, 399 ms
+**runs/inspect/20261028T062914_<name:7>**, step 8: click e221: 200, 399 ms
 
 Sent:
 
 ```json
 {
   "query": {
-    "country_code": "VN",
+    "country_code": "<country>",
     "application_id": "1340102344645283891",
-    "guild_id": "1442518050527248436"
+    "guild_id": "<guildId:1>"
   },
   "body": null
 }
@@ -43,17 +43,17 @@ Answered:
 ```json
 [
   {
-    "id": "1422296448396951579",
+    "id": "<id:1>",
     "summary": "Flex Badge Pack",
     "sku": {
-      "id": "1395150923734581339",
+      "id": "<id:2>",
       "type": 2,
       "product_line": 13,
-      "dependent_sku_id": "1351706802684952639",
+      "dependent_sku_id": "<id:3>",
       "application_id": "1340102344645283891",
       "manifest_labels": null,
       "access_type": 1,
-      "name": "Flex Badge Pack",
+      "name": "<name:1>",
       "features": "(0 items)",
       "release_date": null,
       "premium": false,
@@ -63,7 +63,7 @@ Answered:
       "tenant_metadata": "(1 fields)",
       "powerup_metadata": "(6 fields)",
       "selected_options": "(1 items)",
-      "product_id": "1422296448396951579",
+      "product_id": "<id:1>",
       "created_at": "2025-08-05T20:53:39.133830+00:00",
       "updated_at": "2025-10-10T14:55:25.560337+00:00"
     },
@@ -79,17 +79,17 @@ Answered:
     }
   },
   {
-    "id": "1422296448396951572",
+    "id": "<id:4>",
     "summary": "Level 1",
     "sku": {
-      "id": "1341586379779604621",
+      "id": "<id:5>",
       "type": 2,
       "product_line": 13,
       "dependent_sku_id": null,
       "application_id": "1340102344645283891",
       "manifest_labels": null,
       "access_type": 1,
-      "name": "Level 1",
+      "name": "<name:2>",
       "features": "(0 items)",
       "release_date": null,
       "premium": false,
@@ -99,7 +99,7 @@ Answered:
       "tenant_metadata": "(1 fields)",
       "powerup_metadata": "(5 fields)",
       "selected_options": "(1 items)",
-      "product_id": "1422296448396951572",
+      "product_id": "<id:4>",
       "created_at": "2025-08-05T20:53:39.133830+00:00",
       "updated_at": "2025-10-10T14:55:25.092816+00:00"
     },
@@ -115,17 +115,17 @@ Answered:
     }
   },
   {
-    "id": "1422296448396951573",
+    "id": "<id:6>",
     "summary": "Level 2",
     "sku": {
-      "id": "1341586379779604622",
+      "id": "<id:7>",
       "type": 2,
       "product_line": 13,
-      "dependent_sku_id": "1341586379779604621",
+      "dependent_sku_id": "<id:5>",
       "application_id": "1340102344645283891",
       "manifest_labels": null,
       "access_type": 1,
-      "name": "Level 2",
+      "name": "<name:3>",
       "features": "(0 items)",
       "release_date": null,
       "premium": false,
@@ -135,7 +135,7 @@ Answered:
       "tenant_metadata": "(1 fields)",
       "powerup_metadata": "(5 fields)",
       "selected_options": "(1 items)",
-      "product_id": "1422296448396951573",
+      "product_id": "<id:6>",
       "created_at": "2025-08-05T20:53:39.133830+00:00",
       "updated_at": "2025-10-10T14:55:25.190756+00:00"
     },
@@ -151,17 +151,17 @@ Answered:
     }
   },
   {
-    "id": "1422296448396951574",
+    "id": "<id:8>",
     "summary": "Level 3",
     "sku": {
-      "id": "1341586379779604623",
+      "id": "<id:9>",
       "type": 2,
       "product_line": 13,
-      "dependent_sku_id": "1341586379779604622",
+      "dependent_sku_id": "<id:7>",
       "application_id": "1340102344645283891",
       "manifest_labels": null,
       "access_type": 1,
-      "name": "Level 3",
+      "name": "<name:4>",
       "features": "(0 items)",
       "release_date": null,
       "premium": false,
@@ -171,7 +171,7 @@ Answered:
       "tenant_metadata": "(1 fields)",
       "powerup_metadata": "(5 fields)",
       "selected_options": "(1 items)",
-      "product_id": "1422296448396951574",
+      "product_id": "<id:8>",
       "created_at": "2025-08-05T20:53:39.133830+00:00",
       "updated_at": "2025-10-10T14:55:25.234215+00:00"
     },
@@ -187,17 +187,17 @@ Answered:
     }
   },
   {
-    "id": "1422296448396951575",
+    "id": "<id:10>",
     "summary": "Server Tag",
     "sku": {
-      "id": "1351706802684952639",
+      "id": "<id:3>",
       "type": 2,
       "product_line": 13,
       "dependent_sku_id": null,
       "application_id": "1340102344645283891",
       "manifest_labels": null,
       "access_type": 1,
-      "name": "Server Tag",
+      "name": "<name:5>",
       "features": "(0 items)",
       "release_date": null,
       "premium": false,
@@ -207,11 +207,11 @@ Answered:
       "tenant_metadata": "(1 fields)",
       "powerup_metadata": "(6 fields)",
       "selected_options": "(1 items)",
-      "product_id": "1422296448396951575",
+      "product_id": "<id:10>",
       "created_at": "2025-08-05T20:53:39.133830+00:00",
       "updated_at": "2025-10-10T14:55:25.332909+00:00"
     },
-    "description": "Let your members represent your server everywhere on Discord.",
+    "description": "<messageText>",
     "published": true,
     "benefits": [],
     "powerup_metadata": {
@@ -223,17 +223,17 @@ Answered:
     }
   },
   {
-    "id": "1422296448396951576",
+    "id": "<id:11>",
     "summary": "Enhanced Role Styles",
     "sku": {
-      "id": "1354906318279807056",
+      "id": "<id:12>",
       "type": 2,
       "product_line": 13,
       "dependent_sku_id": null,
       "application_id": "1340102344645283891",
       "manifest_labels": null,
       "access_type": 1,
-      "name": "Enhanced Role Styles",
+      "name": "<name:6>",
       "features": "(0 items)",
       "release_date": null,
       "premium": false,
@@ -243,11 +243,11 @@ Answered:
       "tenant_metadata": "(1 fields)",
       "powerup_metadata": "(6 fields)",
       "selected_options": "(1 items)",
-      "product_id": "1422296448396951576",
+      "product_id": "<id:11>",
       "created_at": "2025-08-05T20:53:39.133830+00:00",
       "updated_at": "2025-10-10T14:55:25.371791+00:00"
     },
-    "description": "Make certain roles stand out with animated, vibrant gradients.",
+    "description": "<messageText>",
     "published": true,
     "benefits": [],
     "powerup_metadata": {

@@ -23,7 +23,7 @@ Seen 2 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261022T113536_61594063207669**, step 1: goto /marketplace/inbox: 200, 450 ms
+**runs/inspect/20261022T113536_<userId:1>**, step 1: goto /marketplace/inbox: 200, 450 ms
 
 Sent:
 
@@ -35,7 +35,7 @@ Sent:
   "variables": {
     "input": {
       "inbox_viewer_role": "BUYER",
-      "actor_id": "61594063207669",
+      "actor_id": "<userId:1>",
       "client_mutation_id": "1"
     }
   },

@@ -10,7 +10,7 @@
 | Path | `/svc/shreddit/community-hover-card` |
 | Sends | — |
 | Reads | — |
-| Called from | `runs/inspect/20261025T124815_MaleficentTry8338/script1.js:692 handleHovercardOpen` |
+| Called from | `runs/inspect/20261025T124815_<name:1>/script1.js:692 handleHovercardOpen` |
 | rea | `ev_b154a5253c10c124cb2d146a76adbd0bb403544f711fe383672a9ea7d22578c6` |
 
 Seen 1 time(s) in 1 run(s).
@@ -23,7 +23,7 @@ Seen 1 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 2: snapshot: 200, 1814 ms
+**runs/inspect/20261025T124815_<name:1>**, step 2: snapshot: 200, 1814 ms
 
 Sent:
 
@@ -34,10 +34,10 @@ null
 Answered:
 
 ```json
-"<div class=\"max-w-[360px] w-[90vw] overflow-hidden p-0 -m-xs\">\n    <div class=\"flex flex-col\">\n      <div class=\"h-[80px] w-auto overflow-hidden relative rounded-t-4\">\n            <img src=\"https://styles.redditmedia.com/t5_gaxt3t/styles/bannerBackgroundImage_ua4qpfwr023h1.png?frame=1&amp;auto=webp&amp;s=bbfcc95ca22a681faae933ba00512baa93d840a4\" alt=\"A banner for the subreddit\" class=\"mb-0 w-full … (3604 chars)"
+"<div class=\"max-w-[360px] w-[90vw] overflow-hidden p-0 -m-xs\">\n    <div class=\"flex flex-col\">\n      <div class=\"h-[80px] w-auto overflow-hidden relative rounded-t-4\">\n            <img src=\"<mediaUrl>\" alt=\"A banner for the subreddit\" class=\"mb-0 w-full … (3604 chars)"
 ```
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 12: goto /r/popular/: 200, 368 ms
+**runs/inspect/20261025T124815_<name:1>**, step 12: goto /r/popular/: 200, 368 ms
 
 Sent:
 
@@ -48,7 +48,7 @@ null
 Answered:
 
 ```json
-"<div class=\"max-w-[360px] w-[90vw] overflow-hidden p-0 -m-xs\">\n    <div class=\"flex flex-col\">\n      <div class=\"h-[80px] w-auto overflow-hidden relative rounded-t-4\">\n            <img src=\"https://styles.redditmedia.com/t5_2qh2b/styles/bannerBackgroundImage_489f4mh7otoh1.jpg?frame=1&amp;auto=webp&amp;format=pjpg&amp;s=b821e02f81a91c84d7c26af598b4bd32d72da0c1\" alt=\"A banner for the subreddit\" clas… (3174 chars)"
+"<div class=\"max-w-[360px] w-[90vw] overflow-hidden p-0 -m-xs\">\n    <div class=\"flex flex-col\">\n      <div class=\"h-[80px] w-auto overflow-hidden relative rounded-t-4\">\n            <img src=\"<mediaUrl>\" alt=\"A banner for the subreddit\" clas… (3174 chars)"
 ```
 
 <!-- facts:end -->

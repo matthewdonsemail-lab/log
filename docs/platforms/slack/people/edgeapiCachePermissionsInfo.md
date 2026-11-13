@@ -18,7 +18,7 @@ Seen 12 time(s) in 1 run(s).
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 4: goto /client | 5 | 200 | 73–425 ms | 7942–9350 ms | — |
-| inspect | step 6: goto /client/T0C4VCD06MR/D0C8VAE7REU | 6 | 200 | 49–185 ms | 5523–14987 ms | — |
+| inspect | step 6: goto /client/<teamId:1>/<channelId:1> | 6 | 200 | 49–185 ms | 5523–14987 ms | — |
 | inspect | step 9: press Control+a | 1 | 200 | 101 ms | 16052 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
@@ -36,7 +36,7 @@ Sent:
     "fp": "6f",
     "_x_num_retries": "0"
   },
-  "body": "{\"token\":\"xoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\",\"user_id\":\"U0C4L7RF7HD\",\"permissions\":[\"ACCESS_SLACK_AI_TODAY\"],\"as_admin\":true}"
+  "body": "{\"token\":\"<slackToken>\",\"user_id\":\"<userId:1>\",\"permissions\":[\"ACCESS_SLACK_AI_TODAY\"],\"as_admin\":true}"
 }
 ```
 
@@ -50,7 +50,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261103T065639_mattSlack**, step 6: goto /client/T0C4VCD06MR/D0C8VAE7REU: 200, 184 ms
+**runs/inspect/20261103T065639_mattSlack**, step 6: goto /client/<teamId:1>/<channelId:1>: 200, 184 ms
 
 Sent:
 
@@ -61,7 +61,7 @@ Sent:
     "fp": "6f",
     "_x_num_retries": "0"
   },
-  "body": "{\"token\":\"xoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\",\"user_id\":\"U0C4L7RF7HD\",\"permissions\":[\"ACCESS_SLACK_AI_TODAY\"],\"as_admin\":true}"
+  "body": "{\"token\":\"<slackToken>\",\"user_id\":\"<userId:1>\",\"permissions\":[\"ACCESS_SLACK_AI_TODAY\"],\"as_admin\":true}"
 }
 ```
 
@@ -86,7 +86,7 @@ Sent:
     "fp": "6f",
     "_x_num_retries": "0"
   },
-  "body": "{\"token\":\"xoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\",\"user_id\":\"U0C4L7RF7HD\",\"permissions\":[\"MANAGE_SALESFORCE_CONNECTIONS\",\"MANAGE_SALESFORCE_MCP_SERVERS\"],\"as_admin\":true}"
+  "body": "{\"token\":\"<slackToken>\",\"user_id\":\"<userId:1>\",\"permissions\":[\"MANAGE_SALESFORCE_CONNECTIONS\",\"MANAGE_SALESFORCE_MCP_SERVERS\"],\"as_admin\":true}"
 }
 ```
 

@@ -35,7 +35,7 @@ Sent:
     "_x_gantry": "true",
     "_x_desktop_ia": "4",
     "_x_csid": "b3O92r22OFk",
-    "slack_route": "T0C4VCD06MR",
+    "slack_route": "<teamId:1>",
     "_x_version_ts": "1793684253",
     "_x_foreground": "true",
     "_x_frontend_build_type": "current",
@@ -43,7 +43,7 @@ Sent:
     "_x_num_retries": "0"
   },
   "body": {
-    "------WebKitFormBoundary8IRjHEUSOUhY5Y4K\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\nxoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\r\n------WebKitFormBoundary8IRjHEUSOUhY5Y4K\r\nContent-Disposition: form-data; name=\"count\"\r\n\r\n250\r\n------WebKitFormBoundary8IRjHEUSOUhY5Y4K\r\nContent-Disposition: form-data; name=\"include_closed\"\r\n\r\ntrue\r\n------WebKitFormBoundary8IRjHEUSOUhY5Y4K\r\nContent-Disposition: form-data;… (996 chars)"
+    "------WebKitFormBoundary8IRjHEUSOUhY5Y4K\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\n<slackToken>\r\n------WebKitFormBoundary8IRjHEUSOUhY5Y4K\r\nContent-Disposition: form-data; name=\"count\"\r\n\r\n250\r\n------WebKitFormBoundary8IRjHEUSOUhY5Y4K\r\nContent-Disposition: form-data; name=\"include_closed\"\r\n\r\ntrue\r\n------WebKitFormBoundary8IRjHEUSOUhY5Y4K\r\nContent-Disposition: form-data;… (996 chars)"
   }
 }
 ```
@@ -55,16 +55,16 @@ Answered:
   "ok": true,
   "ims": [
     {
-      "id": "D0C8VAE7REU",
+      "id": "<channelId:1>",
       "message": {
-        "user": "U0A9JFXK21L",
+        "user": "<userId:1>",
         "type": "message",
         "ts": "1793689118.238869",
         "client_msg_id": "e10f3ff0-5d53-4c66-b0bf-cb2bb3e41382",
         "text": "from who",
-        "team": "T0C4VCD06MR",
-        "user_team": "T0A9H4FM18V",
-        "source_team": "T0A9H4FM18V",
+        "team": "<teamId:1>",
+        "user_team": "<teamId:2>",
+        "source_team": "<teamId:2>",
         "blocks": [
           {
             "type": "rich_text",
@@ -84,31 +84,31 @@ Answered:
         ]
       },
       "channel": {
-        "id": "D0C8VAE7REU",
+        "id": "<channelId:1>",
         "created": 1791540333,
         "is_org_shared": false,
         "is_im": true,
         "is_archived": false,
-        "context_team_id": "T0C4VCD06MR",
+        "context_team_id": "<teamId:1>",
         "updated": 1793354470891,
         "is_shared": true,
         "is_frozen": false,
         "is_slackbot_channel_enabled": false,
         "is_slackbot_channel_eligible": false,
-        "user": "U0A9JFXK21L",
+        "user": "<userId:1>",
         "last_read": "1793689118.238869",
         "is_open": true,
         "connected_team_ids": [
-          "T0C4VCD06MR",
-          "T0A9H4FM18V"
+          "<teamId:1>",
+          "<teamId:2>"
         ],
         "shared_team_ids": [
-          "T0A9H4FM18V"
+          "<teamId:2>"
         ],
         "is_ext_shared": true,
         "properties": {
           "meeting_notes": {
-            "file_id": "F0CDBB09HT5"
+            "file_id": "<fileId:1>"
           },
           "tabs": [
             {
@@ -120,7 +120,7 @@ Answered:
               "id": "Ct0CDC95GAMB",
               "type": "canvas",
               "data": {
-                "file_id": "F0CDBB09HT5",
+                "file_id": "<fileId:1>",
                 "shared_ts": "1793354470.599729"
               },
               "label": ""
@@ -134,7 +134,7 @@ Answered:
               "id": "Ct0CDC95GAMB",
               "type": "canvas",
               "data": {
-                "file_id": "F0CDBB09HT5",
+                "file_id": "<fileId:1>",
                 "shared_ts": "1793354470.599729"
               }
             }
@@ -144,10 +144,10 @@ Answered:
       "latest": "1793689118.238869"
     },
     {
-      "id": "D0C4VCJA6NP",
+      "id": "<channelId:2>",
       "message": {
         "subtype": "bot_message",
-        "text": "Matthew's Team’s free trial of Slack Pro has ended. Any channels with people outside your company — such as *#matt-rheos* — have been disconnected.\n\nTo continue using Slack Connect channels, upgrade to a paid plan. <https://slack.com/pricing|See upgrade options>",
+        "text": "<messageText>",
         "user": "USLACK",
         "type": "message",
         "ts": "1793180184.720269",
@@ -185,12 +185,12 @@ Answered:
         ]
       },
       "channel": {
-        "id": "D0C4VCJA6NP",
+        "id": "<channelId:2>",
         "created": 1790614723,
         "is_org_shared": false,
         "is_im": true,
         "is_archived": false,
-        "context_team_id": "T0C4VCD06MR",
+        "context_team_id": "<teamId:1>",
         "updated": 1790614723826,
         "is_frozen": false,
         "is_slackbot_channel_enabled": false,

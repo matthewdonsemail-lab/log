@@ -24,7 +24,7 @@ Seen 2 time(s) in 2 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261024T060921_61594063207669**, scroll: +515px in 13 wheel steps, 656 ms: 200, 443 ms
+**runs/inspect/20261024T060921_<userId:1>**, scroll: +515px in 13 wheel steps, 656 ms: 200, 443 ms
 
 Sent:
 

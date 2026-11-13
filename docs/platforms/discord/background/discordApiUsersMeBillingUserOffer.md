@@ -10,7 +10,7 @@
 | Path | `discord.com/api/users/@me/billing/user-offer` |
 | Sends | `allow_triggers` |
 | Reads | `user_trial_offer`, `user_discount_offer.id`, `user_discount_offer.user_id`, `user_discount_offer.discount_id`, `user_discount_offer.applied_at`, `user_discount_offer.expires_at`, `user_discount_offer.discount`, `user_discount` |
-| Called from | `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1036.js:1 parse`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1245.js:2 anonymous` |
+| Called from | `runs/inspect/20261030T222341_<name:1>/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_<name:1>/script1036.js:1 parse`, `runs/inspect/20261030T222341_<name:1>/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_<name:1>/script1245.js:2 anonymous` |
 | rea | `ev_065e7ad37dcb5911d240f9de7d6e2882220c5a8d7c025d92b46a23de59cf297c` |
 
 Seen 6 time(s) in 4 run(s).
@@ -28,7 +28,7 @@ Seen 6 time(s) in 4 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder**, step 2: snapshot: 200, 404 ms
+**runs/inspect/20261030T222341_<name:1>**, step 2: snapshot: 200, 404 ms
 
 Sent:
 
@@ -44,13 +44,13 @@ Answered:
 {
   "user_trial_offer": null,
   "user_discount_offer": {
-    "id": "1511280910626980021",
-    "user_id": "1434443116663930960",
-    "discount_id": "1215366184820539392",
+    "id": "<id:1>",
+    "user_id": "<userId:1>",
+    "discount_id": "<id:2>",
     "applied_at": null,
     "expires_at": "2026-11-02T19:32:04.567388+00:00",
     "discount": {
-      "id": "1215366184820539392",
+      "id": "<id:2>",
       "amount": 40,
       "starts_at": null,
       "ends_at": null,
@@ -59,7 +59,7 @@ Answered:
       "sku_ids": null,
       "sku_group_ids": null,
       "plan_ids": [
-        "511651880837840896"
+        "<id:3>"
       ],
       "user_usage_limit_interval": 3,
       "user_usage_limit_interval_count": 1,
@@ -70,7 +70,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder**, step 1: goto /login: 200, 386 ms
+**runs/inspect/20261028T074137_<name:1>**, step 1: goto /login: 200, 386 ms
 
 Sent:
 
@@ -86,13 +86,13 @@ Answered:
 {
   "user_trial_offer": null,
   "user_discount_offer": {
-    "id": "1511280910626980021",
-    "user_id": "1434443116663930960",
-    "discount_id": "1215366184820539392",
+    "id": "<id:1>",
+    "user_id": "<userId:1>",
+    "discount_id": "<id:2>",
     "applied_at": null,
     "expires_at": "2026-11-02T19:32:04.567388+00:00",
     "discount": {
-      "id": "1215366184820539392",
+      "id": "<id:2>",
       "amount": 40,
       "starts_at": null,
       "ends_at": null,
@@ -101,7 +101,7 @@ Answered:
       "sku_ids": null,
       "sku_group_ids": null,
       "plan_ids": [
-        "511651880837840896"
+        "<id:3>"
       ],
       "user_usage_limit_interval": 3,
       "user_usage_limit_interval_count": 1,
@@ -112,7 +112,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261028T065202_sourcedandsoldtothehighestbidder**, step 1: goto /channels/@me/<id>: 200, 452 ms
+**runs/inspect/20261028T065202_<name:1>**, step 1: goto /channels/@me/<id>: 200, 452 ms
 
 Sent:
 
@@ -128,13 +128,13 @@ Answered:
 {
   "user_trial_offer": null,
   "user_discount_offer": {
-    "id": "1511280910626980021",
-    "user_id": "1434443116663930960",
-    "discount_id": "1215366184820539392",
+    "id": "<id:1>",
+    "user_id": "<userId:1>",
+    "discount_id": "<id:2>",
     "applied_at": null,
     "expires_at": "2026-11-02T19:32:04.567388+00:00",
     "discount": {
-      "id": "1215366184820539392",
+      "id": "<id:2>",
       "amount": 40,
       "starts_at": null,
       "ends_at": null,
@@ -143,7 +143,7 @@ Answered:
       "sku_ids": null,
       "sku_group_ids": null,
       "plan_ids": [
-        "511651880837840896"
+        "<id:3>"
       ],
       "user_usage_limit_interval": 3,
       "user_usage_limit_interval_count": 1,

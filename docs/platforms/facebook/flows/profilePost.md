@@ -2,7 +2,7 @@
 
 Post text on the account's own profile: open the composer, type the text, Post, wait for ComposerStoryCreateMutation. Writes on Facebook (--live).
 
-Built by `log flow fromInspect` from the recording `C:/Users/0/.logCli/runs/inspect/20261020T162343_61594063207669/sequences/profilePost` (account profilePost). Run it on any account with `log flow run profilePost --account <a> --live`, or over MCP as the tool `flowProfilePost` (rule 31).
+Built by `log flow fromInspect` from the recording `~/.logCli/runs/inspect/20261020T162343_<userId:1>/sequences/profilePost` (account profilePost). Run it on any account with `log flow run profilePost --account <a> --live`, or over MCP as the tool `flowProfilePost` (rule 31).
 
 ## Params
 

@@ -10,7 +10,7 @@
 | Path | `discord.com/api/promotions` |
 | Sends | — |
 | Reads | — |
-| Called from | `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1036.js:1 parse`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1245.js:2 anonymous` |
+| Called from | `runs/inspect/20261030T222341_<name:1>/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_<name:1>/script1036.js:1 parse`, `runs/inspect/20261030T222341_<name:1>/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_<name:1>/script1245.js:2 anonymous` |
 | rea | `ev_065e7ad37dcb5911d240f9de7d6e2882220c5a8d7c025d92b46a23de59cf297c` |
 
 Seen 6 time(s) in 4 run(s).
@@ -28,7 +28,7 @@ Seen 6 time(s) in 4 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder**, step 2: snapshot: 200, 535 ms
+**runs/inspect/20261030T222341_<name:1>**, step 2: snapshot: 200, 535 ms
 
 Sent:
 
@@ -47,7 +47,7 @@ Answered:
 ```json
 [
   {
-    "id": "1554628839802667048",
+    "id": "<id:1>",
     "marketing_components": [
       "(14 fields)",
       "(14 fields)",
@@ -68,7 +68,7 @@ Answered:
     "priority": null
   },
   {
-    "id": "1550247125034598460",
+    "id": "<id:2>",
     "marketing_components": [
       "(14 fields)",
       "(14 fields)",
@@ -88,7 +88,7 @@ Answered:
     "priority": null
   },
   {
-    "id": "1548052773751361596",
+    "id": "<id:3>",
     "marketing_components": [],
     "start_date": "2026-09-11T05:00:00+00:00",
     "end_date": "2028-09-11T05:00:00+00:00",
@@ -114,7 +114,7 @@ Answered:
 ]
 ```
 
-**runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder**, step 1: goto /login: 200, 408 ms
+**runs/inspect/20261028T074137_<name:1>**, step 1: goto /login: 200, 408 ms
 
 Sent:
 
@@ -133,7 +133,7 @@ Answered:
 ```json
 [
   {
-    "id": "1554628839802667048",
+    "id": "<id:1>",
     "marketing_components": [
       "(14 fields)",
       "(14 fields)",
@@ -154,7 +154,7 @@ Answered:
     "priority": null
   },
   {
-    "id": "1550247125034598460",
+    "id": "<id:2>",
     "marketing_components": [
       "(14 fields)",
       "(14 fields)",
@@ -174,7 +174,7 @@ Answered:
     "priority": null
   },
   {
-    "id": "1548052773751361596",
+    "id": "<id:3>",
     "marketing_components": [],
     "start_date": "2026-09-11T05:00:00+00:00",
     "end_date": "2028-09-11T05:00:00+00:00",
@@ -200,7 +200,7 @@ Answered:
 ]
 ```
 
-**runs/inspect/20261028T065202_sourcedandsoldtothehighestbidder**, step 1: goto /channels/@me/<id>: 200, 372 ms
+**runs/inspect/20261028T065202_<name:1>**, step 1: goto /channels/@me/<id>: 200, 372 ms
 
 Sent:
 
@@ -219,7 +219,7 @@ Answered:
 ```json
 [
   {
-    "id": "1554628839802667048",
+    "id": "<id:1>",
     "marketing_components": [
       "(14 fields)",
       "(14 fields)",
@@ -240,7 +240,7 @@ Answered:
     "priority": null
   },
   {
-    "id": "1550247125034598460",
+    "id": "<id:2>",
     "marketing_components": [
       "(14 fields)",
       "(14 fields)",
@@ -260,7 +260,7 @@ Answered:
     "priority": null
   },
   {
-    "id": "1548052773751361596",
+    "id": "<id:3>",
     "marketing_components": [],
     "start_date": "2026-09-11T05:00:00+00:00",
     "end_date": "2028-09-11T05:00:00+00:00",

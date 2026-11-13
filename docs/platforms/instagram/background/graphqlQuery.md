@@ -97,7 +97,7 @@ Answered:
     "is_final": true,
     "all_video_dash_prefetch_representations": [
       {
-        "video_id": "4021707623438010527",
+        "video_id": "<id:1>",
         "representations": [
           "(10 fields)",
           "(10 fields)",
@@ -107,7 +107,7 @@ Answered:
         "initial_representation_ids": []
       },
       {
-        "video_id": "4012958971773370834",
+        "video_id": "<id:2>",
         "representations": [
           "(10 fields)",
           "(10 fields)",
@@ -200,7 +200,7 @@ Answered:
     "is_final": true,
     "all_video_dash_prefetch_representations": [
       {
-        "video_id": "4012958971773370834",
+        "video_id": "<id:2>",
         "representations": [
           "(10 fields)",
           "(10 fields)",
@@ -213,7 +213,7 @@ Answered:
         "initial_representation_ids": []
       },
       {
-        "video_id": "4000761808955312870",
+        "video_id": "<id:3>",
         "representations": [
           "(10 fields)",
           "(10 fields)",
@@ -310,7 +310,7 @@ Answered:
     "is_final": true,
     "all_video_dash_prefetch_representations": [
       {
-        "video_id": "4020250046051626753",
+        "video_id": "<id:4>",
         "representations": [
           "(10 fields)",
           "(10 fields)",
@@ -323,7 +323,7 @@ Answered:
         "initial_representation_ids": []
       },
       {
-        "video_id": "4021707623438010527",
+        "video_id": "<id:1>",
         "representations": [
           "(10 fields)",
           "(10 fields)",
@@ -333,7 +333,7 @@ Answered:
         "initial_representation_ids": []
       },
       {
-        "video_id": "4021557979593096643",
+        "video_id": "<id:5>",
         "representations": [
           "(10 fields)",
           "(10 fields)",

@@ -23,7 +23,7 @@ Seen 1 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261023T173652_61594063207669**, step 3: click e356: 200, 549 ms
+**runs/inspect/20261023T173652_<userId:1>**, step 3: click e356: 200, 549 ms
 
 Sent:
 
@@ -33,7 +33,7 @@ Sent:
   "fb_api_req_friendly_name": "CometMarketplaceYouFeedCardMoreMenuTargetQuery",
   "server_timestamps": "true",
   "variables": {
-    "id": "1425935622848350",
+    "id": "<id:1>",
     "__relay_internal__pv__ShouldUpdateMarketplaceBoostListingBoostedStatusrelayprovider": false
   },
   "doc_id": "28716475871275076"
@@ -52,20 +52,20 @@ Answered:
       "__isMarketplaceListingRenderable": "GroupCommerceProductItem",
       "product_item": {
         "for_sale_item": {
-          "id": "1425935622848350"
+          "id": "<id:1>"
         },
-        "id": "28800458926283039",
+        "id": "<id:2>",
         "boosted_marketplace_listing": null,
         "promoted_listing": {
           "button_text": "Promote now",
-          "page_id": "1383267438207114",
+          "page_id": "<id:3>",
           "product_item_override": {
-            "id": "28800458926283039"
+            "id": "<id:2>"
           },
           "coupon_offer_id": null
         },
         "product_catalog": {
-          "id": "1116789430997720"
+          "id": "<id:4>"
         }
       },
       "__isMarketplaceListingWithIntegrityStatus": "GroupCommerceProductItem",
@@ -74,17 +74,17 @@ Answered:
       "listing_price": {
         "currency": "USD"
       },
-      "id": "1425935622848350",
+      "id": "<id:1>",
       "is_pending": false,
       "is_hidden": false,
       "is_seller_business_onboarded": false,
       "is_sold": false,
       "is_draft": false,
       "is_viewer_seller": true,
-      "reportable_ent_id": "28800458926283039",
+      "reportable_ent_id": "<id:2>",
       "marketplace_listing_seller": {
         "__typename": "User",
-        "id": "61594063207669"
+        "id": "<userId:1>"
       },
       "story": {
         "id": "UzpfSTYxNTk0MDYzMjA3NjY5OlZLOjE0MjU5MzU2MjI4NDgzNTA="

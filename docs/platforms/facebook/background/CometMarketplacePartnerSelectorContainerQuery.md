@@ -23,7 +23,7 @@ Seen 1 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261022T110738_61594063207669**, step 4: click e191: 200, 1283 ms
+**runs/inspect/20261022T110738_<userId:1>**, step 4: click e191: 200, 1283 ms
 
 Sent:
 
@@ -45,25 +45,25 @@ Answered:
     "viewer": {
       "marketplace_settings": {
         "selected_partner_ids": [
-          "1629659441068862",
-          "1240470891063721"
+          "<id:1>",
+          "<id:2>"
         ],
         "should_hide_organic_listings": false,
         "is_partner_auto_opt_in_enabled": true,
         "should_show_partner_selector": false,
         "viewed_partner_ids": [
-          "1629659441068862",
-          "1240470891063721"
+          "<id:1>",
+          "<id:2>"
         ],
         "id": "TWFya2V0cGxhY2VTZXR0aW5nczo2MTU5NDA2MzIwNzY2OQ==",
         "qualifies_for_partner_selector": true
       },
       "marketplace_partnership_catalog_settings": [
         {
-          "partnership_settings_id": "1240470891063721"
+          "partnership_settings_id": "<id:2>"
         },
         {
-          "partnership_settings_id": "1629659441068862"
+          "partnership_settings_id": "<id:1>"
         }
       ]
     }

@@ -29,7 +29,7 @@ Seen 9 time(s) in 7 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/host/20261026T180628_61594285317994**, setLocation: 'Kamloops, British Columbia' is suggestion 1 of 9: 200, 281 ms
+**runs/host/20261026T180628_<userId:1>**, setLocation: 'Kamloops, British Columbia' is suggestion 1 of 9: 200, 281 ms
 
 Sent:
 
@@ -42,7 +42,7 @@ Sent:
     "input": {
       "browse_radius": 65,
       "use_suggested_radius": false,
-      "actor_id": "61594285317994",
+      "actor_id": "<userId:1>",
       "client_mutation_id": "2"
     }
   },

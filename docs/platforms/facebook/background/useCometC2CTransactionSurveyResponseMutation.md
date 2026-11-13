@@ -23,7 +23,7 @@ Seen 1 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261023T173652_61594063207669**, step 7: click e620: 200, 671 ms
+**runs/inspect/20261023T173652_<userId:1>**, step 7: click e620: 200, 671 ms
 
 Sent:
 
@@ -36,12 +36,12 @@ Sent:
     "input": {
       "action": "DELETE",
       "duplicate_hash": "f770b48411f2c3f8d5207912dc894c177586273bbc5be446c262c51b831cebf0",
-      "for_sale_item_id": "1425935622848350",
+      "for_sale_item_id": "<id:1>",
       "is_short_survey_holdout": true,
       "referral_surface": "UNKNOWN",
       "response": "NO",
       "surface_new": "MARKETPLACE_PAGE_SELLING",
-      "actor_id": "61594063207669",
+      "actor_id": "<userId:1>",
       "client_mutation_id": "2"
     }
   },

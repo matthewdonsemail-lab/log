@@ -23,7 +23,7 @@ Seen 1 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261023T173652_61594063207669**, step 5: click e537: 200, 1115 ms
+**runs/inspect/20261023T173652_<userId:1>**, step 5: click e537: 200, 1115 ms
 
 Sent:
 
@@ -34,10 +34,10 @@ Sent:
   "server_timestamps": "true",
   "variables": {
     "input": {
-      "actor_id": "61594063207669",
+      "actor_id": "<userId:1>",
       "client_mutation_id": "1",
       "batch_delete_variants": true,
-      "for_sale_item_id": "1425935622848350",
+      "for_sale_item_id": "<id:1>",
       "referral_surface": null,
       "surface": "MARKETPLACE_PAGE_SELLING"
     }
@@ -52,7 +52,7 @@ Answered:
 {
   "data": {
     "commerce_for_sale_item_delete": {
-      "deleted_for_sale_item_id": "1425935622848350",
+      "deleted_for_sale_item_id": "<id:1>",
       "viewer": {
         "items": {
           "count_up_to": 0
@@ -80,7 +80,7 @@ Answered:
 
 ## What it does
 
-Deletes the listing: sent `input.for_sale_item_id` (the listing), `batch_delete_variants: true`, `surface: MARKETPLACE_PAGE_SELLING` and the `actor_id`; answered `data.commerce_for_sale_item_delete.deleted_for_sale_item_id` and the seller's remaining items (`items.count_up_to`, active and inactive sets). Fires on the dialog's Delete button, about 1.1 s. Bethlehem 2026-10-23: deleted 1425935622848350, 0 items left.
+Deletes the listing: sent `input.for_sale_item_id` (the listing), `batch_delete_variants: true`, `surface: MARKETPLACE_PAGE_SELLING` and the `actor_id`; answered `data.commerce_for_sale_item_delete.deleted_for_sale_item_id` and the seller's remaining items (`items.count_up_to`, active and inactive sets). Fires on the dialog's Delete button, about 1.1 s. Bethlehem 2026-10-23: deleted <id:1>, 0 items left.
 
 ## What our machine does with it
 

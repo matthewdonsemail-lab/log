@@ -19,7 +19,7 @@ wss://chat-ws.x.com/ws?token=<jwt>    one socket, Origin https://x.com
    socket drops                       new token, new socket (2 s, doubling to 60 s)
 ```
 
-One real example, 28 Oct 05:49:45 UTC: @QuadScorpion08 typed "Ok wait let ai reply now". X pushed it as a `messageEvent` frame the same second, `log twitter chat watch` decrypted it with the saved PIN and printed `>>> NEW 2026-10-28T05:49:45.872000Z @QuadScorpion08: Ok wait let ai reply now`. No inbox read.
+One real example, 28 Oct 05:49:45 UTC: @<name:1> typed "Ok wait let ai reply now". X pushed it as a `messageEvent` frame the same second, `log twitter chat watch` decrypted it with the saved PIN and printed `>>> NEW 2026-10-28T05:49:45.872000Z @<name:1>: Ok wait let ai reply now`. No inbox read.
 
 ## The parts
 

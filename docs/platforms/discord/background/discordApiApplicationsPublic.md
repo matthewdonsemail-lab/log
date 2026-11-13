@@ -10,7 +10,7 @@
 | Path | `discord.com/api/applications/public` |
 | Sends | — |
 | Reads | — |
-| Called from | `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1036.js:1 parse`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1245.js:2 anonymous` |
+| Called from | `runs/inspect/20261030T222341_<name:8>/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_<name:8>/script1036.js:1 parse`, `runs/inspect/20261030T222341_<name:8>/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_<name:8>/script1245.js:2 anonymous` |
 | rea | `ev_065e7ad37dcb5911d240f9de7d6e2882220c5a8d7c025d92b46a23de59cf297c` |
 
 Seen 10 time(s) in 3 run(s).
@@ -27,14 +27,14 @@ Seen 10 time(s) in 3 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder**, step 2: snapshot: 200, 510 ms
+**runs/inspect/20261030T222341_<name:8>**, step 2: snapshot: 200, 510 ms
 
 Sent:
 
 ```json
 {
   "query": {
-    "application_ids": "1470616226995765409"
+    "application_ids": "<id:1>"
   },
   "body": null
 }
@@ -45,10 +45,10 @@ Answered:
 ```json
 [
   {
-    "id": "357607478105604096",
-    "name": "War Thunder",
+    "id": "<id:2>",
+    "name": "<name:1>",
     "icon": "b23dfa191e3f3aa8142572110a99723f",
-    "description": "War Thunder is a free-to-play air combat game set in the World War II and Korean War eras. Naval and land battles are planned additions.",
+    "description": "<messageText>",
     "summary": "",
     "type": 5,
     "is_monetized": false,
@@ -80,12 +80,12 @@ Answered:
     "integration_types_config": {
       "0": "(0 fields)"
     },
-    "verify_key": "ed5af666992678458c1f7e0984ba8c42317ae667220e8332854d7b44f384cd4e",
+    "verify_key": "<token>",
     "embedded_surfaces": []
   },
   {
-    "id": "542075586886107149",
-    "name": "Apex Legends",
+    "id": "<id:3>",
+    "name": "<name:2>",
     "icon": "91fac0600c5b6527c1aea95a93c6a8e0",
     "description": "",
     "summary": "",
@@ -112,7 +112,7 @@ Answered:
     "aliases": [
       "Apex Legends"
     ],
-    "guild_id": "541484311354933258",
+    "guild_id": "<guildId:1>",
     "executables": [
       "(3 fields)",
       "(3 fields)",
@@ -123,12 +123,12 @@ Answered:
     "integration_types_config": {
       "0": "(0 fields)"
     },
-    "verify_key": "09ec3fea255d2f025b9b8aaa3aa39446d2428524830803d020483d628f06065c",
+    "verify_key": "<token>",
     "embedded_surfaces": []
   },
   {
-    "id": "700136079562375258",
-    "name": "VALORANT",
+    "id": "<id:4>",
+    "name": "<name:3>",
     "icon": "e55fc8259df1548328f977d302779ab7",
     "description": "",
     "summary": "",
@@ -159,7 +159,7 @@ Answered:
     "aliases": [
       "VALORANT"
     ],
-    "guild_id": "679875946597056683",
+    "guild_id": "<guildId:2>",
     "executables": [
       "(3 fields)"
     ],
@@ -167,12 +167,12 @@ Answered:
     "integration_types_config": {
       "0": "(0 fields)"
     },
-    "verify_key": "9c0c5c972af9029b85743a3d1c756ef6286058699029c63fbc22dc7d28607748",
+    "verify_key": "<token>",
     "embedded_surfaces": []
   },
   {
-    "id": "1220537550809337856",
-    "name": "Dragon's Dogma 2",
+    "id": "<id:5>",
+    "name": "<name:4>",
     "icon": "111484148fdb007d7df74024f1cd35ac",
     "description": "",
     "summary": "",
@@ -191,8 +191,8 @@ Answered:
       "… 7 more"
     ],
     "bot": {
-      "id": "1220537550809337856",
-      "username": "Dragon's Dogma 2",
+      "id": "<id:5>",
+      "username": "<name:4>",
       "global_name": null,
       "avatar": "111484148fdb007d7df74024f1cd35ac",
       "avatar_decoration_data": null,
@@ -222,12 +222,12 @@ Answered:
     "integration_types_config": {
       "0": "(0 fields)"
     },
-    "verify_key": "90d3c8f26adb59eba5f8f7e9eda75179e10856b71706d897fafd9c308edbed37",
+    "verify_key": "<token>",
     "embedded_surfaces": []
   },
   {
-    "id": "1260340082150346932",
-    "name": "Once Human",
+    "id": "<id:6>",
+    "name": "<name:5>",
     "icon": "ec8a566bcaad1d21e45e728e1307ab1a",
     "description": "",
     "summary": "",
@@ -246,8 +246,8 @@ Answered:
       "… 9 more"
     ],
     "bot": {
-      "id": "1260340082150346932",
-      "username": "Once Human",
+      "id": "<id:6>",
+      "username": "<name:5>",
       "global_name": null,
       "avatar": "ec8a566bcaad1d21e45e728e1307ab1a",
       "avatar_decoration_data": null,
@@ -280,12 +280,12 @@ Answered:
     "integration_types_config": {
       "0": "(0 fields)"
     },
-    "verify_key": "8d63127829fdf7fab9e58719d94b2e404169d7ae9ce5550ca5c381ac7cbeefec",
+    "verify_key": "<token>",
     "embedded_surfaces": []
   },
   {
-    "id": "1402418087793528862",
-    "name": "Risk of Rain 2",
+    "id": "<id:7>",
+    "name": "<name:6>",
     "icon": "b838c4c744b9cb9f8dd4c8afb82b085f",
     "description": "",
     "summary": "",
@@ -304,8 +304,8 @@ Answered:
       "… 9 more"
     ],
     "bot": {
-      "id": "1402418087793528862",
-      "username": "Risk of Rain 2",
+      "id": "<id:7>",
+      "username": "<name:6>",
       "global_name": null,
       "avatar": "b838c4c744b9cb9f8dd4c8afb82b085f",
       "avatar_decoration_data": null,
@@ -330,7 +330,7 @@ Answered:
     "flags_new": "0",
     "hook": true,
     "aliases": [
-      "Risk of Rain 2"
+      "<name:6>"
     ],
     "executables": [
       "(3 fields)",
@@ -342,21 +342,21 @@ Answered:
     "integration_types_config": {
       "0": "(0 fields)"
     },
-    "verify_key": "6cd7a71b91f4d606f6ce821274aaabb83121174b14b337f47c43cf9f3ea1bd57",
+    "verify_key": "<token>",
     "embedded_surfaces": []
   },
   "… 7 more"
 ]
 ```
 
-**runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder**, step 1: goto /login: 200, 598 ms
+**runs/inspect/20261028T074137_<name:8>**, step 1: goto /login: 200, 598 ms
 
 Sent:
 
 ```json
 {
   "query": {
-    "application_ids": "1470616226995765409"
+    "application_ids": "<id:1>"
   },
   "body": null
 }
@@ -367,10 +367,10 @@ Answered:
 ```json
 [
   {
-    "id": "357607478105604096",
-    "name": "War Thunder",
+    "id": "<id:2>",
+    "name": "<name:1>",
     "icon": "b23dfa191e3f3aa8142572110a99723f",
-    "description": "War Thunder is a free-to-play air combat game set in the World War II and Korean War eras. Naval and land battles are planned additions.",
+    "description": "<messageText>",
     "summary": "",
     "type": 5,
     "is_monetized": false,
@@ -402,14 +402,14 @@ Answered:
     "integration_types_config": {
       "0": "(0 fields)"
     },
-    "verify_key": "ed5af666992678458c1f7e0984ba8c42317ae667220e8332854d7b44f384cd4e",
+    "verify_key": "<token>",
     "embedded_surfaces": []
   },
   {
-    "id": "363413310474813450",
-    "name": "Wizard101",
+    "id": "<id:8>",
+    "name": "<name:7>",
     "icon": "dc0e50c93ea51ef3d025bc580b14dcf6",
-    "description": "Wizard101 is a card-based fantasy MMO developed by KingIsle Entertainment.",
+    "description": "<messageText>",
     "summary": "",
     "type": 5,
     "is_monetized": false,
@@ -441,12 +441,12 @@ Answered:
     "integration_types_config": {
       "0": "(0 fields)"
     },
-    "verify_key": "6040de7eec67f727a70695e98038dd61cbc773ba9aa3e8c203c355d1fbaa2575",
+    "verify_key": "<token>",
     "embedded_surfaces": []
   },
   {
-    "id": "542075586886107149",
-    "name": "Apex Legends",
+    "id": "<id:3>",
+    "name": "<name:2>",
     "icon": "91fac0600c5b6527c1aea95a93c6a8e0",
     "description": "",
     "summary": "",
@@ -473,7 +473,7 @@ Answered:
     "aliases": [
       "Apex Legends"
     ],
-    "guild_id": "541484311354933258",
+    "guild_id": "<guildId:1>",
     "executables": [
       "(3 fields)",
       "(3 fields)",
@@ -484,12 +484,12 @@ Answered:
     "integration_types_config": {
       "0": "(0 fields)"
     },
-    "verify_key": "09ec3fea255d2f025b9b8aaa3aa39446d2428524830803d020483d628f06065c",
+    "verify_key": "<token>",
     "embedded_surfaces": []
   },
   {
-    "id": "700136079562375258",
-    "name": "VALORANT",
+    "id": "<id:4>",
+    "name": "<name:3>",
     "icon": "e55fc8259df1548328f977d302779ab7",
     "description": "",
     "summary": "",
@@ -520,7 +520,7 @@ Answered:
     "aliases": [
       "VALORANT"
     ],
-    "guild_id": "679875946597056683",
+    "guild_id": "<guildId:2>",
     "executables": [
       "(3 fields)"
     ],
@@ -528,12 +528,12 @@ Answered:
     "integration_types_config": {
       "0": "(0 fields)"
     },
-    "verify_key": "9c0c5c972af9029b85743a3d1c756ef6286058699029c63fbc22dc7d28607748",
+    "verify_key": "<token>",
     "embedded_surfaces": []
   },
   {
-    "id": "1220537550809337856",
-    "name": "Dragon's Dogma 2",
+    "id": "<id:5>",
+    "name": "<name:4>",
     "icon": "111484148fdb007d7df74024f1cd35ac",
     "description": "",
     "summary": "",
@@ -552,8 +552,8 @@ Answered:
       "… 7 more"
     ],
     "bot": {
-      "id": "1220537550809337856",
-      "username": "Dragon's Dogma 2",
+      "id": "<id:5>",
+      "username": "<name:4>",
       "global_name": null,
       "avatar": "111484148fdb007d7df74024f1cd35ac",
       "avatar_decoration_data": null,
@@ -583,12 +583,12 @@ Answered:
     "integration_types_config": {
       "0": "(0 fields)"
     },
-    "verify_key": "90d3c8f26adb59eba5f8f7e9eda75179e10856b71706d897fafd9c308edbed37",
+    "verify_key": "<token>",
     "embedded_surfaces": []
   },
   {
-    "id": "1260340082150346932",
-    "name": "Once Human",
+    "id": "<id:6>",
+    "name": "<name:5>",
     "icon": "ec8a566bcaad1d21e45e728e1307ab1a",
     "description": "",
     "summary": "",
@@ -607,8 +607,8 @@ Answered:
       "… 9 more"
     ],
     "bot": {
-      "id": "1260340082150346932",
-      "username": "Once Human",
+      "id": "<id:6>",
+      "username": "<name:5>",
       "global_name": null,
       "avatar": "ec8a566bcaad1d21e45e728e1307ab1a",
       "avatar_decoration_data": null,
@@ -641,21 +641,21 @@ Answered:
     "integration_types_config": {
       "0": "(0 fields)"
     },
-    "verify_key": "8d63127829fdf7fab9e58719d94b2e404169d7ae9ce5550ca5c381ac7cbeefec",
+    "verify_key": "<token>",
     "embedded_surfaces": []
   },
   "… 9 more"
 ]
 ```
 
-**runs/inspect/20261028T062914_sourcedandsoldtothehighestbidder**, step 5: click e40: 200, 519 ms
+**runs/inspect/20261028T062914_<name:8>**, step 5: click e40: 200, 519 ms
 
 Sent:
 
 ```json
 {
   "query": {
-    "application_ids": "1470616226995765409"
+    "application_ids": "<id:1>"
   },
   "body": null
 }
@@ -666,10 +666,10 @@ Answered:
 ```json
 [
   {
-    "id": "357607478105604096",
-    "name": "War Thunder",
+    "id": "<id:2>",
+    "name": "<name:1>",
     "icon": "b23dfa191e3f3aa8142572110a99723f",
-    "description": "War Thunder is a free-to-play air combat game set in the World War II and Korean War eras. Naval and land battles are planned additions.",
+    "description": "<messageText>",
     "summary": "",
     "type": 5,
     "is_monetized": false,
@@ -701,14 +701,14 @@ Answered:
     "integration_types_config": {
       "0": "(0 fields)"
     },
-    "verify_key": "ed5af666992678458c1f7e0984ba8c42317ae667220e8332854d7b44f384cd4e",
+    "verify_key": "<token>",
     "embedded_surfaces": []
   },
   {
-    "id": "363413310474813450",
-    "name": "Wizard101",
+    "id": "<id:8>",
+    "name": "<name:7>",
     "icon": "dc0e50c93ea51ef3d025bc580b14dcf6",
-    "description": "Wizard101 is a card-based fantasy MMO developed by KingIsle Entertainment.",
+    "description": "<messageText>",
     "summary": "",
     "type": 5,
     "is_monetized": false,
@@ -740,12 +740,12 @@ Answered:
     "integration_types_config": {
       "0": "(0 fields)"
     },
-    "verify_key": "6040de7eec67f727a70695e98038dd61cbc773ba9aa3e8c203c355d1fbaa2575",
+    "verify_key": "<token>",
     "embedded_surfaces": []
   },
   {
-    "id": "542075586886107149",
-    "name": "Apex Legends",
+    "id": "<id:3>",
+    "name": "<name:2>",
     "icon": "91fac0600c5b6527c1aea95a93c6a8e0",
     "description": "",
     "summary": "",
@@ -772,7 +772,7 @@ Answered:
     "aliases": [
       "Apex Legends"
     ],
-    "guild_id": "541484311354933258",
+    "guild_id": "<guildId:1>",
     "executables": [
       "(3 fields)",
       "(3 fields)",
@@ -783,12 +783,12 @@ Answered:
     "integration_types_config": {
       "0": "(0 fields)"
     },
-    "verify_key": "09ec3fea255d2f025b9b8aaa3aa39446d2428524830803d020483d628f06065c",
+    "verify_key": "<token>",
     "embedded_surfaces": []
   },
   {
-    "id": "700136079562375258",
-    "name": "VALORANT",
+    "id": "<id:4>",
+    "name": "<name:3>",
     "icon": "e55fc8259df1548328f977d302779ab7",
     "description": "",
     "summary": "",
@@ -819,7 +819,7 @@ Answered:
     "aliases": [
       "VALORANT"
     ],
-    "guild_id": "679875946597056683",
+    "guild_id": "<guildId:2>",
     "executables": [
       "(3 fields)"
     ],
@@ -827,12 +827,12 @@ Answered:
     "integration_types_config": {
       "0": "(0 fields)"
     },
-    "verify_key": "9c0c5c972af9029b85743a3d1c756ef6286058699029c63fbc22dc7d28607748",
+    "verify_key": "<token>",
     "embedded_surfaces": []
   },
   {
-    "id": "1220537550809337856",
-    "name": "Dragon's Dogma 2",
+    "id": "<id:5>",
+    "name": "<name:4>",
     "icon": "111484148fdb007d7df74024f1cd35ac",
     "description": "",
     "summary": "",
@@ -851,8 +851,8 @@ Answered:
       "… 7 more"
     ],
     "bot": {
-      "id": "1220537550809337856",
-      "username": "Dragon's Dogma 2",
+      "id": "<id:5>",
+      "username": "<name:4>",
       "global_name": null,
       "avatar": "111484148fdb007d7df74024f1cd35ac",
       "avatar_decoration_data": null,
@@ -882,12 +882,12 @@ Answered:
     "integration_types_config": {
       "0": "(0 fields)"
     },
-    "verify_key": "90d3c8f26adb59eba5f8f7e9eda75179e10856b71706d897fafd9c308edbed37",
+    "verify_key": "<token>",
     "embedded_surfaces": []
   },
   {
-    "id": "1260340082150346932",
-    "name": "Once Human",
+    "id": "<id:6>",
+    "name": "<name:5>",
     "icon": "ec8a566bcaad1d21e45e728e1307ab1a",
     "description": "",
     "summary": "",
@@ -906,8 +906,8 @@ Answered:
       "… 9 more"
     ],
     "bot": {
-      "id": "1260340082150346932",
-      "username": "Once Human",
+      "id": "<id:6>",
+      "username": "<name:5>",
       "global_name": null,
       "avatar": "ec8a566bcaad1d21e45e728e1307ab1a",
       "avatar_decoration_data": null,
@@ -940,7 +940,7 @@ Answered:
     "integration_types_config": {
       "0": "(0 fields)"
     },
-    "verify_key": "8d63127829fdf7fab9e58719d94b2e404169d7ae9ce5550ca5c381ac7cbeefec",
+    "verify_key": "<token>",
     "embedded_surfaces": []
   },
   "… 9 more"

@@ -48,7 +48,7 @@ Seen 30 time(s) in 4 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261023T080801_61594063207669**, step 1: goto /reel/: 200, 1315 ms
+**runs/inspect/20261023T080801_<userId:1>**, step 1: goto /reel/: 200, 1315 ms
 
 Sent:
 
@@ -142,7 +142,7 @@ Answered:
         "… 2 more"
       ],
       "data": {
-        "id": "1607183873661381",
+        "id": "<id:1>",
         "instream_extra_config": "(1 fields)",
         "instream_video_ad_breaks_comet": "(4 fields)"
       },
@@ -174,8 +174,8 @@ Answered:
         "ai_generated_self_disclosure_renderer": null,
         "music_attribution_metadata_renderer": "(3 fields)",
         "id": "UzpfSUZTOjE6LTU5MzA4NTQ3MDIzMjI2MjYxOTM6ZUp3VCs3SDEwYzMzVXhwWk5HWEVZRXhSTnJFUEIyWWNXM1ZRVit6UHoxTnJlY1V1WGIreGx0ZFNScVNCU1kzQkZDeGs5bTNML28yR2NCMXBVUFdyUmQyWVlHSjkwandyNm1DY1U0eE05NWk2bnJmOTIvTHVGdXM3WnBqd08rNmtkU3diZGo5ZHNucmZhbzRqeVMwdE4vczN2RFIrczVxUjZkcHhSb1pEQmlvTFpqSXl6T0RXbUdZSjA3RnRIeVBEcHpPTWJGM1NrODZ4OUVpTFNjRWtSTUF1a21iMCtOYk1wRitTV0JCZm1wZVpscG1hRWwrU24xWWFYNXlSWDFRU241WmZsQnRmbHBtU21o… (520 chars)",
-        "post_id": "1128457519779196",
-        "tracking": "{\"qid\":\"-5930854702322626193\",\"mf_story_key\":\"1128457519779196\",\"top_level_post_id\":\"1128457519779196\",\"content_owner_id_new\":\"100078448742456\",\"page_id\":\"113960531206402\",\"story_location\":125,\"story_attachment_style\":\"video_autoplay\",\"view_time\":1792742897,\"filter\":\"fb_shorts\",\"video_id\":\"1607183873661381\",\"sty\":128,\"mf_objid\":\"1128457519779196\",\"ent_attachement_type\":\"VideoAttachment\",\"app_id\":\"… (1581 chars)",
+        "post_id": "<id:2>",
+        "tracking": "{\"qid\":\"-5930854702322626193\",\"mf_story_key\":\"<id:2>\",\"top_level_post_id\":\"<id:2>\",\"content_owner_id_new\":\"<userId:2>\",\"page_id\":\"<id:3>\",\"story_location\":125,\"story_attachment_style\":\"video_autoplay\",\"view_time\":1792742897,\"filter\":\"fb_shorts\",\"video_id\":\"<id:1>\",\"sty\":128,\"mf_objid\":\"<id:2>\",\"ent_attachement_type\":\"VideoAttachment\",\"app_id\":\"… (1581 chars)",
         "creation_time": 1792630398,
         "creator_collaboration": null,
         "shouldUseCollabsFollowButton": false,
@@ -216,8 +216,8 @@ Answered:
         "encrypted_click_tracking": "AZi4q9iAkKAhFK6OQqSo2vbGzBUALjPAior-cWODP-OZxPr07fxrZxXjtZ0O0JtYUdOVnJPp2d3ZFkl5p7g077DR1T8U4vh48uLOaaKzZ3CsUUZ21DzFocNJGmIsWGA4fdHSTVwBWW2VJTyh5SE-nQLN0to15AIcJfiDttGR1VhBGV41kjejF2JLRymxp3QrXsLtxveN",
         "encrypted_tracking": "AZj-D9qmTRycQ6aAXY8VChniQS-XA9Xd-LYJzEQsJeeHZR7Hg-ZowoV-IZdgBgHhERbCL5uZovdVZSM9xuQyd1G6yIyNLNifWxrh5D2Sx0EKZIyMM5x7w0uo90oaMvbWJKnwYNHPZSHpgWHdv873BeQx1Ys9f8JsahbJQDDmzB2ou06RmXuM8JVkClJPh35ggib7N5AtgF0jxJCKI2T4VkP-lCn3lDPZw-_WlwQsIIgjnhitDMj9DpNyXbEY9d8uLGeh6cW2ix-bI8lCkgerfyvvtFGIv2UIk6OQ5YmNa7I9mK9yCAVT-Gfb0zy5JiFuzLQarXoOs_kztKhfEYjDV6M_k244EJbVjjCcDq4bpacVxNz67AbAF2iwtyaCEnY9_GlRS7TZ2AWqEpo9… (2148 chars)",
         "sponsored_data": null,
-        "post_id": "1128457519779196",
-        "tracking": "{\"qid\":\"-5930854702322626193\",\"mf_story_key\":\"1128457519779196\",\"top_level_post_id\":\"1128457519779196\",\"content_owner_id_new\":\"100078448742456\",\"page_id\":\"113960531206402\",\"story_location\":125,\"story_attachment_style\":\"video_autoplay\",\"view_time\":1792742897,\"filter\":\"fb_shorts\",\"video_id\":\"1607183873661381\",\"sty\":128,\"mf_objid\":\"1128457519779196\",\"ent_attachement_type\":\"VideoAttachment\",\"app_id\":\"… (1581 chars)",
+        "post_id": "<id:2>",
+        "tracking": "{\"qid\":\"-5930854702322626193\",\"mf_story_key\":\"<id:2>\",\"top_level_post_id\":\"<id:2>\",\"content_owner_id_new\":\"<userId:2>\",\"page_id\":\"<id:3>\",\"story_location\":125,\"story_attachment_style\":\"video_autoplay\",\"view_time\":1792742897,\"filter\":\"fb_shorts\",\"video_id\":\"<id:1>\",\"sty\":128,\"mf_objid\":\"<id:2>\",\"ent_attachement_type\":\"VideoAttachment\",\"app_id\":\"… (1581 chars)",
         "url": "https://www.facebook.com/reel/1607183873661381/",
         "comet_unified_video_menu_trigger": "(4 fields)"
       },
@@ -231,7 +231,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261023T080801_61594063207669**, step 8: goto /reel/<id>: 200, 1261 ms
+**runs/inspect/20261023T080801_<userId:1>**, step 8: goto /reel/<id>: 200, 1261 ms
 
 Sent:
 
@@ -258,7 +258,7 @@ Sent:
         "recent_vpvs_v2": []
       },
       "request_type": "NORMAL",
-      "seed_video_id": "1607183873661381",
+      "seed_video_id": "<id:1>",
       "shorts_search_params": {},
       "surface_type": "FEED_VIDEO_DEEP_DIVE",
       "tracking_code": "",
@@ -336,7 +336,7 @@ Answered:
         "… 2 more"
       ],
       "data": {
-        "id": "1369485747896897",
+        "id": "<id:4>",
         "instream_extra_config": "(1 fields)",
         "instream_video_ad_breaks_comet": "(4 fields)"
       },
@@ -368,8 +368,8 @@ Answered:
         "ai_generated_self_disclosure_renderer": null,
         "music_attribution_metadata_renderer": "(3 fields)",
         "id": "UzpfSUZTOjE6LTU5MzA4NDY1OTM2NDY1NzUzOTI6ZUp3VFc3QjY1cHRGSjE2emFNcUl3WmlpYkdLclhpMy9mUHFBcnRpaCtSZVg4NHE5dVh4akxhK2xqRWdEa3hxREtWakk3TTJQbnU3cG15M2dldEtnT2xhTHVqSEJ4RDZkWVdSYk1KT1I0UlFqMHoybXBzNWRQNDQvZXNmeWpoa21mZTA0SThNNmxnMjdueTVadlc4MXg1SGtPUmVlL3BpOTlpclRJUU9WYmZzWUdXWndhN3pqcnBwbUNWUCtaalVqMDRvNkdLOUxlbFZIVG8vMEU2WSthUllwbUtBSTFGWFNqQjVUR3BpWVV2UGd6cE5tOUp6WHlDd0djd1FEZzdoRHdRTUdFRkJsa21aMGc1… (452 chars)",
-        "post_id": "1362437022624464",
-        "tracking": "{\"qid\":\"-5930846593646575392\",\"mf_story_key\":\"1362437022624464\",\"top_level_post_id\":\"1362437022624464\",\"content_owner_id_new\":\"100065745369749\",\"page_id\":\"750643774796814\",\"story_location\":125,\"story_attachment_style\":\"video_autoplay\",\"view_time\":1792743015,\"filter\":\"fb_shorts\",\"video_id\":\"1369485747896897\",\"sty\":128,\"mf_objid\":\"1362437022624464\",\"ent_attachement_type\":\"VideoAttachment\",\"app_id\":\"… (1646 chars)",
+        "post_id": "<id:5>",
+        "tracking": "{\"qid\":\"-5930846593646575392\",\"mf_story_key\":\"<id:5>\",\"top_level_post_id\":\"<id:5>\",\"content_owner_id_new\":\"<userId:3>\",\"page_id\":\"<id:6>\",\"story_location\":125,\"story_attachment_style\":\"video_autoplay\",\"view_time\":1792743015,\"filter\":\"fb_shorts\",\"video_id\":\"<id:4>\",\"sty\":128,\"mf_objid\":\"<id:5>\",\"ent_attachement_type\":\"VideoAttachment\",\"app_id\":\"… (1646 chars)",
         "creation_time": 1786390497,
         "creator_collaboration": null,
         "shouldUseCollabsFollowButton": false,
@@ -395,7 +395,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261023T080801_61594063207669**, step 15: clickRole button "…": 200, 1130 ms
+**runs/inspect/20261023T080801_<userId:1>**, step 15: clickRole button "…": 200, 1130 ms
 
 Sent:
 
@@ -422,7 +422,7 @@ Sent:
         "recent_vpvs_v2": []
       },
       "request_type": "NORMAL",
-      "seed_video_id": "1607183873661381",
+      "seed_video_id": "<id:1>",
       "shorts_search_params": {},
       "surface_type": "FEED_VIDEO_DEEP_DIVE",
       "tracking_code": "",
@@ -500,7 +500,7 @@ Answered:
         "… 2 more"
       ],
       "data": {
-        "id": "1111556267957137",
+        "id": "<id:7>",
         "instream_extra_config": "(1 fields)",
         "instream_video_ad_breaks_comet": null
       },
@@ -532,8 +532,8 @@ Answered:
         "ai_generated_self_disclosure_renderer": null,
         "music_attribution_metadata_renderer": "(3 fields)",
         "id": "UzpfSUZTOjE6LTU5MzA4NDY1OTM2NDY1NzUzOTI6ZUp3VDIvSC8zYUl2RHo5c1pOYVVFWU96UmRuRTFuUnQyRE92VVViczBjUkphM25GRmx5L3NaYlhVa2FrZ1VtTndSUXNaTFpnNTVQblcwUVFldEtnT2xhTHVqSEJCVmZVd1ptZnpqQ3luV0prdXNlMDZOMi80OTE3ZnpLL1k0Ykx2Vm5OeUxTT3BVWHlrQUhETkV1NDZMWjlqQXd6dUZuZWNYTWRTVDR5NWVhR3RaUGZzRnc3enNqUUpmMWpEV2VQTkZPZk5OT0NtWXdNVW5BTkloQTNTVE42Zkd0bXNpeEpMSWhQTGtwTkxNbk16NHRQS2kwcHljK0x6OHlMTDg3SUx5cUpUOHN2eW8wdnkw… (532 chars)",
-        "post_id": "122126637573464028",
-        "tracking": "{\"qid\":\"-5930846593646575392\",\"mf_story_key\":\"122126637573464028\",\"top_level_post_id\":\"122126637573464028\",\"content_owner_id_new\":\"61593920864918\",\"page_id\":\"1363726926816546\",\"story_location\":125,\"story_attachment_style\":\"fb_shorts_creation\",\"view_time\":1792743015,\"filter\":\"fb_shorts\",\"video_id\":\"1111556267957137\",\"sty\":128,\"mf_objid\":\"122126637573464028\",\"ent_attachement_type\":\"FBShortsStoryAtta… (1604 chars)",
+        "post_id": "<id:8>",
+        "tracking": "{\"qid\":\"-5930846593646575392\",\"mf_story_key\":\"<id:8>\",\"top_level_post_id\":\"<id:8>\",\"content_owner_id_new\":\"<userId:4>\",\"page_id\":\"<id:9>\",\"story_location\":125,\"story_attachment_style\":\"fb_shorts_creation\",\"view_time\":1792743015,\"filter\":\"fb_shorts\",\"video_id\":\"<id:7>\",\"sty\":128,\"mf_objid\":\"<id:8>\",\"ent_attachement_type\":\"FBShortsStoryAtta… (1604 chars)",
         "creation_time": 1792164977,
         "creator_collaboration": null,
         "shouldUseCollabsFollowButton": false,

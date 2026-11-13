@@ -23,7 +23,7 @@ Seen 1 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/host/20261024T222706_61593981307720**, signIn: password typed; submitting with Enter: 200, 394 ms
+**runs/host/20261024T222706_<userId:1>**, signIn: password typed; submitting with Enter: 200, 394 ms
 
 Sent:
 
@@ -49,7 +49,7 @@ Answered:
       "user_verification": "preferred",
       "rp": {
         "id": "accounts.meta.com",
-        "name": "Meta"
+        "name": "<name:1>"
       },
       "allow_credentials": [
         {

@@ -10,7 +10,7 @@
 | Path | `/svc/shreddit/graphql` |
 | Sends | `input` |
 | Reads | `data.exposeExperiment`, `errors`, `operation`, `extensions.traceID` |
-| Called from | `runs/inspect/20261025T124815_MaleficentTry8338/script0.js:25 ai`, `runs/inspect/20261025T124815_MaleficentTry8338/script106.js:4200 statement` |
+| Called from | `runs/inspect/20261025T124815_<name:2>/script0.js:25 ai`, `runs/inspect/20261025T124815_<name:2>/script106.js:4200 statement` |
 | rea | `ev_c479322079acc5e9705ab61a5e8726d5e92eaffedc0babbf6f5df7597c433dce` |
 
 Seen 9 time(s) in 1 run(s).
@@ -21,7 +21,7 @@ Seen 9 time(s) in 1 run(s).
 | inspect | step 3: goto /r/AskReddit/ | 2 | 200 | 402–977 ms | 4824–5809 ms | — |
 | inspect | step 5: goto /search/ | 2 | 200 | 359–373 ms | 1599–1600 ms | — |
 | inspect | step 6: goto /r/AskReddit/comments/1x8sr8s/whats_a_high_paying_but_soul_crushing_career_th | 1 | 200 | 319 ms | 1334 ms | — |
-| inspect | step 10: goto /user/Maleficent-Try-8338/ | 1 | 200 | 336 ms | 2064 ms | — |
+| inspect | step 10: goto /user/<name:1>/ | 1 | 200 | 336 ms | 2064 ms | — |
 | inspect | step 11: goto /notifications | 1 | 200 | 326 ms | 1703 ms | — |
 | inspect | step 12: goto /r/popular/ | 1 | 200 | 313 ms | 1255 ms | — |
 
@@ -29,7 +29,7 @@ Seen 9 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 1: goto /: 200, 645 ms
+**runs/inspect/20261025T124815_<name:2>**, step 1: goto /: 200, 645 ms
 
 Sent:
 
@@ -64,7 +64,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 3: goto /r/AskReddit/: 200, 402 ms
+**runs/inspect/20261025T124815_<name:2>**, step 3: goto /r/AskReddit/: 200, 402 ms
 
 Sent:
 
@@ -105,7 +105,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 5: goto /search/: 200, 373 ms
+**runs/inspect/20261025T124815_<name:2>**, step 5: goto /search/: 200, 373 ms
 
 Sent:
 

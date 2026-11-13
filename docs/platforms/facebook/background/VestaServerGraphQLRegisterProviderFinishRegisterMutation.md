@@ -23,7 +23,7 @@ Seen 3 time(s) in 3 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261022T100521_61594063207669**, pin: typed the account's Messenger PIN: 200, 809 ms
+**runs/inspect/20261022T100521_<userId:1>**, pin: typed the account's Messenger PIN: 200, 809 ms
 
 Sent:
 
@@ -35,7 +35,7 @@ Sent:
   "server_timestamps": "true",
   "variables": {
     "input": {
-      "actor_id": "61594063207669",
+      "actor_id": "<userId:1>",
       "client_mutation_id": "4",
       "base64url_encoded_enc_reg_payload": "gGkcxqXv5kAnGleduETjXTDXFyyBh1s53ozcV-4jukjCBcPGWp-wieVepLTDRYXTcQmBH4--oB6lB3ziZ3oPytwoQj5No8yd4Tio3j9gcuFTI3B3LW3EfHx5Q4kQFWELtXc8G_fbEDUITVM3TIGPGQ21_fiRs5_rYbrkOoYHsdQDpkkMFNRwqjKLXthCMjRci0W9TQB6PZ-xW410MpyD9NxcbQIzr1AkoGx8lkylRYKf2JhCYaF4-kxURVAc7mCAvfcN3NwrSebdJuXb4wZdT4GUqkH5Jdkmwl4d29KrZMUzABf3b3IUYuaoX3zb4zCB5RqidNa-3jy7IUN4C_l9eTkmAQrRBBXzTr7MxZNh_WR7XmAxvlMpFODYUAosTtYi6xoFnNCY54d2qFF-… (512 chars)",
       "fbid": "sp5MI2FeHD/hrI1wOQXbKg==",

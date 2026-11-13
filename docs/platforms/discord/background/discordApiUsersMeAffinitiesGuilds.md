@@ -10,7 +10,7 @@
 | Path | `discord.com/api/users/@me/affinities/guilds` |
 | Sends | — |
 | Reads | `guild_affinities` |
-| Called from | `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1036.js:1 parse`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1245.js:2 anonymous` |
+| Called from | `runs/inspect/20261030T222341_<name:1>/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_<name:1>/script1036.js:1 parse`, `runs/inspect/20261030T222341_<name:1>/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_<name:1>/script1245.js:2 anonymous` |
 | rea | `ev_065e7ad37dcb5911d240f9de7d6e2882220c5a8d7c025d92b46a23de59cf297c` |
 
 Seen 2 time(s) in 2 run(s).
@@ -24,7 +24,7 @@ Seen 2 time(s) in 2 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder**, step 2: snapshot: 200, 640 ms
+**runs/inspect/20261030T222341_<name:1>**, step 2: snapshot: 200, 640 ms
 
 Sent:
 
@@ -38,27 +38,27 @@ Answered:
 {
   "guild_affinities": [
     {
-      "guild_id": "1053877538025386074",
+      "guild_id": "<guildId:1>",
       "affinity": 1635.3694287875048
     },
     {
-      "guild_id": "1290725749543927941",
+      "guild_id": "<guildId:2>",
       "affinity": 1313.1123110344417
     },
     {
-      "guild_id": "1442518050527248436",
+      "guild_id": "<guildId:3>",
       "affinity": 431.20519581788784
     },
     {
-      "guild_id": "1130383047699738754",
+      "guild_id": "<guildId:4>",
       "affinity": 247.01759045031068
     },
     {
-      "guild_id": "1019350475847499849",
+      "guild_id": "<guildId:5>",
       "affinity": 223.8806022930477
     },
     {
-      "guild_id": "1529710922749181963",
+      "guild_id": "<guildId:6>",
       "affinity": 208.34762746343887
     },
     "… 67 more"
@@ -66,7 +66,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261028T062914_sourcedandsoldtothehighestbidder**, step 5: click e40: 200, 352 ms
+**runs/inspect/20261028T062914_<name:1>**, step 5: click e40: 200, 352 ms
 
 Sent:
 
@@ -80,27 +80,27 @@ Answered:
 {
   "guild_affinities": [
     {
-      "guild_id": "1053877538025386074",
+      "guild_id": "<guildId:1>",
       "affinity": 1646.2934671355592
     },
     {
-      "guild_id": "1290725749543927941",
+      "guild_id": "<guildId:2>",
       "affinity": 1319.293853734509
     },
     {
-      "guild_id": "1442518050527248436",
+      "guild_id": "<guildId:3>",
       "affinity": 433.8327795401903
     },
     {
-      "guild_id": "1130383047699738754",
+      "guild_id": "<guildId:4>",
       "affinity": 247.87436595899314
     },
     {
-      "guild_id": "1019350475847499849",
+      "guild_id": "<guildId:5>",
       "affinity": 227.40028227161596
     },
     {
-      "guild_id": "1529710922749181963",
+      "guild_id": "<guildId:6>",
       "affinity": 215.55699466751432
     },
     "… 68 more"

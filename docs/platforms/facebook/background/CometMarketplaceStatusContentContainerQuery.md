@@ -24,7 +24,7 @@ Seen 3 time(s) in 3 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261025T064655_61593981307720**, step 3: goto /marketplace/inbox: 200, 1522 ms
+**runs/inspect/20261025T064655_<userId:1>**, step 3: goto /marketplace/inbox: 200, 1522 ms
 
 Sent:
 
@@ -47,7 +47,7 @@ Answered:
   "data": {
     "viewer": {
       "marketplaceViolationTransparencyViewModel": {
-        "profile_name": "Hore Vai",
+        "profile_name": "<name:1>",
         "toast_title": null,
         "toast_body": null,
         "toast_icon_type": "WARNING_CAUTION",
@@ -65,7 +65,7 @@ Answered:
           "headline_text": "Tell us how we're doing",
           "body_text": "How satisfied or dissatisfied are you with the help you received for this issue?",
           "feedback_button_text": "Give feedback",
-          "entity_id": "61593981307720",
+          "entity_id": "<userId:1>",
           "csat_channel": "INTEGRITY_HUB_MARKETPLACE_STATUS",
           "audience_config": "FB_GENPOP",
           "should_show": true,
@@ -74,7 +74,7 @@ Answered:
       },
       "actor": {
         "__typename": "User",
-        "id": "61593981307720"
+        "id": "<userId:1>"
       }
     }
   },
@@ -88,7 +88,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261022T113536_61594063207669**, step 1: goto /marketplace/inbox: 200, 384 ms
+**runs/inspect/20261022T113536_<userId:2>**, step 1: goto /marketplace/inbox: 200, 384 ms
 
 Sent:
 
@@ -111,7 +111,7 @@ Answered:
   "data": {
     "viewer": {
       "marketplaceViolationTransparencyViewModel": {
-        "profile_name": "Bethlehem Trash",
+        "profile_name": "<name:2>",
         "toast_title": null,
         "toast_body": null,
         "toast_icon_type": "WARNING_CAUTION",
@@ -129,7 +129,7 @@ Answered:
           "headline_text": "Tell us how we're doing",
           "body_text": "How satisfied or dissatisfied are you with the help you received for this issue?",
           "feedback_button_text": "Give feedback",
-          "entity_id": "61594063207669",
+          "entity_id": "<userId:2>",
           "csat_channel": "INTEGRITY_HUB_MARKETPLACE_STATUS",
           "audience_config": "FB_GENPOP",
           "should_show": true,
@@ -138,7 +138,7 @@ Answered:
       },
       "actor": {
         "__typename": "User",
-        "id": "61594063207669"
+        "id": "<userId:2>"
       }
     }
   },

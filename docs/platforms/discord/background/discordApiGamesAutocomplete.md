@@ -10,7 +10,7 @@
 | Path | `discord.com/api/games/autocomplete` |
 | Sends | — |
 | Reads | — |
-| Called from | `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1036.js:1 parse`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1245.js:2 anonymous` |
+| Called from | `runs/inspect/20261030T222341_<name:7>/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_<name:7>/script1036.js:1 parse`, `runs/inspect/20261030T222341_<name:7>/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_<name:7>/script1245.js:2 anonymous` |
 | rea | `ev_065e7ad37dcb5911d240f9de7d6e2882220c5a8d7c025d92b46a23de59cf297c` |
 
 Seen 3 time(s) in 1 run(s).
@@ -23,7 +23,7 @@ Seen 3 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261028T062914_sourcedandsoldtothehighestbidder**, step 27: type e2077: 200, 68 ms
+**runs/inspect/20261028T062914_<name:7>**, step 27: type e2077: 200, 68 ms
 
 Sent:
 
@@ -42,15 +42,15 @@ Answered:
 ```json
 [
   {
-    "id": "1554205071603146836",
-    "name": "Huang Ye Ri Ji",
+    "id": "<id:1>",
+    "name": "<name:1>",
     "platform_availability": [
       "mobile"
     ]
   },
   {
-    "id": "1124356315339305022",
-    "name": "Jigsaw Puzzle Dreams",
+    "id": "<id:2>",
+    "name": "<name:2>",
     "icon": {
       "type": "hash",
       "value": "72f6b2dbab5a9e61a2e35f0f9ab7574c"
@@ -60,16 +60,16 @@ Answered:
     ]
   },
   {
-    "id": "1441993408372539484",
-    "name": "Microsoft Jigsaw",
+    "id": "<id:3>",
+    "name": "<name:3>",
     "platform_availability": [
       "console",
       "desktop"
     ]
   },
   {
-    "id": "1547028628418723940",
-    "name": "Jigsawscapes",
+    "id": "<id:4>",
+    "name": "<name:4>",
     "icon": {
       "type": "url",
       "value": "https://images-ext-1.discordapp.net/external/DOMVirmLVYcsSZPXtDxKtbw11wlYlFinQGw6BS8eU6U/https/is1-ssl.mzstatic.com/image/thumb/Purple221/v4/11/b6/df/11b6df26-7c41-bec8-7235-aebc9720fcea/AppIcon-0-0-1x_U007emarketing-0-8-0-85-220.png/150x150bb.jpg"
@@ -79,8 +79,8 @@ Answered:
     ]
   },
   {
-    "id": "1547012957672579094",
-    "name": "Jigsaw Puzzles: Puzzle Game",
+    "id": "<id:5>",
+    "name": "<name:5>",
     "icon": {
       "type": "url",
       "value": "https://images-ext-1.discordapp.net/external/1Ijt44zm0XFxoNPpdcR8zt3b4_j83ukvREBTtiE0yNs/https/is1-ssl.mzstatic.com/image/thumb/Purple211/v4/69/08/61/69086104-3ae5-22bb-64e7-341bfa5320eb/AppIcon-0-0-1x_U007emarketing-0-8-0-85-220.png/150x150bb.jpg"
@@ -90,8 +90,8 @@ Answered:
     ]
   },
   {
-    "id": "1549253457351802921",
-    "name": "Magic Jigsaw Puzzles",
+    "id": "<id:6>",
+    "name": "<name:6>",
     "icon": {
       "type": "url",
       "value": "https://images-ext-1.discordapp.net/external/fBLYscCvS4j0XIsLHNecSq4nX8nkwmV7tEg66CI-pMo/https/is1-ssl.mzstatic.com/image/thumb/Purple211/v4/d3/27/6a/d3276a38-83e3-a191-5899-9f452cb697b8/AppIcon-1x_U007epad-0-1-0-0-0-85-220-0.png/150x150bb.jpg"

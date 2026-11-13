@@ -28,7 +28,7 @@ Seen 6 time(s) in 4 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261023T080801_61594063207669**, step 6: clickAny 1 x link /see owner profile$/: 200, 1444 ms
+**runs/inspect/20261023T080801_<userId:2>**, step 6: clickAny 1 x link /see owner profile$/: 200, 1444 ms
 
 Sent:
 
@@ -39,10 +39,10 @@ Sent:
   "server_timestamps": "true",
   "variables": {
     "scale": 1,
-    "selectedID": "100078448742456",
+    "selectedID": "<userId:1>",
     "selectedSpaceType": "profile",
     "shouldUseFXIMProfilePicEditor": false,
-    "userID": "100078448742456"
+    "userID": "<userId:1>"
   },
   "doc_id": "28621615384199313"
 }
@@ -62,7 +62,7 @@ Answered:
           "nux": null,
           "restriction_violation_status": "No Violations.",
           "dsa16_report_entrypoint": "profile",
-          "dsa16_reporting_url": "https://www.facebook.com/profile.php?id=100078448742456",
+          "dsa16_reporting_url": "https://www.facebook.com/profile.php?id=<userId:1>",
           "is_dsa16_legal_reporting_enabled": false,
           "legal_reporting_uri": null,
           "legal_reporting_cta_type": null,
@@ -72,21 +72,21 @@ Answered:
           "__module_operation_ProfileCometHeaderQuery": "(1 fields)",
           "__module_component_ProfileCometHeaderQuery": "(1 fields)"
         },
-        "id": "100078448742456",
+        "id": "<userId:1>",
         "profile_plus_post_transition_modal": null
       }
     },
     "extensions": {
       "prefetch_uris_v2": [
         {
-          "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/481331896_638977285393891_3209968374649310659_n.jpg (435 chars)",
+          "uri": "<mediaUrl> (435 chars)",
           "label": null,
           "width": null,
           "height": null,
           "surface": null
         },
         {
-          "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/481331896_638977285393891_3209968374649310659_n.jpg (419 chars)",
+          "uri": "<mediaUrl> (419 chars)",
           "label": null,
           "width": null,
           "height": null,
@@ -118,7 +118,7 @@ Answered:
         "user"
       ],
       "data": {
-        "name": "Duck Therapy",
+        "name": "<name:1>",
         "gender": "NEUTER",
         "wem_private_sharing_bundle": {
           "private_sharing_control_model_for_user": null

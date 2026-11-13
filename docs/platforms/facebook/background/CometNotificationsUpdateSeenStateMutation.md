@@ -25,7 +25,7 @@ Seen 3 time(s) in 3 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261023T045453_61594063207669**, step 7: goto /: 200, 6024 ms
+**runs/inspect/20261023T045453_<userId:1>**, step 7: goto /: 200, 6024 ms
 
 Sent:
 
@@ -48,7 +48,7 @@ Sent:
       "query_id": "Cg8BdAZq2uoVDwNlbnYPDE1BSU5fU1VSRkFDRQ8CZnQKAQ8CcXQPBWZpcnN0DwJxZgoCAA8ISVNfQ09NRVQCAQ8VSU5DTFVERV9XQV9QMkJfTk9USUZTAQ8DZWZ0DgE=",
       "source": "unknown",
       "update_type": "MARK_ALL_SEEN",
-      "actor_id": "61594063207669",
+      "actor_id": "<userId:1>",
       "client_mutation_id": "1"
     },
     "environment": "MAIN_SURFACE"
@@ -100,7 +100,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261023T000744_61594063207669**, step 1: goto /marketplace/status: 200, 5412 ms
+**runs/inspect/20261023T000744_<userId:1>**, step 1: goto /marketplace/status: 200, 5412 ms
 
 Sent:
 
@@ -124,7 +124,7 @@ Sent:
       "query_id": "Cg8BdAZq2qVpDwNlbnYPDE1BSU5fU1VSRkFDRQ8CZnQKAQ8CcXQPBWZpcnN0DwJxZgoCAA8ISVNfQ09NRVQCAQ8VSU5DTFVERV9XQV9QMkJfTk9USUZTAQ8DZWZ0DgE=",
       "source": "unknown",
       "update_type": "MARK_ALL_SEEN",
-      "actor_id": "61594063207669",
+      "actor_id": "<userId:1>",
       "client_mutation_id": "1"
     },
     "environment": "MAIN_SURFACE"

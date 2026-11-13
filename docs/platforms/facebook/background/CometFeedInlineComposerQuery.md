@@ -50,7 +50,7 @@ Seen 31 time(s) in 18 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/host/20261026T180628_61594285317994**, step 32: goto /marketplace/: 200, 248 ms
+**runs/host/20261026T180628_<userId:1>**, step 32: goto /marketplace/: 200, 248 ms
 
 Sent:
 
@@ -74,16 +74,16 @@ Answered:
     "viewer": {
       "actor": {
         "__typename": "User",
-        "id": "61594285317994",
+        "id": "<userId:1>",
         "__isActor": "User",
-        "short_name": "Halima",
+        "short_name": "<name:1>",
         "__isProfile": "User",
         "__isEntity": "User",
-        "url": "https://www.facebook.com/profile.php?id=61594285317994",
+        "url": "https://www.facebook.com/profile.php?id=<userId:1>",
         "profile_picture": {
-          "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-1/861826748_122127009285476177_3116611628911920417_n.jpg (484 chars)"
+          "uri": "<mediaUrl> (484 chars)"
         },
-        "name": "Halima Ndjzn",
+        "name": "<name:2>",
         "has_professional_features_for_watch": false
       },
       "feed_comet_composer": {
@@ -159,7 +159,7 @@ Answered:
         "surface": null
       },
       {
-        "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-1/861826748_122127009285476177_3116611628911920417_n.jpg (484 chars)",
+        "uri": "<mediaUrl> (484 chars)",
         "label": null,
         "width": null,
         "height": null,
@@ -178,15 +178,15 @@ Answered:
             "qexData": {
               "4917": {
                 "r": false,
-                "l": "J{\"qeid\":\"61594285317994\",\"u\":\"\",\"t\":\"fb_acting_account\",\"gks\":[],\"qe\":null}"
+                "l": "J{\"qeid\":\"<userId:1>\",\"u\":\"\",\"t\":\"fb_acting_account\",\"gks\":[],\"qe\":null}"
               },
               "5648": {
                 "r": null,
-                "l": "J{\"qeid\":\"61594285317994\",\"u\":\"\",\"t\":\"fb_acting_account\",\"gks\":[],\"qe\":null}"
+                "l": "J{\"qeid\":\"<userId:1>\",\"u\":\"\",\"t\":\"fb_acting_account\",\"gks\":[],\"qe\":null}"
               },
               "5702": {
                 "r": null,
-                "l": "J{\"qeid\":\"61594285317994\",\"u\":\"\",\"t\":\"fb_acting_account\",\"gks\":[],\"qe\":null}"
+                "l": "J{\"qeid\":\"<userId:1>\",\"u\":\"\",\"t\":\"fb_acting_account\",\"gks\":[],\"qe\":null}"
               }
             }
           },
@@ -436,7 +436,7 @@ Answered:
 }
 ```
 
-**runs/host/20261026T180628_61594285317994**, step 38: goto /marketplace/you/selling: 200, 256 ms
+**runs/host/20261026T180628_<userId:1>**, step 38: goto /marketplace/you/selling: 200, 256 ms
 
 Sent:
 
@@ -460,16 +460,16 @@ Answered:
     "viewer": {
       "actor": {
         "__typename": "User",
-        "id": "61594285317994",
+        "id": "<userId:1>",
         "__isActor": "User",
-        "short_name": "Halima",
+        "short_name": "<name:1>",
         "__isProfile": "User",
         "__isEntity": "User",
-        "url": "https://www.facebook.com/profile.php?id=61594285317994",
+        "url": "https://www.facebook.com/profile.php?id=<userId:1>",
         "profile_picture": {
-          "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-1/861826748_122127009285476177_3116611628911920417_n.jpg (484 chars)"
+          "uri": "<mediaUrl> (484 chars)"
         },
-        "name": "Halima Ndjzn",
+        "name": "<name:2>",
         "has_professional_features_for_watch": false
       },
       "feed_comet_composer": {
@@ -524,7 +524,7 @@ Answered:
   "extensions": {
     "prefetch_uris_v2": [
       {
-        "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-1/861826748_122127009285476177_3116611628911920417_n.jpg (484 chars)",
+        "uri": "<mediaUrl> (484 chars)",
         "label": null,
         "width": null,
         "height": null,
@@ -564,15 +564,15 @@ Answered:
             "qexData": {
               "4917": {
                 "r": false,
-                "l": "J{\"qeid\":\"61594285317994\",\"u\":\"\",\"t\":\"fb_acting_account\",\"gks\":[],\"qe\":null}"
+                "l": "J{\"qeid\":\"<userId:1>\",\"u\":\"\",\"t\":\"fb_acting_account\",\"gks\":[],\"qe\":null}"
               },
               "5648": {
                 "r": null,
-                "l": "J{\"qeid\":\"61594285317994\",\"u\":\"\",\"t\":\"fb_acting_account\",\"gks\":[],\"qe\":null}"
+                "l": "J{\"qeid\":\"<userId:1>\",\"u\":\"\",\"t\":\"fb_acting_account\",\"gks\":[],\"qe\":null}"
               },
               "5702": {
                 "r": null,
-                "l": "J{\"qeid\":\"61594285317994\",\"u\":\"\",\"t\":\"fb_acting_account\",\"gks\":[],\"qe\":null}"
+                "l": "J{\"qeid\":\"<userId:1>\",\"u\":\"\",\"t\":\"fb_acting_account\",\"gks\":[],\"qe\":null}"
               }
             }
           },
@@ -812,7 +812,7 @@ Answered:
 }
 ```
 
-**runs/host/20261026T180628_61594285317994**, step 40: goto /messages/: 200, 196 ms
+**runs/host/20261026T180628_<userId:1>**, step 40: goto /messages/: 200, 196 ms
 
 Sent:
 

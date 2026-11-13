@@ -24,7 +24,7 @@ Seen 4 time(s) in 2 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261025T064655_61593981307720**, step 5: goto /marketplace/you/selling: 200, 685 ms
+**runs/inspect/20261025T064655_<userId:1>**, step 5: goto /marketplace/you/selling: 200, 685 ms
 
 Sent:
 
@@ -34,7 +34,7 @@ Sent:
   "fb_api_req_friendly_name": "MarketplaceYourListingDialogQuery",
   "server_timestamps": "true",
   "variables": {
-    "listingId": "28779899605000522",
+    "listingId": "<id:1>",
     "scale": 1,
     "shouldShowAllMessagesOnYouFeedCard": true,
     "__relay_internal__pv__ShouldUpdateMarketplaceBoostListingBoostedStatusrelayprovider": false
@@ -60,32 +60,32 @@ Answered:
       "marketplace_listing": {
         "__typename": "GroupCommerceProductItem",
         "__isMarketplaceListingRenderable": "GroupCommerceProductItem",
-        "id": "28779899605000522",
+        "id": "<id:1>",
         "is_sold": false,
         "is_pending": false,
         "is_profile_selling_post": false,
         "is_draft": false,
         "product_item": {
           "for_sale_item": {
-            "id": "28779899605000522"
+            "id": "<id:1>"
           },
-          "id": "28840294075623042",
+          "id": "<id:2>",
           "promoted_listing": {
             "page_posted_from": null,
             "product_item_override": null,
             "button_text": "Promote now",
-            "page_id": "1295889816951231",
+            "page_id": "<id:3>",
             "coupon_offer_id": null
           },
           "boosted_marketplace_listing": null,
           "product_catalog": {
-            "id": "1086258070905532"
+            "id": "<id:4>"
           }
         },
         "listing_inventory_type": "SINGLE_QUANTITY",
         "marketplace_listing_seller": {
           "__typename": "User",
-          "id": "61593981307720"
+          "id": "<userId:1>"
         },
         "marketplace_bump_info": {
           "bump_count": 0,
@@ -110,9 +110,9 @@ Answered:
               "aggregated_ranges": [],
               "ranges": [],
               "color_ranges": [],
-              "text": "Please confirm your mobile number before selling on Marketplace."
+              "text": "<messageText>"
             },
-            "title": "More Info Needed to Publish This Listing",
+            "title": "<messageText>",
             "glyph_image": {
               "height": 48,
               "scale": 2,
@@ -135,16 +135,16 @@ Answered:
           {
             "__typename": "ProductImage",
             "image": {
-              "uri": "https://scontent.fagc1-2.fna.fbcdn.net/v/t45.5328-4/864582782_1147287251063829_101195274182494668_n.jpg (480 chars)"
+              "uri": "<mediaUrl> (480 chars)"
             },
-            "id": "1147287247730496"
+            "id": "<id:5>"
           },
           {
             "__typename": "ProductImage",
             "image": {
-              "uri": "https://scontent.fagc1-1.fna.fbcdn.net/v/t45.5328-4/864440195_1450483743194211_5594837820471122689_n.jpg (481 chars)"
+              "uri": "<mediaUrl> (481 chars)"
             },
-            "id": "1450483726527546"
+            "id": "<id:6>"
           }
         ],
         "__isMarketplaceListingWithChildListings": "GroupCommerceProductItem",
@@ -161,7 +161,7 @@ Answered:
         "creation_time": 1792884904,
         "location": {
           "reverse_geocode_detailed": {
-            "city": "Mountain Top",
+            "city": "<city>",
             "state": "PA"
           }
         },
@@ -181,7 +181,7 @@ Answered:
         "has_children": false,
         "__isMarketplaceListingWithIntegrityStatus": "GroupCommerceProductItem",
         "can_seller_change_availability": true,
-        "marketplace_listing_category_id": "895487550471874",
+        "marketplace_listing_category_id": "<id:7>",
         "should_show_txn_survey_on_mas": true,
         "story": {
           "id": "UzpfSTYxNTkzOTgxMzA3NzIwOlZLOjI4Nzc5ODk5NjA1MDAwNTIy",
@@ -199,10 +199,10 @@ Answered:
               "__typename": "GroupCommerceProductItem",
               "origin_target": {
                 "__typename": "Marketplace",
-                "id": "1663689853903557",
-                "name": "United States Marketplace"
+                "id": "<id:8>",
+                "name": "<name:1>"
               },
-              "id": "28779899605000522",
+              "id": "<id:1>",
               "is_on_marketplace": true,
               "url": "https://www.facebook.com/marketplace/item/28779899605000522/",
               "story": {
@@ -232,7 +232,7 @@ Answered:
         "__isMarketplaceListingHideableFromFriends": "GroupCommerceProductItem",
         "hidden_from_friends": "VISIBLE_TO_EVERYONE",
         "can_share": true,
-        "reportable_ent_id": "28840294075623042",
+        "reportable_ent_id": "<id:2>",
         "__isMarketplaceListingWithInsights": "GroupCommerceProductItem",
         "listing_insights": {
           "clicks": [
@@ -285,7 +285,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261022T155857_61594063207669**, step 3: goto /marketplace/inbox: 200, 2422 ms
+**runs/inspect/20261022T155857_<userId:2>**, step 3: goto /marketplace/inbox: 200, 2422 ms
 
 Sent:
 
@@ -295,7 +295,7 @@ Sent:
   "fb_api_req_friendly_name": "MarketplaceYourListingDialogQuery",
   "server_timestamps": "true",
   "variables": {
-    "listingId": "1425935622848350",
+    "listingId": "<id:9>",
     "scale": 1,
     "shouldShowAllMessagesOnYouFeedCard": true,
     "__relay_internal__pv__ShouldUpdateMarketplaceBoostListingBoostedStatusrelayprovider": false
@@ -321,32 +321,32 @@ Answered:
       "marketplace_listing": {
         "__typename": "GroupCommerceProductItem",
         "__isMarketplaceListingRenderable": "GroupCommerceProductItem",
-        "id": "1425935622848350",
+        "id": "<id:9>",
         "is_sold": false,
         "is_pending": false,
         "is_profile_selling_post": false,
         "is_draft": false,
         "product_item": {
           "for_sale_item": {
-            "id": "1425935622848350"
+            "id": "<id:9>"
           },
-          "id": "28800458926283039",
+          "id": "<id:10>",
           "promoted_listing": {
             "page_posted_from": null,
             "product_item_override": null,
             "button_text": "Promote now",
-            "page_id": "1383267438207114",
+            "page_id": "<id:11>",
             "coupon_offer_id": null
           },
           "boosted_marketplace_listing": null,
           "product_catalog": {
-            "id": "1116789430997720"
+            "id": "<id:12>"
           }
         },
         "listing_inventory_type": "SINGLE_QUANTITY",
         "marketplace_listing_seller": {
           "__typename": "User",
-          "id": "61594063207669"
+          "id": "<userId:2>"
         },
         "marketplace_bump_info": {
           "bump_count": 0,
@@ -366,16 +366,16 @@ Answered:
           {
             "__typename": "ProductImage",
             "image": {
-              "uri": "https://scontent-lga3-1.xx.fbcdn.net/v/t45.5328-4/856660594_2379535212790769_660742871528716392_n.jpg (428 chars)"
+              "uri": "<mediaUrl> (428 chars)"
             },
-            "id": "2379535206124103"
+            "id": "<id:13>"
           },
           {
             "__typename": "ProductImage",
             "image": {
-              "uri": "https://scontent-lga3-3.xx.fbcdn.net/v/t45.5328-4/856888990_1841284863737368_3153641676653129513_n.jpg (429 chars)"
+              "uri": "<mediaUrl> (429 chars)"
             },
-            "id": "1841284860404035"
+            "id": "<id:14>"
           }
         ],
         "__isMarketplaceListingWithChildListings": "GroupCommerceProductItem",
@@ -392,7 +392,7 @@ Answered:
         "creation_time": 1792667894,
         "location": {
           "reverse_geocode_detailed": {
-            "city": "Bethlehem",
+            "city": "<city>",
             "state": "PA"
           }
         },
@@ -412,7 +412,7 @@ Answered:
         "has_children": false,
         "__isMarketplaceListingWithIntegrityStatus": "GroupCommerceProductItem",
         "can_seller_change_availability": true,
-        "marketplace_listing_category_id": "895487550471874",
+        "marketplace_listing_category_id": "<id:7>",
         "should_show_txn_survey_on_mas": true,
         "story": {
           "id": "UzpfSTYxNTk0MDYzMjA3NjY5OlZLOjE0MjU5MzU2MjI4NDgzNTA=",
@@ -430,10 +430,10 @@ Answered:
               "__typename": "GroupCommerceProductItem",
               "origin_target": {
                 "__typename": "Marketplace",
-                "id": "1663689853903557",
-                "name": "United States Marketplace"
+                "id": "<id:8>",
+                "name": "<name:1>"
               },
-              "id": "1425935622848350",
+              "id": "<id:9>",
               "is_on_marketplace": true,
               "url": "https://www.facebook.com/marketplace/item/1425935622848350/",
               "story": {
@@ -463,7 +463,7 @@ Answered:
         "__isMarketplaceListingHideableFromFriends": "GroupCommerceProductItem",
         "hidden_from_friends": "VISIBLE_TO_EVERYONE",
         "can_share": true,
-        "reportable_ent_id": "28800458926283039",
+        "reportable_ent_id": "<id:10>",
         "__isMarketplaceListingWithInsights": "GroupCommerceProductItem",
         "listing_insights": {
           "clicks": [

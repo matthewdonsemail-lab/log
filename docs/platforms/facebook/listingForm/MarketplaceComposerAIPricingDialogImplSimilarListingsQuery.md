@@ -24,7 +24,7 @@ Seen 2 time(s) in 2 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261022T110738_61594063207669**, scroll: container +87px in 3 steps: 200, 1461 ms
+**runs/inspect/20261022T110738_<userId:1>**, scroll: container +87px in 3 steps: 200, 1461 ms
 
 Sent:
 
@@ -38,7 +38,7 @@ Sent:
     "ai_suggested_condition": null,
     "ai_suggested_price_cents": null,
     "category_ids": [
-      "895487550471874"
+      "<id:1>"
     ],
     "composer_mode": "create",
     "limit": 10,

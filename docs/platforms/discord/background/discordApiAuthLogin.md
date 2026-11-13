@@ -10,7 +10,7 @@
 | Path | `discord.com/api/auth/login` |
 | Sends | `login`, `undelete`, `login_source`, `gift_code_sku_id` |
 | Reads | `message`, `code`, `errors.login`, `user_id`, `token`, `user_settings.locale`, `user_settings.theme` |
-| Called from | `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1036.js:1 parse`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1245.js:2 anonymous` |
+| Called from | `runs/inspect/20261030T222341_<name:1>/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_<name:1>/script1036.js:1 parse`, `runs/inspect/20261030T222341_<name:1>/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_<name:1>/script1245.js:2 anonymous` |
 | rea | `ev_065e7ad37dcb5911d240f9de7d6e2882220c5a8d7c025d92b46a23de59cf297c` |
 
 Seen 4 time(s) in 2 run(s).
@@ -24,13 +24,13 @@ Seen 4 time(s) in 2 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder**, step 2: snapshot: 400, 575 ms
+**runs/inspect/20261030T222341_<name:1>**, step 2: snapshot: 400, 575 ms
 
 Sent:
 
 ```json
 {
-  "login": "matthewdonsemail@gmail.com",
+  "login": "<email>",
   "undelete": false,
   "login_source": null,
   "gift_code_sku_id": null
@@ -56,13 +56,13 @@ Answered:
 }
 ```
 
-**runs/inspect/20261028T062914_sourcedandsoldtothehighestbidder**, step 5: click e40: 200, 946 ms
+**runs/inspect/20261028T062914_<name:1>**, step 5: click e40: 200, 946 ms
 
 Sent:
 
 ```json
 {
-  "login": "matthewdonsemail@gmail.com",
+  "login": "<email>",
   "undelete": false,
   "login_source": null,
   "gift_code_sku_id": null
@@ -73,8 +73,8 @@ Answered:
 
 ```json
 {
-  "user_id": "1434443116663930960",
-  "token": "(taken out)",
+  "user_id": "<userId:1>",
+  "token": "<token>",
   "user_settings": {
     "locale": "en-US",
     "theme": "light"

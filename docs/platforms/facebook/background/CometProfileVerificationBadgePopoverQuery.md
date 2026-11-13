@@ -26,7 +26,7 @@ Seen 5 time(s) in 3 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261024T060921_61594063207669**, scroll: +376px in 9 wheel steps, 328 ms: 200, 1360 ms
+**runs/inspect/20261024T060921_<userId:2>**, scroll: +376px in 9 wheel steps, 328 ms: 200, 1360 ms
 
 Sent:
 
@@ -37,7 +37,7 @@ Sent:
   "fb_api_req_friendly_name": "CometProfileVerificationBadgePopoverQuery",
   "server_timestamps": "true",
   "variables": {
-    "profileID": "100011448242903"
+    "profileID": "<userId:1>"
   },
   "doc_id": "9684350218300346",
   "fb_api_analytics_tags": [
@@ -52,7 +52,7 @@ Answered:
 {
   "data": {
     "node": {
-      "id": "100011448242903",
+      "id": "<userId:1>",
       "__typename": "User"
     }
   },

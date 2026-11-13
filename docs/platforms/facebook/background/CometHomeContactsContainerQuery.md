@@ -50,7 +50,7 @@ Seen 31 time(s) in 18 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/host/20261026T180628_61594285317994**, step 32: goto /marketplace/: 200, 277 ms
+**runs/host/20261026T180628_<userId:1>**, step 32: goto /marketplace/: 200, 277 ms
 
 Sent:
 
@@ -85,7 +85,7 @@ Answered:
           "__module_operation_CometHomeContactsContainerQuery": null,
           "__module_component_CometHomeContactsContainerQuery": null
         },
-        "id": "61594285317994"
+        "id": "<userId:1>"
       }
     }
   },
@@ -96,7 +96,7 @@ Answered:
       "mids": [
         "001189db2a4071a04b876426152dd738"
       ],
-      "debug_link": "https://www.meta.com/debug/?mid=001189db2a4071a04b876426152dd738",
+      "debug_link": "https://www.meta.com/debug/?mid=<cookie>",
       "path": [
         "viewer",
         "actor",
@@ -110,7 +110,7 @@ Answered:
       "mids": [
         "38b7283558dc534b70b66c65fc1fcb18"
       ],
-      "debug_link": "https://www.meta.com/debug/?mid=38b7283558dc534b70b66c65fc1fcb18",
+      "debug_link": "https://www.meta.com/debug/?mid=<cookie>",
       "path": [
         "viewer",
         "actor",
@@ -129,7 +129,7 @@ Answered:
 }
 ```
 
-**runs/host/20261026T180628_61594285317994**, step 38: goto /marketplace/you/selling: 200, 261 ms
+**runs/host/20261026T180628_<userId:1>**, step 38: goto /marketplace/you/selling: 200, 261 ms
 
 Sent:
 
@@ -164,7 +164,7 @@ Answered:
           "__module_operation_CometHomeContactsContainerQuery": null,
           "__module_component_CometHomeContactsContainerQuery": null
         },
-        "id": "61594285317994"
+        "id": "<userId:1>"
       }
     }
   },
@@ -175,7 +175,7 @@ Answered:
       "mids": [
         "001189db2a4071a04b876426152dd738"
       ],
-      "debug_link": "https://www.meta.com/debug/?mid=001189db2a4071a04b876426152dd738",
+      "debug_link": "https://www.meta.com/debug/?mid=<cookie>",
       "path": [
         "viewer",
         "actor",
@@ -189,7 +189,7 @@ Answered:
       "mids": [
         "38b7283558dc534b70b66c65fc1fcb18"
       ],
-      "debug_link": "https://www.meta.com/debug/?mid=38b7283558dc534b70b66c65fc1fcb18",
+      "debug_link": "https://www.meta.com/debug/?mid=<cookie>",
       "path": [
         "viewer",
         "actor",
@@ -208,7 +208,7 @@ Answered:
 }
 ```
 
-**runs/host/20261026T180628_61594285317994**, step 40: goto /messages/: 200, 306 ms
+**runs/host/20261026T180628_<userId:1>**, step 40: goto /messages/: 200, 306 ms
 
 Sent:
 

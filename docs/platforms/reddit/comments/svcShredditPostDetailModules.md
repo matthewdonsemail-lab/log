@@ -10,7 +10,7 @@
 | Path | `/svc/shreddit/post-detail-modules` |
 | Sends | — |
 | Reads | — |
-| Called from | `runs/inspect/20261025T124815_MaleficentTry8338/script0.js:44 statement` |
+| Called from | `runs/inspect/20261025T124815_<name:1>/script0.js:44 statement` |
 | rea | `ev_4a5dcfad32bab6b5f1ed63024ec8eed50aaaeab794ca2a0212b513cf3f6afb8e` |
 
 Seen 1 time(s) in 1 run(s).
@@ -23,7 +23,7 @@ Seen 1 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 6: goto /r/AskReddit/comments/1x8sr8s/whats_a_high_paying_but_soul_crushing_career_th: 200, 409 ms
+**runs/inspect/20261025T124815_<name:1>**, step 6: goto /r/AskReddit/comments/1x8sr8s/whats_a_high_paying_but_soul_crushing_career_th: 200, 409 ms
 
 Sent:
 

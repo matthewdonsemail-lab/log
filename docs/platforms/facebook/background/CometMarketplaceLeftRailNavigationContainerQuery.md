@@ -24,7 +24,7 @@ Seen 2 time(s) in 2 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261022T110738_61594063207669**, step 4: click e191: 200, 1244 ms
+**runs/inspect/20261022T110738_<userId:1>**, step 4: click e191: 200, 1244 ms
 
 Sent:
 
@@ -35,8 +35,8 @@ Sent:
   "server_timestamps": "true",
   "variables": {
     "buyLocation": {
-      "latitude": 37.193232725035,
-      "longitude": -3.6622435304279
+      "latitude": "<coordinate>",
+      "longitude": "<coordinate>"
     },
     "category_ranking_enabled": false,
     "hide_l2_cats": true,
@@ -59,13 +59,13 @@ Answered:
         "current_marketplace": {
           "__typename": "Marketplace",
           "is_metric_base": true,
-          "id": "815544551944570"
+          "id": "<id:1>"
         }
       },
       "actor": {
         "__typename": "User",
         "marketplace_seller_eligible_for_bulk_upload": false,
-        "id": "61594063207669"
+        "id": "<userId:1>"
       },
       "marketplace_nux_states": {
         "marketplace_bulk_upload_entrypoint_nux": "VISIBLE"
@@ -79,62 +79,62 @@ Answered:
         "prediction_id": null,
         "categories_virtual_taxonomy": [
           {
-            "id": "677457442746983",
-            "name": "Clothing",
+            "id": "<id:2>",
+            "name": "<name:1>",
             "icon_name": "t-shirt",
             "seo_info": {
               "seo_url": "apparel",
-              "id": "2626320500744915"
+              "id": "<id:3>"
             },
             "virtual_taxonomy_publish_state": "PUBLISHED"
           },
           {
-            "id": "759201041254543",
-            "name": "Classifieds",
+            "id": "<id:4>",
+            "name": "<name:2>",
             "icon_name": "binoculars",
             "seo_info": {
               "seo_url": "classifieds",
-              "id": "3370316233042991"
+              "id": "<id:5>"
             },
             "virtual_taxonomy_publish_state": "PUBLISHED"
           },
           {
-            "id": "479353692612078",
-            "name": "Electronics",
+            "id": "<id:6>",
+            "name": "<name:3>",
             "icon_name": "mobile",
             "seo_info": {
               "seo_url": "electronics",
-              "id": "2458992307542385"
+              "id": "<id:7>"
             },
             "virtual_taxonomy_publish_state": "PUBLISHED"
           },
           {
-            "id": "529595287638583",
-            "name": "Entertainment",
+            "id": "<id:8>",
+            "name": "<name:4>",
             "icon_name": "film-projector",
             "seo_info": {
               "seo_url": "entertainment",
-              "id": "3727006157324485"
+              "id": "<id:9>"
             },
             "virtual_taxonomy_publish_state": "PUBLISHED"
           },
           {
-            "id": "891748581240437",
-            "name": "Family",
+            "id": "<id:10>",
+            "name": "<name:5>",
             "icon_name": "heart",
             "seo_info": {
               "seo_url": "family",
-              "id": "3008548325836386"
+              "id": "<id:11>"
             },
             "virtual_taxonomy_publish_state": "PUBLISHED"
           },
           {
-            "id": "2796952007029050",
-            "name": "Free stuff",
+            "id": "<id:12>",
+            "name": "<name:6>",
             "icon_name": "tag-remove",
             "seo_info": {
               "seo_url": "free",
-              "id": "2632259956851668"
+              "id": "<id:13>"
             },
             "virtual_taxonomy_publish_state": "PUBLISHED"
           },
@@ -143,8 +143,8 @@ Answered:
       },
       "marketplace_feed_stories": {
         "buy_location": {
-          "display_name": "Maracena, Spain",
-          "id": "108263972541612"
+          "display_name": "<name:7>",
+          "id": "<id:14>"
         }
       }
     }

@@ -128,7 +128,7 @@ Seen 180 time(s) in 52 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/warmup/20261023T080515_61594063207669**, step 1: goto /marketplace/: 200, 428 ms
+**runs/warmup/20261023T080515_<userId:1>**, step 1: goto /marketplace/: 200, 428 ms
 
 Sent:
 
@@ -143,11 +143,11 @@ Answered:
   "__ar": 1,
   "rid": "AE_hGpcLbigag3LZeVRrnoz",
   "payload": null,
-  "lid": "7699771399959004556"
+  "lid": "<id:1>"
 }
 ```
 
-**runs/warmup/20261023T080515_61594063207669**, step 3: goto /marketplace/you/selling: 200, 427 ms
+**runs/warmup/20261023T080515_<userId:1>**, step 3: goto /marketplace/you/selling: 200, 427 ms
 
 Sent:
 
@@ -162,11 +162,11 @@ Answered:
   "__ar": 1,
   "rid": "AoYMt7cPblvYvwqc7u6-6N8",
   "payload": null,
-  "lid": "7699771611009940763"
+  "lid": "<id:2>"
 }
 ```
 
-**runs/warmup/20261023T080515_61594063207669**, step 5: goto /messages/: 200, 438 ms
+**runs/warmup/20261023T080515_<userId:1>**, step 5: goto /messages/: 200, 438 ms
 
 Sent:
 
@@ -181,7 +181,7 @@ Answered:
   "__ar": 1,
   "rid": "APPS8iAlIj4WWLVggRZhioy",
   "payload": null,
-  "lid": "7699771740668431251"
+  "lid": "<id:3>"
 }
 ```
 

@@ -27,7 +27,7 @@ Seen 5 time(s) in 3 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261024T164523_61593843527201**, step 7: click e1395: 200, 1007 ms
+**runs/inspect/20261024T164523_<userId:1>**, step 7: click e1395: 200, 1007 ms
 
 Sent:
 
@@ -57,7 +57,7 @@ Sent:
     "taggedInOnly": null,
     "trackingCode": null,
     "useDefaultActor": false,
-    "id": "61593843527201",
+    "id": "<userId:1>",
     "__relay_internal__pv__GHLShouldChangeAdIdFieldNamerelayprovider": true,
     "__relay_internal__pv__GHLShouldChangeSponsoredDataFieldNamerelayprovider": true,
     "__relay_internal__pv__CometFeedStory_enable_reactor_facepilerelayprovider": false,
@@ -98,7 +98,7 @@ Answered:
     "data": {
       "node": {
         "__typename": "User",
-        "id": "61593843527201",
+        "id": "<userId:1>",
         "timeline_list_feed_units": {
           "edges": [
             {
@@ -112,7 +112,7 @@ Answered:
                 "is_story_civic": null,
                 "cache_id": "-531262306220494892",
                 "matched_terms": "(0 items)",
-                "post_id": "122105587719461450",
+                "post_id": "<id:1>",
                 "creation_time": 864975600,
                 "cix_screen": null,
                 "attachments": "(1 items)",
@@ -122,7 +122,7 @@ Answered:
                 "comet_sections": "(14 fields)",
                 "encrypted_tracking": "AZial_0QuuCloNREDKUauhu_sBPkKeg1Vs1VT1F949eRFKLEIVnYfRHS9esAOK-x4xV71qHWBshK8JVgKvG87ygtAuI3W5UJj3s2g9ThO3GZGwaZ36m_cFJ5dsorCV9wNpeXFjUk6bNn_WM1Zp7Hu3reMIAckgVbQuzK_u9PH0LpIuUOJ_cNJtVwwoQEtrGQSom-kPO1y0IH1ZWI-RSRJVPkjQw6ZX3PW6ljAqPIbt4S4f94gjS86hYpVEXjhmBECulZ1eD5hYvjcXY2AxgvhcD4ukIsEba3XRHWIcQmfIfo8_RtdtGQEHlgjEdRhjbxIyXo-BGWu1nGhJAVscS5POp3jqx4EDfQv2eLesMODMBpdGVRCBDbnxEVJB1IjgpV1LaI9KF3giLS_aFi… (599 chars)",
                 "should_host_actor_link_in_watch": false,
-                "permalink_url": "https://www.facebook.com/permalink.php?story_fbid=pfbid09HcsewaaxL1K7qD2zWYy5ysZsTLDxcceXZSoWbcQnHBFiLKJgq7L4vXqVHCfFQuTl&id=61593843527201",
+                "permalink_url": "https://www.facebook.com/permalink.php?story_fbid=pfbid09HcsewaaxL1K7qD2zWYy5ysZsTLDxcceXZSoWbcQnHBFiLKJgq7L4vXqVHCfFQuTl&id=<userId:1>",
                 "whatsapp_ad_context": null,
                 "schema_context": null,
                 "click_tracking_linkshim_cb": "AUCGxVFp70IBpm-8H8uAPFEczTW3lw5w-NaPG_Oy_0W-Jumo208IR8SqvZCwcl9qRVheWa4xenoJlTC_Ou-ZpzqJqjyg8fVB3KwYPwBdDTW0oP4QRdrl7MFQ4RKlcNJRc7bEMSePTduZZEeR6NF4LLQobkueOByonQQHVcSC9fQVeIwPFzbsUfqSVU4",
@@ -150,7 +150,7 @@ Answered:
     "extensions": {
       "prefetch_uris_v2": [
         {
-          "uri": "https://scontent.fagc1-1.fna.fbcdn.net/v/t39.30808-1/863613843_122123515995461450_843471129485614990_n.jpg (457 chars)",
+          "uri": "<mediaUrl> (457 chars)",
           "label": null,
           "width": null,
           "height": null,
@@ -309,7 +309,7 @@ Answered:
       "extensions": {
         "prefetch_uris_v2": [
           {
-            "uri": "https://scontent.fagc1-1.fna.fbcdn.net/v/t39.30808-1/863613843_122123515995461450_843471129485614990_n.jpg (457 chars)",
+            "uri": "<mediaUrl> (457 chars)",
             "label": null,
             "width": null,
             "height": null,
@@ -323,7 +323,7 @@ Answered:
 }
 ```
 
-**runs/host/20261024T211541_61593939852820**, step 7: goto /me: 200, 621 ms
+**runs/host/20261024T211541_<userId:2>**, step 7: goto /me: 200, 621 ms
 
 Sent:
 
@@ -353,7 +353,7 @@ Sent:
     "taggedInOnly": null,
     "trackingCode": null,
     "useDefaultActor": false,
-    "id": "61593939852820",
+    "id": "<userId:2>",
     "__relay_internal__pv__GHLShouldChangeAdIdFieldNamerelayprovider": true,
     "__relay_internal__pv__GHLShouldChangeSponsoredDataFieldNamerelayprovider": true,
     "__relay_internal__pv__CometFeedStory_enable_reactor_facepilerelayprovider": false,
@@ -394,7 +394,7 @@ Answered:
     "data": {
       "node": {
         "__typename": "User",
-        "id": "61593939852820",
+        "id": "<userId:2>",
         "timeline_list_feed_units": {
           "edges": [
             {
@@ -406,9 +406,9 @@ Answered:
                 "th_dat_spo": null,
                 "feedback": "(3 fields)",
                 "is_story_civic": null,
-                "cache_id": "5256508423534814779",
+                "cache_id": "<id:2>",
                 "matched_terms": "(0 items)",
-                "post_id": "122103367659464661",
+                "post_id": "<id:3>",
                 "creation_time": 862556400,
                 "cix_screen": null,
                 "attachments": "(1 items)",
@@ -418,7 +418,7 @@ Answered:
                 "comet_sections": "(14 fields)",
                 "encrypted_tracking": "AZiVCaYq5MQRkxjIHPcMknF1VMsZfAL-AlwWtzWZRDMTfpePU-882nfSs5_QAx22qXMIYT_19bLktz7-CDsFvpD-jMFupr5H25uW6WagcLda6UWrBLXzWX4rCd_pugnjkOhpJDxEYEXVZoE9wmcVubC6pQW6N02rvva8qwVUIxAjrYWRZAvBE4XucBU8_OXzCJSxlqCLieFjPDe8-zL-bwfKn-UZNByfVqgzVcJ2YyEAyDhPNCmUWxRdwtdNQm24JSBWANxrItLntgS7jsklMnWxJZrE0p6EO7_qAAGnOWHEnmxkcoSYJnXBqChHsfvrUeYeLtKY56a2XSoN65EdNNvOaed9kbafqaZd9U0e0fXfzxTv5H_dqJpfHcriIQ-vcD5cwgGjUfzzdKdV… (599 chars)",
                 "should_host_actor_link_in_watch": false,
-                "permalink_url": "https://www.facebook.com/permalink.php?story_fbid=pfbid0bB3F1z34LjdoWzeXbLVStHKQSreYHia4PKjt6KZDE2uZt4tYGn2NWwPqQX7cw7yel&id=61593939852820",
+                "permalink_url": "https://www.facebook.com/permalink.php?story_fbid=pfbid0bB3F1z34LjdoWzeXbLVStHKQSreYHia4PKjt6KZDE2uZt4tYGn2NWwPqQX7cw7yel&id=<userId:2>",
                 "whatsapp_ad_context": null,
                 "schema_context": null,
                 "click_tracking_linkshim_cb": "AUCjPrgI_w6WMEkHvRj83eoGES9uj8BLhLccOnEktTBMxbnVU0EtV_Xtr347hIFiodl5fGC9nOeshkVbi4NOHuJ1aCteciohcuLRVKkAujh_E4QYgD-BaMIoOp0WH0Qv_FkwnX_RVkuDatQKku34nf3_FeYa5QLfzOduI1e6IZV3tw-RTfnGIuYFda8",
@@ -446,7 +446,7 @@ Answered:
     "extensions": {
       "prefetch_uris_v2": [
         {
-          "uri": "https://scontent.fagc3-1.fna.fbcdn.net/v/t1.30497-1/453178253_471506465671661_2781666950760530985_n.png (405 chars)",
+          "uri": "<mediaUrl> (405 chars)",
           "label": null,
           "width": null,
           "height": null,
@@ -606,7 +606,7 @@ Answered:
       "extensions": {
         "prefetch_uris_v2": [
           {
-            "uri": "https://scontent.fagc3-1.fna.fbcdn.net/v/t1.30497-1/453178253_471506465671661_2781666950760530985_n.png (405 chars)",
+            "uri": "<mediaUrl> (405 chars)",
             "label": null,
             "width": null,
             "height": null,
@@ -620,7 +620,7 @@ Answered:
 }
 ```
 
-**runs/host/20261024T211541_61593939852820**, step 12: goto /me: 200, 533 ms
+**runs/host/20261024T211541_<userId:2>**, step 12: goto /me: 200, 533 ms
 
 Sent:
 
@@ -650,7 +650,7 @@ Sent:
     "taggedInOnly": null,
     "trackingCode": null,
     "useDefaultActor": false,
-    "id": "61593939852820",
+    "id": "<userId:2>",
     "__relay_internal__pv__GHLShouldChangeAdIdFieldNamerelayprovider": true,
     "__relay_internal__pv__GHLShouldChangeSponsoredDataFieldNamerelayprovider": true,
     "__relay_internal__pv__CometFeedStory_enable_reactor_facepilerelayprovider": false,
@@ -691,7 +691,7 @@ Answered:
     "data": {
       "node": {
         "__typename": "User",
-        "id": "61593939852820",
+        "id": "<userId:2>",
         "timeline_list_feed_units": {
           "edges": [
             {
@@ -703,9 +703,9 @@ Answered:
                 "th_dat_spo": null,
                 "feedback": "(3 fields)",
                 "is_story_civic": null,
-                "cache_id": "5256508423534814779",
+                "cache_id": "<id:2>",
                 "matched_terms": "(0 items)",
-                "post_id": "122103367659464661",
+                "post_id": "<id:3>",
                 "creation_time": 862556400,
                 "cix_screen": null,
                 "attachments": "(1 items)",
@@ -715,7 +715,7 @@ Answered:
                 "comet_sections": "(14 fields)",
                 "encrypted_tracking": "AZiZ_O0YGZu0KMdv6DHXW3xiUN3shZ3BwJkfwPOeit4gTJp49ZjOJebIl2ZpnnnIHqchUr0fM3DGKv_DCkScDMXjiMEid5iK_cpazQuxVyN9Vb137rbI3QCZeqqyPrOmkcS-hN7p4jzEJnCTeSL6rrWs07MVmO4WIfaEojNmz2kb77bAq7VNrNjCf-4k709Dmsdmbjdk6GQ_zddNK1QObJrk_6ciAZOPardik7x2le-wm-r0DKoRbawhssnU2BKohVpw5Yo_Ph3hrtrIeQUURnZN-YcaIEl_XMJZ1tOxKm5whP7N8WFF6mbbG5tSiNrvI9Tjt6Z6B19WIJkj5Q87sKzivd-X272hfCpxxzZdbyGTxdYZunm5zOSR2v-g3j8h20-ZKDS7NDZH1DFk… (599 chars)",
                 "should_host_actor_link_in_watch": false,
-                "permalink_url": "https://www.facebook.com/permalink.php?story_fbid=pfbid0bB3F1z34LjdoWzeXbLVStHKQSreYHia4PKjt6KZDE2uZt4tYGn2NWwPqQX7cw7yel&id=61593939852820",
+                "permalink_url": "https://www.facebook.com/permalink.php?story_fbid=pfbid0bB3F1z34LjdoWzeXbLVStHKQSreYHia4PKjt6KZDE2uZt4tYGn2NWwPqQX7cw7yel&id=<userId:2>",
                 "whatsapp_ad_context": null,
                 "schema_context": null,
                 "click_tracking_linkshim_cb": "AUAJtr9GxtN48OSqORcKkPFqJ18CKKgN2XTg4K5-znw98BADmBpYRUgVKS-eE5qPNKr_-2GSS0MnwewF4qRmY4WTav3EHUgjBKEBQ4F514645doVhvXf5YmPWTJaDw9j9-tUxLmgWcTEuk56iiEJA_8uzCjr6jfWiWLJhZtyWs2BtxQ8uK8WQFQ4D3A",
@@ -743,7 +743,7 @@ Answered:
     "extensions": {
       "prefetch_uris_v2": [
         {
-          "uri": "https://scontent.fagc3-1.fna.fbcdn.net/v/t1.30497-1/453178253_471506465671661_2781666950760530985_n.png (405 chars)",
+          "uri": "<mediaUrl> (405 chars)",
           "label": null,
           "width": null,
           "height": null,
@@ -903,7 +903,7 @@ Answered:
       "extensions": {
         "prefetch_uris_v2": [
           {
-            "uri": "https://scontent.fagc3-1.fna.fbcdn.net/v/t1.30497-1/453178253_471506465671661_2781666950760530985_n.png (405 chars)",
+            "uri": "<mediaUrl> (405 chars)",
             "label": null,
             "width": null,
             "height": null,

@@ -26,7 +26,7 @@ Seen 5 time(s) in 4 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261111T081957_61593610473511**, step 8: click e53: 200, 1245 ms
+**runs/inspect/20261111T081957_<userId:1>**, step 8: click e53: 200, 1245 ms
 
 Sent:
 
@@ -34,7 +34,7 @@ Sent:
 {
   "gmt_off": "-420",
   "is_forced": "true",
-  "tz": "America/Vancouver",
+  "tz": "<timezone>",
   "qpl_active_flow_ids": "1056839232"
 }
 ```
@@ -46,11 +46,11 @@ Answered:
   "__ar": 1,
   "rid": "A8AQUkc02_1CMTnMkV7iXUH",
   "payload": null,
-  "lid": "7706829268722279569"
+  "lid": "<id:1>"
 }
 ```
 
-**runs/host/20261024T222706_61593981307720**, step 28: clickRole button "…": 200, 602 ms
+**runs/host/20261024T222706_<userId:2>**, step 28: clickRole button "…": 200, 602 ms
 
 Sent:
 
@@ -58,7 +58,7 @@ Sent:
 {
   "gmt_off": "-240",
   "is_forced": "true",
-  "tz": "America/New_York"
+  "tz": "<timezone>"
 }
 ```
 
@@ -69,11 +69,11 @@ Answered:
   "__ar": 1,
   "rid": "ANNb6IV3KUGN8UoCOsqImyq",
   "payload": null,
-  "lid": "7700365765260980866"
+  "lid": "<id:2>"
 }
 ```
 
-**runs/host/20261024T211541_61593939852820**, step 3: clickRole button "…": 200, 1051 ms
+**runs/host/20261024T211541_<userId:3>**, step 3: clickRole button "…": 200, 1051 ms
 
 Sent:
 
@@ -81,7 +81,7 @@ Sent:
 {
   "gmt_off": "-240",
   "is_forced": "true",
-  "tz": "America/New_York"
+  "tz": "<timezone>"
 }
 ```
 
@@ -92,7 +92,7 @@ Answered:
   "__ar": 1,
   "rid": "ACA3Fv27sucSD3jfRuLmirY",
   "payload": null,
-  "lid": "7700346294843364284"
+  "lid": "<id:3>"
 }
 ```
 

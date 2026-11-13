@@ -34,7 +34,7 @@ Sent:
 {
   "query": {
     "_x_id": "noversion-1793689008.269",
-    "slack_route": "T00000000",
+    "slack_route": "<teamId:1>",
     "_x_version_ts": "noversion",
     "fp": "57",
     "_x_num_retries": "0"
@@ -52,7 +52,7 @@ Answered:
   "ok": true,
   "current_teams": [
     {
-      "email": "matthewdonsemail@gmail.com",
+      "email": "<email>",
       "teams": [
         "(29 fields)",
         "(29 fields)",
@@ -66,18 +66,18 @@ Answered:
   ],
   "current_orgs": [
     {
-      "email": "matthewdonsemail@gmail.com",
+      "email": "<email>",
       "org": {
-        "id": "E07U77NLWDT",
-        "name": "Comet",
-        "url": "https://grid-comet-ml.enterprise.slack.com/",
-        "domain": "grid-comet-ml",
+        "id": "<teamId:2>",
+        "name": "<name:1>",
+        "url": "https://<workspace:1>.<name:2>/",
+        "domain": "<workspace:1>",
         "icon": "(8 fields)",
-        "icon_44": "https://avatars.slack-edge.com/2025-02-23/8520673528272_653829ce27f4ba680abf_44.png",
-        "icon_88": "https://avatars.slack-edge.com/2025-02-23/8520673528272_653829ce27f4ba680abf_88.png",
+        "icon_44": "<avatarUrl>",
+        "icon_88": "<avatarUrl>",
         "two_factor_required": false,
         "is_enterprise": true,
-        "signup_url": "https://grid-comet-ml.enterprise.slack.com/",
+        "signup_url": "https://<workspace:1>.<name:2>/",
         "variant": "commercial",
         "active_users": 4395,
         "profile_photos": "(5 items)",
@@ -90,7 +90,7 @@ Answered:
         "magic_login_code": "z-app-7959260710469-12486834575526-079f86a5ed4bfbacf52c536a709872ffaaa4d39bb300098d26055fa213bf3bc0",
         "last_login_ts": 1788094647,
         "user_type": "guest",
-        "associated_user": "U0BN57MQZ1N",
+        "associated_user": "<userId:1>",
         "user_workspace_signal_score": 0,
         "can_apply_canvas": true,
         "can_apply_list": true,
@@ -102,7 +102,7 @@ Answered:
   "invited_teams": [],
   "domain_enabled_teams": [],
   "has_valid_cookie": true,
-  "confirmed_email": "matthewdonsemail@gmail.com",
+  "confirmed_email": "<email>",
   "privacy_consent_group": "B"
 }
 ```
@@ -115,7 +115,7 @@ Sent:
 {
   "query": {
     "_x_id": "noversion-1793688811.872",
-    "slack_route": "T00000000",
+    "slack_route": "<teamId:1>",
     "_x_version_ts": "noversion",
     "fp": "99",
     "_x_num_retries": "0"
@@ -133,7 +133,7 @@ Answered:
   "ok": true,
   "current_teams": [
     {
-      "email": "matthewdonsemail@gmail.com",
+      "email": "<email>",
       "teams": [
         "(29 fields)",
         "(29 fields)",
@@ -147,18 +147,18 @@ Answered:
   ],
   "current_orgs": [
     {
-      "email": "matthewdonsemail@gmail.com",
+      "email": "<email>",
       "org": {
-        "id": "E07U77NLWDT",
-        "name": "Comet",
-        "url": "https://grid-comet-ml.enterprise.slack.com/",
-        "domain": "grid-comet-ml",
+        "id": "<teamId:2>",
+        "name": "<name:1>",
+        "url": "https://<workspace:1>.<name:2>/",
+        "domain": "<workspace:1>",
         "icon": "(8 fields)",
-        "icon_44": "https://avatars.slack-edge.com/2025-02-23/8520673528272_653829ce27f4ba680abf_44.png",
-        "icon_88": "https://avatars.slack-edge.com/2025-02-23/8520673528272_653829ce27f4ba680abf_88.png",
+        "icon_44": "<avatarUrl>",
+        "icon_88": "<avatarUrl>",
         "two_factor_required": false,
         "is_enterprise": true,
-        "signup_url": "https://grid-comet-ml.enterprise.slack.com/",
+        "signup_url": "https://<workspace:1>.<name:2>/",
         "variant": "commercial",
         "active_users": 4395,
         "profile_photos": "(5 items)",
@@ -171,7 +171,7 @@ Answered:
         "magic_login_code": "z-app-7959260710469-12486834575526-079f86a5ed4bfbacf52c536a709872ffaaa4d39bb300098d26055fa213bf3bc0",
         "last_login_ts": 1788094647,
         "user_type": "guest",
-        "associated_user": "U0BN57MQZ1N",
+        "associated_user": "<userId:1>",
         "user_workspace_signal_score": 0,
         "can_apply_canvas": true,
         "can_apply_list": true,
@@ -183,7 +183,7 @@ Answered:
   "invited_teams": [],
   "domain_enabled_teams": [],
   "has_valid_cookie": true,
-  "confirmed_email": "matthewdonsemail@gmail.com",
+  "confirmed_email": "<email>",
   "privacy_consent_group": "B"
 }
 ```
@@ -192,7 +192,7 @@ Answered:
 
 ## What it does
 
-Slack's sign-in page asks which workspaces the browser's session already belongs to: it answered `ok: true` with `current_teams` (a list per email, here matthewdonsemail@gmail.com, each team with 29 fields), `current_orgs`, `invited_teams`, `domain_enabled_teams`, `has_valid_cookie`, `confirmed_email` and `privacy_consent_group`. It fired in two runs: step 1 goto /get-started (648 ms) and step 3 click e536 (1052 ms).
+Slack's sign-in page asks which workspaces the browser's session already belongs to: it answered `ok: true` with `current_teams` (a list per email, here <email>, each team with 29 fields), `current_orgs`, `invited_teams`, `domain_enabled_teams`, `has_valid_cookie`, `confirmed_email` and `privacy_consent_group`. It fired in two runs: step 1 goto /get-started (648 ms) and step 3 click e536 (1052 ms).
 
 ## What our machine does with it
 

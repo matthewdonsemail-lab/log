@@ -30,7 +30,7 @@ Seen 18 time(s) in 16 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261022T110738_61594063207669**, step 16: type e232: 200, 370 ms
+**runs/inspect/20261022T110738_<userId:1>**, step 16: type e232: 200, 370 ms
 
 Sent:
 
@@ -42,10 +42,10 @@ Sent:
   "server_timestamps": "true",
   "variables": {
     "params": {
-      "category_id": "1583634935226685",
+      "category_id": "<id:1>",
       "currency": "USD",
-      "photo_id": "122127505023468773",
-      "title": "Junk Removal & Cleanouts: Houses, Garages, Basements"
+      "photo_id": "<id:2>",
+      "title": "<messageText>"
     }
   },
   "doc_id": "9566914303429765",
@@ -74,7 +74,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261022T110738_61594063207669**, scroll: container +87px in 3 steps: 200, 1663 ms
+**runs/inspect/20261022T110738_<userId:1>**, scroll: container +87px in 3 steps: 200, 1663 ms
 
 Sent:
 
@@ -86,10 +86,10 @@ Sent:
   "server_timestamps": "true",
   "variables": {
     "params": {
-      "category_id": "895487550471874",
+      "category_id": "<id:3>",
       "currency": "USD",
-      "photo_id": "122127505023468773",
-      "title": "Junk Removal & Cleanouts: Houses, Garages, Basements"
+      "photo_id": "<id:2>",
+      "title": "<messageText>"
     }
   },
   "doc_id": "9566914303429765",
@@ -118,7 +118,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261022T105341_61594063207669**, step 10: type e232: 200, 380 ms
+**runs/inspect/20261022T105341_<userId:1>**, step 10: type e232: 200, 380 ms
 
 Sent:
 
@@ -130,10 +130,10 @@ Sent:
   "server_timestamps": "true",
   "variables": {
     "params": {
-      "category_id": "1583634935226685",
+      "category_id": "<id:1>",
       "currency": "ILS",
-      "photo_id": "122127497595468773",
-      "title": "Junk Removal & Cleanouts: Houses, Garages, Basements"
+      "photo_id": "<id:4>",
+      "title": "<messageText>"
     }
   },
   "doc_id": "9566914303429765",

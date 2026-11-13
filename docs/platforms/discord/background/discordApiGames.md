@@ -10,7 +10,7 @@
 | Path | `discord.com/api/games` |
 | Sends | — |
 | Reads | — |
-| Called from | `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1036.js:1 parse`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1245.js:2 anonymous` |
+| Called from | `runs/inspect/20261030T222341_<name:8>/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_<name:8>/script1036.js:1 parse`, `runs/inspect/20261030T222341_<name:8>/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_<name:8>/script1245.js:2 anonymous` |
 | rea | `ev_065e7ad37dcb5911d240f9de7d6e2882220c5a8d7c025d92b46a23de59cf297c` |
 
 Seen 7 time(s) in 3 run(s).
@@ -28,14 +28,14 @@ Seen 7 time(s) in 3 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder**, step 2: snapshot: 200, 1088 ms
+**runs/inspect/20261030T222341_<name:8>**, step 2: snapshot: 200, 1088 ms
 
 Sent:
 
 ```json
 {
   "query": {
-    "game_ids": "542075586886107149"
+    "game_ids": "<id:1>"
   },
   "body": null
 }
@@ -46,10 +46,10 @@ Answered:
 ```json
 [
   {
-    "id": "1445982809792708628",
-    "name": "AION 2",
+    "id": "<id:2>",
+    "name": "<name:1>",
     "aliases": "(0 items)",
-    "description": "AION 2 is the only MMORPG built around a world where the sky is the battlefield. Choose your faction, ascend as a Daeva, and fight a faction war across a world 36 times larger than the original. PC only, on Unreal Engine 5.",
+    "description": "<messageText>",
     "icon_hash": "5146eac718876015ae5d3eeadbaad9d7",
     "executables": "(0 items)",
     "third_party_skus": "(4 items)",
@@ -80,10 +80,10 @@ Answered:
     "content_classification": "(1 fields)"
   },
   {
-    "id": "1539812812854132867",
-    "name": "Call of Duty",
+    "id": "<id:3>",
+    "name": "<name:2>",
     "aliases": "(0 items)",
-    "description": "The Call of Duty® experience supports Modern Warfare® 4, Black Ops 7 and Call of Duty®: Warzone™.\n\nCall of Duty®: Modern Warfare® 4 brings players Warfare Without Limits.\n\nIn Call of Duty®: Black Ops 7, Treyarch and Raven Software are bringing players the biggest Black Ops ever.\n\nCall of Duty®: Warzone™ is the massive free-to-play combat arena, featuring Battle Royale, Resurgence, and now introduc… (495 chars)",
+    "description": "<messageText>",
     "icon_hash": "532b24566a2cdde9646052b7e4d43bc0",
     "executables": "(1 items)",
     "third_party_skus": "(7 items)",
@@ -110,10 +110,10 @@ Answered:
     "content_classification": "(1 fields)"
   },
   {
-    "id": "542075586886107149",
-    "name": "Apex Legends",
+    "id": "<id:1>",
+    "name": "<name:3>",
     "aliases": "(1 items)",
-    "description": "Conquer with character in Apex Legends, a free-to-play Hero shooter where legendary characters with powerful abilities team up to battle for fame & fortune on the fringes of the Frontier.\n\nMaster an ever-growing roster of diverse Legends, deep tactical squad play and bold new innovations that go beyond the Battle Royale experience—all within a rugged world where anything goes. Welcome to the next … (426 chars)",
+    "description": "<messageText>",
     "icon_hash": "91fac0600c5b6527c1aea95a93c6a8e0",
     "executables": "(4 items)",
     "third_party_skus": "(7 items)",
@@ -144,14 +144,14 @@ Answered:
 ]
 ```
 
-**runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder**, step 1: goto /login: 200, 418 ms
+**runs/inspect/20261028T074137_<name:8>**, step 1: goto /login: 200, 418 ms
 
 Sent:
 
 ```json
 {
   "query": {
-    "game_ids": "1432419613165228174"
+    "game_ids": "<id:4>"
   },
   "body": null
 }
@@ -162,10 +162,10 @@ Answered:
 ```json
 [
   {
-    "id": "1539812812854132867",
-    "name": "Call of Duty",
+    "id": "<id:3>",
+    "name": "<name:2>",
     "aliases": [],
-    "description": "The Call of Duty® experience supports Modern Warfare® 4, Black Ops 7 and Call of Duty®: Warzone™.\n\nCall of Duty®: Modern Warfare® 4 brings players Warfare Without Limits.\n\nIn Call of Duty®: Black Ops 7, Treyarch and Raven Software are bringing players the biggest Black Ops ever.\n\nCall of Duty®: Warzone™ is the massive free-to-play combat arena, featuring Battle Royale, Resurgence, and now introduc… (495 chars)",
+    "description": "<messageText>",
     "icon_hash": "532b24566a2cdde9646052b7e4d43bc0",
     "executables": [
       "(3 fields)"
@@ -243,10 +243,10 @@ Answered:
     }
   },
   {
-    "id": "1432419613165228174",
-    "name": "ARC Raiders",
+    "id": "<id:4>",
+    "name": "<name:4>",
     "aliases": [],
-    "description": "ARC Raiders is a multiplayer extraction adventure, set in a lethal future earth, ravaged by a mysterious mechanized threat known as ARC.",
+    "description": "<messageText>",
     "icon_hash": "7ce8aa26a0dd472740eebeb9c25e6577",
     "executables": [
       "(3 fields)"
@@ -326,12 +326,12 @@ Answered:
     "opencritic_url": "https://opencritic.com/game/19023/arc-raiders",
     "l30_rank": 17,
     "community_guild_ids": [
-      "1107589599045361695",
-      "927355923314380901",
-      "1002892569824464906",
-      "1367740450194063402",
-      "1095091795022590034",
-      "1173725697248862371",
+      "<id:5>",
+      "<id:6>",
+      "<id:7>",
+      "<id:8>",
+      "<id:9>",
+      "<id:10>",
       "… 29 more"
     ],
     "game_flags": 0,
@@ -342,14 +342,14 @@ Answered:
 ]
 ```
 
-**runs/inspect/20261028T062914_sourcedandsoldtothehighestbidder**, step 5: click e40: 200, 358 ms
+**runs/inspect/20261028T062914_<name:8>**, step 5: click e40: 200, 358 ms
 
 Sent:
 
 ```json
 {
   "query": {
-    "game_ids": "1539812812854132867"
+    "game_ids": "<id:3>"
   },
   "body": null
 }
@@ -360,15 +360,15 @@ Answered:
 ```json
 [
   {
-    "id": "1539812812854132867",
-    "name": "Call of Duty",
+    "id": "<id:3>",
+    "name": "<name:2>",
     "aliases": [],
-    "description": "The Call of Duty® experience supports Modern Warfare® 4, Black Ops 7 and Call of Duty®: Warzone™.\n\nCall of Duty®: Modern Warfare® 4 brings players Warfare Without Limits.\n\nIn Call of Duty®: Black Ops 7, Treyarch and Raven Software are bringing players the biggest Black Ops ever.\n\nCall of Duty®: Warzone™ is the massive free-to-play combat arena, featuring Battle Royale, Resurgence, and now introduc… (495 chars)",
+    "description": "<messageText>",
     "icon_hash": "532b24566a2cdde9646052b7e4d43bc0",
     "executables": [
       {
         "os": "win32",
-        "name": "cod.exe",
+        "name": "<name:5>",
         "is_launcher": false
       }
     ],
@@ -508,13 +508,13 @@ Answered:
     ],
     "companies": [
       {
-        "name": "Activision",
+        "name": "<name:6>",
         "roles": [
           1
         ]
       },
       {
-        "name": "Infinity Ward",
+        "name": "<name:7>",
         "roles": [
           2
         ]

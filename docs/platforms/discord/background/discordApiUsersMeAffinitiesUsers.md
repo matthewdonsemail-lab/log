@@ -10,7 +10,7 @@
 | Path | `discord.com/api/users/@me/affinities/users` |
 | Sends | — |
 | Reads | `user_affinities` |
-| Called from | `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1036.js:1 parse`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1245.js:2 anonymous` |
+| Called from | `runs/inspect/20261030T222341_<name:1>/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_<name:1>/script1036.js:1 parse`, `runs/inspect/20261030T222341_<name:1>/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_<name:1>/script1245.js:2 anonymous` |
 | rea | `ev_065e7ad37dcb5911d240f9de7d6e2882220c5a8d7c025d92b46a23de59cf297c` |
 
 Seen 2 time(s) in 2 run(s).
@@ -24,7 +24,7 @@ Seen 2 time(s) in 2 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder**, step 2: snapshot: 200, 740 ms
+**runs/inspect/20261030T222341_<name:1>**, step 2: snapshot: 200, 740 ms
 
 Sent:
 
@@ -38,7 +38,7 @@ Answered:
 {
   "user_affinities": [
     {
-      "other_user_id": "428660066716090378",
+      "other_user_id": "<userId:1>",
       "user_segment": "HFU_MAU",
       "other_user_segment": "HFU_MAU",
       "is_friend": true,
@@ -52,7 +52,7 @@ Answered:
       "communication_rank": 1
     },
     {
-      "other_user_id": "541647035317747722",
+      "other_user_id": "<userId:2>",
       "user_segment": "HFU_MAU",
       "other_user_segment": "HFU_MAU",
       "is_friend": true,
@@ -66,7 +66,7 @@ Answered:
       "communication_rank": 2
     },
     {
-      "other_user_id": "1177427345733324870",
+      "other_user_id": "<userId:3>",
       "user_segment": "HFU_MAU",
       "other_user_segment": "HFU_MAU",
       "is_friend": true,
@@ -80,7 +80,7 @@ Answered:
       "communication_rank": 3
     },
     {
-      "other_user_id": "1192133857198223460",
+      "other_user_id": "<userId:4>",
       "user_segment": "HFU_MAU",
       "other_user_segment": "HFU_MAU",
       "is_friend": true,
@@ -94,7 +94,7 @@ Answered:
       "communication_rank": 4
     },
     {
-      "other_user_id": "1173020076509773965",
+      "other_user_id": "<userId:5>",
       "user_segment": "HFU_MAU",
       "other_user_segment": "HFU_MAU",
       "is_friend": true,
@@ -108,7 +108,7 @@ Answered:
       "communication_rank": 5
     },
     {
-      "other_user_id": "1016308664119857202",
+      "other_user_id": "<userId:6>",
       "user_segment": "HFU_MAU",
       "other_user_segment": "HFU_MAU",
       "is_friend": true,
@@ -126,7 +126,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261028T062914_sourcedandsoldtothehighestbidder**, step 5: click e40: 200, 789 ms
+**runs/inspect/20261028T062914_<name:1>**, step 5: click e40: 200, 789 ms
 
 Sent:
 
@@ -140,7 +140,7 @@ Answered:
 {
   "user_affinities": [
     {
-      "other_user_id": "428660066716090378",
+      "other_user_id": "<userId:1>",
       "user_segment": "HFU_MAU",
       "other_user_segment": "HFU_MAU",
       "is_friend": true,
@@ -154,7 +154,7 @@ Answered:
       "communication_rank": 1
     },
     {
-      "other_user_id": "541647035317747722",
+      "other_user_id": "<userId:2>",
       "user_segment": "HFU_MAU",
       "other_user_segment": "HFU_MAU",
       "is_friend": true,
@@ -168,7 +168,7 @@ Answered:
       "communication_rank": 2
     },
     {
-      "other_user_id": "1177427345733324870",
+      "other_user_id": "<userId:3>",
       "user_segment": "HFU_MAU",
       "other_user_segment": "HFU_MAU",
       "is_friend": true,
@@ -182,7 +182,7 @@ Answered:
       "communication_rank": 3
     },
     {
-      "other_user_id": "1173020076509773965",
+      "other_user_id": "<userId:5>",
       "user_segment": "HFU_MAU",
       "other_user_segment": "HFU_MAU",
       "is_friend": true,
@@ -196,7 +196,7 @@ Answered:
       "communication_rank": 4
     },
     {
-      "other_user_id": "1192133857198223460",
+      "other_user_id": "<userId:4>",
       "user_segment": "HFU_MAU",
       "other_user_segment": "HFU_MAU",
       "is_friend": true,
@@ -210,7 +210,7 @@ Answered:
       "communication_rank": 5
     },
     {
-      "other_user_id": "1016308664119857202",
+      "other_user_id": "<userId:6>",
       "user_segment": "HFU_MAU",
       "other_user_segment": "HFU_MAU",
       "is_friend": true,

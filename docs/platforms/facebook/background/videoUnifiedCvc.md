@@ -129,7 +129,7 @@ Seen 146 time(s) in 17 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/host/20261026T180628_61594285317994**, scroll: +589px in 14 wheel steps, 950 ms: 200, 167 ms
+**runs/host/20261026T180628_<userId:1>**, scroll: +589px in 14 wheel steps, 950 ms: 200, 167 ms
 
 Sent:
 
@@ -145,7 +145,7 @@ Sent:
     },
     "si": "f2751670747e82b3b",
     "so": "inline::fb_reels_video_preview",
-    "vi": "2140038816719447"
+    "vi": "<id:1>"
   }
 }
 ```
@@ -157,7 +157,7 @@ Answered:
   "__ar": 1,
   "rid": "AF6icQIhYAlxeB6KW7NVZiQ",
   "payload": {
-    "vi": "2140038816719447",
+    "vi": "<id:1>",
     "si": "f2751670747e82b3b",
     "d": {
       "c": 0,
@@ -167,11 +167,11 @@ Answered:
       "t": "s"
     }
   },
-  "lid": "7701040220778735680"
+  "lid": "<id:2>"
 }
 ```
 
-**runs/host/20261026T180628_61594285317994**, scroll: +643px in 14 wheel steps, 528 ms: 200, 166 ms
+**runs/host/20261026T180628_<userId:1>**, scroll: +643px in 14 wheel steps, 528 ms: 200, 166 ms
 
 Sent:
 
@@ -187,7 +187,7 @@ Sent:
     },
     "si": "f9ae1b915641de97e",
     "so": "inline::inline",
-    "vi": "1389163852926731"
+    "vi": "<id:3>"
   }
 }
 ```
@@ -199,7 +199,7 @@ Answered:
   "__ar": 1,
   "rid": "A-2lj0YBE-sTjs-3bh7pj6f",
   "payload": {
-    "vi": "1389163852926731",
+    "vi": "<id:3>",
     "si": "f9ae1b915641de97e",
     "d": {
       "c": 0,
@@ -209,11 +209,11 @@ Answered:
       "t": "s"
     }
   },
-  "lid": "7701040511792349917"
+  "lid": "<id:4>"
 }
 ```
 
-**runs/host/20261026T180628_61594285317994**, scroll: -553px in 12 wheel steps, 499 ms: 200, 185 ms
+**runs/host/20261026T180628_<userId:1>**, scroll: -553px in 12 wheel steps, 499 ms: 200, 185 ms
 
 Sent:
 
@@ -229,7 +229,7 @@ Sent:
     },
     "si": "f42edb7dbeccf117f",
     "so": "inline::inline",
-    "vi": "937263719207841"
+    "vi": "<id:5>"
   }
 }
 ```
@@ -241,7 +241,7 @@ Answered:
   "__ar": 1,
   "rid": "A8zVM3I3elqabnnuSyBkUIw",
   "payload": {
-    "vi": "937263719207841",
+    "vi": "<id:5>",
     "si": "f42edb7dbeccf117f",
     "d": {
       "c": 0,
@@ -251,7 +251,7 @@ Answered:
       "t": "s"
     }
   },
-  "lid": "7701040560265979624"
+  "lid": "<id:6>"
 }
 ```
 

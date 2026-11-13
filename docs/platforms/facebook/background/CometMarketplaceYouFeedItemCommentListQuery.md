@@ -23,7 +23,7 @@ Seen 1 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261022T155857_61594063207669**, step 3: goto /marketplace/inbox: 200, 1857 ms
+**runs/inspect/20261022T155857_<userId:1>**, step 3: goto /marketplace/inbox: 200, 1857 ms
 
 Sent:
 
@@ -35,7 +35,7 @@ Sent:
   "variables": {
     "feedbackSource": 62,
     "feedLocation": "MARKETPLACE_YOU_FEED",
-    "listingId": "1425935622848350",
+    "listingId": "<id:1>",
     "scale": 1,
     "shouldIncludeProductFeedback": false,
     "useDefaultActor": false,
@@ -71,7 +71,7 @@ Answered:
             "(8 fields)"
           ]
         },
-        "id": "1425935622848350"
+        "id": "<id:1>"
       }
     }
   },

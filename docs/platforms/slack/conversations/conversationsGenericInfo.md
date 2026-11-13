@@ -35,7 +35,7 @@ Sent:
     "_x_id": "2c6eaecf-1793689065.989",
     "_x_gantry": "true",
     "_x_desktop_ia": "4",
-    "slack_route": "T0C4VCD06MR",
+    "slack_route": "<teamId:1>",
     "_x_version_ts": "1793684253",
     "_x_foreground": "true",
     "_x_frontend_build_type": "current",
@@ -43,7 +43,7 @@ Sent:
     "_x_num_retries": "0"
   },
   "body": {
-    "------WebKitFormBoundary3pN8vABeEaoHn8n3\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\nxoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\r\n------WebKitFormBoundary3pN8vABeEaoHn8n3\r\nContent-Disposition: form-data; name=\"updated_channels\"\r\n\r\n{\"D0C4VCJA6NP\":1790614723826}\r\n------WebKitFormBoundary3pN8vABeEaoHn8n3\r\nContent-Disposition: form-data; name=\"_x_reason\"\r\n\r\nfallback:fetchAndUpsertChannelsById\r\n------WebK… (737 chars)"
+    "------WebKitFormBoundary3pN8vABeEaoHn8n3\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\n<slackToken>\r\n------WebKitFormBoundary3pN8vABeEaoHn8n3\r\nContent-Disposition: form-data; name=\"updated_channels\"\r\n\r\n{\"<channelId:1>\":1790614723826}\r\n------WebKitFormBoundary3pN8vABeEaoHn8n3\r\nContent-Disposition: form-data; name=\"_x_reason\"\r\n\r\nfallback:fetchAndUpsertChannelsById\r\n------WebK… (737 chars)"
   }
 }
 ```
@@ -55,7 +55,7 @@ Answered:
   "ok": true,
   "channels": [],
   "unchanged_channel_ids": [
-    "D0C4VCJA6NP"
+    "<channelId:1>"
   ]
 }
 ```

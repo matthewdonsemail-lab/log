@@ -10,7 +10,7 @@
 | Path | `/svc/shreddit/partial/crosspost-dialog` |
 | Sends | — |
 | Reads | — |
-| Called from | `runs/inspect/20261025T124815_MaleficentTry8338/script1.js:1475 anonymous`, `runs/inspect/20261025T124815_MaleficentTry8338/script1.js:130 anonymous` |
+| Called from | `runs/inspect/20261025T124815_<name:2>/script1.js:1475 anonymous`, `runs/inspect/20261025T124815_<name:2>/script1.js:130 anonymous` |
 | rea | `ev_a66b2f6f7c310d323a206587a0ec80388256e37f52c6091bbbf2ed991f69248c` |
 
 Seen 6 time(s) in 1 run(s).
@@ -21,14 +21,14 @@ Seen 6 time(s) in 1 run(s).
 | inspect | step 3: goto /r/AskReddit/ | 1 | 200 | 613 ms | 4604 ms | — |
 | inspect | step 5: goto /search/ | 1 | 200 | 370 ms | 1256 ms | — |
 | inspect | step 6: goto /r/AskReddit/comments/1x8sr8s/whats_a_high_paying_but_soul_crushing_career_th | 1 | 200 | 383 ms | 1026 ms | — |
-| inspect | step 10: goto /user/Maleficent-Try-8338/ | 1 | 200 | 625 ms | 1235 ms | — |
+| inspect | step 10: goto /user/<name:1>/ | 1 | 200 | 625 ms | 1235 ms | — |
 | inspect | step 12: goto /r/popular/ | 1 | 200 | 355 ms | 934 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 1: goto /: 200, 976 ms
+**runs/inspect/20261025T124815_<name:2>**, step 1: goto /: 200, 976 ms
 
 Sent:
 
@@ -42,7 +42,7 @@ Answered:
 "<faceplate-loader name=\"CrosspostDialogDesktop_XpstDd\" src=\"concat:Ao1SgzdS5N,B4azaGpu-D,BeLwdK0x8v,BGZ-nd1DBK,BpOJq76-SY,BQsgkJ4lDx,BvOWmaNPEJ,BZHTPhFhv1,CbjxY8gDr4,CBwOyNjLvJ,CduUKQEdoo,COK-wVBdxx,Cp7VcC-uun,CwGbZ5ZxpN,CX27rU6tdm,CylLPexIpe,DabYop_mOQ,DCOj0oSMGE,DCsN1jnZED,DN6zbZ6_Ke,DqkCfNPD_v,DsVco_yHGz,DVq0oBRqNf,Dwt9Fx1AQ-,Dyg3q1gB6W,DZ-1Q62jVR,DZcSDD0zpH,HejvpGEapx,IxxeVlpudr,jR4stjsgSR,NuF… (20733 chars)"
 ```
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 3: goto /r/AskReddit/: 200, 613 ms
+**runs/inspect/20261025T124815_<name:2>**, step 3: goto /r/AskReddit/: 200, 613 ms
 
 Sent:
 
@@ -62,7 +62,7 @@ Answered:
 "<faceplate-loader name=\"CrosspostDialogDesktop_XpstDd\" src=\"concat:Ao1SgzdS5N,B4azaGpu-D,BeLwdK0x8v,BGZ-nd1DBK,BpOJq76-SY,BQsgkJ4lDx,BvOWmaNPEJ,BZHTPhFhv1,CbjxY8gDr4,CBwOyNjLvJ,CduUKQEdoo,COK-wVBdxx,Cp7VcC-uun,CwGbZ5ZxpN,CX27rU6tdm,CylLPexIpe,DabYop_mOQ,DCOj0oSMGE,DCsN1jnZED,DN6zbZ6_Ke,DqkCfNPD_v,DsVco_yHGz,DVq0oBRqNf,Dwt9Fx1AQ-,Dyg3q1gB6W,DZ-1Q62jVR,DZcSDD0zpH,HejvpGEapx,IxxeVlpudr,jR4stjsgSR,NuF… (20834 chars)"
 ```
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 5: goto /search/: 200, 370 ms
+**runs/inspect/20261025T124815_<name:2>**, step 5: goto /search/: 200, 370 ms
 
 Sent:
 

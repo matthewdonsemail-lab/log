@@ -36,7 +36,7 @@ Sent:
     "_x_gantry": "true",
     "_x_desktop_ia": "4",
     "_x_csid": "b3O92r22OFk",
-    "slack_route": "T0C4VCD06MR",
+    "slack_route": "<teamId:1>",
     "_x_version_ts": "1793684253",
     "_x_foreground": "true",
     "_x_frontend_build_type": "current",
@@ -44,7 +44,7 @@ Sent:
     "_x_num_retries": "0"
   },
   "body": {
-    "------WebKitFormBoundaryrzrB6K0IYlSwUE2m\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\nxoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\r\n------WebKitFormBoundaryrzrB6K0IYlSwUE2m\r\nContent-Disposition: form-data; name=\"channel_id\"\r\n\r\nD0C8VAE7REU\r\n------WebKitFormBoundaryrzrB6K0IYlSwUE2m\r\nContent-Disposition: form-data; name=\"page\"\r\n\r\n1\r\n------WebKitFormBoundaryrzrB6K0IYlSwUE2m\r\nContent-Disposition: form-data;… (1080 chars)"
+    "------WebKitFormBoundaryrzrB6K0IYlSwUE2m\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\n<slackToken>\r\n------WebKitFormBoundaryrzrB6K0IYlSwUE2m\r\nContent-Disposition: form-data; name=\"channel_id\"\r\n\r\n<channelId:1>\r\n------WebKitFormBoundaryrzrB6K0IYlSwUE2m\r\nContent-Disposition: form-data; name=\"page\"\r\n\r\n1\r\n------WebKitFormBoundaryrzrB6K0IYlSwUE2m\r\nContent-Disposition: form-data;… (1080 chars)"
   }
 }
 ```
@@ -66,16 +66,16 @@ Answered:
     },
     {
       "url": "https://code.claude.com/docs/en/plugins/mods/overview",
-      "title": "Mods overview - Claude Code Docs",
+      "title": "<messageText>",
       "icon_url": "https://code.claude.com/docs/mintlify-assets/_mintlify/favicons/claude-code/pLsy-mRpNksna2sx/_generated/favicon/apple-touch-icon.png",
-      "thumb_url": "https://claude-code.mintlify.app/_mintlify/api/og/v2?division=Mods&title=Mods+overview&description=Add+panes%2C+commands%2C+and+tool+call+rules+to+Claude+Code+with+a+mod.+See+what+a+mod+can+do%2C+how+to+make+or+install+one%2C+and+where+mods+run.&theme=8d9812df31da293aba4e8103&signature=99ef215ffafc633652e196dbe3649e0d8ddffd420ab1c2aab05e51a9d79ee841",
+      "thumb_url": "https://claude-code.mintlify.app/_mintlify/api/og/v2?division=Mods&title=Mods+overview&description=<messageText>&theme=8d9812df31da293aba4e8103&signature=99ef215ffafc633652e196dbe3649e0d8ddffd420ab1c2aab05e51a9d79ee841",
       "thumb_width": 1200,
       "thumb_height": 630,
       "timestamp": "1793688196.600209"
     },
     {
       "url": "https://keenable.ai/",
-      "title": "Keenable.ai — Independent Web Search API for AI",
+      "title": "<messageText>",
       "icon_url": "https://framerusercontent.com/images/OnMsGFmAf0nM3frNRGKVMIjywao.png",
       "thumb_url": "https://framerusercontent.com/images/BzWtoTW95sFebOcWSEVTOtnpm4.png",
       "thumb_width": 1200,
@@ -84,7 +84,7 @@ Answered:
     },
     {
       "url": "https://x.com/edwardeachday/status/2115502035244073072?a=8jceGdeMd8ASI5erGas&s=20",
-      "title": "Edward Sturm (@edwardeachday) on X",
+      "title": "<messageText>",
       "icon_url": "https://x.com/apple-touch-icon.png",
       "thumb_url": "https://jf.x.com/images/media-preview/2115502035244073072",
       "thumb_width": 675,
@@ -93,7 +93,7 @@ Answered:
     },
     {
       "url": "https://github.com/simonbalfe/adlib",
-      "title": "GitHub - simonbalfe/adlib: Fast browserless Meta Ad Library scraper in Go",
+      "title": "<messageText>",
       "icon_url": "https://a.slack-edge.com/80588/img/unfurl_icons/github.png",
       "thumb_url": null,
       "thumb_width": null,
@@ -111,7 +111,7 @@ Answered:
     },
     "… 15 more"
   ],
-  "query": " has:link in:<#D0C8VAE7REU>",
+  "query": " has:link in:<#<channelId:1>>",
   "filter_suggestions": {},
   "pagination": {
     "total_count": 20,

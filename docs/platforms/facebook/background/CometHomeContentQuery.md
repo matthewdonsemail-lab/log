@@ -50,7 +50,7 @@ Seen 31 time(s) in 18 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/host/20261026T180628_61594285317994**, step 32: goto /marketplace/: 200, 226 ms
+**runs/host/20261026T180628_<userId:1>**, step 32: goto /marketplace/: 200, 226 ms
 
 Sent:
 
@@ -83,7 +83,7 @@ Answered:
 }
 ```
 
-**runs/host/20261026T180628_61594285317994**, step 38: goto /marketplace/you/selling: 200, 210 ms
+**runs/host/20261026T180628_<userId:1>**, step 38: goto /marketplace/you/selling: 200, 210 ms
 
 Sent:
 
@@ -116,7 +116,7 @@ Answered:
 }
 ```
 
-**runs/host/20261026T180628_61594285317994**, step 40: goto /messages/: 200, 190 ms
+**runs/host/20261026T180628_<userId:1>**, step 40: goto /messages/: 200, 190 ms
 
 Sent:
 

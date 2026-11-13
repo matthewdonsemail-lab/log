@@ -10,7 +10,7 @@
 | Path | `w3-reporting.reddit.com/reports` |
 | Sends | — |
 | Reads | — |
-| Called from | `runs/inspect/20261025T124815_MaleficentTry8338/script0.js:50 Zh` |
+| Called from | `runs/inspect/20261025T124815_<name:2>/script0.js:50 Zh` |
 | rea | `ev_a0900cc4da1ca39914046767a7b89709c1d1bec48228118e051e5982c6469e97` |
 
 Seen 7 time(s) in 1 run(s).
@@ -21,7 +21,7 @@ Seen 7 time(s) in 1 run(s).
 | inspect | step 3: goto /r/AskReddit/ | 1 | 0 | 430 ms | 7910 ms | — |
 | inspect | step 5: goto /search/ | 1 | 0 | 490 ms | 4164 ms | — |
 | inspect | step 6: goto /r/AskReddit/comments/1x8sr8s/whats_a_high_paying_but_soul_crushing_career_th | 1 | 0 | 363 ms | 3957 ms | — |
-| inspect | step 10: goto /user/Maleficent-Try-8338/ | 1 | 0 | 414 ms | 4152 ms | — |
+| inspect | step 10: goto /user/<name:1>/ | 1 | 0 | 414 ms | 4152 ms | — |
 | inspect | step 11: goto /notifications | 1 | 0 | 410 ms | 4537 ms | — |
 | inspect | step 12: goto /r/popular/ | 1 | 0 | 313 ms | 3913 ms | — |
 
@@ -29,7 +29,7 @@ Seen 7 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 1: goto /: 0, 413 ms
+**runs/inspect/20261025T124815_<name:2>**, step 1: goto /: 0, 413 ms
 
 Sent:
 
@@ -43,7 +43,7 @@ Answered:
 null
 ```
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 3: goto /r/AskReddit/: 0, 430 ms
+**runs/inspect/20261025T124815_<name:2>**, step 3: goto /r/AskReddit/: 0, 430 ms
 
 Sent:
 
@@ -57,7 +57,7 @@ Answered:
 null
 ```
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 5: goto /search/: 0, 490 ms
+**runs/inspect/20261025T124815_<name:2>**, step 5: goto /search/: 0, 490 ms
 
 Sent:
 

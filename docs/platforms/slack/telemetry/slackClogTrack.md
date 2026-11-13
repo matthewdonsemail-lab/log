@@ -34,7 +34,7 @@ Sent:
 
 ```json
 {
-  "------WebKitFormBoundaryfPhbmXXDZyMrHNTR\r\nContent-Disposition: form-data; name": "\"logs\"\r\n\r\n[{\"tstamp\":1793689009690,\"event\":300323,\"args\":{\"contexts\":{\"ui_context\":{\"ui_step\":\"get_started_creator_landing\",\"entry_point\":\"unknown\",\"ui_component_variant\":\"get_started_revamp_existing_users_v2_treatment\",\"step_variant\":\"confirmed_with_google_id_token\",\"ui_element\":1361,\"ui_properties\":{\"element_name\":\"workspaces_joined\",\"element_value\":\"7\"},\"action\":1}}},\"team_id\":\"T00000000\",\"sess… (3995 chars)"
+  "------WebKitFormBoundaryfPhbmXXDZyMrHNTR\r\nContent-Disposition: form-data; name": "\"logs\"\r\n\r\n[{\"tstamp\":1793689009690,\"event\":300323,\"args\":{\"contexts\":{\"ui_context\":{\"ui_step\":\"get_started_creator_landing\",\"entry_point\":\"unknown\",\"ui_component_variant\":\"get_started_revamp_existing_users_v2_treatment\",\"step_variant\":\"confirmed_with_google_id_token\",\"ui_element\":1361,\"ui_properties\":{\"element_name\":\"workspaces_joined\",\"element_value\":\"7\"},\"action\":1}}},\"team_id\":\"<teamId:1>\",\"sess… (3995 chars)"
 }
 ```
 
@@ -51,7 +51,7 @@ Sent:
 ```json
 {
   "------WebKitFormBoundaryJLcFTxbDgbQ8a32v\r\nContent-Disposition: form-data; name": "\"logs\"\r\n\r\n[{\"tstamp\":1793688784107,\"event\":800008,\"args\":{\"contexts\":{\"ui_context\":{\"ui_step\":\"sign_in_to_your_workspace\",\"entry_point\":\"nav_menu\",\"step_variant\":\"get_started_creator_signup\",\"ui_properties\":{\"element_name\":\"google_login_button\",\"element_type\":2},\"ui_component_name\":\"auth_route_email_first_create\",\"action\":1,\"ui_page\":\"https://slack.com/get-started?entry_point=nav_menu",
-  "_gl": "1*1b9y6p7*_gcl_au*NzIyMDQwMjIxLjE3OTM2ODg3NTI.*_ga*ODA1NDEyOTg3LjE3OTM2ODg3NTQ.*_ga_QTJQME5M5D*czE3OTM2ODg3NTMkbzEkZzAkdDE3OTM2ODg3NTQkajU5JGwwJGgw#/createnew\"}},\"referring_event_id\":300323},\"team_id\":\"T00000000\",\"session_id\":\"9eee0901-ec6e-409e-8044-17e7f4db9851\",\"i18n_locale\":\"en-US\",\"sub_app_name\":\"legacy\"}]\r\n------WebKitFormBoundaryJLcFTxbDgbQ8a32v\r\nContent-Disposition: form-data; name=\"o\"\r\n\r\n… (452 chars)"
+  "_gl": "1*1b9y6p7*_gcl_au*NzIyMDQwMjIxLjE3OTM2ODg3NTI.*_ga*ODA1NDEyOTg3LjE3OTM2ODg3NTQ.*_ga_QTJQME5M5D*czE3OTM2ODg3NTMkbzEkZzAkdDE3OTM2ODg3NTQkajU5JGwwJGgw#/createnew\"}},\"referring_event_id\":300323},\"team_id\":\"<teamId:1>\",\"session_id\":\"<token>\",\"i18n_locale\":\"en-US\",\"sub_app_name\":\"legacy\"}]\r\n------WebKitFormBoundaryJLcFTxbDgbQ8a32v\r\nContent-Disposition: form-data; name=\"o\"\r\n\r\n… (452 chars)"
 }
 ```
 
@@ -68,7 +68,7 @@ Sent:
 ```json
 {
   "------WebKitFormBoundaryFnfL35CR3Se9OCk5\r\nContent-Disposition: form-data; name": "\"logs\"\r\n\r\n[{\"tstamp\":1793688813452,\"event\":300323,\"args\":{\"contexts\":{\"referring_ui_context\":{\"ui_step\":\"sign_in_to_your_workspace\",\"entry_point\":\"nav_menu\",\"step_variant\":\"get_started_creator_signup\",\"ui_properties\":{\"element_name\":\"google_login_button\",\"element_type\":2},\"ui_component_name\":\"auth_route_email_first_create\",\"is_primary_cta\":true,\"action\":36},\"ui_context\":{\"entry_point\":\"default_oau… (1539 chars)",
-  "_gl": "1*1b9y6p7*_gcl_au*NzIyMDQwMjIxLjE3OTM2ODg3NTI.*_ga*ODA1NDEyOTg3LjE3OTM2ODg3NTQ.*_ga_QTJQME5M5D*czE3OTM2ODg3NTMkbzEkZzAkdDE3OTM2ODg3NTQkajU5JGwwJGgw#landing\"}},\"referring_event_id\":300323},\"team_id\":\"T00000000\",\"session_id\":\"23bf31a1-0444-472e-bc89-45bbc6c195cc\",\"i18n_locale\":\"en-US\",\"sub_app_name\":\"legacy\"},{\"tstamp\":1793688813458,\"event\":300323,\"args\":{\"contexts\":{\"referring_ui_context\":{\"ui_step… (2817 chars)"
+  "_gl": "1*1b9y6p7*_gcl_au*NzIyMDQwMjIxLjE3OTM2ODg3NTI.*_ga*ODA1NDEyOTg3LjE3OTM2ODg3NTQ.*_ga_QTJQME5M5D*czE3OTM2ODg3NTMkbzEkZzAkdDE3OTM2ODg3NTQkajU5JGwwJGgw#landing\"}},\"referring_event_id\":300323},\"team_id\":\"<teamId:1>\",\"session_id\":\"<token>\",\"i18n_locale\":\"en-US\",\"sub_app_name\":\"legacy\"},{\"tstamp\":1793688813458,\"event\":300323,\"args\":{\"contexts\":{\"referring_ui_context\":{\"ui_step… (2817 chars)"
 }
 ```
 
