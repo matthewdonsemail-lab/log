@@ -72,10 +72,16 @@ export function vocabularyOf(texts: readonly string[]): Set<string> {
 
 const vocabularies = new WeakMap<readonly RoutableUseCase[], Set<string>>()
 
+let lastVocabulary: { key: string; vocabulary: Set<string> } | null = null
+
+const textOf = (useCase: RoutableUseCase) => (useCase as RoutableUseCase & { text?: string }).text ?? ''
+
 export function useCaseVocabulary(useCases: readonly RoutableUseCase[]): Set<string> {
   const known = vocabularies.get(useCases)
   if (known) return known
-  const built = vocabularyOf([...utterancesOf(useCases).map((u) => u.text), ...useCases.map((u) => (u as RoutableUseCase & { text?: string }).text ?? '')])
+  const key = useCases.map((u) => `${u.id}\u0000${u.asks}\u0000${textOf(u)}`).join('\u0001')
+  const built = lastVocabulary?.key === key ? lastVocabulary.vocabulary : vocabularyOf([...utterancesOf(useCases).map((u) => u.text), ...useCases.map(textOf)])
+  lastVocabulary = { key, vocabulary: built }
   vocabularies.set(useCases, built)
   return built
 }

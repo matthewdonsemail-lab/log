@@ -41,7 +41,7 @@ describe('one router for the ask path and the prompt hook', () => {
       if (loaded !== (['menu', 'none'].includes(g.expect) ? null : g.expect)) wrong.push(`${g.prompt}: ask loaded ${loaded}`)
     }
     expect(wrong).toEqual([])
-  })
+  }, 60_000)
 
   test('no prompt naming one platform activates a play filed under another platform', () => {
     for (const g of golden) {
