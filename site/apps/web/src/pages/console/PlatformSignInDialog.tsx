@@ -69,7 +69,7 @@ export function PlatformSignInDialog({ platform, target, accounts, onClose, onSi
       toast.error('Sign-in not finished', errorText(error))
     } finally { setPending(false) }
   }
-  const field = 'mt-2 h-11 w-full rounded-lg border border-slate-300 px-3 text-base font-normal outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100'
+  const field = 'mt-2 h-11 w-full rounded-lg border border-slate-300 px-3 text-base font-normal outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 [&::-webkit-calendar-picker-indicator]:hidden'
 
   return <dialog ref={dialog} aria-labelledby={titleId} aria-describedby={descriptionId} onCancel={(event) => { event.preventDefault(); if (!pending) onClose() }} onClose={onClose} onClick={(event) => { if (event.target === event.currentTarget && !pending) onClose() }} className="m-auto w-[calc(100%-2rem)] max-h-[90dvh] max-w-md overflow-y-auto rounded-2xl border border-slate-200 bg-white p-0 font-sans text-slate-900 shadow-xl backdrop:bg-[#0D2A4C]/45 backdrop:backdrop-blur-[2px]">
     <div className="relative p-6 sm:p-7">

@@ -83,6 +83,8 @@ function confirmed(answer: { isError?: boolean; structuredContent?: unknown }): 
 }
 
 export async function openBrowser(account: ConnectionAccount, callTool: BrowserToolCaller, env: Env = process.env): Promise<BrowserCheckView> {
+  if (account.status === "deactivated") throw new Error("accountDeactivated");
+  if (["banned", "dead", "restricted", "checkpoint"].includes(account.status)) throw new Error("accountCheckStopped");
   const before = await browserCheckView(account, env);
   if (before.phase !== "browserMissing") return before;
   confirmed(await callTool("inspectStart", { account: account.name, detach: true, goal: GOAL, waitMs: 50000, ...(account.platform === "facebook" ? { url: "https://www.facebook.com/" } : {}) }));

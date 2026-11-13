@@ -24,7 +24,7 @@ export const CONSOLE_API: Readonly<Record<ConsoleDomain, (query: URLSearchParams
   usage: (query) => {
     const days = usageDaysOf(query.get("days") ?? "7");
     if (!days) throw new ConsoleInputError("usageRangeInvalid");
-    return loadConsoleUsage(days);
+    return loadConsoleUsage(days, Date.now(), true);
   },
   events: (query) => loadConsoleEvents({ kind: query.get("kind") ?? undefined, status: statusOf(query.get("status")), page: Number(query.get("page") ?? 0) || 0, pageSize: Number(query.get("pageSize") ?? MAX_PAGE_SIZE) || MAX_PAGE_SIZE }),
   aiClients: (query) => loadConsoleAiClients({ client: query.get("client") ?? undefined }),
