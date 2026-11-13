@@ -12,7 +12,8 @@ import { ShareCardPage } from './landing/shareCard/ShareCardPage'
 import { McpPage } from './landing/mcp/McpPage'
 import { McpPromo } from './landing/mcp/McpPromo'
 import Dither from './components/Dither'
-import { ClerkAuthPage } from './pages/auth/ClerkAuthPage'
+import { AuthPage } from './pages/auth/AuthPage'
+import { SsoCallbackPage } from './pages/auth/SsoCallbackPage'
 import { ConnectionsPage } from './pages/console/ConnectionsPage'
 import { StartPage } from './pages/console/StartPage'
 import { UsagePage } from './pages/console/UsagePage'
@@ -105,9 +106,10 @@ export function App() {
             <Route path="/docs" element={<StaticDocsRedirect />} />
             <Route path="/docs/*" element={<StaticDocsRedirect />} />
             <Route path="/shareCard/:slug" element={<ShareCardPage />} />
-            <Route path="/sign-in" element={localConsole ? <Navigate to="/console/start" replace /> : <ClerkAuthPage />} />
-            <Route path="/sign-up" element={localConsole ? <Navigate to="/console/start" replace /> : <ClerkAuthPage />} />
-            <Route path="/verify" element={<Navigate to="/sign-in" replace />} />
+            <Route path="/sign-in" element={localConsole ? <Navigate to="/console/start" replace /> : <AuthPage key="signIn" mode="signIn" />} />
+            <Route path="/sign-up" element={localConsole ? <Navigate to="/console/start" replace /> : <AuthPage key="signUp" mode="signIn" />} />
+            <Route path="/verify" element={localConsole ? <Navigate to="/console/start" replace /> : <AuthPage key="verify" mode="verify" />} />
+            <Route path="/sso-callback" element={localConsole ? <Navigate to="/console/start" replace /> : <SsoCallbackPage />} />
             <Route path="/console" element={<Navigate to="/console/start" replace />} />
             <Route path="/console/start" element={<StartPage />} />
             <Route path="/console/connections" element={<ConnectionsPage />} />
