@@ -67,4 +67,4 @@ The full steps: [Adding an account](../accounts.md).
 ## Full detail
 
 - [Reference](../reference.md): every command, flag and MCP tool.
-- Agent guides: [the account](../guides/xAccount.md), [the inbox](../guides/xInbox.md), [sending](../guides/xSending.md).
+- Agent guides: [the account](../guides/xAccount.md), [the inbox](../guides/xInbox.md), [sending](../guides/xSending.md). Shared with every platform: [the inbox and claims](../guides/inbox.md), [the voice gate](../guides/voiceGate.md), [sessions](../guides/sessions.md).

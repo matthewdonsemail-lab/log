@@ -41,5 +41,5 @@ Pair a second runtime that cannot touch the real one: its own `LOG_RUNTIME_DIR` 
 
 - Loopback only. The server binds 127.0.0.1 and refuses any request whose Host, remote address or Origin isn't this machine, or which is cross-site, the same guard as the dev server's `/api/console/events`. Changes are same-origin JSON posts with the `x-log-console: 1` header.
 - Keys never leave the workspace: answers carry only `hasValue` and a fixed mask, `credentialsRead` answers AdsPower's countries and URL only, secret arguments are journalled as `<redacted>`, and the control service stores none of it (rule 172).
-- Governor resets stay with `governorReset` and matt's word (rule 168); sends stay with their own tools and gates.
+- Governor resets stay with `governorReset` and the owner's word (rule 168); sends stay with their own tools and gates.
 - Parity is checked: `bun run check:consoleParity` fails when a web nav item has no terminal screen, or the two don't read the same `src/console/<domain>` loader.

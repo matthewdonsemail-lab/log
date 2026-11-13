@@ -13,7 +13,7 @@ export const MEMELORD_USAGE = [
   "       log memelord template <id> [--json]   (one template: its name, media url, text slots and what it means)",
   "       log memelord trending [--limit <n>] [--media image|video] [--json]   (what is trending now, with its cultural context)",
   "       log memelord tools [--category imageToImage|imageTextToImage|textToImage] [--json]   (the catalog of one-shot image tools; log never runs them)",
-  "       log memelord taste [--build --from <posts.json>] [--json]   (matt's meme taste: the styles he named and the memes he has sent, each read by SubQ from its picture; --build reads a file of his X media posts)",
+  "       log memelord taste [--build --from <posts.json>] [--json]   (the owner's meme taste: the styles they named and the memes they have sent, each read by SubQ from its picture; --build reads a file of their X media posts)",
   "Search ranks what it finds by matt's taste (--noTaste turns it off): SubQ reads each template's picture against the styles he named (deep fried, larping, streamer reacts like FlightReacts, Zias and Bloo, shitposts) and the memes he has sent, and the taste line leads the answer.",
   "Memelord is an extension (docs/extensions/memelord.md): only its four free discovery tools are reachable from log, so nothing here spends money (rule 41). The key is MEMELORD_API_KEY in .env.local. A meme goes out on Discord as its media url on a line of its own, which Discord shows inline.",
 ].join("\n");
@@ -52,7 +52,7 @@ export const MEMELORD_INPUT: CommandInput = {
     },
     {
       words: ["taste"],
-      summary: "matt's meme taste: the styles he named and the memes he has sent, each read by SubQ from its picture; --build makes it from a file of his X media posts",
+      summary: "the owner's meme taste: the styles they named and the memes they have sent, each read by SubQ from its picture; --build makes it from a file of their X media posts",
       positionals: [],
       flags: [{ name: "build", kind: "boolean", description: "Read every post in --from and keep the memes, with their style" }, { name: "from", kind: "string", description: "A JSON file of his X media posts (the timeline items of treg tikhub.x.twitter-web-fetch-user-media pages)" }, JSON_FLAG],
     },

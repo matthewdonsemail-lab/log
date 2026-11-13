@@ -52,7 +52,7 @@ Where the comment was a question (for example "what does the first message actua
 
 ## What the runs taught
 
-- **Write in house style from the start.** Copy written with full stops and commas is refused by `check`.
+- **Write in house style from the start.** Copy written with full stops and commas is refused by `twitterQueueCheck`.
 - **Vary the lines.** Spintax (`{a|b}`) is a quick way to draft variations, but expand it into plain lines before `twitterQueueBuild`.
 
 ## Next

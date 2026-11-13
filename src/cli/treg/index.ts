@@ -71,7 +71,7 @@ export const tregCommand: Command = {
   name: "treg",
   effect: "read",
   input: TREG_INPUT,
-  summary: "The treg extension: find an endpoint by the job, read it, and call it with the key injected server-side (free ones run, priced ones only when matt asked)",
+  summary: "The treg extension: find an endpoint by the job, read it, and call it with the key injected server-side (free ones run, priced ones only when the owner asked)",
   args: "search \"<job>\"|get <id>|call <id> [--params <json>] [--approvedBy <who>] [--live] [--json]",
   async run(context, argv) {
     const sub = SUBS.find((s) => s === argv[0]);

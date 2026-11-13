@@ -5,7 +5,7 @@ import type { Command, CommandInput } from "../runner/types.ts";
 
 export const JOB_USAGE = [
   "Usage: log job status <jobId> [--afterLine <n>] [--waitMs <ms>] [--json]   (a long MCP run: its status, the lines after afterLine, and its result once it ends; waits up to waitMs, default 10000, for something new)",
-  "       log job cancel <jobId>   (stops it at its next browser step; never once Publish is clicked, rule 10)",
+  "       log job cancel <jobId>   (stops it at its next browser step; never once Publish is clicked, rule 8)",
   "       log job list [--json]   (the latest jobs)",
 ].join("\n");
 

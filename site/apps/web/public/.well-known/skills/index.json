@@ -14,7 +14,7 @@
     },
     {
       "name": "log-discord-channel-reply",
-      "description": "Answering someone in a Discord DM or group DM. A log play (docs/useCases/discord/channelReply.md): Answer what someone said to the account in a Discord DM or group DM, with words: a question about what matt is building, a reply to something he posted. A group DM is a private chat of a few people with no server; a channel inside a server (\"pennyserver #general\") is a different place, read and answered differently, and is [serverReply](serverReply.md). The chat is read first, the answer is written from what was said there and what matt has told you, gated like every send, and sent through the account's one session. No meme and no voice note (those are [memeReply](memeReply.md) and [voiceNote](../inbox/voiceNote.md)).",
+      "description": "Answering someone in a Discord DM or group DM. A log play (docs/useCases/discord/channelReply.md): Answer what someone said to the account in a Discord DM or group DM, with words: a question about what the owner is building, a reply to something the owner posted. A group DM is a private chat of a few people with no server; a channel inside a server (\"pennyserver #general\") is a different place, read and answered differently, and is [serverReply](serverReply.md). The chat is read first, the answer is written from what was said there and what the owner has told you, gated like every send, and sent through the account's one session. No meme and no voice note (those are [memeReply](memeReply.md) and [voiceNote](../inbox/voiceNote.md)).",
       "files": [
         "SKILL.md"
       ],
@@ -22,7 +22,7 @@
     },
     {
       "name": "log-discord-forum-posts",
-      "description": "Going through a Discord forum for posts worth answering. A log play (docs/useCases/discord/forumPosts.md): Find a forum in a server, list its posts, read the ones that look right, and tell matt which are worth answering and why: someone asking for help with something matt has built or knows, a question nobody answered yet, a problem log solves. This page reads and sends nothing; answering one is [serverReply](serverReply.md).",
+      "description": "Going through a Discord forum for posts worth answering. A log play (docs/useCases/discord/forumPosts.md): Find a forum in a server, list its posts, read the ones that look right, and tell the owner which are worth answering and why: someone asking for help with something the owner has built or knows, a question nobody answered yet, a problem log solves. This page reads and sends nothing; answering one is [serverReply](serverReply.md).",
       "files": [
         "SKILL.md"
       ],
@@ -46,7 +46,7 @@
     },
     {
       "name": "log-discord-server-reply",
-      "description": "Replying in a Discord server channel. A log play (docs/useCases/discord/serverReply.md): Answer someone in a channel of a Discord server: a mention of the account, a reply to its message, or a question in a channel matt is part of, like \"pennyserver #general\". A server channel is not a group chat. It is a room inside someone else's server, with members who never joined a conversation with matt, an owner and its own rules, so it is read, answered and sent differently from a DM or a group DM. DMs and group DMs are [channelReply](channelReply.md).",
+      "description": "Replying in a Discord server channel. A log play (docs/useCases/discord/serverReply.md): Answer someone in a channel of a Discord server: a mention of the account, a reply to its message, or a question in a channel the owner is part of, like \"pennyserver #general\". A server channel is not a group chat. It is a room inside someone else's server, with members who never joined a conversation with the owner, an owner and its own rules, so it is read, answered and sent differently from a DM or a group DM. DMs and group DMs are [channelReply](channelReply.md).",
       "files": [
         "SKILL.md"
       ],
@@ -54,7 +54,7 @@
     },
     {
       "name": "log-discord-server-search",
-      "description": "Finding a conversation in a Discord server. A log play (docs/useCases/discord/serverSearch.md): Find what someone said in a server, or a conversation matt had there, with Discord's own search across every channel, forum post and thread at once, then read around it. This is how \"the conversation I had with <someone> about <a topic> in the <server> server\" is found in one search instead of reading a channel back hundreds of messages. This page reads and sends nothing.",
+      "description": "Finding a conversation in a Discord server. A log play (docs/useCases/discord/serverSearch.md): Find what someone said in a server, or a conversation the owner had there, with Discord's own search across every channel, forum post and thread at once, then read around it. This is how \"the conversation I had with <someone> about <a topic> in the <server> server\" is found in one search instead of reading a channel back hundreds of messages. This page reads and sends nothing.",
       "files": [
         "SKILL.md"
       ],
@@ -102,7 +102,7 @@
     },
     {
       "name": "log-inbox-reactions",
-      "description": "Reacting to a message. A log play (docs/useCases/inbox/reactions.md): React to someone's message with an emoji on X, Discord, Slack or Instagram, the way a person answers a moment without typing: a laugh at a joke, a fire on a win, a heart on good news. It goes through the platform's own engine and the account's one session, never the browser, and counts as a write (rule 140).",
+      "description": "Reacting to a message. A log play (docs/useCases/inbox/reactions.md): React to someone's message with an emoji on X, Discord, Slack or Instagram, the way a person answers a moment without typing: a laugh at a joke, a fire on a win, a heart on good news. It goes through the platform's own engine and the account's one session, never the browser, and counts as a write (rule 8).",
       "files": [
         "SKILL.md"
       ],
@@ -142,7 +142,7 @@
     },
     {
       "name": "log-inbox-voice-note",
-      "description": "Sending a voice note. A log play (docs/useCases/inbox/voiceNote.md): Send someone a voice note in matt's own cloned voice, as the platform's own voice note, on Discord, Instagram or Slack. It is made from his words by the voice provider ([Inworld](https://inworld.ai/signup?ref=FSNLMJ2H) by default, [Fish Audio](https://fish.audio/?aff=Q6W4DNSLJCSXG) too) and goes through the platform's engine and the account's one session, never the browser (rules 142, 143). A voice note only goes out when matt asks for one.",
+      "description": "Sending a voice note. A log play (docs/useCases/inbox/voiceNote.md): Send someone a voice note in the owner's own cloned voice, as the platform's own voice note, on Discord, Instagram or Slack. It is made from the owner's words by the voice provider ([Inworld](https://inworld.ai/signup?ref=FSNLMJ2H) by default, [Fish Audio](https://fish.audio/?aff=Q6W4DNSLJCSXG) too) and goes through the platform's engine and the account's one session, never the browser (rule 142). A voice note only goes out when the owner asks for one.",
       "files": [
         "SKILL.md"
       ],
@@ -150,7 +150,7 @@
     },
     {
       "name": "log-instagram-dm-reply",
-      "description": "Reading and answering an Instagram DM. A log play (docs/useCases/instagram/dmReply.md): Read what someone wrote to the account on Instagram and answer it in matt's voice, with text or a meme, on the account's own session through vendor/instagrapi. No browser, ever (rule 128).",
+      "description": "Reading and answering an Instagram DM. A log play (docs/useCases/instagram/dmReply.md): Read what someone wrote to the account on Instagram and answer it in the owner's voice, with text or a meme, on the account's own session through vendor/instagrapi. No browser, ever.",
       "files": [
         "SKILL.md"
       ],
@@ -174,7 +174,7 @@
     },
     {
       "name": "log-slack-dm-reply",
-      "description": "Reading and answering a Slack DM. A log play (docs/useCases/slack/dmReply.md): Read what someone wrote to the account on Slack and answer it in matt's voice, on the account's own session, with no browser.",
+      "description": "Reading and answering a Slack DM. A log play (docs/useCases/slack/dmReply.md): Read what someone wrote to the account on Slack and answer it in the owner's voice, on the account's own session, with no browser.",
       "files": [
         "SKILL.md"
       ],

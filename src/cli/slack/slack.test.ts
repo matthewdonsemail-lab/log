@@ -158,8 +158,8 @@ describe("the Slack watch and the d cookie", () => {
 
 describe("the hooks on Slack", () => {
   test("a hand-run log slack command is refused and pointed at its MCP tool, the cookie prompt is not", () => {
-    expect(liveLogVerdict("Bash", 'log slack send --account mattSlack --chat sam --text "yo"').deny).toContain("rule 106");
-    expect(liveLogVerdict("Bash", "bun bin/log.ts slack read --account mattSlack --chat sam").deny).toContain("rule 106");
+    expect(liveLogVerdict("Bash", 'log slack send --account mattSlack --chat sam --text "yo"').deny).toContain("rule 163");
+    expect(liveLogVerdict("Bash", "bun bin/log.ts slack read --account mattSlack --chat sam").deny).toContain("rule 163");
     expect(liveLogVerdict("Bash", "log slack cookies save --account mattSlack").deny).toBeNull();
   });
 });

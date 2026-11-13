@@ -32,7 +32,7 @@ export const runtimeDeps: { callTool: () => Promise<ToolCaller>; connect: typeof
     const { settleLocation } = await import("../../mcp/apps/index.ts");
     settleLocation("remote");
     void import("../../mcp/apps/browserView/helpers/index.ts").then(({ widgetHtml }) => widgetHtml()).catch(() => {});
-    return (name, input, scope) => runToolCall(name, input, {}, undefined, undefined, undefined, undefined, scope) as Promise<{ isError?: boolean; structuredContent?: unknown }>;
+    return (name, input, scope) => runToolCall(name, input, {}, undefined, undefined, undefined, undefined, scope, false) as Promise<{ isError?: boolean; structuredContent?: unknown }>;
   },
   connect: keepConnected,
   dbPath: () => defaultDbPath(),

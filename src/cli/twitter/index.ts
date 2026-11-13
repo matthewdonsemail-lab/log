@@ -5,7 +5,7 @@ import type { Command, CommandInput } from "../runner/types.ts";
 
 export const SESSION_USAGE = [
   "Usage: log twitter session check --account <accountName> [--json]",
-  "       log twitter session webClient --account <accountName> [--json]   (loads x.com/home through the account's one X session, as twikit already does to sign its calls, and saves the page and every script it lists from abs.twimg.com to ~/.logCli/twitter/<account>/webClient/<time>, reads spaced 0.8 to 2.5 s, so rea can read X's own signed-in client: what its composer sends; rule 113)",
+  "       log twitter session webClient --account <accountName> [--json]   (loads x.com/home through the account's one X session, as twikit already does to sign its calls, and saves the page and every script it lists from abs.twimg.com to ~/.logCli/twitter/<account>/webClient/<time>, reads spaced 0.8 to 2.5 s, so rea can read X's own signed-in client: what its composer sends; rule 105)",
   "Checks that X still accepts the account's saved session, on the direct-API engine (no browser, no proxy: X accounts call X directly, rule 80). Sends nothing.",
   "X's own answer decides: the session check's HTTP status (401 or 403 loggedOut, 200 or 404 loggedIn), then the account's profile read (suspended or locked: restricted). The result goes to socialAccounts.sessionState, and X's refreshed cookies are merged back into the row.",
 ].join("\n");

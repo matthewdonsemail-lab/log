@@ -27,7 +27,7 @@ export function buffersOutput(command: string): boolean {
 
 export function handRunDenial(name: string): string | null {
   if (name in TERMINAL_ONLY) return null;
-  return `log ${name} was run by hand from a shell. Every log action goes through the log MCP tools, never a hand-run \`log …\` or \`bun bin/log.ts …\` command (rule 106: matt, "you're not allowed hand-rolled commands, it always has to be through the MCP"). Call its mcp__log__ tool instead (getGuide names it); if the MCP server is stale, say so to matt rather than working around it. Only the terminal-only prompts (${Object.keys(TERMINAL_ONLY).join(", ")}) are run in a terminal, by matt.`;
+  return `log ${name} was run by hand from a shell. Every log action goes through the log MCP tools, never a hand-run \`log …\` or \`bun bin/log.ts …\` command (rule 163). Its mcp__log__ tool runs it (getGuide names it); a stale MCP server is reported to the owner, never worked around. Only the terminal-only prompts (${Object.keys(TERMINAL_ONLY).join(", ")}) are run in a terminal, by the owner.`;
 }
 
 export function liveLogVerdict(tool: string, command: string, runInBackground = false): LiveLogVerdict {
@@ -37,12 +37,12 @@ export function liveLogVerdict(tool: string, command: string, runInBackground = 
   if (handRun) return { deny: handRun, context: null };
   if (buffersOutput(command)) {
     return {
-      deny: `log ${name} piped through tail/head shows nothing until it ends (rule 26: matt sees every line as it happens). Run it with \`2>&1 | tee <runFolder>/<name>.log\` and no tail/head, under Monitor, or start a Monitor on \`tail -f ~/.logCli/mcp/<day>.log\` (every log run writes there).`,
+      deny: `log ${name} piped through tail/head shows nothing until it ends (rule 26: the owner sees every line as it happens). Run it with \`2>&1 | tee <runFolder>/<name>.log\` and no tail/head, under Monitor, or start a Monitor on \`tail -f ~/.logCli/mcp/<day>.log\` (every log run writes there).`,
       context: null,
     };
   }
   if (tool !== "Monitor" && (runInBackground || LONG_RUNNING.has(name))) {
-    return { deny: null, context: `log ${name} runs for seconds to minutes: matt watches it live (rule 26). If no Monitor is on \`tail -f ~/.logCli/mcp/<day>.log\` (UTC day), start one, and say what each stage means as it comes in.` };
+    return { deny: null, context: `log ${name} runs for seconds to minutes: the owner watches it live (rule 26). If no Monitor is on \`tail -f ~/.logCli/mcp/<day>.log\` (UTC day), start one, and say what each stage means as it comes in.` };
   }
   return { deny: null, context: null };
 }

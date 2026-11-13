@@ -37,7 +37,7 @@ Checked by: code and SubQ
 | Key | What it counts | Lowered by |
 |---|---|---|
 | `sharedCommandsUnderPlatformGuide`, `sharedToolsUnderPlatformGuide` | Commands with platform `any` or `byArgument`, and their tools, whose guide topic (`guideOfCommand`) is named for one platform: the topic is a platform id or label, or starts with one followed by a capital (`facebookBrowser`, `xInbox`) | slices 2 and 18: shared topics |
-| `sharedCommandsNamingPlatform` | Shared commands whose summary, usage or tool notes (`NOTES`) name exactly one platform (Facebook, Marketplace and Messenger count as Facebook; Twitter, tweet and a capital X as X). A text naming several platforms is a list and is not counted | slice 2 |
+| `sharedCommandsNamingPlatform` | Shared commands whose summary, usage or tool notes (`NOTES`) name exactly one platform (Facebook, Marketplace and Messenger count as Facebook; Twitter, tweet and a capital X as X). A text naming several platforms is a list and is not counted, and neither is a line starting `Platforms:`, which lists the platforms a command supports | slice 2 (0 since slices 2 and 18) |
 | `toolsPerPlatform.*` | Command tools by their command's platform (`shared` for `any` and `byArgument`), and the flow tools (info) | slice 7 moves tools to shared capabilities |
 | `flowToolsWithoutPlatform` | Flow tools whose name holds no platform id | slices 12 and 18 |
 | `useCases.*` | Use cases per folder under `docs/useCases/` (info) | |
@@ -50,7 +50,8 @@ Checked by: code and SubQ
 | `hookHosts` | Members of `HookHost` (higher is better) | slices 9 and 19 |
 | `serverInstructionsChars`, `toolsListed`, `toolDescriptionChars`, `toolDescriptionAverage`, `boilerplatePercent` | The server instructions; the listed tools, their description text in total and on average, and the share of it that is the guide line plus the rules line | slice 18 |
 | `guideChars.*`, `guidesOverLimit` | Each generated guide's size in characters, and how many are over 50,000 (the size Claude Code saves to a file, [sources.md](../proposals/sources.md)) | slice 18 |
-| `ruleCitations.*`, `deadRuleCitations.*` | "rule N" and "rules N, M" (lists and ranges) in `docs/useCases/**`, `skills/**` and the listed tool descriptions; dead when AGENTS.md has no rule N | slice 18 |
+| `ruleCitations.*`, `deadRuleCitations.*` | "rule N" and "rules N, M" (lists and ranges) in `docs/useCases/**`, `skills/**`, the listed tool descriptions, the generated guides (`guides`) and the hook and live-log source (`hooks`: `src/agentHooks/**`, `src/observability/liveLog/**`, `src/mcp/freshness/**`, `scripts/hooks/**`); dead when AGENTS.md has no rule N | slice 18 (all 0) |
+| `ownerNameInServedText` | The owner's first name, word-bounded and case-insensitive (never inside an identifier such as `needsMatt`), in the listed tool descriptions, the guides, both server instructions and the use cases (`ownerNameIn`, `servedText`) | slice 18 (0) |
 | `platformFallbacks` | `?? 'facebook'` in any quoting and case, and `PLATFORMS[0]`, in `src/` and `scripts/` | slice 1 follow-ups |
 
 **Has a machine.** A command has a machine when the file that declares its export (its module in `COMMAND_INDEX`, or the file under that module's folder that declares `export const <exportName>`) calls `createMachine`, or directly imports a file that calls it or whose folder holds a `machine.ts` that calls it. One import deep, nothing transitive. Commands declared in the same file share the answer.

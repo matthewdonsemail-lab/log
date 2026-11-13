@@ -5,9 +5,9 @@ import { COMMANDS } from "../../cli/runner/index.ts";
 import { isPlatform, toolBaseName } from "../../cli/runner/helpers/platforms.ts";
 import { marketplaceFixture } from "../../twenty/graphql/index.ts";
 import { catalog, entryById, getAnswer, resolveCall } from "../catalog/index.ts";
-import { commandTools, createLogMcpServer, currentToolName, guardCall, RENAMED_TOOLS, runToolCall, toolsFromCommands } from "./index.ts";
+import { commandTools, createLogMcpServer, currentToolName, guardCall, RENAMED_COMMAND_TOOLS, RENAMED_FLOW_TOOLS, RENAMED_TOOLS, runToolCall, savedFlows, toolsFromCommands, toolsFromFlows } from "./index.ts";
 
-const toolNames = toolsFromCommands(COMMANDS).map((t) => t.name);
+const toolNames = [...toolsFromCommands(COMMANDS), ...toolsFromFlows(savedFlows())].map((t) => t.name);
 
 function textOf(result: unknown): string {
   return (((result as { content?: unknown }).content ?? []) as { type: string; text?: string }[]).map((part) => part.text ?? "").join("\n");
@@ -31,7 +31,15 @@ describe("renamed Facebook tools keep their old names for one release", () => {
   test("the table names every Facebook tool by its old name, and nothing else", () => {
     const facebook = commandTools(COMMANDS).filter((t) => t.command.platform === "facebook").map((t) => t.tool);
     const old = Object.fromEntries(facebook.map((tool) => [tool[8].toLowerCase() + tool.slice(9), tool]));
-    expect(RENAMED_TOOLS).toEqual(old);
+    expect(RENAMED_COMMAND_TOOLS).toEqual(old);
+  });
+
+  test("every flow tool keeps its old flow<Name> as an alias of its platform's name", () => {
+    const flows = savedFlows();
+    const old = Object.fromEntries(flows.flatMap((f) => [false, true].map((live) => [`flow${f.name[0].toUpperCase()}${f.name.slice(1)}${live ? "Live" : ""}`, toolsFromFlows([f])[live ? 1 : 0].name])));
+    expect(RENAMED_FLOW_TOOLS).toEqual(old);
+    expect(RENAMED_FLOW_TOOLS.flowFacebookLanguageEnglish).toBe("facebookFlowLanguageEnglish");
+    expect(currentToolName("flowPostCommentLive")).toBe("facebookFlowPostCommentLive");
   });
 
   test("every new name is a listed tool and no old name is", () => {

@@ -1,7 +1,7 @@
 import { commandKey } from "../../cli/runner/helpers/platforms.ts";
 import { AGENT_HOOKS, MCP_SERVER_NAME } from "../../agentHooks/registry/index.ts";
 import type { AgentHook, HookEvent } from "../../agentHooks/registry/index.ts";
-import { toolName } from "../../browser/flow/index.ts";
+import { flowToolName } from "../../browser/flow/index.ts";
 import { commandBrowser } from "../../browser/run/index.ts";
 import { commandEngine } from "../../directApi/engine/index.ts";
 import type { FlowDefinition } from "../../browser/flow/index.ts";
@@ -72,7 +72,7 @@ export function catalog(commands: readonly Command[]): CommandEntry[] {
 export function flowEntries(flows: readonly FlowDefinition[]): FlowEntry[] {
   return flows.map((flow) => ({
     name: flow.name,
-    tool: toolName(flow.name),
+    tool: flowToolName(flow),
     summary: flow.summary,
     params: flow.params.map((p) => p.name),
     steps: flow.steps.map((s) => s.id.replace(/^s\d+_/, "")),

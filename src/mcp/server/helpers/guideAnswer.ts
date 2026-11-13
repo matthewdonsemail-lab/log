@@ -55,7 +55,7 @@ export function askAnswer(ask: string, scope: PlayScope = processPlayScope(), ha
   };
 }
 
-export function guideAnswer(input: unknown, scope: PlayScope = processPlayScope()): GuideAnswer {
+export function guideAnswer(input: unknown, scope: PlayScope = processPlayScope(), shell = true): GuideAnswer {
   const asked = (input ?? {}) as { topic?: unknown; useCase?: unknown; ask?: unknown; clearPlay?: unknown };
   const handle = handleOf(input);
   if (asked.clearPlay === true) {
@@ -66,7 +66,7 @@ export function guideAnswer(input: unknown, scope: PlayScope = processPlayScope(
   if (typeof asked.ask === "string" && asked.ask.trim()) return askAnswer(asked.ask.trim(), scope, handle);
   if (typeof asked.useCase === "string" && asked.useCase) return useCaseAnswer(asked.useCase, scope, handle, "useCase");
   const topic = String(asked.topic ?? CORE_GUIDE);
-  const text = readGuide(topic);
+  const text = readGuide(topic, shell);
   if (text === null) return { isError: true, text: `No guide "${topic}". Topics: ${Object.keys(GUIDE_TOPICS).join(", ")}.` };
   return { text };
 }

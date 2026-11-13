@@ -18,7 +18,7 @@ Checked by: code and SubQ
 
 ### REQ-MCP-02: The instructions send the agent to the full guide first
 
-The instructions say to load `getGuide({ topic: "logMcpInstructions" })` before the other log tools, once per session. Active rule 158.
+The instructions say to load `getGuide({ topic: "logMcpInstructions" })` before the other log tools, once per session, and to load a tool's own guide before first using it. They describe `getGuide({ ask })` as it is: it routes the owner's words and loads a play only on a clear match (REQ-MCP-16). The local text and the hosted text are one source, `serverInstructions` in `src/mcp/server/helpers/agentRules.ts` (REQ-MCP-22). Active rule 158.
 
 Checked by: code (anchors)
 
@@ -30,13 +30,13 @@ Checked by: code and SubQ
 
 ### REQ-MCP-04: Every tool names the rules it falls under
 
-Every tool's description ends with a line naming AGENTS.md (`log://agents`) and the rules it falls under: its command's own rules from `COMMAND_RULES` and the rules every tool falls under (30, 38, 39, 40, 41). `currentRuleIds` resolves retired references to the active ids in the MCP generator's consolidated mapping. Generated guides use active rule text and distinguish current legacy command behavior from the native hosted target; active rules 171/172/175 govern the data boundary.
+Every tool's description ends with a line naming AGENTS.md (`log://agents`) and the rules it falls under: its command's own rules from `COMMAND_RULES` and the rules every tool falls under (30, 38, 39, 40, 41), each once. `currentRuleIds` resolves retired references to the active ids, or drops them when no current rule holds their content; `operatingRuleIds` also drops the developer rules (`DEVELOPER_RULES`: code layout, naming, docs, schema), so a tool never cites them as rules for using it; only the `new` command, which writes code, keeps them. Rule numbers written into tool, flow and hook text go through `cite`, which does the same. The core guide carries the scope block (active rules 171/172/175 govern the data boundary).
 
 Checked by: code and SubQ
 
 ### REQ-MCP-05: Every tool names its guide
 
-Every tool whose command belongs to a guide topic says in its description to load that guide with `getGuide({ topic })` before first using it. A flow tool names the flows guide.
+Every tool whose command belongs to a guide topic says in its description to load that guide with `getGuide({ topic })` before first using it. A flow tool names its platform's flows guide (`facebookFlows`, `FLOWS_GUIDE`).
 
 Checked by: code and SubQ
 
@@ -183,5 +183,21 @@ The `data` input is read through a registry of sources, `REPORT_SOURCES` (`src/m
 Agent-written view code can reach only `log` and `react`. `compileView` (`src/mcp/apps/report/view/server.tsx`) refuses a static import from anything else, and `dynamicImportIn` refuses, with `viewImportRefused`, any `import()` (which sucrase turns into a `require` inside a promise), any `import(` left in the compiled code, and any `require` whose argument is not one of `VIEW_MODULES`. At run time `moduleRequire` (`src/mcp/apps/report/view/run.ts`) throws `viewImportRefused` for any other name, so an `import()` that got past the compiler rejects when it is called, in the widget and in the server's text rendering alike. The server-side text rendering still runs the code with `new Function`, so the runtime's globals stay reachable from a view; this is not a sandbox.
 
 On the hosted path, the bridge journals each operation's result in `operations.result` (`journalState`, `src/runtime/bridge/client.ts`). `redactConsoleResult` (`src/console/operations/client.ts`) replaces every top-level field of a result from a tool in `PRIVATE_RESULT_TOOLS` (`report`, `reportData`) with `<redacted>` before it is written, so bios and message text never reach the journal. The live answer to the caller is not redacted; a reconcile read of the journal returns the redacted copy.
+
+Checked by: code and SubQ
+
+## What reaches the model, by capability and platform
+
+### REQ-MCP-22: Guides are scoped by capability and platform, fit every host, and say "the owner"
+
+Shared commands (platform `any` or `byArgument`) are filed under shared guide topics in `GUIDE_TOPICS` (`src/mcp/server/helpers/guides.ts`): `accountBrowser` (inspect, browsers, browser, adsPower, localAccount), `sessions` (sessions, login, logout, whoami), `flows` (flow, warmup), `inbox` (the `inbox*` tools) and `voiceGate` (voice, voiceIndex, voiceAiIndex). A platform topic (`facebook…`, `x…`, `discord` and the rest) holds only its own platform's commands; the flow tools are Facebook's, from their definitions, and sit under `facebookFlows`. Shared topics embed only platform-neutral skills (`inspect`, `adsPower`, `humanMouse`, `flow`, `warmup`); the Facebook parts live in `facebookInspect`, `facebookFlows` and `facebookWarmup`. Each topic names the topics to load next (`next`, rendered by `nextGuidesLine` at the top of the guide). `GUIDE_ALIASES` keeps an old topic name answering for one release (empty today: no topic was renamed).
+
+`renderGuide` keeps every guide under `GUIDE_LIMIT` (50,000 characters: Claude Code saves a larger MCP text result to a file) by structure: one row per tool with its title and usage line, never the tool's whole description (the description is in `tools/list` already); the rules by number and first line (`ruleSummary`), with their full text only in the core guide and AGENTS.md; and the scope block only in the core guide. The whole guide goes through `ownerNeutral`, and rule text through `ruleText`, so served text says "the owner".
+
+Guides are rendered once, deterministically, with shell-only and no-shell blocks marked (`shellOnly`, `noShellOnly`). `readGuide` passes the text through `guideForCaller`: the local server passes `hasShell` of the client to `runToolCall`, and the hosted runtime passes `false`, so a host with no shell is never told to tail a log file.
+
+`serverInstructions` (`src/mcp/server/helpers/agentRules.ts`) writes both instruction texts from the same lines: `local` is `SERVER_INSTRUCTIONS`; `hosted` adds that every tool runs in the team's workspace, starts with `accountsList`, and says each result carries its `progress`. `bun run docs:build` writes the hosted text to `python/controlService/serverInstructions.txt`, which `python/controlService/mcpRoutes.py` reads as `INSTRUCTIONS`; `check:docs` fails when the file is out of date.
+
+`check:platformNeutral` (`scripts/checks/checkPlatformNeutral.ts`, `platformNeutralProblems` in `src/surface/scorecard/helpers/neutral.ts`) fails when any of these scorecard numbers is above zero: shared commands or tools under a platform-named guide, shared commands whose usage, summary or tool note names one platform (a `Platforms:` line listing the platforms in use doesn't count), flow tools with no platform, guides over the limit, dead rule citations in tool descriptions, guides, use cases, skills or hook text, and the owner's name in served text. It runs in pre-commit, pre-push and `bun run check`.
 
 Checked by: code and SubQ

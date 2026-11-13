@@ -1,7 +1,8 @@
 import { pageProblem } from './helpers/pageCheck'
 import { describe, expect, test } from 'bun:test'
 import { createActor, fromPromise, toPromise } from 'xstate'
-import { confirmingRequest, createFlowMachine, fillStep, flowFromRecording, flowWithParams, loadFlow, renderFlowDoc, toolName } from './index'
+import { flowPlatform } from './helpers/flowPlatform'
+import { confirmingRequest, createFlowMachine, fillStep, flowFromRecording, flowWithParams, loadFlow, renderFlowDoc, flowToolName } from './index'
 import type { FlowActInput, FlowRunOutput, FlowStepResult } from './index'
 import type { RecordedCommand } from './helpers/index'
 
@@ -169,7 +170,10 @@ describe('flowFromRecording', () => {
     expect(doc).toContain('`ProfileCometProfilePictureSetMutation`')
     expect(doc).toContain('rea `ev_05_click`')
     expect(doc).toContain('stateDiagram-v2')
-    expect(toolName('profileSetup')).toBe('flowProfileSetup')
+    expect(flowToolName(loadFlow('profileSetup')!)).toBe('facebookFlowProfileSetup')
+    expect(flowToolName(loadFlow('facebookLanguageEnglish')!)).toBe('facebookFlowLanguageEnglish')
+    expect(flowToolName({ name: 'postReply', steps: [] })).toBe('flowPostReply')
+    expect(flowPlatform({ steps: [{ id: 's01', action: 'goto', url: 'https://www.reddit.com/r/{sub}/', recorded: { step: '01', ms: 0, requests: [] } }] } as never)).toBe('reddit')
   })
 })
 

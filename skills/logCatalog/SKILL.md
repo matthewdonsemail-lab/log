@@ -31,7 +31,7 @@ help[1]:
   - `no` only reads.
   - `live` has a live run that acts on the platform.
   - `write`, `browser` or `delete` change local data, Twenty or the account's browser.
-  - `terminal` is a prompt matt runs in a terminal, never over MCP.
+  - `terminal` is a prompt the owner runs in a terminal, never over MCP.
 
 ## 2. Read it: `logGet`
 
@@ -57,8 +57,8 @@ logCall { "id": "twitter.dm", "inputs": { "account": "yourAccount", "userId": "1
 
 - It runs the command through its own tool, so every check still applies: the voice gate, the play, claims, the governor and jobs.
 - An unknown input is refused by name, with the inputs it takes. Nothing runs.
-- `live: true` runs the live form. It needs `confirmLive: true`, and only when matt asked for this live run (rules 8, 10).
-- `confirmBypass: true` is only for a run outside the account's hours that matt asked for (rule 20).
+- `live: true` runs the live form. It needs `confirmLive: true`, and only when the owner asked for this live run (rule 8).
+- `confirmBypass: true` is only for a run outside the account's hours that the owner asked for.
 - A long run comes back as a job after `waitMs`. Follow it with `jobStatus`, and watch `tail -f ~/.logCli/mcp/<day>.log` while it runs (rule 26).
 
 ## Ids

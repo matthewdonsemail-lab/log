@@ -1,5 +1,6 @@
 {
   "name": "facebookLanguageEnglish",
+  "platform": "facebook",
   "summary": "Switch the account's Facebook language to English (US): Settings, Language and region, Account language, English (US), OK; decided by useCometUSFScrollablePickerMutation answering en_US. Recorded on Scranton 2026-10-25 from Arabic.",
   "params": [],
   "steps": [

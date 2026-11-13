@@ -4,7 +4,7 @@ import type { BrowserAt, Finding, HookEvent, HookMemory, HookReply } from "./typ
 
 export type { BrowserAt, Finding, HookMemory, HookReply } from "./types.ts";
 
-const HEADER = "log-cli page state (rules 54-55, scripts/hooks/pageState.ts):";
+const HEADER = "log-cli page state (rule 35, scripts/hooks/pageState.ts):";
 
 export function findingOf(at: BrowserAt): Finding {
   const state = pageStateOf(at.url, at.text, { messengerPin: at.messengerPin, exchanges: at.exchanges });
@@ -25,7 +25,7 @@ export function findingOf(at: BrowserAt): Finding {
       kind: "failed",
       state: null,
       mark: `${at.step}:failed`,
-      line: `${at.account}: step failed, the page is unconfirmed (${where}): ${at.failed.slice(0, 240)}. Resolve it: \`log inspect do snapshot --account ${at.account}\`, read where the page is, then its resolver; a blocking page not in pageStateOf is added there (rule 54).`,
+      line: `${at.account}: step failed, the page is unconfirmed (${where}): ${at.failed.slice(0, 240)}. It resolves through the MCP tool \`inspectDo\` { action: "snapshot", account: "${at.account}" }, which reads where the page is, then its resolver; a blocking page not in pageStateOf is added there (rule 35).`,
       resolvable: true,
     };
   }

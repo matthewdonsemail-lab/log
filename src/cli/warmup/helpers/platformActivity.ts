@@ -20,11 +20,11 @@ export const PLATFORM_USAGE = [
   "       log <platform> warmup <activity> [--account <a>] [--live] [--likes] [--bypass] [--now]   (record: the account's browser opened primed with the activity, each step checked, the outline written)",
   "       log <platform> warmup <activity> plan [--json]   (the activity's steps and what each must do)",
   "       log <platform> warmup persona --account <a> [--newPersona] [--seed <n>]   (the account's behaviour profile and real viewer, from the datasets; no browser, no SubQ)",
-  "       log facebook warmup reel plan [--reels 8-20] [--watch 4-25] [--skip 0.6] [--comments 0.3] [--profile 0.15] [--likes] [--seed <n>] [--json]   (a drawn Reels session)",
-  "       log facebook warmup reel run --account <a> [reel plan flags] [--live] [--likes] [--bypass]   (a drawn session, stopped at the first step that doesn't do what it should)",
-  "       log facebook warmup reel run --account <a> --persona [--newPersona] [--reels 8-20] [--trafficMb 1024] [--live] [--likes] [--bypass]   (the persona's For you feed: SubQ reads each reel, the orderer plans it from the pack and real viewer, rule 50)",
-  "       log facebook warmup feed run --account <a> --persona [--posts 8-15] [--trafficMb 1024] [--live] [--likes] [--bypass]   (the home feed post by post: SubQ reads each post, a glance or a read and a like where the persona would, then Marketplace and listings)",
-  `  Platforms: ${WARMUP_PLATFORMS.join(", ")}. Facebook activities: ${[...Object.keys(FACEBOOK_ACTIVITIES), "stages"].join(", ")}.`,
+  "       log <platform> warmup reel plan [--reels 8-20] [--watch 4-25] [--skip 0.6] [--comments 0.3] [--profile 0.15] [--likes] [--seed <n>] [--json]   (a drawn Reels session)",
+  "       log <platform> warmup reel run --account <a> [reel plan flags] [--live] [--likes] [--bypass]   (a drawn session, stopped at the first step that doesn't do what it should)",
+  "       log <platform> warmup reel run --account <a> --persona [--newPersona] [--reels 8-20] [--trafficMb 1024] [--live] [--likes] [--bypass]   (the persona's For you feed: SubQ reads each reel, the orderer plans it from the pack and real viewer)",
+  "       log <platform> warmup feed run --account <a> --persona [--posts 8-15] [--trafficMb 1024] [--live] [--likes] [--bypass]   (the home feed post by post: SubQ reads each post, a glance or a read and a like where the persona would, then the listings pages)",
+  `  Platforms: ${WARMUP_PLATFORMS.map((p) => `${p} (${[...Object.keys(FACEBOOK_ACTIVITIES), "stages"].join(", ")})`).join(", ")}.`,
 ].join("\n");
 
 export function sessionOptions(flags: Record<string, string | true>): { ok: true; options: ReelSessionOptions } | { ok: false; error: string } {

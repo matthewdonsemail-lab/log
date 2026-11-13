@@ -11,6 +11,25 @@ const RULES_LINE = "AGENTS.md (log://agents): rules";
 const FALLBACKS: readonly RegExp[] = [/\?\?\s*(["'`])(?:facebook|Facebook|FACEBOOK)\1/g, /\bPLATFORMS\[0\]/g];
 
 const where = (command: ScoredCommand): string => commandKey(command);
+const SUPPORT_LINE = /^\s*Platforms:/;
+const OWNER_NAME = /\bmatt\b/gi;
+
+export function ownerNameIn(files: readonly SourceText[]): string[] {
+  return files.flatMap((file) => {
+    const n = [...file.text.matchAll(OWNER_NAME)].length;
+    return n ? [`${file.path} (${n})`] : [];
+  });
+}
+
+export function servedText(input: Pick<ScorecardInput, "listedTools" | "guides" | "serverInstructions" | "hostedInstructions" | "useCaseFiles">): SourceText[] {
+  return [
+    ...input.listedTools.map((t) => ({ path: `tool ${t.name}`, text: t.description })),
+    ...Object.entries(input.guides).map(([topic, text]) => ({ path: `guide ${topic}`, text })),
+    { path: "server instructions", text: input.serverInstructions },
+    { path: "hosted instructions", text: input.hostedInstructions },
+    ...input.useCaseFiles,
+  ];
+}
 
 export function sharedUnderPlatformGuide(commands: readonly ScoredCommand[], guideOf: ScorecardInput["guideOf"]): string[] {
   return commands.filter((c) => isShared(c.platform)).flatMap((c) => {
@@ -29,7 +48,8 @@ export function sharedToolsUnderPlatformGuide(tools: readonly ScoredCommandTool[
 export function sharedNamingPlatform(commands: readonly ScoredCommand[], tools: readonly ScoredCommandTool[], notes: ScorecardInput["notes"]): string[] {
   return commands.filter((c) => isShared(c.platform)).flatMap((c) => {
     const own = tools.filter((t) => t.command === c).flatMap((t) => notes[t.tool] ?? []);
-    const named = platformsNamed([c.summary, c.usage, ...(notes[c.name] ?? []), ...own].join("\n"));
+    const lines = [c.summary, c.usage, ...(notes[c.name] ?? []), ...own].join("\n").split("\n").filter((line) => !SUPPORT_LINE.test(line));
+    const named = platformsNamed(lines.join("\n"));
     return named.length === 1 ? [`${where(c)} (${named[0]})`] : [];
   });
 }
@@ -133,11 +153,14 @@ export function measure(input: ScorecardInput): Metric[] {
     ["useCases", "use cases", input.useCaseFiles],
     ["skills", "skills", input.skillFiles],
     ["toolDescriptions", "tool descriptions", toolFiles],
+    ["guides", "guides", Object.entries(input.guides).map(([topic, text]) => ({ path: `guide ${topic}`, text }))],
+    ["hooks", "hook and live-log source", input.hookFiles],
   ] as const) {
     const found = deadCitations(files, input.ruleIds);
     out.push(count(`ruleCitations.${key}`, `Rule citations in ${label}`, "info", found.citations));
     out.push(count(`deadRuleCitations.${key}`, `Dead rule citations in ${label}`, "lower", found.dead, found.worst.map((w) => `${w.path} (${w.dead})`)));
   }
+  out.push(count("ownerNameInServedText", "The owner's name in served text (tool descriptions, guides, instructions, use cases)", "lower", ownerNameIn(servedText(input)).reduce((n, d) => n + Number(/\((\d+)\)$/.exec(d)?.[1] ?? 0), 0), ownerNameIn(servedText(input))));
   out.push(metric("platformFallbacks", "Hard-coded Facebook fallbacks in src/ and scripts/", "lower", platformFallbacks(input.codeFiles)));
   return out;
 }

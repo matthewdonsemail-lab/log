@@ -72,7 +72,7 @@ export function catalogTools(): LogTool[] {
       title: "Run a log command by its id",
       description: [
         `Run a command by its id with its inputs, exactly as ${GET_TOOL} lists them. It goes through the same checks as the command's own tool: an unknown input is refused by name with the ones it takes, and nothing runs.`,
-        "Read-only unless live: true, which needs confirmLive: true and only when matt asked for this live run (rules 8, 10). Outside an account's hours only with confirmBypass: true, when matt asked (rule 20). A long run comes back as a job past waitMs: follow it with jobStatus.",
+        "Read-only unless live: true, which needs confirmLive: true and only when the owner asked for this live run (rule 8). Outside an account's hours only with confirmBypass: true, when the owner asked (rule 35). A long run comes back as a job past waitMs: follow it with jobStatus.",
         ...tail(CALL_TOOL),
       ].join("\n"),
       annotations: annotationsOf("write", true, "Run a log command by its id"),

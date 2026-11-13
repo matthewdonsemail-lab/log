@@ -14,7 +14,7 @@ Say: **"go on docs/useCases/inbox/signIn.md for <account>"**. The agent reads th
 ```mermaid
 flowchart TD
   s0["1. Check every account (or one) through its platform's own answer,…<br/><i>sessionsCheck, log</i>"]
-  s1["2. When it needs a person, open the account's live browser<br/><i>browserView</i>"]
+  s1["2. When it needs a person, open the account's browser with inspect…<br/><i>inspectStart, browserView</i>"]
   s2["3. The owner signs in themself, in the window or in the chat<br/><i>the owner</i>"]
   s3["4. Close the browser to save the new session (inspectDo stop), che…<br/><i>inspectDo, sessionsCheck</i>"]
   s0 --> s1
@@ -26,7 +26,7 @@ flowchart TD
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
 | 1 | Check every account (or one) through its platform's own answer, never a screen. A 401 or no saved session is "needs signing in", with its next step | `sessionsCheck` { platform?, account? } (the CLI's `log sessions check`, the console's Check) | each account signed in, needs signing in, stopped or unknown |
-| 2 | When it needs a person, open the account's live browser. On the owner's machine it is the window on their screen; from a remote runtime an MCP Apps host shows it inline in the chat | `browserView` { account } | the browser is on the sign-in page, and the answer says where |
+| 2 | When it needs a person, open the account's browser with `inspectStart` (it goes through the account's gates and stays open), then `browserView` says where that open browser is: on the owner's machine the window on their screen; from a remote runtime an MCP Apps host shows it inline in the chat. `browserView` shows a browser that is already open; it doesn't open one | `inspectStart` { account, detach: true }, then `browserView` { account } | the browser is open on the sign-in page, and the answer says where |
 | 3 | The owner signs in themself, in the window or in the chat. Their clicks and typing reach the page only while it still asks for sign-in | the owner | the page has moved past sign-in |
 | 4 | Close the browser to save the new session (`inspectDo` stop), check again, and only call it signed in when the platform says so (rule 25) | `inspectDo` { action: "stop" }, then `sessionsCheck` { account } | signed in |
 

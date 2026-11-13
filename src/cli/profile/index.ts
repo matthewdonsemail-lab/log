@@ -20,7 +20,7 @@ export const profileCommand: Command = {
   platform: "facebook",
   name: "profile",
   effect: "browser",
-  summary: "Set an account's profile picture and cover photo from Twenty (dry run unless --live, rule 28)",
+  summary: "Set an account's profile picture and cover photo from its account record (dry run unless --live, rule 35)",
   args: "setup --account <name> [--live] [--bypass] [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, { boolean: ["live", "bypass", "json"], valued: ["account"] });

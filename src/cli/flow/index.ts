@@ -3,7 +3,7 @@ import { findAccount, toTwentyEnum } from "../../marketplace/socialAccount/index
 import { existsSync, readFileSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
 import { createActor, fromPromise, toPromise } from "xstate";
-import { createFlowMachine, fillStep, flowFromRecording, listFlows, loadFlow, readRecordedCommands, saveFlow, toolName, writeFlowDoc } from "../../browser/flow/index.ts";
+import { createFlowMachine, fillStep, flowFromRecording, listFlows, loadFlow, readRecordedCommands, flowToolName, saveFlow, writeFlowDoc } from "../../browser/flow/index.ts";
 import type { FlowActInput, FlowDefinition, FlowRunOutput, FlowStep, FlowStepResult } from "../../browser/flow/index.ts";
 import type { InspectAction } from "../../browser/inspect/index.ts";
 import { placeProblem } from "../../facebook/marketplace/location/index.ts";
@@ -125,7 +125,7 @@ export const flowCommand: Command = {
 
     if (sub === "list") {
       const names = listFlows();
-      return { code: 0, stdout: names.length ? names.map((n) => `${n}  (MCP tool ${toolName(n)})`).join("\n") : "No flows yet: log flow fromInspect <runDir> --name <n>" };
+      return { code: 0, stdout: names.length ? names.map((n) => `${n}  (MCP tool ${flowToolName(loadFlow(n) ?? { name: n, steps: [] })})`).join("\n") : "No flows yet: log flow fromInspect <runDir> --name <n>" };
     }
     if (sub === "fromInspect") {
       if (!target || !existsSync(join(target, "replies.jsonl"))) return { code: 1, stderr: `log flow: ${target ?? "(none)"} is not an inspect run folder\n${FLOW_USAGE}` };
@@ -142,7 +142,7 @@ export const flowCommand: Command = {
       const files = [saveFlow(flow), writeFlowDoc(flow)];
       const lines = [`Flow ${name}: ${flow.steps.length} steps, params ${flow.params.map((p) => p.name).join(", ") || "none"}`];
       flow.steps.forEach((s, i) => lines.push(`  ${i + 1}. ${describe(s)}${s.expect ? `  → ${s.expect}` : ""}`));
-      lines.push(...files.map((f) => `  wrote ${f}`), `  MCP tool: ${toolName(name)}`);
+      lines.push(...files.map((f) => `  wrote ${f}`), `  MCP tool: ${flowToolName(flow)}`);
       return { code: 0, stdout: lines.join("\n") };
     }
     const flow = target ? loadFlow(target) : null;

@@ -1,6 +1,7 @@
 {
   "name": "messengerPinCreate",
-  "summary": "Messenger's Create a PIN: open /messages/, press Create PIN, type the account's PIN from Twenty, then again to confirm (rule 67). Recorded on Bethlehem 2026-10-22.",
+  "platform": "facebook",
+  "summary": "Messenger's Create a PIN: open /messages/, press Create PIN, type the account's PIN from Twenty, then again to confirm (rule 35). Recorded on Bethlehem 2026-10-22.",
   "params": [],
   "steps": [
     {
