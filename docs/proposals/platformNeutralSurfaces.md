@@ -221,6 +221,30 @@ The evidence, with every file, is in [contextInjectionAudit.md](contextInjection
 - Watchers and pending messages stop depending on a hook (slice 10).
 - Files: `src/agentHooks/registry/types.ts`, `src/agentHooks/registry/index.ts`, `src/cli/launch/index.ts`, `src/cli/launch/helpers/setup.ts`, `src/cli/launch/helpers/start.ts`, `hermesPlugin/**`, `.opencode/plugins/logHooks/**`, `.agents/hooks.json`, `scripts/hooks/antigravity.ts`, `docs/harnesses/*.md`.
 
+### Slices 20 and 21: signing in from inside any harness, and the people data `report` draws
+
+The detail, with schemas, files and acceptance tests, is in [inAppVerificationAndGenerativeUI.md](inAppVerificationAndGenerativeUI.md).
+
+**Slice 20: one sign-in that works inside every harness (extends slice 3).**
+- The sign-in machine from slice 3 is reached through one tool, `sessionsSignIn { platform?, account }`, on the local and the hosted server. Today the hosted model is told to call `inspectStart`, which it cannot.
+- What the owner sees is decided per session, from what the host declares:
+  1. The host draws MCP Apps: the live browser shows inline, as `browserView` does today.
+  2. The host has no MCP Apps but supports URL elicitation: the answer is a signed, single-use console link that expires in ten minutes. It is never the raw stream URL.
+  3. Neither: plain text with the same link.
+- A missing account answers with a structured `accountNotConfigured { platform, next }`, so any host can show a connect step.
+- Page states are classified per platform, from a fixture login page for each, not from Facebook's flow.
+- Polling by the live view stops writing a hosted journal row per frame.
+- Which hosts support which rung comes from web research and is not verified by running each one; the matrix is a list of claims to test.
+- Files: `src/platformKit/sessionCheck/client.ts`, `src/mcp/apps/browserView/client.ts`, `src/mcp/server/index.ts`, `src/cli/browser/index.ts`, `python/browser/browserViewer.py`, `python/controlService/tools.py`, `python/controlService/dispatcher.py`, `src/runtime/bridge/client.ts`, `src/console/operations/types.ts`, and a new console route for the link.
+
+**Slice 21: people data stored once, so `report` draws it without a platform call.**
+- `report` reads one data source today (`twitterDmsBySender`), and the `source` input is never dispatched on. It becomes a registry of sources, one per capability, on every platform that has the data.
+- The engines already fetch bios, follower counts, verified flags and display names, then drop them. A new `identityProfiles` table, keyed by platform and user id, keeps them, with the avatar in the existing `blobs` table under a raw codec. It is rebuilt from events like the other derived tables.
+- `report` gains an `identityProfile` source that reads that table.
+- On the hosted path, `report` and `sessionsSignIn` results are redacted before they are journaled. Today a `report` result is journaled as it is.
+- A view written by the agent can't reach a module through a dynamic `import()`. Today only static imports are blocked.
+- Files: `src/storage/schema/helpers/migrations.ts`, `src/storage/schema/helpers/platformTables.ts`, `src/storage/platform/client.ts`, `src/storage/platform/types.ts`, `src/inbox/senders/types.ts`, `src/mcp/apps/report/client.ts`, `src/mcp/apps/report/view/run.ts`, `src/twitter/notification/helpers/extenders.ts`, the Discord, Slack and LinkedIn session callers, `src/console/operations/types.ts`, `src/runtime/bridge/client.ts`.
+
 ## Order
 
 1. Slice 0, the scorecard check, so nothing below can regress.
@@ -228,9 +252,10 @@ The evidence, with every file, is in [contextInjectionAudit.md](contextInjection
 3. Slices 2 and 18, the guides.
 4. Slices 11 to 15, the schema, result and gate parity.
 5. Slices 7 and 8, capabilities and action machines.
-6. Slices 3, 4 and 10, sign-in, check state and the watcher.
+6. Slices 3, 4, 10 and 20, sign-in, check state, the watcher and sign-in inside every harness.
 7. Slices 9 and 19, the harness contract.
-8. Slices 5 and 6, renames and console twins.
+8. Slice 21, the people data for `report`.
+9. Slices 5 and 6, renames and console twins.
 
 ## Found while building slice 1 (PR #133)
 
