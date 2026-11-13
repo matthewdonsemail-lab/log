@@ -50,9 +50,12 @@ export interface FlowParam {
   description: string
 }
 
+export type FlowEffect = 'write' | 'delete'
+
 export interface FlowDefinition {
   name: string
   summary: string
+  effect?: FlowEffect
   params: FlowParam[]
   steps: FlowStep[]
   source: { runDir: string; account: string; builtAt: string }

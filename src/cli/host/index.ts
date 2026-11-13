@@ -6,7 +6,7 @@ import type { HostControl, MilestoneField } from "../../marketplace/host/index.t
 import { standingOf } from "../../marketplace/lifecycle/index.ts";
 import { findAccount, toTwentyEnum } from "../../marketplace/socialAccount/index.ts";
 import { createInspector, formatTraceLine } from "../../observability/trace/index.ts";
-import { parseArgs, parserSpecOf, PROXY_MS_FLAG, refuseError } from "../runner/helpers/index.ts";
+import { numberOf, parseArgs, parserSpecOf, PROXY_MS_FLAG, refuseError } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
 import { dayOf, hostActors } from "./helpers/index.ts";
 import type { HostBrowser } from "./helpers/index.ts";
@@ -33,8 +33,8 @@ export const HOST_INPUT: CommandInput = {
         { name: "likes", kind: "boolean", live: true, description: "The warm-up's likes, only when matt asked (rule 8)" },
         { name: "bypass", kind: "boolean", bypass: true, description: "Outside the account's waking hours, only when matt asked (rule 20)" },
         { name: "now", kind: "boolean", description: "Skip the 10-minute launch gap only (rule 30)" },
-        { name: "gapSeconds", kind: "integer", description: "Seconds between warm-up activities (default 10)" },
-        { name: "watchMinutes", kind: "integer", description: "Minutes between watch checks" },
+        { name: "gapSeconds", kind: "integer", min: 0, max: 36_000, description: "Seconds between warm-up activities (default 10)" },
+        { name: "watchMinutes", kind: "integer", min: 0, max: 600, description: "Minutes between watch checks (default 12)" },
         PROXY_MS_FLAG,
       ],
     },
@@ -89,11 +89,8 @@ export const hostCommand: Command = {
     }
 
     if (sub !== "start") return { code: 1, stderr: `log facebook host: pick start, send or status\n${HOST_USAGE}` };
-    const minutes = (flag: string, fallback: number) => (flags[flag] === undefined ? fallback : Number(flags[flag]));
-    const gap = minutes("gapSeconds", 10);
-    const watch = minutes("watchMinutes", 12);
-    if (!Number.isFinite(gap) || gap < 0 || gap > 36_000) return { code: 1, stderr: "log facebook host: --gapSeconds is 0 to 36000" };
-    if (!Number.isFinite(watch) || watch < 0 || watch > 600) return { code: 1, stderr: "log facebook host: --watchMinutes is 0 to 600" };
+    const gap = numberOf(parsed, "gapSeconds") ?? 10;
+    const watch = numberOf(parsed, "watchMinutes") ?? 12;
 
     const browser: HostBrowser = { run: null, session: null };
     const log = (line: string) => context.err(line);

@@ -4,6 +4,8 @@ You use a tool, you make content about it, and people message you about it. This
 
 Inbound and outbound are on other pages: [dmInbox.md](dmInbox.md) reads who is waiting, [engagerDms.md](engagerDms.md) opens new conversations.
 
+How the owner asks for it: "answer the people asking about <tool> in my dms with my affiliate link", "turn the dms about <tool> into affiliate money", "follow up everyone who asked about the tool", "get me onto <company>'s affiliate program and book the call".
+
 ## Run it from a fresh context
 
 Say: **"go on docs/useCases/twitter/affiliateMarketing.md for `<tool>`, link `<affiliate link>`"**. The agent then reads this page and [README.md](README.md) and runs the steps.

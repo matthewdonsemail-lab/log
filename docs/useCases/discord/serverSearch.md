@@ -27,7 +27,7 @@ flowchart TD
 | --- | --- | --- | --- |
 | 1 | Search the server for the subject, narrowed to the person when matt names one | `discordSearch` { account, server: "<server>", query: "<words>", from: "<who>" } | hits with their time, author, text and where each one is (`"<server> #<channel>"` or a post) |
 | 2 | When nothing comes back, search again with other words matt or they would have used | `discordSearch` { account, server: "<server>", query: "<other words>" } | the hit, or two searches with nothing |
-| 3 | Read the conversation around the hit, text only, in the channel or post it names | `discordRead` { account, channel: "<where the hit is>", limit: "60", noMedia: true } | the whole exchange: what was asked and every answer |
+| 3 | Read the conversation around the hit, text only, in the channel or post it names | `discordRead` { account, channel: "<where the hit is>", limit: 60, noMedia: true } | the whole exchange: what was asked and every answer |
 | 4 | Tell matt what was said | the reply to matt | who said what, when (matt's time), quoted closely, and what it means for what he asked |
 
 ## What to know

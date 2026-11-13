@@ -1,7 +1,8 @@
 import { consoleErrorCode, isConsoleOperation, redactConsoleArgs, redactConsoleResult, runConsoleOperation } from "../../console/operations/index.ts";
 import type { ConsoleOperationDeps } from "../../console/operations/index.ts";
 import { finishPairing, keepConnected, readBinding, startPairing } from "../../runtime/bridge/index.ts";
-import type { ResultPayload, RunTool } from "../../runtime/bridge/index.ts";
+import type { Authority, ResultPayload, RunTool } from "../../runtime/bridge/index.ts";
+import type { PlayScope } from "../../mcp/server/helpers/index.ts";
 import { defaultDbPath, openDatabase, SCHEMA_VERSION } from "../../storage/schema/index.ts";
 import { readLocalAccounts } from "../../twenty/graphql/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";
@@ -23,7 +24,7 @@ export const RUNTIME_INPUT: CommandInput = {
   ],
 };
 
-type ToolCaller = (name: string, input: Record<string, unknown>) => Promise<{ isError?: boolean; structuredContent?: unknown; content?: unknown }>;
+type ToolCaller = (name: string, input: Record<string, unknown>, scope?: PlayScope) => Promise<{ isError?: boolean; structuredContent?: unknown; content?: unknown }>;
 
 export const runtimeDeps: { callTool: () => Promise<ToolCaller>; connect: typeof keepConnected; dbPath: () => string } = {
   callTool: async () => {
@@ -31,7 +32,7 @@ export const runtimeDeps: { callTool: () => Promise<ToolCaller>; connect: typeof
     const { settleLocation } = await import("../../mcp/apps/index.ts");
     settleLocation("remote");
     void import("../../mcp/apps/browserView/helpers/index.ts").then(({ widgetHtml }) => widgetHtml()).catch(() => {});
-    return (name, input) => runToolCall(name, input) as Promise<{ isError?: boolean; structuredContent?: unknown }>;
+    return (name, input, scope) => runToolCall(name, input, {}, undefined, undefined, undefined, undefined, scope) as Promise<{ isError?: boolean; structuredContent?: unknown }>;
   },
   connect: keepConnected,
   dbPath: () => defaultDbPath(),
@@ -74,11 +75,16 @@ export async function uiResources(tool: string, args: Record<string, unknown>): 
   return { state: "failed", error: { code: "resourceNotFound", message: "no such ui resource" } };
 }
 
-export async function guideOperation(args: Record<string, unknown>): Promise<ResultPayload> {
-  const { guideAnswer } = await import("../../mcp/server/helpers/index.ts");
-  const answer = guideAnswer(args);
+export async function hostedPlayScope(authority?: Pick<Authority, "teamId" | "actorUserId" | "grantId"> | null): Promise<PlayScope> {
+  const { hostedPlayOwner, playScope } = await import("../../mcp/server/helpers/index.ts");
+  return playScope(hostedPlayOwner(authority));
+}
+
+export async function guideOperation(args: Record<string, unknown>, scope?: PlayScope): Promise<ResultPayload> {
+  const { guideAnswer, playMeta } = await import("../../mcp/server/helpers/index.ts");
+  const answer = guideAnswer(args, scope);
   if (answer.isError) return { state: "failed", error: { code: "guideUnknown", message: answer.text.slice(0, 2000) } };
-  return { state: "succeeded", result: { text: answer.text } };
+  return { state: "succeeded", result: { text: answer.text, ...(answer.play === undefined ? {} : { play: playMeta(answer.play) }) } };
 }
 
 export async function reportOperation(args: Record<string, unknown>): Promise<ResultPayload> {
@@ -105,16 +111,18 @@ export async function consoleOperation(tool: string, args: Record<string, unknow
 }
 
 export function toolRunner(callTool: ToolCaller): RunTool {
-  return async (tool, args) => {
+  return async (tool, args, authority) => {
     if (tool === "accountsList") return accountsList(args);
     if (tool === "toolManifest") return toolManifest(args);
     if (tool === "uiResourcesList" || tool === "uiResourceRead") return uiResources(tool, args);
     if (tool === "report") return reportOperation(args);
-    if (tool === "getGuide") return guideOperation(args);
-    if (isConsoleOperation(tool)) return consoleOperation(tool, args, callTool);
-    const answer = await callTool(tool, args);
+    const scope = await hostedPlayScope(authority);
+    if (tool === "getGuide") return guideOperation(args, scope);
+    if (isConsoleOperation(tool)) return consoleOperation(tool, args, (name, input) => callTool(name, input, scope));
+    const { withCallFooter } = await import("../../mcp/server/index.ts");
+    const answer = withCallFooter(tool, args, (await callTool(tool, args, scope)) as Parameters<typeof withCallFooter>[2], scope);
     const content = (answer.structuredContent ?? {}) as Record<string, unknown>;
-    const { browsers: _browsers, next: _next, ...result } = content;
+    const { browsers: _browsers, ...result } = content;
     return answer.isError ? { state: "failed", result, error: { code: typeof content.error === "string" && /^[a-zA-Z]{1,60}$/.test(content.error) ? content.error : "toolFailed", message: String(content.stderr ?? content.message ?? "the tool failed").slice(0, 2000) } } : { state: "succeeded", result };
   };
 }

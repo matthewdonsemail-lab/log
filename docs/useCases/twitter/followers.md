@@ -2,6 +2,8 @@
 
 Before a slide, a page or a message says someone follows you (or that you follow them), check it live on X. Engaging with you isn't following you. This page reads it on the account's own session and sends nothing.
 
+How the owner asks for it: "does <someone> follow me", "check who really follows me on x", "is <someone> following me on twitter", "check these people follow me before the slide says so".
+
 ## Run it from a fresh context
 
 Say: **"go on docs/useCases/twitter/followers.md for <handles>"**, or "for everyone named on <page>". The agent then reads this page and [README.md](README.md) and runs the steps.
@@ -22,7 +24,7 @@ flowchart TD
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
 | 0 | Session check | `twitterSessionCheck` | `loggedIn` |
-| 1 | For each handle: do they follow the account, does the account follow them | `twitterFollows` { account, handles: "a,b,c" } | one answer per handle, from X |
+| 1 | For each handle: do they follow the account, does the account follow them | `twitterFollows` { account, handles: ["a", "b", "c"] } | one answer per handle, from X |
 | 2 | Take anyone who doesn't follow off the "followers" line, or reword the line | the page or copy | every name on it is true today |
 
 Handles come from research or from the owner, never guessed (rule 53). The read is 1.5 s per handle, so a long list takes a minute.

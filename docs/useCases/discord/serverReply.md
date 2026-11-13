@@ -43,7 +43,7 @@ flowchart TD
 | --- | --- | --- | --- |
 | 1 | Find the server's channel by its name | `discordChannels` { account, server: "<server>" } | the channel by its name and kind; for a forum, the post from `discordPosts`, named `"<server> #<forum> > <post title>"` |
 | 2 | Claim the channel, so no other session answers it | `inboxClaim` { platform: "discord", account, chat: "<channel id>", event: "<event id from the hook>" } | this session holds the channel |
-| 3 | Read the channel or post from Discord, far enough back to have what they said, what it answers and anything matt already said after it | `discordRead` { account, channel: "<server> #<channel>", limit: "50" } | their message with its `fromId`, the messages before it, and none from matt after it |
+| 3 | Read the channel or post from Discord, far enough back to have what they said, what it answers and anything matt already said after it | `discordRead` { account, channel: "<server> #<channel>", limit: 50 } | their message with its `fromId`, the messages before it, and none from matt after it |
 | 4 | Write the answer to that one person, from what they asked and what matt said to tell them, in his words and length, then gate it | `voice` { to: "<who>", context: "<what they said and what came before>", text: "<draft>" } | `PASS`, or matt's own words he gave for this message |
 | 5 | Send it to the channel by its name, tagging the person with `<@their fromId>` | `discordSendLive` { account, channel: "<server> #<channel>", text: "<@fromId> <draft>", approvedBy: "matt", confirmLive: true } | Discord answers `sent` with the message id |
 

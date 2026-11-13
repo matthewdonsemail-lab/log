@@ -37,7 +37,7 @@ flowchart TD
 
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
-| 1 | Read them in full before asking anything: the whole thread, every file, sheet or screenshot they sent, what they have already built, what they are stuck on, and anything they have said about money | `discordRead` { channel, limit: "120" }, `twitterDms` { with }, `slackRead` { chat }, `instagramDms` { account, with } | what they have done, what is blocked, and what they are paying for, in a few lines |
+| 1 | Read them in full before asking anything: the whole thread, every file, sheet or screenshot they sent, what they have already built, what they are stuck on, and anything they have said about money | `discordRead` { channel, limit: 120 }, `twitterDms` { with }, `slackRead` { chat }, `instagramDms` { account, with } | what they have done, what is blocked, and what they are paying for, in a few lines |
 | 2 | Read the artefacts they sent, not just the message about them: open the spreadsheet, the doc, the tracker, and say what it actually shows | `read`, the file's own tool (an `.xlsx` through the spreadsheet skill), `mediaView` | each artefact's real content, and the gap between it and the message |
 | 3 | Pull how the owner really writes in that chat, before drafting a word | `voice` { to, with, context } with no text | his latest messages there, his real replies to things like it, and the chat's own length and burst |
 | 4 | Ask the open scope questions, as short lines in his shape, one question per line, and gate the whole draft | `voice` { to, with, context, text }, then the send | every line he would plausibly have typed, and `pass` |
@@ -69,7 +69,7 @@ Only what the thread has not already answered. In practice, in this order:
 - **The gate failing six times was a data problem and a shape problem, not a wording problem.** On 2026-11-12 a scoping message to a Discord DM scored `voice` 0.16 to 0.66 over seven drafts. The voice index held no pairs for that chat, so the gate graded the owner as a stranger and treated a two-day conversation as a first message; once the chat was indexed, the same draft scored 0.85. The other half was shape: six lines read as one wall of text scored 0.22, and as six messages 0.85.
 - **A gate refusal is a signal to check the evidence, not only the words.** Before rewriting a fifth time, read `voice` with no text: if his latest messages there are empty, the gate has nothing to compare against and no phrasing will pass.
 - **The scope is usually in the artefact they already sent.** On 2026-11-12 the whole job — the stages, the two blocked substeps, the counts that already passed — was in one spreadsheet the person had sent two days earlier, and the open questions were only about the artefacts, the blocker and what "done" meant.
-- **A play must be loaded before sending as the owner,** and a session that changed models mid-thread loses it: a send with no play is refused `playMissing` (rule 157).
+- **A play must be loaded before sending as the owner,** and a session that changed models mid-thread loses it: a send with no play is refused `playMissing`.
 
 ## Next
 

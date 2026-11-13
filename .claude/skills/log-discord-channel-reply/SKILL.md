@@ -26,7 +26,7 @@ Say: **"go on docs/useCases/discord/channelReply.md for <chat>"**. The agent rea
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
 | 1 | Claim the chat, so no other session answers it | `inboxClaim` { platform: "discord", account, chat: "<chat id>", event: "<event id from the hook>" } | this session holds the chat |
-| 2 | Read the chat around what they said, by its name | `discordRead` { account, channel: "<chat as matt says it>", limit: "25" } | what they said, what came before it, and who it answers |
+| 2 | Read the chat around what they said, by its name | `discordRead` { account, channel: "<chat as matt says it>", limit: 25 } | what they said, what came before it, and who it answers |
 | 3 | Write the answer from what they asked and what matt said to tell them, in his words and length, then gate it | `voice` { to: "<who>", context: "<what they said and what came before>", text: "<draft>" } | `PASS`, or matt's own words he gave for this message |
 | 4 | Send it to the chat by its name | `discordSendLive` { account, channel: "<chat as matt says it>", text: "<draft>", approvedBy: "matt", confirmLive: true } | Discord answers `sent` with the message id |
 

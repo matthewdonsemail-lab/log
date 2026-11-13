@@ -7,7 +7,7 @@ import { COMMANDS } from "../../cli/runner/index.ts";
 import { COMMAND_INDEX } from "../../cli/runner/helpers/commandIndex.ts";
 import { reportTool } from "../../mcp/apps/report/index.ts";
 import { catalogTools } from "../../mcp/catalog/index.ts";
-import { agentsRules, commandTools, GUIDE_TOPICS, guideOfCommand, guideTool, listUseCases, PLAY_REQUIRED, SERVER_INSTRUCTIONS, toolsFromCommands, toolsFromFlows, withUseCases } from "../../mcp/server/helpers/index.ts";
+import { agentsRules, commandTools, GUIDE_TOPICS, guideOfCommand, guideTool, listUseCases, playRequiredTools, SERVER_INSTRUCTIONS, unnamedActingTools, toolsFromCommands, toolsFromFlows, withUseCases } from "../../mcp/server/helpers/index.ts";
 import { NOTES } from "../../mcp/server/helpers/toolsFromCommands.ts";
 import { hasMachine, measure } from "./helpers/index.ts";
 import type { Metric, ScoredCommand, ScorecardInput, SourceText, ToolText } from "./types.ts";
@@ -58,7 +58,8 @@ export function repoInput(root: string = REPO_ROOT): ScorecardInput {
     listedTools,
     guideOf: (command: ScoredCommand) => guideOfCommand(command),
     notes: NOTES,
-    playRequired: PLAY_REQUIRED,
+    playRequired: playRequiredTools(COMMANDS, flows, useCases),
+    actingNamedByNoUseCase: unnamedActingTools(COMMANDS, flows, useCases),
     useCases,
     guides,
     serverInstructions: SERVER_INSTRUCTIONS,

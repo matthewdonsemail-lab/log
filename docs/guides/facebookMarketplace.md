@@ -14,7 +14,7 @@ When the owner asks for one of these, follow its page step by step.
 
 | Use case | What it is | How the owner asks for it |
 |---|---|---|
-| `getGuide({ useCase: "facebook/marketplaceListings" })` | From accounts to live Marketplace listings | see the page |
+| `getGuide({ useCase: "facebook/marketplaceListings" })` | From accounts to live Marketplace listings | "post a marketplace listing in <town>", "get listings up on facebook marketplace in every town", "set up the facebook accounts and publish the listings", "take the marketplace listing down". |
 
 ## The tools in this guide
 
