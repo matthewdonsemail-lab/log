@@ -117,6 +117,22 @@
       "summary": "Scoping a job out of someone in a DM"
     },
     {
+      "name": "log-inbox-show-me",
+      "description": "Showing it as a view: generative UI in the chat. A log play (docs/useCases/inbox/showMe.md): The owner wants to see something rather than read it. The agent builds a view for that one question (stats, charts, people, a page per person) and log draws it in the chat with the numbers read from log.db. It reads only and sends nothing. A question about one person gets that person; a question about the week gets the week.",
+      "files": [
+        "SKILL.md"
+      ],
+      "summary": "Showing it as a view: generative UI in the chat"
+    },
+    {
+      "name": "log-inbox-sign-in",
+      "description": "Signing an account in: checking it, then the live browser. A log play (docs/useCases/inbox/signIn.md): An account's session has run out, or it was never signed in. The agent checks it through the platform's own answer, and when it needs a person, it opens the account's own browser for the owner to sign in. On the owner's machine that browser is the window on their screen. From a remote runtime it is streamed into the chat as a live view, the same one the console's Connections page opens. The agent never types a password; the owner does.",
+      "files": [
+        "SKILL.md"
+      ],
+      "summary": "Signing an account in: checking it, then the live browser"
+    },
+    {
       "name": "log-inbox-triage",
       "description": "Triage: scoping someone's job and handing it to whoever does it. A log play (docs/useCases/inbox/triage.md): A person comes to the owner needing something built. The owner is the face of the work: the person on the other side deals with him and nobody else. Behind that, the work goes to whoever actually does it. This page is that route: read what the person needing it has said, get the scope out of them, and hand the whole thing to the person who will build it, as a brief, without ever telling either side about the other.",
       "files": [

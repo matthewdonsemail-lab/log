@@ -31,6 +31,8 @@ What log-cli is built to do, one page each, by platform. Each page gives the ide
 | Web | [Competitor traffic: finding how to rank on your competitors' names](web/competitorTraffic.md) | what competitors rank for, their affiliate programmes, what BlackHatWorld says works this month, who in your DMs has a site to link from, then a SubQ-ranked order, all read-only |
 | Every chat | [Bossmaxxing: giving out tasks to the team](inbox/bossMaxxing.md) | reads each person's chat, triages every job across the team, sends each task as a brief with a live monitor on, and walks people through setups one step at a time |
 | Every chat | [Sending a voice note](inbox/voiceNote.md) | only when matt asks: his words said in his cloned voice and sent as Discord's, Instagram's or Slack's own voice note, gated and claimed like a send |
+| Every chat | [Showing it as a view: generative UI in the chat](inbox/showMe.md) | builds a view for the question (stats, charts, people, a page per person) from log.db and draws it in the chat, or as text where the host can't, sends nothing |
+| Every platform | [Signing an account in: checking it, then the live browser](inbox/signIn.md) | checks the session through the platform's answer and, when it needs a person, opens the account's own browser: the window on your screen, or inline in the chat from a remote runtime |
 | Instagram | [Bringing a new platform up, then vendoring its client](instagram/newPlatform.md) | makes the platform, opens it in the account's browser to sign in, reads its client's calls with rea, then vendors the GitHub client that speaks them |
 
 ## The parts every use case is built from
