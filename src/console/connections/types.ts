@@ -1,3 +1,4 @@
+import type { CheckState } from "../../platformKit/sessionCheck/index.ts";
 import type { Platform } from "../../cli/runner/helpers/platforms.ts";
 import type { CredentialInputType, CredentialProvider } from "../../auth/credentials/index.ts";
 
@@ -24,8 +25,8 @@ export type AccountStatus = (typeof ACCOUNT_STATUSES)[number];
 export const SESSION_STATES = ["loggedIn", "loggedOut", "restricted", "checkpoint", "unknown", "shadowSuspect", "accountWarning"] as const;
 export type SessionState = (typeof SESSION_STATES)[number];
 
-export const CHECK_STATES = ["running", "succeeded", "signInNeeded", "stopped", "unavailable", "unknown"] as const;
-export type CheckState = (typeof CHECK_STATES)[number];
+export { CHECK_STATES } from "../../platformKit/sessionCheck/index.ts";
+export type { CheckState };
 
 export type ProxyProvider = "twoCaptcha" | "byteful" | "unknown";
 

@@ -1,5 +1,8 @@
 import type { CredentialFetch } from "../../auth/credentials/index.ts";
+import type { CheckStore } from "../../platformKit/sessionCheck/index.ts";
 import type { CheckToolCaller } from "../accountCheck/index.ts";
+import type { SignInStore } from "../../platformKit/signIn/index.ts";
+import type { ConsoleSignInDeps } from "../signIn/index.ts";
 
 export const BROWSER_OPERATIONS = ["browserState", "browserOpen", "browserFrame", "browserInput", "browserAction", "browserSaveState", "browserClose"] as const;
 export const CONSOLE_OPERATIONS = ["connectionsList", "credentialsSave", "credentialsRead", "accountCheck", "accountSignIn", "usage", "events", ...BROWSER_OPERATIONS] as const;
@@ -29,12 +32,12 @@ export const CONSOLE_SAFE_ERRORS = [
   "accountCheckStopped",
   "accountDeactivated",
   "browserCheckRequired",
-  "accountCheckUnavailable",
   "signInInputInvalid",
   "cookieSignInUnavailable",
   "passwordSignInUnavailable",
   "cookiesIncomplete",
-  "signInBusy",
+  "signInRouteUnavailable",
+  "sessionSaveUnconfirmed",
   "usageRangeInvalid",
   "browserMissing",
   "browserViewerUnavailable",
@@ -53,6 +56,9 @@ export interface ConsoleOperationDeps {
   callTool?: CheckToolCaller;
   fetcher?: CredentialFetch;
   now?: () => number;
+  checkStore?: CheckStore;
+  signInStore?: SignInStore;
+  signInActors?: ConsoleSignInDeps["actors"];
 }
 
 export const CONSOLE_ERROR_STATUS: Readonly<Record<string, number>> = {
@@ -69,13 +75,13 @@ export const CONSOLE_ERROR_STATUS: Readonly<Record<string, number>> = {
   accountCheckStopped: 409,
   accountDeactivated: 409,
   browserCheckRequired: 409,
-  signInBusy: 409,
+  signInRouteUnavailable: 409,
+  sessionSaveUnconfirmed: 503,
   cookieSignInUnavailable: 409,
   passwordSignInUnavailable: 409,
   credentialSaveUnconfirmed: 503,
   credentialValidationUnavailable: 503,
   browserProviderUnavailable: 503,
-  accountCheckUnavailable: 503,
   browserMissing: 404,
   browserViewerUnavailable: 503,
   browserGenerationChanged: 409,
@@ -102,5 +108,5 @@ export const CONSOLE_MUTATIONS: Readonly<Record<string, ConsoleOperation>> = {
   "/api/console/browserCheck/close": "browserClose",
 };
 
-export const STREAM_TOOLS: readonly string[] = ["browserState", "browserOpen", "browserInput", "browserAction", "browserSaveState", "browserClose", "browserViewStream", "browserViewFrame", "browserViewInput", "browserViewDone", "browserView"];
+export const STREAM_TOOLS: readonly string[] = ["browserState", "browserOpen", "browserInput", "browserAction", "browserSaveState", "browserClose", "browserViewStream", "browserViewFrame", "browserViewInput", "browserViewDone", "browserView", "sessionsSignIn"];
 export const FRAME_TOOLS: readonly string[] = ["browserFrame", "browserViewFrame"];

@@ -7,7 +7,11 @@ import { cite, rulesLine } from "./agentRules.ts";
 import { guideLine, guideOfCommand } from "./guides.ts";
 import { annotationsOf, LIVE_SUFFIX, titleOf } from "./toolAnnotations.ts";
 
-export const LONG_RUNNING = new Set(["inspect", "join", "read", "poll", "check", "connect", "publish", "profile", "scan", "status", "watch", "warmup", "host", "flow", "capture", "doctor", "campaign", "queue"]);
+export const LONG_RUNNING: ReadonlySet<string> = new Set(["inspect", "join", "read", "poll", "check", "connect", "publish", "profile", "scan", "status", "watch", "warmup", "host", "flow", "capture", "doctor", "campaign", "queue", "sessions"]);
+
+export function longRunning(command: Pick<Command, "name">): boolean {
+  return LONG_RUNNING.has(command.name);
+}
 
 export const commandWords = (command: Command): string =>
   isPlatform(command.platform) ? `${command.platform} ${command.name}` : command.platform === "byArgument" ? `<platform> ${command.name}` : command.name;
@@ -129,14 +133,14 @@ function typedTool(entry: CommandTool, form: InputForm, options: ToolOptions): L
       ...(options.full ? formUsage(command, form) : formUsage(command, form).filter((line) => line.startsWith("log "))),
       ...(NOTES[entry.tool] ?? []),
       `Fill the named fields; each value goes through whole.${bypass ? " `bypass` (outside the account's hours) needs confirmBypass: true, only when the owner asked." : ""}${!entry.live && entry.command.input?.forms.some((f) => f.words.join() === form.words.join() && f.flags.some((flag) => flag.live)) ? ` What acts on ${platformLabel(command)} is \`${entry.tool}${LIVE_SUFFIX}\`.` : ""}`,
-      ...(LONG_RUNNING.has(command.name) ? [longRunLine(options)] : []),
+      ...(longRunning(command) ? [longRunLine(options)] : []),
       ...guideLines(command),
       rulesLine(commandKey(command)),
     ].join("\n"),
     annotations: annotationsOf(entry.effect, entry.live, title),
     inputSchema: {
       type: "object",
-      properties: { ...properties, ...(entry.live ? { confirmLive: CONFIRM_LIVE(platformLabel(command)) } : {}), ...(bypass ? { confirmBypass: CONFIRM_BYPASS } : {}), ...(LONG_RUNNING.has(command.name) ? { waitMs: WAIT_MS } : {}), ...(actsAsOwner(entry) ? { playHandle: PLAY_HANDLE } : {}) },
+      properties: { ...properties, ...(entry.live ? { confirmLive: CONFIRM_LIVE(platformLabel(command)) } : {}), ...(bypass ? { confirmBypass: CONFIRM_BYPASS } : {}), ...(longRunning(command) ? { waitMs: WAIT_MS } : {}), ...(actsAsOwner(entry) ? { playHandle: PLAY_HANDLE } : {}) },
       ...(required.length || entry.live ? { required: [...required, ...(entry.live ? ["confirmLive"] : [])] } : {}),
       additionalProperties: false,
     },
@@ -160,7 +164,7 @@ function argsTool(entry: CommandTool, options: ToolOptions): LogTool {
       entry.live
         ? `Pass the arguments after the command name in \`args\`, with ${liveFlags}. \`--bypass\` (outside the account's hours) needs confirmBypass: true, only when the owner asked.`
         : `Pass the arguments after the command name in \`args\`, e.g. ["--json"].${liveFlags ? ` It never takes ${liveFlags}: that is \`${entry.tool}${LIVE_SUFFIX}\`.` : ""} \`--bypass\` (outside the account's hours) needs confirmBypass: true, only when the owner asked.`,
-      ...(LONG_RUNNING.has(command.name) ? [longRunLine(options)] : []),
+      ...(longRunning(command) ? [longRunLine(options)] : []),
       ...guideLines(command),
       rulesLine(commandKey(command)),
     ].join("\n"),
@@ -171,7 +175,7 @@ function argsTool(entry: CommandTool, options: ToolOptions): LogTool {
         args: { type: "array", items: { type: "string" }, description: command.platform === "byArgument" ? `Arguments for \`log <platform> ${command.name}\`, the platform first (e.g. ["facebook", "reel"])` : `Arguments for \`log ${commandWords(command)}\`` },
         ...(entry.live ? { confirmLive: CONFIRM_LIVE(platformLabel(command)) } : {}),
         confirmBypass: CONFIRM_BYPASS,
-        ...(LONG_RUNNING.has(command.name) ? { waitMs: WAIT_MS } : {}),
+        ...(longRunning(command) ? { waitMs: WAIT_MS } : {}),
         ...(actsAsOwner(entry) ? { playHandle: PLAY_HANDLE } : {}),
       },
       ...(entry.live ? { required: ["args", "confirmLive"] } : {}),

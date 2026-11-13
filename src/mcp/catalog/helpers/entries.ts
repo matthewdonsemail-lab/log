@@ -2,7 +2,7 @@ import { isPlatform } from "../../../cli/runner/helpers/platforms.ts";
 import { currentToolName } from "../../server/helpers/toolAliases.ts";
 import type { Command, FlagSpec, InputForm, PositionalSpec } from "../../../cli/runner/types.ts";
 import { guideOfCommand } from "../../server/helpers/guides.ts";
-import { argsLiveFlags, commandTools, LONG_RUNNING } from "../../server/helpers/toolsFromCommands.ts";
+import { argsLiveFlags, commandTools, longRunning } from "../../server/helpers/toolsFromCommands.ts";
 import type { CommandTool } from "../../server/helpers/toolsFromCommands.ts";
 import { TERMINAL_ONLY } from "../../server/types.ts";
 import type { CatalogEntry, CatalogInput, InputType } from "../types.ts";
@@ -59,7 +59,7 @@ function entryOf(plain: CommandTool, live: CommandTool | undefined): CatalogEntr
     inputs,
     liveInputs,
     bypass: form ? form.flags.some((f) => f.bypass) : /--bypass\b/.test(command.usage),
-    longRunning: LONG_RUNNING.has(command.name),
+    longRunning: longRunning(command),
     guide: guideOfCommand(command),
     terminalOnly: null,
   };

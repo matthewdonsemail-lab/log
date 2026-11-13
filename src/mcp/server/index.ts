@@ -25,7 +25,7 @@ import type { OAuthServer } from "../oauth/index.ts";
 import { activePlay, currentToolName, FLOW_LIVE_TOOL, forgetPlayScope, gatedToolOf, guideAnswer, handleOf, PLAY_HANDLE_FIELD, playMeta, playRefusal, actingAsOwnerTools, folderOfPlay, namedByPlay, platformOfTool, playGateMode, stepToolsOf, playScope, processPlayScope, renamedTool, touchPlay, withoutHandle, withPlayFooter, withRenamedNote } from "./helpers/index.ts";
 import type { PlayScope } from "./helpers/index.ts";
 import { CALL_TOOL, catalog, catalogTools, getAnswer, isCatalogTool, resolveCall, searchAnswer, SEARCH_TOOL } from "../catalog/index.ts";
-import { AGENTS_URI, commandTools, CORE_GUIDE, flowArgv, flowOfTool, guardCall, GUIDE_TOOL, GUIDE_TOPICS, guideTool, listUseCases, readUseCase, withUseCases, hasShell, LONG_RUNNING, parseEnvText, readGuide, SERVER_INSTRUCTIONS, toolsFromCommands, toolsFromFlows } from "./helpers/index.ts";
+import { AGENTS_URI, commandTools, CORE_GUIDE, flowArgv, flowOfTool, guardCall, GUIDE_TOOL, GUIDE_TOPICS, guideTool, listUseCases, readUseCase, withUseCases, hasShell, longRunning, parseEnvText, readGuide, SERVER_INSTRUCTIONS, toolsFromCommands, toolsFromFlows } from "./helpers/index.ts";
 import type { LogStream } from "./helpers/index.ts";
 import type { LogToolInput, ProgressLine, ToolResult } from "./types.ts";
 import { RESULT_SIZE_META } from "./types.ts";
@@ -263,7 +263,7 @@ export async function runToolCall(
   if (noPlay) return refused(noPlay, readBrowsers);
   const entry = commandOfTool(name);
   const progress: ProgressLine[] = [];
-  if (!entry || !LONG_RUNNING.has(entry.command.name)) {
+  if (!entry || !longRunning(entry.command)) {
     const ran = await runGuarded(name, guard.argv, context, onLine, progress, null, signal);
     const answered = withBrowsers(ran.base, ran.text, ran.base.exit !== 0, readBrowsers, ran.images);
     return name === BROWSER_VIEW_TOOL ? withViewer(answered, input) : answered;

@@ -42,6 +42,7 @@ export function createContext(overrides: Partial<CommandContext> = {}): CommandC
     now: overrides.now ?? (() => new Date()),
     sleep: overrides.sleep,
     cancelled: overrides.cancelled,
+    cookiePrompts: overrides.cookiePrompts,
     directRead: overrides.directRead ?? readGroupDirect,
     directTwitter: overrides.directTwitter ?? runTwitterEngine,
     directTwitterLive: overrides.directTwitterLive ?? runTwitterEngineLive,

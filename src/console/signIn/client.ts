@@ -1,36 +1,29 @@
 import { PLATFORMS } from "../../cli/runner/helpers/platforms.ts";
 import type { Platform } from "../../cli/runner/helpers/platforms.ts";
-import type { Command, CommandContext } from "../../cli/runner/types.ts";
+import type { CommandContext } from "../../cli/runner/types.ts";
+import { cookieCommandOf, cookieSaveBy, liveWiring, signInActorsOf } from "../../cli/sessions/helpers/index.ts";
+import { logDbSignInStore, runSignIn } from "../../platformKit/signIn/index.ts";
+import type { SignInActors, SignInResult as MachineResult, SignInRoute, SignInStore } from "../../platformKit/signIn/index.ts";
+import type { ConnectionAccount } from "../connections/index.ts";
 import { localAccountsPath, readLocalAccounts, writeLocalAccounts } from "../../twenty/graphql/index.ts";
-import { connectionIdOf } from "../connections/index.ts";
+import { inProcessToolCaller } from "../accountCheck/index.ts";
+import type { CheckToolCaller } from "../accountCheck/index.ts";
+import { connectionIdOf, loadConnectionsView } from "../connections/index.ts";
 import { parseCookies } from "./helpers/cookies.ts";
-import { COOKIE_NAMES, PASSWORD_PLATFORMS } from "./types.ts";
-import type { SignInPrompts, SignInRequest, SignInResult } from "./types.ts";
+import { COOKIE_NAMES, PASSWORD_PLATFORMS, SIGN_IN_METHODS } from "./types.ts";
+import type { SignInMethod, SignInPrompts, SignInRequest, SignInResult } from "./types.ts";
 
-type CookieDeps = { prompts: SignInPrompts; tty: () => { stdinTTY: boolean | undefined; stdoutTTY: boolean | undefined } };
-type CookieRoute = { command: Command; deps: CookieDeps };
 type Env = Record<string, string | undefined>;
 
-export const signInDeps: { route: (platform: Platform) => Promise<CookieRoute | null>; context: () => Promise<Partial<CommandContext>> } = {
-  route: async (platform) => {
-    if (platform === "twitter") {
-      const { cookiesCommand, cookiesDeps } = await import("../../cli/twitter/helpers/cookies.ts");
-      return { command: cookiesCommand, deps: cookiesDeps as unknown as CookieDeps };
-    }
-    if (platform === "linkedin") {
-      const { linkedinCookiesCommand, linkedinCookiesDeps } = await import("../../cli/linkedin/helpers/cookies.ts");
-      return { command: linkedinCookiesCommand, deps: linkedinCookiesDeps as unknown as CookieDeps };
-    }
-    if (platform === "slack") {
-      const { slackCookiesCommand, slackCookiesDeps } = await import("../../cli/slack/helpers/cookies.ts");
-      return { command: slackCookiesCommand, deps: slackCookiesDeps as unknown as CookieDeps };
-    }
-    return null;
-  },
+export interface ConsoleSignInDeps {
+  callTool?: CheckToolCaller;
+  actors?: (route: SignInRoute, cookieContext: () => Promise<CommandContext>, callTool: CheckToolCaller) => SignInActors;
+  store?: SignInStore;
+}
+
+export const signInDeps: { context: () => Promise<Partial<CommandContext>> } = {
   context: async () => ({}),
 };
-
-let busy = false;
 
 function text(value: unknown, max: number): string {
   if (typeof value !== "string") throw new Error("signInInputInvalid");
@@ -42,16 +35,18 @@ function text(value: unknown, max: number): string {
 export function signInRequestOf(input: Record<string, unknown>): SignInRequest {
   const platform = String(input.platform ?? "") === "x" ? "twitter" : String(input.platform ?? "");
   if (!(PLATFORMS as readonly string[]).includes(platform)) throw new Error("signInInputInvalid");
-  if (input.method !== "cookies" && input.method !== "password") throw new Error("signInInputInvalid");
+  if (!(SIGN_IN_METHODS as readonly unknown[]).includes(input.method)) throw new Error("signInInputInvalid");
+  const method = input.method as SignInMethod;
   const account = text(input.account, 120).replace(/^@/, "");
-  if (input.method === "cookies") {
+  if (method === "browser") return { platform: platform as Platform, method, account };
+  if (method === "cookies") {
     if (typeof input.cookies !== "string" || !input.cookies.trim() || input.cookies.length > 65536) throw new Error("signInInputInvalid");
     return { platform: platform as Platform, method: "cookies", account, cookies: input.cookies };
   }
   return { platform: platform as Platform, method: "password", account, username: text(input.username, 320), password: text(input.password, 1024) };
 }
 
-function stubPrompts(answers: string[]): SignInPrompts {
+export function answeringPrompts(answers: string[]): SignInPrompts {
   return {
     intro: () => {},
     outro: () => {},
@@ -63,28 +58,42 @@ function stubPrompts(answers: string[]): SignInPrompts {
   };
 }
 
-async function cookieSignIn(request: SignInRequest): Promise<SignInResult> {
-  const names = COOKIE_NAMES[request.platform];
-  const route = names ? await signInDeps.route(request.platform) : null;
-  if (!names || !route) throw new Error("cookieSignInUnavailable");
-  const values = parseCookies(request.cookies, names);
-  if (busy) throw new Error("signInBusy");
-  busy = true;
-  const held = { prompts: route.deps.prompts, tty: route.deps.tty };
-  route.deps.prompts = stubPrompts(names.map((name) => values[name]));
-  route.deps.tty = () => ({ stdinTTY: true, stdoutTTY: true });
-  try {
-    const { createContext } = await import("../../cli/runner/client.ts");
-    const quiet = () => {};
-    const result = await route.command.run(createContext({ ...(await signInDeps.context()), out: quiet, err: quiet }), ["save", "--account", request.account]);
-    const accountId = connectionIdOf(request.platform, request.account);
-    if (result.code !== 0) return { signedIn: false, next: "none", accountId, detail: String(result.stderr ?? "the platform did not accept those cookies").split("\n")[0].slice(0, 300) };
-    return { signedIn: true, next: "none", accountId, detail: "signedIn" };
-  } finally {
-    route.deps.prompts = held.prompts;
-    route.deps.tty = held.tty;
-    busy = false;
+async function cookieContext(answers: string[]): Promise<CommandContext> {
+  const { createContext } = await import("../../cli/runner/client.ts");
+  const quiet = () => {};
+  return createContext({ ...(await signInDeps.context()), out: quiet, err: quiet, cookiePrompts: answeringPrompts(answers) });
+}
+
+function defaultActors(route: SignInRoute, context: () => Promise<CommandContext>, callTool: CheckToolCaller): SignInActors {
+  return signInActorsOf(liveWiring(callTool, cookieSaveBy(context)), route);
+}
+
+async function machineSignIn(request: SignInRequest, deps: ConsoleSignInDeps): Promise<SignInResult> {
+  const route: SignInRoute = request.method === "cookies" ? "cookies" : "browser";
+  const known = loadConnectionsView().accounts.find((account) => account.platform === request.platform && account.name.toLowerCase() === request.account.toLowerCase());
+  if (!known && route === "browser") throw new Error("accountNotFound");
+  let answers: string[] = [];
+  if (route === "cookies") {
+    const names = COOKIE_NAMES[request.platform];
+    if (!names || !(await cookieCommandOf(request.platform))) throw new Error("cookieSignInUnavailable");
+    const values = parseCookies(request.cookies, names);
+    answers = names.map((name) => values[name]);
   }
+  const account = known ? { id: known.id, name: known.name, platform: known.platform, status: known.status, state: known.state, checkedAt: known.checkedAt, lastCheck: known.lastCheck } : { id: connectionIdOf(request.platform, request.account), name: request.account, platform: request.platform };
+  const callTool = deps.callTool ?? (await inProcessToolCaller());
+  const actors = (deps.actors ?? defaultActors)(route, () => cookieContext(answers), callTool);
+  const result = await runSignIn({ account, route }, { actors, store: deps.store });
+  const detail = result.state === "signedIn" ? "signedIn" : result.state === "waitingForOwner" ? "browserOpened" : (result.save?.detail ?? result.detail ?? result.code ?? result.state);
+  return { signedIn: result.state === "signedIn", next: result.state === "waitingForOwner" ? "browserCheck" : "none", accountId: account.id, detail: detail.split("\n")[0].slice(0, 300), state: result.state };
+}
+
+export async function finishConsoleSignIn(account: ConnectionAccount, deps: ConsoleSignInDeps = {}): Promise<MachineResult | null> {
+  const store = deps.store ?? logDbSignInStore();
+  const held = store.load(account.id);
+  if (!held) return null;
+  const callTool = deps.callTool ?? (await inProcessToolCaller());
+  const actors = (deps.actors ?? defaultActors)(held.route, () => cookieContext([]), callTool);
+  return runSignIn({ account: { id: account.id, name: account.name, platform: account.platform, status: account.status, state: account.state, checkedAt: account.checkedAt, lastCheck: account.lastCheck }, finish: true }, { actors, store });
 }
 
 function passwordSignIn(request: SignInRequest, env: Env): SignInResult {
@@ -95,10 +104,10 @@ function passwordSignIn(request: SignInRequest, env: Env): SignInResult {
   if (!row) throw new Error("accountNotFound");
   Object.assign(row, { email: request.username, password: request.password, updatedAt: new Date().toISOString() });
   writeLocalAccounts(rows, path);
-  return { signedIn: false, next: "browserCheck", accountId: connectionIdOf(request.platform, String(row.accountName ?? row.name)), detail: "loginSaved" };
+  return { signedIn: false, next: "browserCheck", accountId: connectionIdOf(request.platform, String(row.accountName ?? row.name)), detail: "loginSaved", state: "signInNeeded" };
 }
 
-export async function signInConsoleAccount(input: Record<string, unknown>, env: Env = process.env): Promise<SignInResult> {
+export async function signInConsoleAccount(input: Record<string, unknown>, env: Env = process.env, deps: ConsoleSignInDeps = {}): Promise<SignInResult> {
   const request = signInRequestOf(input);
-  return request.method === "cookies" ? cookieSignIn(request) : passwordSignIn(request, env);
+  return request.method === "password" ? passwordSignIn(request, env) : machineSignIn(request, deps);
 }

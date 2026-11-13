@@ -23,6 +23,7 @@ Each tool's own description carries its full usage, notes, live line and rules; 
 | `logout` | Forget the stored Twenty session | `log logout [--apiUrl <url>] [--json]` |
 | `whoami` | Show who is signed in, refreshing the session if it expired | `log whoami [--apiUrl <url>] [--json]` |
 | `sessionsCheck` | Check every account's saved session through its platform's own answer | `log sessions check [--platform <p>] [--account <accountName>] [--json]` |
+| `sessionsSignIn` | Sign an account in | `log sessions signIn --account <accountName> [--platform <p>] [--route browser\|cookies] [--done] [--wait <seconds>] [--json]` |
 
 ## The rules these tools fall under
 

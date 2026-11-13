@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 47 domains, 527 requirements. Each one's anchors are proved against its code by the syntax tree on every commit, push and pull request (`bun run check:specs`). SubQ reads a requirement against its code only when asked (`bun run check:specs --subq`, rule 170). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 48 domains, 535 requirements. Each one's anchors are proved against its code by the syntax tree on every commit, push and pull request (`bun run check:specs`). SubQ reads a requirement against its code only when asked (`bun run check:specs --subq`, rule 170). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -84,6 +84,19 @@ An acting command (a send, a reaction, a voice note) runs through one shared mac
 - **REQ-ACTION-01** One machine: gating, acting, confirming, then done, refused or uncertain
 - **REQ-ACTION-02** The platform's answer decides, and a throw is never read as success
 - **REQ-ACTION-03** Which commands run through it
+
+## [Sessions: check and sign-in](./sessions.md)
+
+Whether an account is signed in, and signing it back in, is one capability with one state, one gate and one machine on every surface: the CLI (`log sessions check`, `log sessions signIn`), the MCP tools (`sessionsCheck`, `sessionsSignIn`), the console's Connections page and the hosted relay. Slices 3 and 4 of [platformNeutralSurfaces.md](../proposals/platformNeutralSurfaces.md). Rules 6, 25 and 94.
+
+- **REQ-SESSIONS-01** One check state for every surface
+- **REQ-SESSIONS-02** One gate decides which accounts may be checked
+- **REQ-SESSIONS-03** The check machine owns "checking", and a crash leaves no stuck row
+- **REQ-SESSIONS-04** One sign-in machine
+- **REQ-SESSIONS-05** Routes per platform, from one table
+- **REQ-SESSIONS-06** A signed-out browser never overwrites a session
+- **REQ-SESSIONS-07** Every surface calls the same machine
+- **REQ-SESSIONS-08** A login page off facebook.com is the owner's
 
 ## [Agent hooks](./agentHooks.md)
 
