@@ -32,6 +32,7 @@ import { readConsoleEvents } from "../../observability/console/index.ts";
 import { viewerState } from "../../browser/viewer/index.ts";
 import { accountOfArgs, appTools, BROWSER_VIEW_TOOL, BROWSER_VIEW_URI, browserViewResource, httpLocation, isAppTool, readBrowserViewResource, runAppTool, settleLocation, uiCapable, withBrowserView, withBrowserViewUi } from "../apps/browserView/index.ts";
 import { browserViewLocation } from "../../cli/browser/index.ts";
+import { readReportResource, REPORT_TOOL, REPORT_URI, reportResource, reportTool, runReport, withReportUi } from "../apps/report/index.ts";
 
 export * from "./helpers/index.ts";
 export type { GuardResult, LogTool, LogToolInput } from "./types.ts";
@@ -214,6 +215,7 @@ export async function runToolCall(
   appCaller: boolean = browserViewLocation() === "remote",
 ): Promise<CallToolResult> {
   if (isAppTool(name)) return runAppTool(name, input, appCaller);
+  if (name === REPORT_TOOL) return runReport(input, appCaller);
   if (name === GUIDE_TOOL) {
     const asked = (input ?? {}) as { topic?: unknown; useCase?: unknown };
     if (typeof asked.useCase === "string" && asked.useCase) {
@@ -310,22 +312,24 @@ export function createLogMcpServer(context: Partial<CommandContext> = {}, option
     const listed = [guideTool(), ...catalogTools(), ...withUseCases(tools, listUseCases(tools.map((t) => t.name)))];
     const capable = uiCapable(server.getClientCapabilities());
     const sized = listed.map((tool) => ({ ...tool, _meta: { ...RESULT_SIZE_META } as Record<string, unknown> }));
-    return { tools: capable ? [...sized.map(withBrowserViewUi), ...appTools()] : sized };
+    const report = { ...reportTool(), _meta: { ...RESULT_SIZE_META } as Record<string, unknown> };
+    return { tools: capable ? [...sized.map(withBrowserViewUi), withReportUi(report), ...appTools()] : [...sized, report] };
   });
   server.setRequestHandler(ListResourcesRequestSchema, async () => ({
     resources: [
       { uri: AGENTS_URI, name: "AGENTS.md", description: "matt's rules for log-cli, every one numbered and dated, the newest at the bottom. Every tool's description cites the ones it falls under.", mimeType: "text/markdown" },
-      ...(uiCapable(server.getClientCapabilities()) ? [browserViewResource()] : []),
+      ...(uiCapable(server.getClientCapabilities()) ? [browserViewResource(), reportResource()] : []),
     ],
   }));
   server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
     if (request.params.uri === BROWSER_VIEW_URI) return readBrowserViewResource();
-    if (request.params.uri !== AGENTS_URI) throw new Error(`No resource ${request.params.uri} (the resources are ${AGENTS_URI} and ${BROWSER_VIEW_URI})`);
+    if (request.params.uri === REPORT_URI) return readReportResource();
+    if (request.params.uri !== AGENTS_URI) throw new Error(`No resource ${request.params.uri} (the resources are ${AGENTS_URI}, ${BROWSER_VIEW_URI} and ${REPORT_URI})`);
     return { contents: [{ uri: AGENTS_URI, mimeType: "text/markdown", text: readFileSync(AGENTS_MD, "utf8") }] };
   });
   server.setRequestHandler(CallToolRequestSchema, async (request, extra) => {
     const result = await runToolCall(request.params.name, request.params.arguments as LogToolInput | undefined, context, onLine, options.readBrowsers ?? browserViews, extra.signal, uiCapable(server.getClientCapabilities()));
-    if (request.params.name === GUIDE_TOOL) return result;
+    if (request.params.name === GUIDE_TOOL || request.params.name === REPORT_TOOL) return result;
     const target = request.params.name === CALL_TOOL ? resolveCall(catalog(COMMANDS), request.params.arguments as LogToolInput | undefined) : null;
     return withPlayFooter(target?.ok ? target.tool : request.params.name, result);
   });

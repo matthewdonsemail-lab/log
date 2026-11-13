@@ -16,6 +16,7 @@ export interface GuideTopic {
   commands: string[];
   skills: string[];
   flows?: boolean;
+  serverTools?: string[];
 }
 
 export const GUIDE_TOPICS: Readonly<Record<string, GuideTopic>> = {
@@ -40,6 +41,7 @@ export const GUIDE_TOPICS: Readonly<Record<string, GuideTopic>> = {
   governor: { about: "Every platform account's governor: its daily count of requests and writes, reading it, and putting it back to 0 when matt says so, recorded in log.db", commands: ["any:governor"], skills: ["governor"] },
   newPlatform: { about: "Making a new platform whole with one command, and where every new file goes", commands: ["any:new"], skills: ["layout"] },
   instagram: { about: "An Instagram account: its session, reading its DMs, sending text and photos, and the live realtime watch", commands: ["instagram:session", "instagram:dms", "instagram:send", "instagram:react", "instagram:voice", "instagram:watch"], skills: ["instagram"] },
+  ui: { about: "Reports in the chat: the report tool and its block catalog (KPI tiles, bar and line charts, tables, people, callouts), drawn inline by MCP Apps hosts and as markdown everywhere else, with reportData for the numbers from log.db", commands: ["any:report"], skills: ["report"], serverTools: ["report"] },
 };
 
 export const guideKey = (command: Pick<Command, "platform" | "name">): string => `${command.platform}:${command.name}`;
@@ -156,13 +158,15 @@ export function skillBody(name: string): string {
 
 const shift = (markdown: string, levels: number): string => markdown.replace(/^(#{1,4}) /gm, (_, h: string) => `${"#".repeat(Math.min(6, h.length + levels))} `);
 
+export type GuideTool = Pick<LogTool, "name" | "title" | "description">;
+
 export interface GuideInput {
   topic: string;
-  tools: LogTool[];
+  tools: GuideTool[];
   commands: readonly Command[];
   flows: FlowDefinition[];
   agentsMd: string;
-  rulesOf: (tool: LogTool) => number[];
+  rulesOf: (tool: GuideTool) => number[];
   rules?: number[];
   extra?: string[];
 }

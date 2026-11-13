@@ -4,6 +4,7 @@ import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { marketplaceFixture } from "../../twenty/graphql/index.ts";
 import { createLogMcpServer, serveLogMcpHttp, TOOL_RESULT_SCHEMA } from "./index.ts";
+import { reportOutputSchema } from "../apps/report/index.ts";
 
 const stops: (() => void)[] = [];
 afterEach(() => stops.splice(0).forEach((stop) => stop()));
@@ -76,7 +77,8 @@ describe("what a client needs from the server (MCP client best practices)", () =
     const [a, b] = InMemoryTransport.createLinkedPair();
     await Promise.all([server.connect(b), client.connect(a)]);
     const { tools } = await client.listTools();
-    expect(tools.filter((t) => t.name !== "getGuide").every((t) => JSON.stringify(t.outputSchema) === JSON.stringify(TOOL_RESULT_SCHEMA))).toBe(true);
+    expect(tools.filter((t) => t.name !== "getGuide" && t.name !== "report").every((t) => JSON.stringify(t.outputSchema) === JSON.stringify(TOOL_RESULT_SCHEMA))).toBe(true);
+    expect(JSON.stringify(tools.find((t) => t.name === "report")?.outputSchema)).toBe(JSON.stringify(reportOutputSchema()));
     expect(client.getServerCapabilities()?.tools?.listChanged).toBe(true);
     await client.close();
   });

@@ -1,6 +1,9 @@
-export const widgetStyle = `
+export const brandTokens = `
 :root{--lk-blue:#2A8CFF;--lk-blue-deep:#1F78F0;--lk-blue-light:#4FA6FF;--lk-navy:#0D2A4C;--lk-shadow:#1A5FC8;--lk-bg:#ffffff;--lk-panel:#f8fafc;--lk-line:#e2e8f0;--lk-text:#0f172a;--lk-muted:#64748b;--lk-ok:#047857;--lk-ok-bg:#ecfdf5;--lk-stop:#b91c1c;--lk-stop-bg:#fef2f2;color-scheme:light}
 :root[data-theme="dark"]{--lk-bg:#0b1726;--lk-panel:#0f1f33;--lk-line:#1e3350;--lk-text:#e2e8f0;--lk-muted:#94a3b8;--lk-ok:#6ee7b7;--lk-ok-bg:#06281f;--lk-stop:#fca5a5;--lk-stop-bg:#2a0f12;color-scheme:dark}
+`;
+
+export const widgetStyle = `${brandTokens}
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;background:transparent}
 body{font-family:"Satoshi",Inter,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--lk-text);-webkit-font-smoothing:antialiased}

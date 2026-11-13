@@ -22,6 +22,7 @@ flowchart TB
     c_media["media"]
     c_browsers["browsers"]
     c_browser["browser"]
+    c_report["report"]
     c_job["job"]
     c_mcp["mcp"]
     c_login["login"]
@@ -228,6 +229,8 @@ flowchart TB
   mcp --> c_browsers
   cli --> c_browser
   mcp --> c_browser
+  cli --> c_report
+  mcp --> c_report
   cli --> c_job
   mcp --> c_job
   cli --> c_mcp

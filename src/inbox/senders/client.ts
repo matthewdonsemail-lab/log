@@ -1,0 +1,99 @@
+import { conversationsDbPath, loadConversations } from "../../search/conversations/index.ts";
+import type { Conversation, ConversationMessage } from "../../search/conversations/index.ts";
+import { useDatabase } from "../../storage/schema/index.ts";
+import { isMirror, personKeyOf } from "../../twitter/dm/person/index.ts";
+import { SENDERS_DEFAULT_LIMIT, SENDERS_MAX_LIMIT } from "./types.ts";
+import type { Sender, SendersOptions, SendersReport } from "./types.ts";
+
+const DAY_MS = 86_400_000;
+
+export function sinceOf(value: string | null | undefined, now: Date = new Date()): string | null {
+  const text = (value ?? "").trim();
+  if (!text) return null;
+  const relative = /^(\d{1,4})([dwh])$/.exec(text);
+  if (relative) {
+    const hours = Number(relative[1]) * (relative[2] === "w" ? 168 : relative[2] === "d" ? 24 : 1);
+    return new Date(now.getTime() - hours * 3_600_000).toISOString();
+  }
+  const at = Date.parse(text);
+  if (Number.isNaN(at)) throw new Error(`sinceInvalid: "${text}" is neither a date (2026-11-01) nor a span (7d, 4w, 12h)`);
+  return new Date(at).toISOString();
+}
+
+const handleOf = (text: string): string => text.replace(/^@/, "");
+
+function inbound(messages: readonly ConversationMessage[], since: string | null): ConversationMessage[] {
+  const sorted = messages.filter((m) => !m.fromMe && m.at && (!since || m.at >= since)).sort((a, b) => (a.at ?? "").localeCompare(b.at ?? ""));
+  const kept: ConversationMessage[] = [];
+  for (const m of sorted) {
+    const at = Date.parse(m.at ?? "");
+    let mirrored = false;
+    for (let i = kept.length - 1; i >= 0 && at - Date.parse(kept[i].at ?? "") <= 5_000; i--) {
+      if (isMirror(kept[i], m)) {
+        mirrored = true;
+        break;
+      }
+    }
+    if (!mirrored) kept.push(m);
+  }
+  return kept;
+}
+
+export function sendersOf(conversations: readonly Conversation[], options: SendersOptions = {}, names: ReadonlyMap<string, string> = new Map()): SendersReport {
+  const since = sinceOf(options.since, options.now);
+  const account = options.account ? handleOf(options.account) : null;
+  const limit = Math.min(Math.max(1, options.limit ?? SENDERS_DEFAULT_LIMIT), SENDERS_MAX_LIMIT);
+  const oneToOne = conversations.filter((c) => c.platform === "twitter" && c.with.length === 1 && (!account || c.account.toLowerCase() === account.toLowerCase()));
+  const groups = new Map<string, { handle: string; account: string; messages: ConversationMessage[] }>();
+  for (const c of oneToOne) {
+    const key = `${c.account}\u0000${personKeyOf(c.conversationId)}`;
+    const group = groups.get(key) ?? { handle: handleOf(c.with[0]), account: c.account, messages: [] };
+    group.messages.push(...c.messages);
+    groups.set(key, group);
+  }
+  const senders: Sender[] = [];
+  const days = new Map<string, number>();
+  for (const group of groups.values()) {
+    const messages = inbound(group.messages, since);
+    if (!messages.length) continue;
+    for (const m of messages) days.set(m.at!.slice(0, 10), (days.get(m.at!.slice(0, 10)) ?? 0) + 1);
+    senders.push({ handle: group.handle, name: names.get(group.handle.toLowerCase()) || group.handle, account: group.account, count: messages.length, firstAt: messages[0].at, lastAt: messages.at(-1)!.at });
+  }
+  senders.sort((a, b) => b.count - a.count || (b.lastAt ?? "").localeCompare(a.lastAt ?? "") || a.handle.localeCompare(b.handle));
+  return {
+    source: "twitterDmsBySender",
+    readFrom: "log.db",
+    account,
+    accounts: [...new Set(oneToOne.map((c) => c.account))].sort(),
+    since,
+    messages: senders.reduce((sum, s) => sum + s.count, 0),
+    people: senders.length,
+    senders: senders.slice(0, limit),
+    byDay: fillDays(days, since),
+  };
+}
+
+function fillDays(days: ReadonlyMap<string, number>, since: string | null): { day: string; count: number }[] {
+  const keys = [...days.keys()].sort();
+  if (!keys.length) return [];
+  const start = Date.parse(`${since ? since.slice(0, 10) : keys[0]}T00:00:00Z`);
+  const end = Date.parse(`${keys.at(-1)}T00:00:00Z`);
+  if ((end - start) / DAY_MS > 366) return keys.map((day) => ({ day, count: days.get(day)! }));
+  const out: { day: string; count: number }[] = [];
+  for (let t = start; t <= end; t += DAY_MS) {
+    const day = new Date(t).toISOString().slice(0, 10);
+    out.push({ day, count: days.get(day) ?? 0 });
+  }
+  return out;
+}
+
+export function twitterNames(path: string = conversationsDbPath()): Map<string, string> {
+  return useDatabase(path, (handle) => {
+    const rows = handle.prepare("SELECT handle, displayName FROM identities WHERE platform = 'twitter' AND handle IS NOT NULL AND displayName IS NOT NULL AND displayName <> ''").all() as { handle: string; displayName: string }[];
+    return new Map(rows.map((r) => [handleOf(r.handle).toLowerCase(), r.displayName]));
+  });
+}
+
+export function readTwitterSenders(options: SendersOptions = {}, path: string = conversationsDbPath()): SendersReport {
+  return sendersOf(loadConversations(path, { platform: "twitter" }), options, twitterNames(path));
+}

@@ -10,6 +10,9 @@ import { DIRECT_ROUTES } from "../../src/directApi/engine/index.ts";
 import { renderSurface, withSurface } from "../../src/surface/readme/index.ts";
 import { withStepsDiagrams } from "../../src/surface/stepsDiagram/index.ts";
 import { SPEC_ORDER, specDomains, specsIndex, specSummary } from "../../src/specs/index.ts";
+import { REPORT_TOOL, reportTool } from "../../src/mcp/apps/index.ts";
+
+const SERVER_TOOLS: Record<string, { name: string; title: string; description: string }> = { [REPORT_TOOL]: reportTool() };
 
 const root = join(import.meta.dir, "..", "..");
 const check = process.argv.includes("--check");
@@ -95,7 +98,8 @@ put("docs/specs/README.md", specsIndex(specDomains(root).filter((d) => existsSyn
   const guideDir = join(root, "docs/guides");
   mkdirSync(guideDir, { recursive: true });
   for (const [topic, about] of Object.entries(GUIDE_TOPICS)) {
-    const tools = full.filter((t) => (about.flows && flowNames.has(t.name)) || topicOfTool.get(t.name) === topic);
+    const serverTools = (about.serverTools ?? []).map((name) => SERVER_TOOLS[name]).filter(Boolean);
+    const tools = [...serverTools, ...full.filter((t) => (about.flows && flowNames.has(t.name)) || topicOfTool.get(t.name) === topic)];
     const names = new Set(tools.map((t) => t.name));
     const theirs = useCases.filter((u) => u.tools.some((name) => names.has(name)));
     const useCaseRows = (list: typeof useCases) => ["| Use case | What it is | How the owner asks for it |", "|---|---|---|", ...list.map((u) => `| \`${GUIDE_TOOL}({ useCase: "${u.id}" })\` | ${u.title} | ${u.asks || "see the page"} |`)];

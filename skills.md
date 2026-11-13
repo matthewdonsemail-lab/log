@@ -23,6 +23,7 @@ skill in the same commit.
 | [`runs`](skills/runs/SKILL.md) | List the recorded runs and prune the ones rea settled and the request docs hold, keeping findings and domains; the storage hook (rule 66) |
 | [`callTiming`](skills/callTiming/SKILL.md) | Find where a call's time goes from its stored timings: `timing` for p50, p95 and p99 per tool and stage, `timing` { call } for one call's waterfall, then measure again after a fix (rule 165) |
 | [`governor`](skills/governor/SKILL.md) | Read every platform account's governor count and put one back to 0 when matt says so, checked and recorded in log.db's ledger: `governorShow`, `governorReset` (rule 168) |
+| [`report`](skills/report/SKILL.md) | Show data as a report in the chat from log's block catalog (KPI tiles, bar and line charts, tables, people, callouts) with `report`, its numbers from log.db through `reportData` |
 | [`console`](skills/console/SKILL.md) | Read this machine's local console (Start, Connections, Usage, Events, AI clients, Settings) in the terminal, as JSON per screen, or as the web console on loopback with no sign-in: `log console`, `consoleStart` … `consoleSettings`, `log console --web` |
 | [`tregExtension`](skills/tregExtension/SKILL.md) | Find a treg endpoint by the job, read its price and params, and call it with the key held server-side; priced ones only when matt approves the spend (rule 166) |
 | [`warmup`](skills/warmup/SKILL.md) | Record the five warm-up activities headed, turn them into flows, run them in one open browser with an activity feed (rule 36) |

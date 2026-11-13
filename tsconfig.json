@@ -14,5 +14,5 @@
     "forceConsistentCasingInFileNames": true
   },
   "include": ["bin", "src"],
-  "exclude": ["src/mcp/apps/browserView/widget"]
+  "exclude": ["src/mcp/apps/browserView/widget", "src/mcp/apps/report/widget/main.ts"]
 }

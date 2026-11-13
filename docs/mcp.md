@@ -192,4 +192,46 @@ machine), and empty otherwise.
 person's machine, finish in the window there; from a remote runtime, open the
 view in an MCP Apps host, or the local console on the runtime's machine.
 
+## Reports in the chat
+
+Ask the agent for a report ("generate a report with some bar charts of who
+has been messaging me on Twitter") and it answers with one, in whatever host
+you use. One server, the best presentation each host can show.
+
+The agent never writes code for it. It sends `report { title, subtitle?,
+blocks }`: data and layout from log's own block catalog, the way A2UI and
+json-render catalogs work. The catalog is eight blocks: `heading`, `text`,
+`stat` (KPI tiles), `barChart`, `lineChart`, `table` (with columns),
+`personList` (initials avatar, name, handle, count) and `callout`. The server
+checks the spec against the catalog (`checkReport` in
+`src/mcp/apps/report/helpers/schema.ts`, zod) and refuses one that breaks it
+with a code and the paths to fix: `reportBlockUnknown`, `reportFieldInvalid`,
+`reportTooLarge`, `reportSeriesMismatch` or `reportColumnUnknown`. The full
+catalog, an example and the layout rules are the `ui` guide
+(`getGuide({ topic: "ui" })`, from `skills/report/SKILL.md`).
+
+| Host | What the person sees |
+| --- | --- |
+| MCP Apps (Claude web and Desktop, ChatGPT, Cursor, VS Code, Goose, MCPJam) | `ui://log/report` inline: log's brand (blue `#2A8CFF` family, rounded cards, Satoshi), charts drawn as SVG and CSS bars, light or dark from the host's theme, and a full-screen button when the host offers it. The model gets a one-line summary, so it doesn't repeat the numbers. |
+| Anything else (Claude Code, Codex, older clients) | The same report as markdown: headings, KPI line, tables, people as a numbered list, and charts as unicode bars (`████████▌ 42`) and sparklines (`▁▃▅█`) in a text block. |
+
+The spec comes back as `structuredContent` either way. `report` is read-only:
+it reads nothing and sends nothing. The view is one HTML page with its script,
+styles and fonts inline and an empty CSP (no `connectDomains`, no
+`resourceDomains`), so avatars are initials, never pictures from the web.
+
+**The numbers.** `reportData` (`log report data`) reads them from log.db only:
+no platform call, no governor use. `--source twitterDmsBySender` counts who
+messaged an X account in its one-to-one DMs: per person (an old DM thread and
+the X Chat thread with the same person are one, a message mirrored into both
+counted once, group chats left out), with first and last message times, the
+totals, and the count per day with empty days as 0. `--account`, `--since`
+(`7d`, `4w`, `12h` or a date) and `--limit` narrow it. It holds only what
+log.db has, so the agent reads the inbox with `twitterDms` first when it may
+be behind.
+
+```bash
+log report data --source twitterDmsBySender --since 30d --json
+```
+
 Next: [using log well](usingLog.md).
