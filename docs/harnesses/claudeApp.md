@@ -9,9 +9,8 @@ Claude has two harnesses that work differently with log: the Claude app (web, de
   - `report` draws the view inline.
   - `browserView` draws the account's live browser inline from a remote runtime.
 - **Guidance:**
-  - There are no prompt hooks, so the prompt router doesn't run here.
-  - Whether Claude passes the server's `instructions` to the model isn't documented.
-  - What's left: the tool descriptions, which name `getGuide` and the use cases that call each tool.
+  - **Prompt router:** there are no prompt hooks, so the model routes each request with `getGuide({ ask: "<the owner's words>" })`. The hosted server serves `getGuide` and says so in its instructions and in the tool's description.
+  - **Server instructions:** whether Claude passes them to the model isn't documented, which is why `getGuide`'s description says it too.
 - **Not verified:**
   - which widget actions Claude supports: asking (`ui/message`), pointing (`ui/update-model-context`), full screen, open link and download
   - whether `instructions` reach the model

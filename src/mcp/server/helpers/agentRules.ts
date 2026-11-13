@@ -28,7 +28,8 @@ export const SERVER_INSTRUCTIONS = [
   "6. Stream progress: with a shell start a Monitor on its live log, `tail -f ~/.logCli/mcp/<day>.log`. A client without a shell reads each result's `progress` instead (rule 26).",
   "7. No added scope/spend; do not raise Meta/Facebook rules unless Matt does (rules 38, 39, 41).",
   "8. Discover exact inputs with logSearch, logGet, logCall (rule 163). Use active rules; old rule history is non-authoritative (rule 176).",
-  "9. To show numbers, call report with data and layout from its block catalog (getGuide({ topic: \"ui\" })): MCP Apps hosts draw it inline, others get markdown."
+  "9. To show something, call report: data from log.db draws a starter view, or write the view with code (getGuide({ topic: \"ui\" })); MCP Apps hosts draw it inline, others get text.",
+  "10. With no log prompt hook in this app, route each request first: getGuide({ ask: \"<the owner's words>\" }) returns the use case to follow.",
 ].join("\n");
 
 const SOURCE_COMMAND_RULES: Readonly<Record<string, number[]>> = {

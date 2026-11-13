@@ -13,6 +13,7 @@ READ_TOOLS = frozenset({
     "errors",
     "whoami",
     "browserView",
+    "getGuide",
     "report",
     "reportData",
     "uiResourcesList",

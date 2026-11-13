@@ -137,7 +137,9 @@ export const mcpServer = {
     'REQ-MCP-15': [
       { kind: 'symbol', file: 'src/mcp/server/helpers/activePlay.ts', name: 'playRefusal' },
       { kind: 'symbol', file: 'src/mcp/server/helpers/activePlay.ts', name: 'playFooter' },
-      { kind: 'uses', file: SERVER, name: 'setActivePlay' },
+      { kind: 'uses', file: SERVER, name: 'guideAnswer' },
+      { kind: 'uses', file: 'src/mcp/server/helpers/guideAnswer.ts', name: 'setActivePlay' },
+      { kind: 'uses', file: 'src/mcp/server/helpers/guideAnswer.ts', name: 'matchPlays' },
     ],
     'REQ-MCP-14': [
       { kind: 'string', file: ENGINES, includes: '.lastHook' },
@@ -160,7 +162,7 @@ export const mcpServer = {
     'REQ-MCP-18': noul('Does the ListTools handler list logSearch, logGet and logCall right after getGuide; does catalogOf make one entry per command tool with its Live twin as liveTool and every TERMINAL_ONLY command as an entry with terminalOnly and no tool; does searchCatalog keep only the named platform and any when a platform is named and answer strong, closest or none with up to 3 near misses; and does resolveCall refuse an unknown id, a terminal-only entry, live without a liveTool and any input not among the entry inputs, and otherwise run the entry tool or liveTool through runToolCall so guardCall applies?'),
     'REQ-MCP-17': noul('For Codex, does the UserPromptSubmit useCases hook run as a curl to the context layer service with the bun script only after ||, while for Claude Code does useCasesAnswer in src/agentHooks/answers/client.ts call the same hookAnswer, does routePrompt skip text isPrompt refuses, correct typos, embed windows and combine denseScores and sparseScores at DENSE_WEIGHT, naming matches at or above the threshold and otherwise a menu at or above DEFAULT_MENU_FLOOR, and does hookAnswer on SessionStart return playReminder for the last play sessionPlayOf finds in the transcript?'),
     'REQ-MCP-16': noul('Does matchPlays score the prompt content words against each use case asks and title, keep only matches at or above MATCH_FLOOR best first and at most MATCHES_SHOWN, does playMatchText return a >>> PLAY MATCH line naming getGuide with the top use case id, a >>> MAYBE A PLAY list for a menu, and nothing when there is neither, and does scripts/hooks/useCases.ts ask the context service for the route and write it through hookOutput only when there is text?'),
-    'REQ-MCP-15': noul('Does runToolCall call setActivePlay when getGuide is given a useCase, does stepsOf read each steps-table row into its number, step, the tools named in backticks and done when, does the server add playFooter to every non-guide tool answer naming the step that tool is and the next step, or that it is not a step of the play, and does playRefusal refuse a PLAY_REQUIRED tool with playMissing while no play is loaded, naming the use cases whose pages name the tool?'),
+    'REQ-MCP-15': noul('Does runToolCall answer getGuide through guideAnswer, which calls setActivePlay when getGuide is given a useCase or an ask that matchPlays matches to a use case (returning a >>> PLAY MATCH line, or the list of use cases when none matches), does stepsOf read each steps-table row into its number, step, the tools named in backticks and done when, does the server add playFooter to every non-guide tool answer naming the step that tool is and the next step, or that it is not a step of the play, and does playRefusal refuse a PLAY_REQUIRED tool with playMissing while no play is loaded, naming the use cases whose pages name the tool?'),
     'REQ-MCP-14': noul('Does the engines hook write its text when the event is SessionStart, and on any other event only when the text differs from the one saved in its last hook file?'),
     unspecifiedBehavior: noul('Does the server list a tool without its rules line or result size limit, or let a hand-run log command through, by a route the specification does not describe?'),
   },

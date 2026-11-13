@@ -119,6 +119,7 @@ export function guideTool(): Omit<LogTool, "outputSchema"> {
       `Read a detailed guide on one kind of work. Call with topic "${CORE_GUIDE}" before using other log tools, once per session; call again if a long thread may have dropped guide text.`,
       "Each tool's description names its guide: load it before first using that tool. A guide holds the work step by step (the skills), every tool it covers with its full usage, and every AGENTS.md rule those tools fall under, in full.",
       `Guides live in docs/guides/<topic>.md. Topics: ${Object.keys(GUIDE_TOPICS).map((t) => `"${t}"`).join(", ")}.`,
+      "When the owner asks for something and this app has no log prompt hook (Claude app, ChatGPT, Cursor, Hermes, Grok), pass their request word for word as ask: getGuide({ ask: \"<their words>\" }) returns the use case that fits, as the session's play, or says none does.",
       `Use cases are the work the owner asks for again and again, each one tool by tool in order (docs/useCases/<platform>/<page>.md). Read one with useCase instead of topic, and when the owner asks for work a use case covers, follow its page step by step. Use cases: ${useCases.map((u) => `"${u.id}"`).join(", ")}.`,
     ].join("\n"),
     annotations: { title: "Read a log guide", readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
@@ -126,6 +127,7 @@ export function guideTool(): Omit<LogTool, "outputSchema"> {
       type: "object",
       properties: {
         topic: { type: "string", enum: Object.keys(GUIDE_TOPICS), description: `The guide topic to read. Available topics:\n${topics}` },
+        ask: { type: "string", description: "The owner's request in their own words: log finds the use case that fits and returns it, as when its prompt hook routes a prompt" },
         useCase: { type: "string", enum: useCases.map((u) => u.id), description: `A use case to read instead of a topic: its steps, tool by tool. Available use cases:\n${useCases.map((u) => `"${u.id}": ${u.title}`).join("\n")}` },
       },
       additionalProperties: false,

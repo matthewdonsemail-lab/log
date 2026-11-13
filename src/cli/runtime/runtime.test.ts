@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { REPORT_URI } from "../../mcp/apps/index.ts";
-import { reportOperation, toolManifest, uiResources } from "./index.ts";
+import { guideOperation, reportOperation, toolManifest, uiResources } from "./index.ts";
 
 const SPEC = { title: "Fake report", blocks: [{ type: "barChart", title: "Messages by person", data: [{ label: "Fake One", value: 3 }] }] };
 
@@ -30,5 +30,13 @@ describe("the hosted relay serves the report widget", () => {
     expect((ui.result as { spec: { compiled: string } | null }).spec?.compiled).toContain("require('log')");
     const refused = await reportOperation({ title: "t", blocks: [{ type: "pie", data: [] }] });
     expect(refused.state).toBe("failed");
+  });
+
+  test("getGuide is served on the hosted path, and ask routes the owner's words", async () => {
+    const manifest = await toolManifest({ names: ["getGuide"] });
+    expect((manifest.result as { tools: { name: string }[] }).tools.map((t) => t.name)).toEqual(["getGuide"]);
+    const routed = await guideOperation({ ask: "show me who has been messaging me" });
+    expect((routed.result as { text: string }).text).toContain("(inbox/showMe)");
+    expect((await guideOperation({ topic: "nope" })).state).toBe("failed");
   });
 });

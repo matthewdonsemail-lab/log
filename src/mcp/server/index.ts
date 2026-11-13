@@ -22,7 +22,7 @@ import { accountOfArgv, appendProgress, busyJob, cancelRequested, DEFAULT_WAIT_M
 import type { JobRecord } from "../jobs/index.ts";
 import { oauthFromEnv } from "../oauth/index.ts";
 import type { OAuthServer } from "../oauth/index.ts";
-import { playRefusal, setActivePlay, withPlayFooter } from "./helpers/index.ts";
+import { guideAnswer, playRefusal, withPlayFooter } from "./helpers/index.ts";
 import { CALL_TOOL, catalog, catalogTools, getAnswer, isCatalogTool, resolveCall, searchAnswer, SEARCH_TOOL } from "../catalog/index.ts";
 import { AGENTS_URI, commandTools, CORE_GUIDE, flowArgv, flowOfTool, guardCall, GUIDE_TOOL, GUIDE_TOPICS, guideTool, listUseCases, readUseCase, withUseCases, hasShell, LONG_RUNNING, parseEnvText, readGuide, SERVER_INSTRUCTIONS, toolsFromCommands, toolsFromFlows } from "./helpers/index.ts";
 import type { LogStream } from "./helpers/index.ts";
@@ -217,17 +217,8 @@ export async function runToolCall(
   if (isAppTool(name)) return runAppTool(name, input, appCaller);
   if (name === REPORT_TOOL) return runReport(input, appCaller);
   if (name === GUIDE_TOOL) {
-    const asked = (input ?? {}) as { topic?: unknown; useCase?: unknown };
-    if (typeof asked.useCase === "string" && asked.useCase) {
-      const page = readUseCase(asked.useCase);
-      if (page === null) return { isError: true, content: [{ type: "text", text: `No use case "${asked.useCase}". Use cases: ${listUseCases().map((u) => u.id).join(", ")}.` }] };
-      const play = setActivePlay(asked.useCase, page);
-      return { content: [{ type: "text", text: `${page}\n\n>>> PLAY ${play.id} is now this session's play: every log tool's answer ends with the step it is and the step that comes next, and a send that isn't one of its steps says so (rule 157).` }] };
-    }
-    const topic = String(asked.topic ?? CORE_GUIDE);
-    const text = readGuide(topic);
-    if (text === null) return { isError: true, content: [{ type: "text", text: `No guide "${topic}". Topics: ${Object.keys(GUIDE_TOPICS).join(", ")}.` }] };
-    return { content: [{ type: "text", text }] };
+    const answer = guideAnswer(input);
+    return { ...(answer.isError ? { isError: true } : {}), content: [{ type: "text", text: answer.text }] };
   }
   if (isCatalogTool(name)) {
     const entries = catalog(COMMANDS);

@@ -11,7 +11,7 @@
   - log's `report` and `browserView` already send these.
 - **Guidance:**
   - **Server instructions:** used. OpenAI says ChatGPT and Codex use a server's instructions alongside the tool metadata.
-  - **Prompt router:** no prompt hooks, so it doesn't run here. The instructions and tool descriptions carry the route instead.
+  - **Prompt router:** no prompt hooks, so the model routes each request with `getGuide({ ask: "<the owner's words>" })`, as the instructions tell it.
   - **Skills:** the [support matrix](https://modelcontextprotocol.io/extensions/client-matrix) marks Skills over MCP as partial.
 - **Not verified in ChatGPT itself:**
   - log's view: inline script, the full-screen request and CSV download

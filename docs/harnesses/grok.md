@@ -8,5 +8,5 @@
 - **Draws MCP Apps:** xAI's page doesn't mention MCP Apps, resources, prompts or server instructions, and Grok isn't in the [support matrix](https://modelcontextprotocol.io/extensions/client-matrix).
   - **Views:** `report` comes back as text.
   - **Sign-in:** happens in the log console.
-- **Guidance:** there's no prompt router and no confirmed instructions, so guidance comes through the tool descriptions and `getGuide`. `server_description` is the one field the API offers for describing log to the model.
+- **Guidance:** there are no prompt hooks and no confirmed instructions, so the model routes each request with `getGuide({ ask: "<the owner's words>" })`, as `getGuide`'s description says. Keep `getGuide` in `allowed_tools`. `server_description` is the one field the API offers for describing log to the model, and it should say the same.
 - **The Grok app:** whether grok.com takes custom MCP connectors isn't documented on xAI's page.

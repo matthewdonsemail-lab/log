@@ -28,6 +28,8 @@ def answer(envelope: dict) -> dict:
         return {"kind": "result", "payload": {"state": "succeeded", "result": {"resources": [{"uri": "ui://log/browserView", "name": "Live browser", "mimeType": "text/html;profile=mcp-app"}, {"uri": "log://agents", "name": "not ui"}]}}}
     if tool == "uiResourceRead":
         return {"kind": "result", "payload": {"state": "succeeded", "result": {"contents": [{"uri": args["uri"], "mimeType": "text/html;profile=mcp-app", "text": "<html>view</html>"}]}}}
+    if tool == "getGuide":
+        return {"kind": "result", "payload": {"state": "succeeded", "result": {"text": "PLAY MATCH " + str(args.get("ask"))}}}
     if tool == "report":
         spec = {"title": args["title"], "blocks": []} if args.get("ui") else None
         return {"kind": "result", "payload": {"state": "succeeded", "result": {"text": "# " + args["title"], "spec": spec}}}
@@ -135,3 +137,13 @@ def test_a_report_reaches_widget_clients_as_a_spec_and_others_as_markdown(world:
     text = rpc(world, token, "tools/call", {"name": "report", "arguments": {"title": "Fake report", "blocks": []}}, session=plain).json()["result"]
     assert "structuredContent" not in text
     assert text["content"][0]["text"] == "# Fake report"
+
+
+def test_get_guide_is_relayed_as_plain_text_and_the_instructions_say_to_route(world: World) -> None:
+    attach(world, answer)
+    token = bearer(world)
+    response = rpc(world, token, "initialize", {"protocolVersion": "2025-06-18", "capabilities": {}})
+    assert "getGuide({ ask:" in response.json()["result"]["instructions"]
+    session = response.headers["Mcp-Session-Id"]
+    result = rpc(world, token, "tools/call", {"name": "getGuide", "arguments": {"ask": "show me my dms"}}, session=session).json()["result"]
+    assert result["content"][0]["text"] == "PLAY MATCH show me my dms"

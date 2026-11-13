@@ -56,12 +56,12 @@ export function accountsList(args: Record<string, unknown>): ResultPayload {
 
 export async function toolManifest(args: Record<string, unknown>): Promise<ResultPayload> {
   const names = new Set(Array.isArray(args.names) ? args.names.map(String) : []);
-  const [{ COMMANDS }, { toolsFromCommands }] = await Promise.all([import("../runner/index.ts"), import("../../mcp/server/helpers/index.ts")]);
+  const [{ COMMANDS }, { GUIDE_TOOL, guideTool, toolsFromCommands }] = await Promise.all([import("../runner/index.ts"), import("../../mcp/server/helpers/index.ts")]);
   const tools = toolsFromCommands(COMMANDS, { shell: false })
     .filter((tool) => names.has(tool.name))
     .map((tool) => ({ name: tool.name, title: tool.title, description: tool.description, inputSchema: tool.inputSchema, annotations: tool.annotations }));
   const { appTools, reportTool, withBrowserViewUi, withReportUi } = await import("../../mcp/apps/index.ts");
-  const report = names.has("report") ? [args.ui === true ? withReportUi(reportTool()) : reportTool()] : [];
+  const report = [...(names.has(GUIDE_TOOL) ? [guideTool()] : []), ...(names.has("report") ? [args.ui === true ? withReportUi(reportTool()) : reportTool()] : [])];
   if (args.ui !== true) return { state: "succeeded", result: { tools: [...tools, ...report] } };
   return { state: "succeeded", result: { tools: [...tools.map((tool) => withBrowserViewUi(tool as typeof tool & { _meta?: Record<string, unknown> })), ...report, ...appTools()] } };
 }
@@ -72,6 +72,13 @@ export async function uiResources(tool: string, args: Record<string, unknown>): 
   if (args.uri === BROWSER_VIEW_URI) return { state: "succeeded", result: await readBrowserViewResource() };
   if (args.uri === REPORT_URI) return { state: "succeeded", result: await readReportResource() };
   return { state: "failed", error: { code: "resourceNotFound", message: "no such ui resource" } };
+}
+
+export async function guideOperation(args: Record<string, unknown>): Promise<ResultPayload> {
+  const { guideAnswer } = await import("../../mcp/server/helpers/index.ts");
+  const answer = guideAnswer(args);
+  if (answer.isError) return { state: "failed", error: { code: "guideUnknown", message: answer.text.slice(0, 2000) } };
+  return { state: "succeeded", result: { text: answer.text } };
 }
 
 export async function reportOperation(args: Record<string, unknown>): Promise<ResultPayload> {
@@ -103,6 +110,7 @@ export function toolRunner(callTool: ToolCaller): RunTool {
     if (tool === "toolManifest") return toolManifest(args);
     if (tool === "uiResourcesList" || tool === "uiResourceRead") return uiResources(tool, args);
     if (tool === "report") return reportOperation(args);
+    if (tool === "getGuide") return guideOperation(args);
     if (isConsoleOperation(tool)) return consoleOperation(tool, args, callTool);
     const answer = await callTool(tool, args);
     const content = (answer.structuredContent ?? {}) as Record<string, unknown>;

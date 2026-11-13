@@ -18,7 +18,9 @@ from controlService.tools import APP_TOOLS, MCP_APP_MIME_TYPE, READ_TOOLS, UI_EX
 INSTRUCTIONS = (
     "log runs your team's social accounts from its own cloud workspace. Every tool runs there, with that workspace's "
     "accounts and limits; nothing is stored by this server. Start with accountsList to see which accounts exist. "
-    "Tools that post or send are not available over this connection yet."
+    "Tools that post or send are not available over this connection yet. "
+    "Route each request first: getGuide({ ask: \"<the owner's words>\" }) returns the use case to follow, and "
+    "getGuide({ topic: \"ui\" }) explains report, which shows the owner a view of their data."
 )
 HIDDEN = {"toolManifest", "uiResourcesList", "uiResourceRead"}
 SESSION_HEADER = "mcp-session-id"
@@ -161,6 +163,8 @@ def mcp_router(settings: Settings, engine: Engine, dispatcher: Dispatcher) -> AP
             detail = (view.error or {}).get("message") if isinstance(view.error, dict) else None
             text = tool_text(view.result) if view.result else (detail or f"the operation is {view.state}; ask again later with the same request")
             return {"isError": True, "content": [{"type": "text", "text": f"{view.state}: {text}"}]}
+        if name == "getGuide" and isinstance(view.result, dict) and isinstance(view.result.get("text"), str):
+            return {"content": [{"type": "text", "text": view.result["text"]}]}
         if name == "report" and isinstance(view.result, dict):
             spec = view.result.get("spec")
             answer = {"content": [{"type": "text", "text": str(view.result.get("text") or "")}]}

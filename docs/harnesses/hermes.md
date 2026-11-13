@@ -10,7 +10,7 @@ Hermes (Nous Research) is an agent that runs on a server and answers through gat
   - **Views:** `report` comes back as text, and that is what reaches Telegram.
   - **Sign-in:** happens in the log console or, when log runs on the owner's machine, the window on their screen.
 - **Guidance:**
-  - **Prompt router:** Hermes has no prompt hooks for it.
+  - **Prompt router:** Hermes has no prompt hooks for it, so the model routes each request with `getGuide({ ask: "<the owner's words>" })` (as `mcp_log_getGuide`).
   - **Server instructions:** Hermes's MCP page doesn't mention them.
   - **Resources and prompts:** Hermes does wrap a server's resources and prompts as tools (`list_resources`, `read_resource`, `list_prompts`, `get_prompt`), so log's `log://agents` resource can be read.
   - **What's left:** guidance comes through the tool descriptions and `getGuide`.

@@ -12,3 +12,5 @@ export { agentsRules, agentsSection, CORE_GUIDE, FLOWS_GUIDE, GUIDE_TOOL, GUIDE_
 export type { GuideTopic, GuideInput, UseCase } from "./guides.ts";
 export { activePlay, clearActivePlay, PLAY_REQUIRED, playFooter, playRefusal, setActivePlay, stepsOf, withPlayFooter } from "./activePlay.ts";
 export type { ActivePlay, PlayStep } from "./activePlay.ts";
+export { ASK_FLOOR, askAnswer, guideAnswer } from "./guideAnswer.ts";
+export type { GuideAnswer } from "./guideAnswer.ts";
