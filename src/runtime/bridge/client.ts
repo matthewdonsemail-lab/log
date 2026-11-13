@@ -143,6 +143,7 @@ export interface ConnectOptions {
   signal?: AbortSignal;
   socket?: (url: string, headers: Record<string, string>) => WebSocket;
   redact?: (tool: string, args: Record<string, unknown>) => Record<string, unknown>;
+  redactResult?: (tool: string, result: unknown) => unknown;
 }
 
 const openSocket = (url: string, headers: Record<string, string>) => new (WebSocket as unknown as new (url: string, options: { headers: Record<string, string> }) => WebSocket)(url, { headers });
@@ -207,7 +208,7 @@ export function connectOnce(options: ConnectOptions): Promise<{ code: number; re
       } catch (error) {
         outcome = { state: options.isLive(checked.tool) ? "unknown" : "failed", error: { code: "runtimeError", message: error instanceof Error ? error.message : String(error) } };
       }
-      journalState(db, operationId, outcome.state, outcome);
+      journalState(db, operationId, outcome.state, options.redactResult && outcome.result !== undefined ? { ...outcome, result: options.redactResult(checked.tool, outcome.result) } : outcome);
       onLine(`bridge: ${checked.tool} ${outcome.state} (operation ${operationId})`);
       send({ kind: "result", operationId, payload: outcome });
     });
