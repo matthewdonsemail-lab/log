@@ -1,7 +1,7 @@
 import { spawnSync } from "node:child_process";
 import { join } from "node:path";
 import { applyPlan, planNewPlatform } from "../../scaffold/platform/index.ts";
-import { JSON_FLAG, listOf, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";
+import { JSON_FLAG, listOf, parseArgs, parserSpecOf, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
 
 const REPO = join(import.meta.dir, "..", "..", "..");
@@ -46,7 +46,7 @@ export const newCommand: Command = {
   args: "platform <name> [--library <vendor/folder>] [--apply]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(NEW_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log new: ${parsed.error}\n${NEW_USAGE}` };
+    if (!parsed.ok) return refuseInput("new", parsed.error, NEW_USAGE);
     const [what, name, ...rest] = parsed.positionals;
     if (what !== "platform" || !name || rest.length) return { code: 1, stderr: `log new: give platform <name>\n${NEW_USAGE}` };
     const str = (flag: string) => (typeof parsed.flags[flag] === "string" ? (parsed.flags[flag] as string) : undefined);

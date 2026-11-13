@@ -14,10 +14,10 @@ import { createInspector, formatTraceLine } from "../../observability/trace/inde
 import { recordAccountIssue } from "../../marketplace/replacement/index.ts";
 import { checkRunnable, findAccount, listFacebookAccounts, saveCookies, saveDeviceProfile, savePlatformSession, saveSession, setAccountStatus, toFacebookCookies } from "../../marketplace/socialAccount/index.ts";
 import type { FacebookAccount, RunPurpose } from "../../marketplace/socialAccount/index.ts";
-import { parseArgs, refuse, refuseError } from "../runner/helpers/index.ts";
+import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuse, refuseError, refuseInput } from "../runner/helpers/index.ts";
 import { settleInBackground } from "../../rea/capture/index.ts";
 import type { LoginSecrets } from "../../twenty/graphql/index.ts";
-import type { Command, CommandContext, CommandResult } from "../runner/types.ts";
+import type { Command, CommandContext, CommandInput, CommandResult, FlagSpec } from "../runner/types.ts";
 import { renderConnect, renderDoctor, renderLoss, renderScan, summarizeConnect } from "./helpers/index.ts";
 
 export * from "./helpers/index.ts";
@@ -29,6 +29,42 @@ export const CONNECT_WAIT_SECONDS = 600;
 export const SCAN_USAGE = "Usage: log facebook scan --account <accountName> [--json] [--bypass]";
 export const STATUS_USAGE = "Usage: log facebook status <listingId> --account <accountName> [--json] [--bypass]";
 
+export const FACEBOOK_ACCOUNT_FLAG: FlagSpec = { name: "account", kind: "string", required: true, description: "The Facebook socialAccount's accountName" };
+
+export const BYPASS_FLAG: FlagSpec = { name: "bypass", kind: "boolean", bypass: true, description: "Outside the account's waking hours, only when the owner asked (rule 86)" };
+
+export const DOCTOR_INPUT: CommandInput = { forms: [{ words: [], summary: "Check python, facebook-camofox-client, Camoufox, Twenty, and which Facebook accounts may run", positionals: [], flags: [JSON_FLAG] }] };
+
+export const CONNECT_INPUT: CommandInput = {
+  forms: [
+    {
+      words: [],
+      summary: "Sign a Facebook account in through its proxy (the connect machine) and save its cookies",
+      positionals: [],
+      flags: [
+        FACEBOOK_ACCOUNT_FLAG,
+        { name: "wait", kind: "integer", min: 10, max: 1800, description: `How long anything it can't handle waits for the owner in the visible window, in seconds (default ${CONNECT_WAIT_SECONDS})` },
+        { name: "noPrompt", kind: "boolean", description: "Never prompt in the terminal (always set over MCP)" },
+        BYPASS_FLAG,
+        { name: "now", kind: "boolean", description: "Skip the 10-minute launch gap only (rule 35)" },
+      ],
+    },
+  ],
+};
+
+export const SCAN_INPUT: CommandInput = { forms: [{ words: [], summary: "Read Marketplace > Selling live for one account and update its listings", positionals: [], flags: [FACEBOOK_ACCOUNT_FLAG, JSON_FLAG, BYPASS_FLAG] }] };
+
+export const STATUS_INPUT: CommandInput = {
+  forms: [
+    {
+      words: [],
+      summary: "Open one Marketplace item page live and classify its status",
+      positionals: [{ name: "listingId", kind: "string", required: true, description: "The Marketplace listing id" }],
+      flags: [FACEBOOK_ACCOUNT_FLAG, JSON_FLAG, BYPASS_FLAG],
+    },
+  ],
+};
+
 export async function openAccount(
   context: CommandContext,
   name: string,
@@ -39,7 +75,7 @@ export async function openAccount(
   withLogin = false,
   skipLaunchGap = false,
 ): Promise<{ account: FacebookAccount; run: PreparedRun; login: LoginSecrets | null } | CommandResult> {
-  if (typeof value !== "string") return { code: 1, stderr: `log ${name}: --account is required (log facebook accounts lists them)\n${usage}` };
+  if (typeof value !== "string") return { code: 1, error: "inputInvalid", stderr: `log ${name}: --account is required (log facebook accounts lists them)\n${usage}` };
   let account: FacebookAccount;
   try {
     account = await findAccount(context.twenty, value);
@@ -133,10 +169,11 @@ export const doctorCommand: Command = {
   platform: "facebook",
   name: "doctor",
   effect: "browser",
+  input: DOCTOR_INPUT,
   summary: "Check python, facebook-camofox-client, Camoufox, Twenty, and which accounts may run",
   args: "[--json]",
   async run(context, argv) {
-    const parsed = parseArgs(argv, { boolean: ["json"] });
+    const parsed = parseArgs(argv, parserSpecOf(DOCTOR_INPUT));
     if (!parsed.ok || parsed.positionals.length > 0) {
       return { code: 1, stderr: `log facebook doctor: ${parsed.ok ? `unexpected argument "${parsed.positionals[0]}"` : parsed.error}\n${DOCTOR_USAGE}` };
     }
@@ -169,14 +206,14 @@ export const connectCommand: Command = {
   platform: "facebook",
   name: "connect",
   effect: "browser",
+  input: CONNECT_INPUT,
   summary: "Sign a Facebook account in through its proxy (the connect machine), save its cookies to Twenty",
   args: "--account <name> [--noPrompt] [--wait <seconds>] [--bypass] [--now]",
   async run(context, argv) {
-    const parsed = parseArgs(argv, { boolean: ["noPrompt", "bypass", "now"], valued: ["account", "wait"] });
-    if (!parsed.ok) return { code: 1, stderr: `log facebook connect: ${parsed.error}\n${CONNECT_USAGE}` };
+    const parsed = parseArgs(argv, parserSpecOf(CONNECT_INPUT));
+    if (!parsed.ok) return refuseInput("facebook connect", parsed.error, CONNECT_USAGE);
     const noPrompt = Boolean(parsed.flags["noPrompt"]);
-    const waitSeconds = parsed.flags["wait"] === undefined ? CONNECT_WAIT_SECONDS : Number(parsed.flags["wait"]);
-    if (!Number.isInteger(waitSeconds) || waitSeconds < 10 || waitSeconds > 1800) return { code: 1, stderr: `log facebook connect: --wait must be 10 to 1800 seconds\n${CONNECT_USAGE}` };
+    const waitSeconds = numberOf(parsed, "wait") ?? CONNECT_WAIT_SECONDS;
     const opened = await openAccount(context, "connect", CONNECT_USAGE, parsed.flags["account"], "connect", Boolean(parsed.flags["bypass"]), noPrompt, Boolean(parsed.flags["now"]));
     if (!("run" in opened)) return opened;
     const { account, run, login } = opened;
@@ -265,11 +302,12 @@ export const scanCommand: Command = {
   platform: "facebook",
   name: "scan",
   effect: "browser",
+  input: SCAN_INPUT,
   summary: "Read Marketplace > Selling live for one account and update its listings in Twenty",
   args: "--account <name> [--json] [--bypass]",
   async run(context, argv) {
-    const parsed = parseArgs(argv, { boolean: ["json", "bypass"], valued: ["account"] });
-    if (!parsed.ok) return { code: 1, stderr: `log facebook scan: ${parsed.error}\n${SCAN_USAGE}` };
+    const parsed = parseArgs(argv, parserSpecOf(SCAN_INPUT));
+    if (!parsed.ok) return refuseInput("facebook scan", parsed.error, SCAN_USAGE);
     const opened = await openAccount(context, "scan", SCAN_USAGE, parsed.flags["account"], "run", Boolean(parsed.flags["bypass"]));
     if (!("run" in opened)) return opened;
     const { account, run } = opened;
@@ -298,14 +336,15 @@ export const statusCommand: Command = {
   platform: "facebook",
   name: "status",
   effect: "browser",
+  input: STATUS_INPUT,
   summary: "Open one Marketplace item page live and classify its status",
   args: "<listingId> --account <name> [--json] [--bypass]",
   async run(context, argv) {
-    const parsed = parseArgs(argv, { boolean: ["json", "bypass"], valued: ["account"] });
-    if (!parsed.ok) return { code: 1, stderr: `log facebook status: ${parsed.error}\n${STATUS_USAGE}` };
+    const parsed = parseArgs(argv, parserSpecOf(STATUS_INPUT));
+    if (!parsed.ok) return refuseInput("facebook status", parsed.error, STATUS_USAGE);
     const [listingId, extra] = parsed.positionals;
-    if (listingId === undefined) return { code: 1, stderr: `log facebook status: a listing id is required\n${STATUS_USAGE}` };
-    if (extra !== undefined) return { code: 1, stderr: `log facebook status: unexpected argument "${extra}"\n${STATUS_USAGE}` };
+    if (listingId === undefined) return { code: 1, error: "inputInvalid", stderr: `log facebook status: a listing id is required\n${STATUS_USAGE}` };
+    if (extra !== undefined) return { code: 1, error: "inputInvalid", stderr: `log facebook status: unexpected argument "${extra}"\n${STATUS_USAGE}` };
     const opened = await openAccount(context, "status", STATUS_USAGE, parsed.flags["account"], "run", Boolean(parsed.flags["bypass"]));
     if (!("run" in opened)) return opened;
     const { account, run } = opened;

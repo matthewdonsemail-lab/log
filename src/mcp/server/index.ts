@@ -24,10 +24,12 @@ import { oauthFromEnv } from "../oauth/index.ts";
 import type { OAuthServer } from "../oauth/index.ts";
 import { activePlay, currentToolName, FLOW_LIVE_TOOL, forgetPlayScope, gatedToolOf, guideAnswer, handleOf, PLAY_HANDLE_FIELD, playMeta, playRefusal, actingAsOwnerTools, folderOfPlay, namedByPlay, platformOfTool, playGateMode, stepToolsOf, playScope, processPlayScope, renamedTool, touchPlay, withoutHandle, withPlayFooter, withRenamedNote } from "./helpers/index.ts";
 import type { PlayScope } from "./helpers/index.ts";
+import { codeOfText, isPlatform } from "../../cli/runner/helpers/index.ts";
+import { flowRunInput, FLOW_RUN_TOOL } from "./helpers/index.ts";
 import { CALL_TOOL, catalog, catalogTools, getAnswer, isCatalogTool, resolveCall, searchAnswer, SEARCH_TOOL } from "../catalog/index.ts";
-import { AGENTS_URI, commandTools, CORE_GUIDE, flowArgv, flowOfTool, guardCall, GUIDE_TOOL, GUIDE_TOPICS, guideTool, listUseCases, readUseCase, withUseCases, hasShell, LONG_RUNNING, parseEnvText, readGuide, SERVER_INSTRUCTIONS, toolsFromCommands, toolsFromFlows } from "./helpers/index.ts";
+import { AGENTS_URI, commandTools, CORE_GUIDE, flowArgv, flowOfTool, guardCall, GUIDE_TOOL, GUIDE_TOPICS, guideTool, listUseCases, readUseCase, withUseCases, hasShell, identityOf, legacyArgsTool, LONG_RUNNING, parseEnvText, readGuide, SERVER_INSTRUCTIONS, toolsFromCommands, toolsFromFlows } from "./helpers/index.ts";
 import type { LogStream } from "./helpers/index.ts";
-import type { LogToolInput, ProgressLine, ToolResult } from "./types.ts";
+import type { LogToolInput, ProgressLine, ResultIdentity, ToolResult } from "./types.ts";
 import { RESULT_SIZE_META } from "./types.ts";
 import { readConsoleEvents } from "../../observability/console/index.ts";
 import { viewerState } from "../../browser/viewer/index.ts";
@@ -53,9 +55,9 @@ export function browserLines(views: BrowserView[]): string[] {
   const where = views.length
     ? `Browsers: ${views.map((v) => `${v.account} on ${v.url || "a page"} (step ${v.step})${v.state ? `, page state ${v.state.id}: ${v.state.what}` : v.failed ? ", its last step failed" : ", no known blocking state"}`).join("; ")}.`
     : "Browsers: none open.";
-  const matt = views.find((v) => v.needsMatt)?.needsMatt;
+  const owner = views.find((v) => v.needsMatt)?.needsMatt;
   const next = views.find((v) => v.next)?.next;
-  return [where, ...(matt ? [`Needs matt: ${matt}`] : []), ...(next ? [`Next: call \`${next.tool}\` ${JSON.stringify(next.input)} (rule 79: a known state is resolved, never a reason to stop).`] : [])];
+  return [where, ...(owner ? [`Needs the owner: ${owner}`] : []), ...(next ? [`Next: call \`${next.tool}\` ${JSON.stringify(next.input)} (rule 79: a known state is resolved, never a reason to stop).`] : [])];
 }
 
 function withBrowsers(base: Omit<ToolResult, "browsers" | "next" | "needsMatt">, body: string, isError: boolean, read: ReadBrowsers, images: readonly ToolImage[] = []): CallToolResult {
@@ -64,8 +66,10 @@ function withBrowsers(base: Omit<ToolResult, "browsers" | "next" | "needsMatt">,
   return { isError, content: [{ type: "text", text: [...browserLines(views), "", body].join("\n") }, ...images.map((image) => ({ type: "image" as const, data: image.data, mimeType: image.mimeType }))], structuredContent: result as unknown as Record<string, unknown> };
 }
 
-function refused(message: string, read: ReadBrowsers): CallToolResult {
-  return withBrowsers({ exit: 1, ok: false, stdout: "", stderr: message, log: [], progress: [] }, message, true, read);
+const NO_IDENTITY: ResultIdentity = { platform: null, capability: null };
+
+function refused(message: string, code: string, read: ReadBrowsers, identity: ResultIdentity = NO_IDENTITY): CallToolResult {
+  return withBrowsers({ exit: 1, ok: false, code, ...identity, stdout: "", stderr: message, log: [], progress: [] }, message, true, read);
 }
 
 function jsonOf(stdout: string): unknown {
@@ -111,11 +115,11 @@ export interface ToolImage {
   mimeType: string;
 }
 
-function runGuarded(name: string, argv: string[], context: Partial<CommandContext>, onLine: OnLogLine, progress: ProgressLine[], job: JobRecord | null, signal?: AbortSignal): Promise<Ran> {
-  return timeCall(name, (call) => runTimed(name, argv, context, onLine, progress, job, call, signal), { account: accountOfArgv(argv) || undefined, job: job?.id });
+function runGuarded(name: string, argv: string[], context: Partial<CommandContext>, onLine: OnLogLine, progress: ProgressLine[], job: JobRecord | null, identity: ResultIdentity, signal?: AbortSignal): Promise<Ran> {
+  return timeCall(name, (call) => runTimed(name, argv, context, onLine, progress, job, call, identity, signal), { account: accountOfArgv(argv) || undefined, job: job?.id });
 }
 
-async function runTimed(name: string, argv: string[], context: Partial<CommandContext>, onLine: OnLogLine, progress: ProgressLine[], job: JobRecord | null, call: ActiveCall, signal?: AbortSignal): Promise<Ran> {
+async function runTimed(name: string, argv: string[], context: Partial<CommandContext>, onLine: OnLogLine, progress: ProgressLine[], job: JobRecord | null, call: ActiveCall, identity: ResultIdentity, signal?: AbortSignal): Promise<Ran> {
   const began = performance.now();
   let kept: JobRecord | null = null;
   const out: string[] = [];
@@ -152,10 +156,14 @@ async function runTimed(name: string, argv: string[], context: Partial<CommandCo
   inFlight.add(fromProcess);
   onLine(name, "out", `▶ log ${argv.join(" ")}${job ? `  (job ${job.id})` : ""}  (call ${call.callId})`);
   let code: number;
+  let refusal: string | null = null;
   let cancelled = false;
   try {
     code = await runCli(argv, {
       ...context,
+      refused: (said) => {
+        refusal ??= said;
+      },
       ...(job
         ? {
             cancelled: () => cancelRequested(job.id),
@@ -182,6 +190,7 @@ async function runTimed(name: string, argv: string[], context: Partial<CommandCo
   } catch (error) {
     cancelled = error instanceof JobCancelled;
     err.push(error instanceof Error ? error.message : String(error));
+    refusal = cancelled ? "commandFailed" : "crashed";
     code = 1;
   } finally {
     signal?.removeEventListener("abort", clientCancelled);
@@ -196,11 +205,16 @@ async function runTimed(name: string, argv: string[], context: Partial<CommandCo
   const stdout = out.join("\n");
   const json = jsonOf(stdout);
   if (keptJob) finishJob(keptJob.id, code === 0 ? "completed" : "failed", { exit: code, ok: code === 0, stdout, stderr: err.join("\n"), cancelledByClient: true }, text);
-  return { base: { exit: code, ok: code === 0, stdout, stderr: err.join("\n"), log: processLog, progress, ...(json === undefined ? {} : { json }) }, text, cancelled, images };
+  const failed = code === 0 ? null : (refusal ?? "commandFailed");
+  return { base: { exit: code, ok: code === 0, code: failed, ...identity, stdout, stderr: err.join("\n"), log: processLog, progress, ...(json === undefined ? {} : { json }) }, text, cancelled, images };
 }
 
 function commandOfTool(name: string) {
   return commandTools(COMMANDS).find((t) => t.tool === name) ?? null;
+}
+
+function flowIdentity(flow: FlowDefinition): ResultIdentity {
+  return { platform: isPlatform(flow.platform) ? flow.platform : null, capability: "flow.run" };
 }
 
 export function waitOf(input: LogToolInput | undefined): number {
@@ -231,14 +245,14 @@ export async function runToolCall(
     return { ...(answer.isError ? { isError: true } : {}), content: [{ type: "text", text: answer.text }], ...(play === undefined ? {} : { _meta: { [PLAY_META]: play } }) };
   }
   if (isCatalogTool(name)) {
-    const entries = catalog(COMMANDS);
+    const entries = catalog(COMMANDS, savedFlows());
     if (name === CALL_TOOL) {
       const target = resolveCall(entries, given);
-      if (!target.ok) return refused(target.message, readBrowsers);
+      if (!target.ok) return refused(target.message, "inputInvalid", readBrowsers);
       return again(target.tool, target.input, false);
     }
     const answer = name === SEARCH_TOOL ? searchAnswer(entries, given) : getAnswer(entries, given);
-    return withBrowsers({ exit: answer.ok ? 0 : 1, ok: answer.ok, stdout: answer.text, stderr: answer.ok ? "" : answer.text, log: [], progress: [], json: answer.json }, answer.text, !answer.ok, readBrowsers);
+    return withBrowsers({ exit: answer.ok ? 0 : 1, ok: answer.ok, code: answer.ok ? null : "inputInvalid", ...NO_IDENTITY, stdout: answer.text, stderr: answer.ok ? "" : answer.text, log: [], progress: [], json: answer.json }, answer.text, !answer.ok, readBrowsers);
   }
   const { waitMs, ...fields } = given ?? {};
   const flows = savedFlows();
@@ -253,30 +267,33 @@ export async function runToolCall(
   };
   const flowCall = flowOfTool(flows, name);
   if (flowCall) {
-    const built = flowArgv(flowCall.flow, fields as Record<string, unknown>, flowCall.live);
-    if (!built.ok) return refused(built.message, readBrowsers);
-    return again(flowCall.live ? FLOW_LIVE_TOOL : "flow", { args: built.argv.slice(1), confirmLive: fields.confirmLive, confirmBypass: fields.confirmBypass, ...(waitMs === undefined ? {} : { waitMs }) });
+    const built = flowRunInput(flowCall.flow, fields as Record<string, unknown>, flowCall.live);
+    if (!built.ok) return refused(built.message, "inputInvalid", readBrowsers, flowIdentity(flowCall.flow));
+    const ran = await again(flowCall.live ? FLOW_LIVE_TOOL : FLOW_RUN_TOOL, { ...built.input, confirmLive: fields.confirmLive, confirmBypass: fields.confirmBypass, ...(waitMs === undefined ? {} : { waitMs }) });
+    return ran.structuredContent ? { ...ran, structuredContent: { ...ran.structuredContent, ...flowIdentity(flowCall.flow) } } : ran;
   }
   const guard = guardCall(name, given === undefined ? undefined : fields, COMMANDS);
-  if (!guard.ok) return refused(guard.message, readBrowsers);
+  const entry = commandOfTool(name) ?? legacyArgsTool(currentToolName(name), COMMANDS);
+  const identity = entry ? identityOf(entry, guard.ok ? guard.argv : []) : NO_IDENTITY;
+  if (!guard.ok) return refused(guard.message, guard.code, readBrowsers, identity);
   const noPlay = gate(gatedToolOf(name, fields as Record<string, unknown>, flows));
-  if (noPlay) return refused(noPlay, readBrowsers);
-  const entry = commandOfTool(name);
+  if (noPlay) return refused(noPlay, codeOfText(noPlay), readBrowsers, identity);
   const progress: ProgressLine[] = [];
+  const noted = (result: CallToolResult): CallToolResult => (guard.note ? { ...result, content: [...(result.content ?? []), { type: "text" as const, text: guard.note }] } : result);
   if (!entry || !LONG_RUNNING.has(entry.command.name)) {
-    const ran = await runGuarded(name, guard.argv, context, onLine, progress, null, signal);
-    const answered = withBrowsers(ran.base, ran.text, ran.base.exit !== 0, readBrowsers, ran.images);
+    const ran = await runGuarded(name, guard.argv, context, onLine, progress, null, identity, signal);
+    const answered = noted(withBrowsers(ran.base, ran.text, ran.base.exit !== 0, readBrowsers, ran.images));
     return name === BROWSER_VIEW_TOOL ? withViewer(answered, input) : answered;
   }
   const account = accountOfArgv(guard.argv);
   const holder = busyJob(account);
-  if (holder) return refused(`accountBusy: job ${holder.id} (${holder.tool}) holds ${account}, started ${holder.startedAt}. Follow it with jobStatus { jobId: "${holder.id}" }, or stop it with jobCancel (rule 35).`, readBrowsers);
+  if (holder) return refused(`accountBusy: job ${holder.id} (${holder.tool}) holds ${account}, started ${holder.startedAt}. Follow it with jobStatus { jobId: "${holder.id}" }, or stop it with jobCancel (rule 35).`, "accountBusy", readBrowsers, identity);
   const job = startJob({ tool: name, argv: guard.argv, account, live: entry.live });
-  const run = runGuarded(name, guard.argv, context, onLine, progress, job, signal).then((ran) => {
+  const run = runGuarded(name, guard.argv, context, onLine, progress, job, identity, signal).then((ran) => {
     const status = ran.cancelled ? "cancelled" : ran.base.exit === 0 ? "completed" : "failed";
     const done = withBrowsers({ ...ran.base, job: { id: job.id, status, afterLine: progress.length } }, ran.text, ran.base.exit !== 0, readBrowsers);
     finishJob(job.id, status, done.structuredContent as Record<string, unknown>, (done.content as { text: string }[])[0].text);
-    return done;
+    return noted(done);
   });
   const wait = waitOf(input);
   let timer: ReturnType<typeof setTimeout> | undefined;
@@ -284,12 +301,12 @@ export async function runToolCall(
   clearTimeout(timer);
   if (finished) return finished;
   const running = `Still running as job ${job.id} (${name}). Follow it with jobStatus { jobId: "${job.id}", afterLine: ${progress.length} } (it waits for new lines), stop it at its next browser step with jobCancel { jobId: "${job.id}" }. Lines so far:\n${progress.map((p) => `${p.at.slice(11, 19)}  ${p.line}`).join("\n") || "(none yet)"}`;
-  return withBrowsers({ exit: -1, ok: false, stdout: "", stderr: "", log: [], progress: [...progress], job: { id: job.id, status: "running", afterLine: progress.length } }, running, false, readBrowsers);
+  return withBrowsers({ exit: -1, ok: false, code: null, ...identity, stdout: "", stderr: "", log: [], progress: [...progress], job: { id: job.id, status: "running", afterLine: progress.length } }, running, false, readBrowsers);
 }
 
 export function withCallFooter(name: string, input: LogToolInput | undefined, result: CallToolResult, scope: PlayScope = processPlayScope()): CallToolResult {
   if (name === GUIDE_TOOL || name === REPORT_TOOL) return result;
-  const target = name === CALL_TOOL ? resolveCall(catalog(COMMANDS), withoutHandle(input)) : null;
+  const target = name === CALL_TOOL ? resolveCall(catalog(COMMANDS, savedFlows()), withoutHandle(input)) : null;
   return withPlayFooter(target?.ok ? target.tool : currentToolName(name), result, activePlay(scope, handleOf(input)));
 }
 

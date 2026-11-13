@@ -13,6 +13,7 @@ export interface CommandResult {
   code: number;
   stdout?: string;
   stderr?: string;
+  error?: import("../../errors/catalog/index.ts").ErrorCode;
 }
 
 export interface MarketplaceData {
@@ -34,6 +35,7 @@ export interface CommandContext {
   connectTiming?: Partial<ConnectTiming>;
   out: (line: string) => void;
   err: (line: string) => void;
+  refused?: (code: string) => void;
   image?: (data: string, mimeType: string) => void;
   now?: () => Date;
   sleep?: (ms: number) => Promise<void>;

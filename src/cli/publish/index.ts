@@ -35,7 +35,7 @@ import { preparePhotos } from "../../media/photo/index.ts";
 import { createInspector, formatTraceLine } from "../../observability/trace/index.ts";
 import { renderLoss } from "../live/helpers/index.ts";
 import { keepNewDevice, keepSession } from "../live/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf, PROXY_MS_FLAG, refuse, refuseError } from "../runner/helpers/index.ts";
+import { JSON_FLAG, parseArgs, parserSpecOf, PROXY_MS_FLAG, refuse, refuseError, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandContext, CommandInput, CommandResult } from "../runner/types.ts";
 import { renderPublishOutput, summarizePublish } from "./helpers/index.ts";
 
@@ -126,10 +126,10 @@ export const publishCommand: Command = {
   args: "--listing <id> [--live] [--json] [--bypass] [--now]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(PUBLISH_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log facebook publish: ${parsed.error}\n${PUBLISH_USAGE}` };
-    if (parsed.positionals.length > 0) return { code: 1, stderr: `log facebook publish: unexpected argument "${parsed.positionals[0]}"\n${PUBLISH_USAGE}` };
+    if (!parsed.ok) return refuseInput("facebook publish", parsed.error, PUBLISH_USAGE);
+    if (parsed.positionals.length > 0) return { code: 1, error: "inputInvalid", stderr: `log facebook publish: unexpected argument "${parsed.positionals[0]}"\n${PUBLISH_USAGE}` };
     const listingId = parsed.flags.listing;
-    if (typeof listingId !== "string") return { code: 1, stderr: `log facebook publish: --listing is required (an agencyListing id)\n${PUBLISH_USAGE}` };
+    if (typeof listingId !== "string") return { code: 1, error: "inputInvalid", stderr: `log facebook publish: --listing is required (an agencyListing id)\n${PUBLISH_USAGE}` };
     const dryRun = !parsed.flags.live;
     const json = Boolean(parsed.flags.json);
 

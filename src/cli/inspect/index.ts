@@ -9,7 +9,7 @@ import type { CurrentInspect } from "../../browser/inspect/index.ts";
 import { findAccount } from "../../marketplace/socialAccount/index.ts";
 import { inspectRuns, mapAllInspectRuns, mapInspectRun } from "../../rea/inspectMap/index.ts";
 import { openAccount, withRun } from "../live/index.ts";
-import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, PROXY_MS_FLAG } from "../runner/helpers/index.ts";
+import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, PROXY_MS_FLAG, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
 import { browserFor } from "../../browser/driver/index.ts";
 import type { FacebookAccount } from "../../marketplace/socialAccount/index.ts";
@@ -196,7 +196,7 @@ export const inspectCommand: Command = {
   args: "start --account <name> [--url <u>] [--bypass] | do <action> [args] [--live]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(INSPECT_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log inspect: ${parsed.error}\n${INSPECT_USAGE}` };
+    if (!parsed.ok) return refuseInput("inspect", parsed.error, INSPECT_USAGE);
     const [sub, ...rest] = parsed.positionals;
 
     if (sub === "start") {
@@ -338,6 +338,6 @@ export const inspectCommand: Command = {
       return { code: 0, stdout: lines.join("\n") };
     }
 
-    return { code: 1, stderr: `log inspect: expected "start", "do", "read", "goal", "finding" or "map"\n${INSPECT_USAGE}` };
+    return { code: 1, error: "inputInvalid", stderr: `log inspect: expected "start", "do", "read", "goal", "finding" or "map"\n${INSPECT_USAGE}` };
   },
 };

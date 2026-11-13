@@ -21,9 +21,9 @@ Each tool's own description carries its full usage, notes, live line and rules; 
 
 | Tool | What it does | Usage |
 |---|---|---|
-| `errors` | The error catalog | `log errors [--layer <account\|listing\|photo\|form\|captcha\|runtime\|twenty\|proxyVendor\|auth\|profile>] [--code <code>] [--json] [--markdown]` |
+| `errors` | The error catalog | `log errors [--layer <account\|listing\|photo\|form\|captcha\|runtime\|twenty\|proxyVendor\|auth\|profile\|tool>] [--code <code>] [--json] [--markdown]` |
 | `graph` | Print a machine's states and transitions as a Mermaid diagram | `log graph <publish\|monitor>` |
-| `facebookCapture` | Read a run's raw HAR | `log facebook capture --har <path> [--out <dir>] [--noRea] [--json] \| --settle <dir> \| --docs [--noRea]` |
+| `facebookCapture` | Read a run's raw HAR and its scripts with offline rea, settle a run's… | `log facebook capture --har <path> [--out <dir>] [--noRea] [--json]` |
 | `runsList` | Every recorded run | `log runs [list] [--json]   (every recorded run: its size, settled by rea, in the request docs, and why it is kept or that it may go)` |
 | `runsExchanges` | Take every recorded step's internal API calls | `log runs exchanges   (takes every recorded step's internal API calls, what was sent and what came back, out of its HAR into exchanges.json, for every run still on disk; prune does it first too)` |
 | `runsPrune` | Delete each analysed run after taking out its steps' exchanges… | `log runs prune [--before <YYYY-MM-DD>] [--apply]   (deletes each analysed run, started before the day when given, after taking out every step's exchanges, keeping its findings.md, steps.jsonl, settle.json, every step's exchanges.json, reading.json and readingState.json, its goalFindings and its requests by domain; a dry run unless --apply)` |

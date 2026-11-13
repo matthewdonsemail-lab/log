@@ -89,6 +89,34 @@ export const RENAMED_FLOW_TOOLS: Readonly<Record<string, string>> = {
 
 export const RENAMED_TOOLS: Readonly<Record<string, string>> = { ...RENAMED_COMMAND_TOOLS, ...RENAMED_FLOW_TOOLS };
 
+export const ARGS_TOOLS_GIVEN_FORMS: ReadonlySet<string> = new Set([
+  "adsPower",
+  "localAccount",
+  "facebookLifecycle",
+  "facebookPreflight",
+  "facebookDoctor",
+  "facebookConnect",
+  "facebookProfile",
+  "facebookProfileLive",
+  "flow",
+  "flowLive",
+  "warmup",
+  "warmupLive",
+  "facebookJoin",
+  "facebookJoinLive",
+  "facebookPoll",
+  "facebookScan",
+  "facebookStatus",
+  "facebookWatch",
+  "proxy",
+  "facebookCampaign",
+  "facebookCampaignLive",
+  "graph",
+  "facebookCapture",
+  "logout",
+  "whoami",
+]);
+
 export function renamedTool(name: string): string | null {
   return Object.hasOwn(RENAMED_TOOLS, name) ? RENAMED_TOOLS[name] : null;
 }

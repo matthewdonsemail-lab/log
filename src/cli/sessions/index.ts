@@ -2,8 +2,9 @@ import { checkStateOfVerdict, inProcessToolCaller, recordCheck } from "../../con
 import { readConnectionRows } from "../../console/connections/index.ts";
 import { checkSessions, sessionsText } from "../../platformKit/sessionCheck/index.ts";
 import type { SessionCheckAccount, SessionToolCaller } from "../../platformKit/sessionCheck/index.ts";
+import { isErrorCode } from "../../errors/catalog/index.ts";
 import { PLATFORMS } from "../runner/helpers/platforms.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";
+import { JSON_FLAG, parseArgs, parserSpecOf, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
 
 export const SESSIONS_USAGE = [
@@ -43,9 +44,9 @@ export const sessionsCommand: Command = {
   args: "check [--platform <p>] [--account <a>] [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(SESSIONS_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log sessions: ${parsed.error}\n${SESSIONS_USAGE}` };
+    if (!parsed.ok) return refuseInput("sessions", parsed.error, SESSIONS_USAGE);
     const [sub = "check", ...rest] = parsed.positionals;
-    if (sub !== "check" || rest.length) return { code: 1, stderr: `log sessions: pick check\n${SESSIONS_USAGE}` };
+    if (sub !== "check" || rest.length) return { code: 1, error: "inputInvalid", stderr: `log sessions: pick check\n${SESSIONS_USAGE}` };
     const str = (name: string) => (typeof parsed.flags[name] === "string" ? String(parsed.flags[name]).trim() : undefined);
     const json = parsed.flags["json"] === true;
     const callTool = await sessionsDeps.callTool();
@@ -57,9 +58,8 @@ export const sessionsCommand: Command = {
       });
     } catch (error) {
       const code = error instanceof Error ? error.message : "sessionCheckFailed";
-      return { code: 1, stderr: `log sessions check: ${code}${code === "accountNotFound" ? `: no account ${str("account")}${str("platform") ? ` on ${str("platform")}` : ""}` : ""}` };
+      return { code: 1, error: isErrorCode(code) ? code : "commandFailed", stderr: `log sessions check: ${code}${code === "accountNotFound" ? `: no account ${str("account")}${str("platform") ? ` on ${str("platform")}` : ""}` : ""}` };
     }
-    const needs = reports.some((report) => report.verdict === "signInNeeded" || report.verdict === "stopped");
-    return { code: needs ? 1 : 0, stdout: json ? JSON.stringify({ accounts: reports }, null, 2) : sessionsText(reports) };
+    return { code: 0, stdout: json ? JSON.stringify({ accounts: reports }, null, 2) : sessionsText(reports) };
   },
 };

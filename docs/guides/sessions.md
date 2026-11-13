@@ -21,7 +21,7 @@ Each tool's own description carries its full usage, notes, live line and rules; 
 | Tool | What it does | Usage |
 |---|---|---|
 | `logout` | Forget the stored Twenty session | `log logout [--apiUrl <url>] [--json]` |
-| `whoami` | Show who is signed in, refreshing the session if it expired | `log whoami [--apiUrl <url>] [--json]` |
+| `whoami` | Show who is signed in to Twenty, refreshing the session if it expired | `log whoami [--apiUrl <url>] [--json]` |
 | `sessionsCheck` | Check every account's saved session through its platform's own answer | `log sessions check [--platform <p>] [--account <accountName>] [--json]` |
 
 ## The rules these tools fall under

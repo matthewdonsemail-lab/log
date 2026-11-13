@@ -13,7 +13,7 @@ Say: **"go on docs/useCases/slack/dmReply.md for <someone>"**. The agent reads t
 <!-- stepsDiagram: written by `bun run docs:build` from the steps table below, not edited by hand -->
 ```mermaid
 flowchart TD
-  s0["0. The account is known: a local row with its d cookie<br/><i>localAccount, log</i>"]
+  s0["0. The account is known: a local row with its d cookie<br/><i>localAccountList, log</i>"]
   s1["1. Session check, and which workspaces it is in<br/><i>slackSessionCheck, slackWorkspaces</i>"]
   s2["2. Find the chat by who it is with<br/><i>slackChats</i>"]
   s3["3. Read the chat<br/><i>slackRead</i>"]
@@ -33,7 +33,7 @@ flowchart TD
 
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
-| 0 | The account is known: a local row with its `d` cookie | `localAccount` { action: "list" }; if missing, the owner runs `log slack cookies save --account <name>` in a terminal | the account is listed |
+| 0 | The account is known: a local row with its `d` cookie | `localAccountList` {}; if missing, the owner runs `log slack cookies save --account <name>` in a terminal | the account is listed |
 | 1 | Session check, and which workspaces it is in | `slackSessionCheck`, then `slackWorkspaces` | `loggedIn`, with the workspace's domain |
 | 2 | Find the chat by who it is with | `slackChats` { account, workspace } | one DM or group with that person |
 | 3 | Read the chat | `slackRead` { account, workspace, chat, limit } | their latest message and what came before it |

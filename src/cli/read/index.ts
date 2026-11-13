@@ -15,7 +15,7 @@ import { checkRunnable, findAccount } from "../../marketplace/socialAccount/inde
 import type { FacebookAccount } from "../../marketplace/socialAccount/index.ts";
 import { createInspector, formatTraceLine } from "../../observability/trace/index.ts";
 import type { TwentyClient } from "../../twenty/graphql/index.ts";
-import { refuse, refuseError } from "../runner/helpers/index.ts";
+import { refuse, refuseError, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandContext, CommandResult } from "../runner/types.ts";
 import { directGate, recordSessionState } from "../../directApi/engine/index.ts";
 import { parseReadArgs, READ_INPUT, renderDirectRead } from "./helpers/index.ts";
@@ -222,7 +222,7 @@ export function renderMembers(read: MembersRead, owners: boolean): string {
 }
 
 async function runReadMembers(context: CommandContext, parsed: ReadMembersArgs): Promise<CommandResult> {
-  if (parsed.count === null) return { code: 1, stderr: `log facebook read members: --count is needed\n${READ_USAGE}` };
+  if (parsed.count === null) return { code: 1, error: "inputInvalid", stderr: `log facebook read members: --count is needed\n${READ_USAGE}` };
   const ref = parseGroupRef(parsed.group ?? "");
   if (!ref.ok) return refuse("read", "groupRefInvalid", ref.error);
   const account = await findAccount(context.twenty, parsed.account ?? "");
@@ -244,7 +244,7 @@ async function runReadMembers(context: CommandContext, parsed: ReadMembersArgs):
 
 export async function runRead(context: CommandContext, argv: string[]): Promise<CommandResult> {
   const parsed = parseReadArgs(argv);
-  if (!parsed.ok) return { code: 1, stderr: `log facebook read: ${parsed.error}\n${READ_USAGE}` };
+  if (!parsed.ok) return refuseInput("facebook read", parsed.error, READ_USAGE);
   if (!parsed.account || !parsed.group) return { code: 1, stderr: `log facebook read: --account and --group are both needed\n${READ_USAGE}` };
   if (parsed.target === "members") {
     try {

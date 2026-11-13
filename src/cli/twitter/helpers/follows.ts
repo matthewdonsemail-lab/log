@@ -1,5 +1,5 @@
 import type { TwitterSessionAnswer } from "../../../twitter/account/session/index.ts";
-import { JSON_FLAG, listOf, parseArgs, parserSpecOf, refuse, refuseError } from "../../runner/helpers/index.ts";
+import { JSON_FLAG, listOf, parseArgs, parserSpecOf, refuse, refuseError, refuseInput } from "../../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../../runner/types.ts";
 import { governorLine, openTwitterAccount } from "./account.ts";
 
@@ -40,10 +40,10 @@ export const followsCommand: Command = {
   args: "--account <a> --handles <h,…> [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(FOLLOWS_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log twitter follows: ${parsed.error}\n${FOLLOWS_USAGE}` };
+    if (!parsed.ok) return refuseInput("twitter follows", parsed.error, FOLLOWS_USAGE);
     const ref = parsed.flags["account"];
     const given = listOf(parsed, "handles");
-    if (typeof ref !== "string" || !given) return { code: 1, stderr: `log twitter follows: --account and --handles are needed\n${FOLLOWS_USAGE}` };
+    if (typeof ref !== "string" || !given) return { code: 1, error: "inputInvalid", stderr: `log twitter follows: --account and --handles are needed\n${FOLLOWS_USAGE}` };
     const handles = [...new Set(given.map((h) => h.replace(/^@/, "")).filter(Boolean))];
     if (!handles.length) return refuse("twitter follows", "targetMissing", "--handles names no handle");
     try {

@@ -8,7 +8,7 @@ import { COPY_STYLES, copyStyleOf, DEFAULT_COPY_STYLE } from "../../../twitter/c
 import { TwentyError } from "../../../twenty/graphql/index.ts";
 import { shouldPrompt } from "../../launch/helpers/index.ts";
 import type { LaunchTTY } from "../../launch/helpers/index.ts";
-import { parseArgs, parserSpecOf, refuse, refuseError } from "../../runner/helpers/index.ts";
+import { parseArgs, parserSpecOf, refuse, refuseError, refuseInput } from "../../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../../runner/types.ts";
 
 export const COOKIES_USAGE = [
@@ -67,10 +67,10 @@ export const cookiesCommand: Command = {
   async run(context, argv) {
     if (argv[0] !== "save") return { code: 1, stderr: `log twitter cookies: save is the only subcommand\n${COOKIES_USAGE}` };
     const parsed = parseArgs(argv.slice(1), parserSpecOf({ forms: [{ ...COOKIES_INPUT.forms[0], words: [] }] }));
-    if (!parsed.ok) return { code: 1, stderr: `log twitter cookies: ${parsed.error}\n${COOKIES_USAGE}` };
+    if (!parsed.ok) return refuseInput("twitter cookies", parsed.error, COOKIES_USAGE);
     const raw = parsed.flags["account"];
     const handle = typeof raw === "string" ? raw.trim().replace(/^@/, "") : "";
-    if (!/^[A-Za-z0-9_]{1,15}$/.test(handle)) return { code: 1, stderr: `log twitter cookies save: --account must be an X handle (letters, digits, _)\n${COOKIES_USAGE}` };
+    if (!/^[A-Za-z0-9_]{1,15}$/.test(handle)) return { code: 1, error: "inputInvalid", stderr: `log twitter cookies save: --account must be an X handle (letters, digits, _)\n${COOKIES_USAGE}` };
     const style = typeof parsed.flags["style"] === "string" ? (parsed.flags["style"] as string).trim() : undefined;
     if (style && !copyStyleOf(style)) return refuse("twitter cookies save", "copyStyleUnknown", `${style} (known: ${Object.keys(COPY_STYLES).join(", ")})`);
     if (!context.directTwitter) return { code: 1, stderr: "log twitter cookies save: the direct-API engine isn't wired in this context" };

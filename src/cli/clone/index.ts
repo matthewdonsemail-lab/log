@@ -98,7 +98,7 @@ export const cloneCommand: Command = {
     const form = CLONE_INPUT.forms[SUBS.indexOf(sub)];
     const parsed = parseArgs(argv.slice(1), parserSpecOf({ forms: [{ ...form, words: [] }] }));
     if (!parsed.ok) return { code: 1, stderr: `log clone ${sub}: ${parsed.error}\n${CLONE_USAGE}` };
-    if (parsed.positionals.length) return { code: 1, stderr: `log clone ${sub}: takes no words, only flags\n${CLONE_USAGE}` };
+    if (parsed.positionals.length) return { code: 1, error: "inputInvalid", stderr: `log clone ${sub}: takes no words, only flags\n${CLONE_USAGE}` };
     const label = `clone ${sub}`;
     const chosen = providerOf(parsed.flags["provider"]);
     if (!chosen.ok) return refuse(label, "voiceProviderUnknown", chosen.detail);

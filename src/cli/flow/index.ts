@@ -12,17 +12,54 @@ import { fetchProxyUrl } from "../../marketplace/socialAccount/index.ts";
 import { createInspector, formatTraceLine } from "../../observability/trace/index.ts";
 import { mapInspectRun } from "../../rea/inspectMap/index.ts";
 import { openAccount, withRun } from "../live/index.ts";
-import { parseArgs } from "../runner/helpers/index.ts";
+import { JSON_FLAG, parseArgs, parserSpecOf, PROXY_MS_FLAG, refuseInput } from "../runner/helpers/index.ts";
 import { openInspectSession, runFlowInSession } from "./helpers/index.ts";
 
 export * from "./helpers/index.ts";
-import type { Command, CommandResult } from "../runner/types.ts";
+import type { Command, CommandResult, CommandInput, PositionalSpec } from "../runner/types.ts";
 
 export const FLOW_USAGE = [
   "Usage: log flow fromInspect <runDir> --name <name> [--summary <text>] [--rename text1=firstName]...",
-  "       log flow docs <name> | list | show <name>",
+  "       log flow docs <name>",
+  "       log flow list",
+  "       log flow show <name>",
   "       log flow run <name> --account <accountName> [--set <param>=<value>]... [--live] [--bypass] [--now] [--json]",
 ].join("\n");
+
+const FLOW_NAME: PositionalSpec = { name: "name", kind: "string", required: true, description: "The flow's name (log flow list)" };
+
+export const FLOW_INPUT: CommandInput = {
+  forms: [
+    {
+      words: ["fromInspect"],
+      effect: "write",
+      summary: "Turn a recorded inspect run into a flow: its steps, parameters, doc and machine",
+      positionals: [{ name: "runDir", kind: "string", required: true, description: "The inspect run folder (the one with replies.jsonl)" }],
+      flags: [
+        { name: "name", kind: "string", required: true, pattern: "^[a-z][A-Za-z0-9]*$", takes: "a camelCase name", description: "The flow's name, camelCase (rule 1)" },
+        { name: "summary", kind: "string", description: "What the flow does" },
+        { name: "rename", kind: "pairs", description: "Recorded text to make a parameter, as text=paramName" },
+      ],
+    },
+    { words: ["docs"], effect: "write", summary: "Write a flow's doc again", positionals: [FLOW_NAME], flags: [] },
+    { words: ["list"], effect: "read", summary: "Every saved flow, with its tool", positionals: [], flags: [] },
+    { words: ["show"], effect: "read", summary: "A saved flow's steps and parameters, as JSON", positionals: [FLOW_NAME], flags: [] },
+    {
+      words: ["run"],
+      summary: "Run a saved flow on an account: a dry run lists the steps and opens nothing; live runs each step in the account's browser",
+      positionals: [FLOW_NAME],
+      flags: [
+        { name: "account", kind: "string", required: true, description: "The account it runs on" },
+        { name: "set", kind: "pairs", description: "The flow's parameters, as name=value" },
+        { name: "live", kind: "boolean", live: true, description: "Run every step in the account's browser, only when the owner asked (rule 8)" },
+        { name: "bypass", kind: "boolean", bypass: true, description: "Outside the account's waking hours, only when the owner asked (rule 86)" },
+        { name: "now", kind: "boolean", description: "Skip the 10-minute launch gap only (rule 35)" },
+        PROXY_MS_FLAG,
+        JSON_FLAG,
+      ],
+    },
+  ],
+};
 
 export function takePairs(argv: string[], flag: string): { pairs: Record<string, string>; rest: string[] } {
   const pairs: Record<string, string> = {};
@@ -114,13 +151,14 @@ export const flowCommand: Command = {
   platform: "any",
   name: "flow",
   effect: "browser",
+  input: FLOW_INPUT,
   summary: "Recorded inspect runs as flows: docs, an XState machine per flow, run on any account (rule 31)",
   args: "fromInspect <runDir> --name <n> | docs <n> | list | show <n> | run <n> --account <a> [--set k=v]... [--live]",
   async run(context, argv) {
     const sets = takePairs(argv, "set");
     const renames = takePairs(sets.rest, "rename");
-    const parsed = parseArgs(renames.rest, { boolean: ["live", "bypass", "now", "json"], valued: ["name", "summary", "account"] });
-    if (!parsed.ok) return { code: 1, stderr: `log flow: ${parsed.error}\n${FLOW_USAGE}` };
+    const parsed = parseArgs(renames.rest, parserSpecOf(FLOW_INPUT));
+    if (!parsed.ok) return refuseInput("flow", parsed.error, FLOW_USAGE);
     const [sub, target] = parsed.positionals;
 
     if (sub === "list") {
@@ -130,7 +168,7 @@ export const flowCommand: Command = {
     if (sub === "fromInspect") {
       if (!target || !existsSync(join(target, "replies.jsonl"))) return { code: 1, stderr: `log flow: ${target ?? "(none)"} is not an inspect run folder\n${FLOW_USAGE}` };
       const name = parsed.flags["name"];
-      if (typeof name !== "string" || !/^[a-z][A-Za-z0-9]*$/.test(name)) return { code: 1, stderr: "log flow: --name must be camelCase (rule 1)" };
+      if (typeof name !== "string" || !/^[a-z][A-Za-z0-9]*$/.test(name)) return { code: 1, error: "inputInvalid", stderr: "log flow: --name must be camelCase (rule 1)" };
       const summary = typeof parsed.flags["summary"] === "string" ? parsed.flags["summary"] : `Recorded from ${basename(target)}.`;
       const account = basename(target).split("_").pop() ?? "";
       let flow: FlowDefinition;
@@ -150,6 +188,6 @@ export const flowCommand: Command = {
     if (sub === "show") return { code: 0, stdout: JSON.stringify(flow, null, 2) };
     if (sub === "docs") return { code: 0, stdout: `wrote ${writeFlowDoc(flow)}` };
     if (sub === "run") return runFlow(context, flow, sets.pairs, parsed.flags);
-    return { code: 1, stderr: `log flow: expected fromInspect, docs, list, show or run\n${FLOW_USAGE}` };
+    return { code: 1, error: "inputInvalid", stderr: `log flow: expected fromInspect, docs, list, show or run\n${FLOW_USAGE}` };
   },
 };

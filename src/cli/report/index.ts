@@ -1,6 +1,6 @@
 import { readTwitterSenders, SENDER_SOURCES, SENDERS_DEFAULT_LIMIT, SENDERS_MAX_LIMIT } from "../../inbox/senders/index.ts";
 import type { SendersReport } from "../../inbox/senders/index.ts";
-import { JSON_FLAG, numberOf, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";
+import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
 
 export const REPORT_USAGE = [
@@ -48,10 +48,10 @@ export const reportCommand: Command = {
   args: "data --source twitterDmsBySender [--account <a>] [--since <span|date>] [--limit <n>] [--json]",
   async run(_context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(REPORT_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log report: ${parsed.error}\n${REPORT_USAGE}` };
+    if (!parsed.ok) return refuseInput("report", parsed.error, REPORT_USAGE);
     if (parsed.positionals[0] !== "data" || parsed.positionals.length > 1) return { code: 1, stderr: `log report: say data\n${REPORT_USAGE}` };
     const source = parsed.flags["source"];
-    if (source !== "twitterDmsBySender") return { code: 1, stderr: `log report data: --source is one of ${SENDER_SOURCES.join(", ")}\n${REPORT_USAGE}` };
+    if (source !== "twitterDmsBySender") return { code: 1, error: "inputInvalid", stderr: `log report data: --source is one of ${SENDER_SOURCES.join(", ")}\n${REPORT_USAGE}` };
     const str = (name: string) => (typeof parsed.flags[name] === "string" ? String(parsed.flags[name]).trim() : "");
     const limit = numberOf(parsed, "limit");
     try {

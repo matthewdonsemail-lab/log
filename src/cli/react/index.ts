@@ -63,7 +63,7 @@ export function reactCommandOf(shape: ReactShape): Command {
     async run(context, argv) {
       const parsed = parseArgs(argv, parserSpecOf(input));
       if (!parsed.ok) return { code: 1, stderr: `log ${label}: ${parsed.error}\n${usage}` };
-      if (parsed.positionals.length) return { code: 1, stderr: `log ${label}: takes no words, only flags\n${usage}` };
+      if (parsed.positionals.length) return { code: 1, error: "inputInvalid", stderr: `log ${label}: takes no words, only flags\n${usage}` };
       const message = String(parsed.flags[shape.message.name] ?? "").trim();
       const emoji = String(parsed.flags["emoji"] ?? "").trim();
       const remove = parsed.flags["remove"] === true;

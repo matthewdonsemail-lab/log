@@ -1,5 +1,5 @@
 import { callWaterfall, msText, reportLines, timingStats } from "../../observability/timing/index.ts";
-import { JSON_FLAG, numberOf, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";
+import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
 
 export const TIMING_USAGE = [
@@ -39,8 +39,8 @@ export const timingCommand: Command = {
   args: "[--tool <name>] [--hours <n>] [--stages <n>] [--call <callId>] [--json]",
   async run(_context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(TIMING_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log timing: ${parsed.error}\n${TIMING_USAGE}` };
-    if (parsed.positionals.length) return { code: 1, stderr: `log timing: unexpected argument "${parsed.positionals[0]}"\n${TIMING_USAGE}` };
+    if (!parsed.ok) return refuseInput("timing", parsed.error, TIMING_USAGE);
+    if (parsed.positionals.length) return { code: 1, error: "inputInvalid", stderr: `log timing: unexpected argument "${parsed.positionals[0]}"\n${TIMING_USAGE}` };
     const json = Boolean(parsed.flags["json"]);
     const call = parsed.flags["call"];
     if (typeof call === "string" && call) {

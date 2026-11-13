@@ -9,7 +9,7 @@ import { lastWordOf, personKeyOf } from "../../../inbox/lastWord/index.ts";
 import type { LastWord } from "../../../inbox/lastWord/index.ts";
 import { loadConversations, saveConversations, twitterConversationOf } from "../../../search/conversations/index.ts";
 import { localAccountId, twitterStateRoot } from "../../../directApi/engine/index.ts";
-import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuse, refuseError } from "../../runner/helpers/index.ts";
+import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuse, refuseError, refuseInput } from "../../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../../runner/types.ts";
 import { activityLine, activityOf, dropMirrors, followUpDue, mergeThreads, ONE_INBOX_NOTE, openedNoReply, reactedOnly, storedThreads, waitingOnYou } from "../../../twitter/dm/person/index.ts";
 import { notificationsFresh, notificationStorePath, readNotificationStore } from "../../../twitter/notification/feed/index.ts";
@@ -151,9 +151,9 @@ export const dmsCommand: Command = {
   args: "--account <a> [--limit <n>] [--waiting] [--with <handle>] [--conversation <id>] [--force] [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(DMS_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log twitter dms: ${parsed.error}\n${DMS_USAGE}` };
+    if (!parsed.ok) return refuseInput("twitter dms", parsed.error, DMS_USAGE);
     const ref = parsed.flags["account"];
-    if (typeof ref !== "string") return { code: 1, stderr: `log twitter dms: --account is needed\n${DMS_USAGE}` };
+    if (typeof ref !== "string") return { code: 1, error: "inputInvalid", stderr: `log twitter dms: --account is needed\n${DMS_USAGE}` };
     const limit = numberOf(parsed, "limit") ?? 20;
     const conversation = parsed.flags["conversation"];
     if (conversation !== undefined && (typeof conversation !== "string" || !/^[\dg]+(?:[-:]\d+)?$/.test(conversation))) return refuse("twitter dms", "conversationInvalid", "--conversation is X's conversation id (digits, or two user ids joined by a dash)");

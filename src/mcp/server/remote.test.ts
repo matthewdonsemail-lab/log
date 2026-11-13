@@ -28,7 +28,7 @@ describe("the log MCP server over Streamable HTTP (remote)", () => {
     const served = serve("s3cret");
     const client = await clientOf(served.url, "s3cret");
     const { tools } = await client.listTools();
-    expect(tools.some((t) => t.name === "facebookJoin")).toBe(true);
+    expect(tools.some((t) => t.name === "facebookJoinGroup")).toBe(true);
     const result = await client.callTool({ name: "facebookAccounts", arguments: { json: true } });
     expect(result.isError).toBe(false);
     const structured = result.structuredContent as { exit: number; ok: boolean; json: unknown };

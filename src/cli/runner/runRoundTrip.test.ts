@@ -16,9 +16,11 @@ const SKIP: Readonly<Record<string, string>> = {
   inspectStart: "opens the account's browser as its own process",
   facebookHostStart: "runs the host loop, which drives a browser for minutes",
   mediaDescriber: "starts the describer process",
+  localAccountPull: "pulls every account from Twenty with its own client, not the context's",
+  facebookWatch: "with checks 0 it watches until stopped",
 };
 
-const WRITES = new Set(["apply"]);
+const WRITES = new Set(["apply", "write", "docs"]);
 
 const CONDITIONAL_BOUNDS: Readonly<Record<string, string>> = {
   "instagramDms.limit": "at most 100 threads, or 200 messages with --with: the schema states the larger bound and run refuses the rest",
@@ -40,7 +42,17 @@ const SAMPLES: Readonly<Record<string, string>> = {
   post: "1900000000000000001",
   where: "isReply=false",
   source: "twitterDmsBySender",
+  homes: "US",
+  home: "IE",
+  reels: "8-20",
+  watch: "4-25",
+  posts: "8-15",
 };
+
+function alone(form: InputForm, base: Record<string, unknown>, name: string): Record<string, unknown> {
+  const others = new Set((form.groups ?? []).filter((g) => g.rule === "atMostOne" && g.names.includes(name)).flatMap((g) => g.names.filter((n) => n !== name)));
+  return Object.fromEntries(Object.entries(base).filter(([key]) => !others.has(key)));
+}
 
 function sampleString(spec: FlagSpec | PositionalSpec, platform: string): string {
   if (spec.name === "account") return accountOf(platform);
@@ -181,7 +193,7 @@ afterAll(() => {
 
 describe("every form tool, driven through its command's own run", () => {
   test("the skip list is small and names forms that exist", () => {
-    expect(Object.keys(SKIP).length).toBeLessThanOrEqual(3);
+    expect(Object.keys(SKIP).length).toBeLessThanOrEqual(5);
     for (const name of Object.keys(SKIP)) expect(formTools.some((t) => t.tool === name)).toBe(true);
   });
 
@@ -200,7 +212,7 @@ describe("every form tool, driven through its command's own run", () => {
     for (const tool of driven) {
       const base = minimalInput(tool.form!, platformOf(tool));
       for (const spec of [...tool.form!.positionals, ...tool.form!.flags].filter((s) => !(s.name in base) && !WRITES.has(s.name))) {
-        const result = await run(tool, { ...base, [spec.name]: sampleValue(spec, platformOf(tool)) });
+        const result = await run(tool, { ...alone(tool.form!, base, spec.name), [spec.name]: sampleValue(spec, platformOf(tool)) });
         if (!result.built) refused.push(`${tool.tool}.${spec.name}: the schema's own value did not build: ${result.message}`);
         else if (result.code !== 0 && INPUT_REFUSAL.test(result.err)) refused.push(`${tool.tool}.${spec.name}: ${result.err.split("\n").find((l) => INPUT_REFUSAL.test(l))}`);
       }

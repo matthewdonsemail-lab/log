@@ -15,7 +15,7 @@ import type { AudioOf } from "../transcribe/index.ts";
 import { profileFor, readProfiles, splitPlan } from "../../voice/pairs/index.ts";
 import type { VoiceProfile } from "../../voice/pairs/index.ts";
 import type { PlatformAccount, PlatformAnswer } from "../../platformKit/session/index.ts";
-import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuse, refuseError } from "../runner/helpers/index.ts";
+import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuse, refuseError, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandContext, CommandInput, CommandResult, FlagSpec } from "../runner/types.ts";
 
 export const SLACK_SESSION_USAGE = [
@@ -58,10 +58,10 @@ export const slackSessionCommand: Command = {
   args: "check --account <a> [--workspace <domain>] [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(SLACK_SESSION_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log slack session: ${parsed.error}\n${SLACK_SESSION_USAGE}` };
+    if (!parsed.ok) return refuseInput("slack session", parsed.error, SLACK_SESSION_USAGE);
     if (parsed.positionals[0] !== "check" || parsed.positionals.length > 1) return { code: 1, stderr: `log slack session: give check\n${SLACK_SESSION_USAGE}` };
     const ref = parsed.flags["account"];
-    if (typeof ref !== "string") return { code: 1, stderr: `log slack session check: --account is needed\n${SLACK_SESSION_USAGE}` };
+    if (typeof ref !== "string") return { code: 1, error: "inputInvalid", stderr: `log slack session check: --account is needed\n${SLACK_SESSION_USAGE}` };
     try {
       const account = await findSlackAccount(context.twenty, ref);
       const gate = slackGate(account);
@@ -139,8 +139,8 @@ export const slackWorkspacesCommand: Command = {
   args: "--account <a> [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(SLACK_WORKSPACES_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log slack workspaces: ${parsed.error}\n${SLACK_WORKSPACES_USAGE}` };
-    if (parsed.positionals.length) return { code: 1, stderr: `log slack workspaces: takes no words, only flags\n${SLACK_WORKSPACES_USAGE}` };
+    if (!parsed.ok) return refuseInput("slack workspaces", parsed.error, SLACK_WORKSPACES_USAGE);
+    if (parsed.positionals.length) return { code: 1, error: "inputInvalid", stderr: `log slack workspaces: takes no words, only flags\n${SLACK_WORKSPACES_USAGE}` };
     try {
       const opened = await openAccount(context, "slack workspaces", parsed.flags);
       if (!opened.ok) return opened.result;
@@ -182,8 +182,8 @@ export const slackChatsCommand: Command = {
   args: "--account <a> [--workspace <domain>] [--limit <n>] [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(SLACK_CHATS_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log slack chats: ${parsed.error}\n${SLACK_CHATS_USAGE}` };
-    if (parsed.positionals.length) return { code: 1, stderr: `log slack chats: takes no words, only flags\n${SLACK_CHATS_USAGE}` };
+    if (!parsed.ok) return refuseInput("slack chats", parsed.error, SLACK_CHATS_USAGE);
+    if (parsed.positionals.length) return { code: 1, error: "inputInvalid", stderr: `log slack chats: takes no words, only flags\n${SLACK_CHATS_USAGE}` };
     const limit = numberOf(parsed, "limit") ?? 30;
     try {
       const opened = await openAccount(context, "slack chats", parsed.flags);
@@ -245,8 +245,8 @@ export const slackReadCommand: Command = {
   args: "--account <a> --chat <id|name> [--workspace <domain>] [--limit <n>] [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(SLACK_READ_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log slack read: ${parsed.error}\n${SLACK_READ_USAGE}` };
-    if (parsed.positionals.length) return { code: 1, stderr: `log slack read: takes no words, only flags\n${SLACK_READ_USAGE}` };
+    if (!parsed.ok) return refuseInput("slack read", parsed.error, SLACK_READ_USAGE);
+    if (parsed.positionals.length) return { code: 1, error: "inputInvalid", stderr: `log slack read: takes no words, only flags\n${SLACK_READ_USAGE}` };
     const limit = numberOf(parsed, "limit") ?? 30;
     try {
       const opened = await openAccount(context, "slack read", parsed.flags);
@@ -321,8 +321,8 @@ export const slackWatchCommand: Command = {
   args: "--account <a> [--workspace <domain>] [--chat <id|name>] [--seconds <s>] [--inbox] [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(SLACK_WATCH_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log slack watch: ${parsed.error}\n${SLACK_WATCH_USAGE}` };
-    if (parsed.positionals.length) return { code: 1, stderr: `log slack watch: takes no words, only flags\n${SLACK_WATCH_USAGE}` };
+    if (!parsed.ok) return refuseInput("slack watch", parsed.error, SLACK_WATCH_USAGE);
+    if (parsed.positionals.length) return { code: 1, error: "inputInvalid", stderr: `log slack watch: takes no words, only flags\n${SLACK_WATCH_USAGE}` };
     const seconds = numberOf(parsed, "seconds") ?? 0;
     if (seconds !== 0 && seconds < 5) return refuse("slack watch", "secondsInvalid", "--seconds must be at least 5");
     try {
@@ -416,8 +416,8 @@ export const slackSendCommand: Command = {
   args: '--account <a> --chat <id|name> --text "<message>" [--workspace <domain>] [--asOne] [--approvedBy <who>] [--live] [--json]',
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(SLACK_SEND_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log slack send: ${parsed.error}\n${SLACK_SEND_USAGE}` };
-    if (parsed.positionals.length) return { code: 1, stderr: `log slack send: takes no words, only flags\n${SLACK_SEND_USAGE}` };
+    if (!parsed.ok) return refuseInput("slack send", parsed.error, SLACK_SEND_USAGE);
+    if (parsed.positionals.length) return { code: 1, error: "inputInvalid", stderr: `log slack send: takes no words, only flags\n${SLACK_SEND_USAGE}` };
     const said = String(parsed.flags["chat"]).trim();
     const text = String(parsed.flags["text"]);
     const approvedBy = typeof parsed.flags["approvedBy"] === "string" ? parsed.flags["approvedBy"].trim() : "";

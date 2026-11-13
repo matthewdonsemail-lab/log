@@ -1,6 +1,6 @@
 import { DEFAULT_STATUS_WAIT_MS, jobView, listJobs, readJob, requestCancel, waitForJob } from "../../mcp/jobs/index.ts";
 import type { JobView } from "../../mcp/jobs/index.ts";
-import { JSON_FLAG, numberOf, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";
+import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
 
 export const JOB_USAGE = [
@@ -46,21 +46,21 @@ export const jobCommand: Command = {
   args: "status <jobId> [--afterLine <n>] [--waitMs <ms>] | cancel <jobId> | list",
   async run(_context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(JOB_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log job: ${parsed.error}\n${JOB_USAGE}` };
+    if (!parsed.ok) return refuseInput("job", parsed.error, JOB_USAGE);
     const [sub, id, ...rest] = parsed.positionals;
-    if (rest.length) return { code: 1, stderr: `log job: unexpected argument "${rest[0]}"\n${JOB_USAGE}` };
+    if (rest.length) return { code: 1, error: "inputInvalid", stderr: `log job: unexpected argument "${rest[0]}"\n${JOB_USAGE}` };
     if (sub === "list") {
       const views = listJobs().slice(0, 20).map((r) => jobView(r, Number.MAX_SAFE_INTEGER));
       if (parsed.flags["json"]) return { code: 0, stdout: JSON.stringify({ jobs: views }, null, 2) };
       return { code: 0, stdout: views.length ? views.map((v) => `${v.id}  ${v.status.padEnd(9)}  ${v.tool}${v.account ? `  ${v.account}` : ""}  ${v.startedAt}`).join("\n") : "No jobs yet." };
     }
-    if (!id) return { code: 1, stderr: `log job: the job's id is needed\n${JOB_USAGE}` };
+    if (!id) return { code: 1, error: "inputInvalid", stderr: `log job: the job's id is needed\n${JOB_USAGE}` };
     if (sub === "cancel") {
       const verdict = requestCancel(id);
       if (!verdict.ok) return { code: 1, stderr: `log job cancel: ${verdict.message}` };
       return { code: 0, stdout: `Job ${id} (${verdict.record.tool}) will stop at its next browser step. Follow it with log job status ${id}.` };
     }
-    if (sub !== "status") return { code: 1, stderr: `log job: pick status, cancel or list\n${JOB_USAGE}` };
+    if (sub !== "status") return { code: 1, error: "inputInvalid", stderr: `log job: pick status, cancel or list\n${JOB_USAGE}` };
     if (!readJob(id)) return { code: 1, stderr: `log job status: no job ${id}` };
     const view = await waitForJob(id, numberOf(parsed, "afterLine") ?? 0, numberOf(parsed, "waitMs") ?? DEFAULT_STATUS_WAIT_MS);
     if (!view) return { code: 1, stderr: `log job status: no job ${id}` };

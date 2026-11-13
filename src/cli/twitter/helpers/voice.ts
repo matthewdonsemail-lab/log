@@ -30,7 +30,7 @@ import { buildPhraseIndex, openPhraseIndex, phrasesLine, readPhrases, writePhras
 import type { PhraseReading } from "../../../voice/phrases/index.ts";
 import { scramblerLine, scramblerReadingOf } from "../../../twitter/copy/scrambler/index.ts";
 import type { ScramblerReading } from "../../../twitter/copy/scrambler/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../../runner/helpers/index.ts";
+import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError, refuseInput } from "../../runner/helpers/index.ts";
 import type { Command, CommandContext, CommandInput, CommandResult } from "../../runner/types.ts";
 
 
@@ -208,7 +208,7 @@ export const voiceCommand: Command = {
   async run(context, argv) {
     if (argv[0] === "aiIndex") {
       const parsed = parseArgs(argv.slice(1), parserSpecOf({ forms: [{ ...VOICE_INPUT.forms[1], words: [] }] }));
-      if (!parsed.ok) return { code: 1, stderr: `log voice aiIndex: ${parsed.error}\n${VOICE_USAGE}` };
+      if (!parsed.ok) return refuseInput("voice aiIndex", parsed.error, VOICE_USAGE);
       try {
         const pairsFile = join(voiceDir(), "pairs.json");
         const replies = existsSync(pairsFile) ? (JSON.parse(readFileSync(pairsFile, "utf8")) as VoicePair[]).map((p) => p.reply) : [];
@@ -223,7 +223,7 @@ export const voiceCommand: Command = {
     }
     if (argv[0] === "index") {
       const parsed = parseArgs(argv.slice(1), parserSpecOf({ forms: [{ ...VOICE_INPUT.forms[2], words: [] }] }));
-      if (!parsed.ok) return { code: 1, stderr: `log voice index: ${parsed.error}\n${VOICE_USAGE}` };
+      if (!parsed.ok) return refuseInput("voice index", parsed.error, VOICE_USAGE);
       try {
         const conversations = loadConversations();
         const embedder = voiceDeps.embedder();
@@ -239,7 +239,7 @@ export const voiceCommand: Command = {
       }
     }
     const parsed = parseArgs(argv, parserSpecOf({ forms: [VOICE_INPUT.forms[0]] }));
-    if (!parsed.ok) return { code: 1, stderr: `log voice: ${parsed.error}\n${VOICE_USAGE}` };
+    if (!parsed.ok) return refuseInput("voice", parsed.error, VOICE_USAGE);
     const to = parsed.flags["to"];
     const text = typeof parsed.flags["text"] === "string" ? parsed.flags["text"] : "";
     const said = typeof parsed.flags["context"] === "string" ? parsed.flags["context"].trim() : "";

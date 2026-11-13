@@ -13,7 +13,7 @@ Say: **"go on docs/useCases/discord/groupChatRead.md for <group>, last <N> hours
 <!-- stepsDiagram: written by `bun run docs:build` from the steps table below, not edited by hand -->
 ```mermaid
 flowchart TD
-  s0["0. The account is known: a local row if it isn't in Twenty<br/><i>localAccount</i>"]
+  s0["0. The account is known: a local row if it isn't in Twenty<br/><i>localAccountAdd</i>"]
   s1["1. Session check<br/><i>discordSessionCheck</i>"]
   s2["2. If logged out: open the account's own browser, the owner signs…<br/><i>inspectStart, inspectDoLive</i>"]
   s3["3. Find the group or channel by its name<br/><i>discordChats</i>"]
@@ -29,7 +29,7 @@ flowchart TD
 
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
-| 0 | The account is known: a local row if it isn't in Twenty | `localAccount` { action: "add", platform: "discord", account: "<account>", adsPower: "<profileId>" } | `log localAccount list` shows it |
+| 0 | The account is known: a local row if it isn't in Twenty | `localAccountAdd` { platform: "discord", account: "<account>", adsPower: "<profileId>" } | `log localAccount list` shows it |
 | 1 | Session check | `discordSessionCheck` | `loggedIn` |
 | 2 | If logged out: open the account's own browser, the owner signs in, then stop it to save the session | `inspectStart` { account }, then `inspectDoLive` stop | the session check answers `loggedIn` |
 | 3 | Find the group or channel by its name | `discordChats` | the group by its name, with its members; a server channel as "<server> #<channel>" |
