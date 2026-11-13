@@ -1,6 +1,6 @@
 import { createTregClient, endpointOf, paramsOf, shownCommand, callArgs, trimAnswer, trimOf } from "../../extensions/treg/index.ts";
 import type { TregClient, TregRun } from "../../extensions/treg/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";
+import { JSON_FLAG, numberOf, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";
 import type { Command, CommandInput, FlagSpec } from "../runner/types.ts";
 
 export const TREG_USAGE = [
@@ -18,7 +18,7 @@ export const TREG_INPUT: CommandInput = {
       words: ["search"],
       summary: "Find a treg endpoint by what you want done: each one's id, what it does and its price",
       positionals: [{ name: "query", kind: "rest", required: true, description: "The job in plain words, e.g. x user tweets, web search, tiktok comments" }],
-      flags: [{ name: "limit", kind: "string", description: "How many, default 10, at most 100" }, JSON_FLAG],
+      flags: [{ name: "limit", kind: "integer", min: 1, max: 100, description: "How many, default 10, at most 100" }, JSON_FLAG],
     },
     {
       words: ["get"],
@@ -32,14 +32,14 @@ export const TREG_INPUT: CommandInput = {
       summary: "Call a treg endpoint, the key injected server-side: a free one runs, a priced one is a dry run saying its price unless live with approvedBy",
       positionals: [{ name: "id", kind: "string", required: true, description: "The endpoint id from search or get" }],
       flags: [
-        { name: "params", kind: "string", description: "The query params as a JSON object, e.g. {\"query\":\"kick streamer managers\",\"domain_type\":\"web\"}; a list is sent comma-separated" },
+        { name: "params", kind: "string", format: "jsonObject", refusal: "tregParamsInvalid", description: "The query params as a JSON object, e.g. {\"query\":\"kick streamer managers\",\"domain_type\":\"web\"}; a list is sent comma-separated" },
         { name: "path", kind: "string", description: "The path, when the endpoint takes one" },
         { name: "method", kind: "string", description: "The HTTP method, when it isn't the endpoint's own" },
         { name: "data", kind: "string", description: "The request body, for a POST" },
         { name: "await", kind: "boolean", description: "Wait for an async endpoint to finish" },
-        { name: "maxItems", kind: "string", description: "Keep at most this many rows in each list of the answer (after --where)" },
-        { name: "fields", kind: "string", description: "Keep only these keys in each row of the answer's lists, comma-separated, e.g. id,text,createdUtc" },
-        { name: "where", kind: "string", description: "Keep only rows whose key equals the value, comma-separated, e.g. isReply=false" },
+        { name: "maxItems", kind: "integer", min: 1, max: 1000, refusal: "tregTrimInvalid", description: "Keep at most this many rows in each list of the answer (after --where), at most 1000" },
+        { name: "fields", kind: "list", description: "Keep only these keys in each row of the answer's lists, comma-separated, e.g. id,text,createdUtc" },
+        { name: "where", kind: "list", pattern: "^[^=]+=", takes: "key=value pairs", refusal: "tregTrimInvalid", description: "Keep only rows whose key equals the value, comma-separated, e.g. isReply=false" },
         { name: "raw", kind: "boolean", description: "Keep treg's raw provider copy in the answer (dropped by default, it repeats output)" },
         APPROVED_BY,
         { name: "live", kind: "boolean", live: true, description: "Spend on a priced endpoint, only when matt asked (rule 41); a free one runs without it" },
@@ -82,8 +82,7 @@ export const tregCommand: Command = {
     const json = parsed.flags["json"] === true;
     const client = tregDeps.client();
     if (sub === "search") {
-      const limit = parsed.flags["limit"] === undefined ? 10 : Number(parsed.flags["limit"]);
-      if (!Number.isInteger(limit) || limit < 1 || limit > 100) return { code: 1, stderr: `log treg search: --limit is a whole number from 1 to 100\n${TREG_USAGE}` };
+      const limit = numberOf(parsed, "limit") ?? 10;
       const query = parsed.positionals.join(" ").trim();
       const run = await client.search(query, limit);
       if (!run.ok) return failed(sub, run);
@@ -107,7 +106,7 @@ export const tregCommand: Command = {
       ...(typeof parsed.flags["data"] === "string" ? { data: parsed.flags["data"] } : {}),
       wait: parsed.flags["await"] === true,
     };
-    const trimmed = trimOf(parsed.flags);
+    const trimmed = trimOf(parsed.values);
     if (!trimmed.ok) return { code: 1, stderr: `log treg call: tregTrimInvalid: ${trimmed.error}` };
     const shown = shownCommand(callArgs(input));
     const live = parsed.flags["live"] === true;

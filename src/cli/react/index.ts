@@ -33,7 +33,7 @@ interface ReactShape {
 
 const EMOJI: FlagSpec = { name: "emoji", kind: "string", required: true, description: "The reaction: an emoji (😂) or its name (joy, :fire:)" };
 const REMOVE: FlagSpec = { name: "remove", kind: "boolean", description: "Take the account's own reaction off instead of adding it" };
-const APPROVED_BY: FlagSpec = { name: "approvedBy", kind: "string", description: "Who approved it: needed with --live (rule 8)" };
+const APPROVED_BY: FlagSpec = { name: "approvedBy", kind: "string", approval: true, description: "Who approved it: needed with --live (rule 8)" };
 
 function usageOf(shape: ReactShape): string {
   return [

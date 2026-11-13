@@ -1,6 +1,6 @@
 import { findRedditAccount, recordRedditSession, redditGate } from "../../reddit/account/session/index.ts";
 import type { PlatformAnswer } from "../../platformKit/session/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../runner/helpers/index.ts";
+import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuse, refuseError } from "../runner/helpers/index.ts";
 import type { Command, CommandInput, FlagSpec } from "../runner/types.ts";
 
 export const REDDIT_SESSION_USAGE = [
@@ -91,7 +91,7 @@ export const REDDIT_READ_INPUT: CommandInput = {
       flags: [
         REDDIT_ACCOUNT_FLAG,
         { name: "subreddit", kind: "string", required: true, description: "The subreddit, with or without r/" },
-        { name: "days", kind: "string", description: "How many days back, default 7" },
+        { name: "days", kind: "number", max: 365, description: "How many days back, default 7, at most 365" },
         { name: "linksTo", kind: "string", description: "Keep only posts linking to this host (github.com), ranked by score then comments" },
         JSON_FLAG,
       ],
@@ -109,7 +109,7 @@ export const REDDIT_READ_INPUT: CommandInput = {
       flags: [
         REDDIT_ACCOUNT_FLAG,
         { name: "url", kind: "string", required: true, description: "The post's link (its permalink)" },
-        { name: "limit", kind: "string", description: "How many comments, default 50" },
+        { name: "limit", kind: "integer", min: 1, max: 500, description: "How many comments, default 50, at most 500" },
         JSON_FLAG,
       ],
     },
@@ -214,9 +214,7 @@ export const redditReadCommand: Command = {
       if (form === "post") {
         const url = parsed.flags["url"];
         if (typeof url !== "string" || !url.trim()) return { code: 1, stderr: `log reddit read post: --url is needed\n${REDDIT_READ_USAGE}` };
-        const limitFlag = parsed.flags["limit"];
-        const limit = typeof limitFlag === "string" ? Number(limitFlag) : 50;
-        if (!Number.isInteger(limit) || limit < 1 || limit > 500) return { code: 1, stderr: "log reddit read post: --limit is a number of comments, 1 to 500" };
+        const limit = numberOf(parsed, "limit") ?? 50;
         context.err(`${account.accountName}: reading ${url} and its comments`);
         const run = context.directReddit(account, { action: "post", url, limit });
         for (const line of await recordRedditSession(context.twenty, account, run, now)) context.err(line);
@@ -239,9 +237,8 @@ export const redditReadCommand: Command = {
       }
       const subreddit = parsed.flags["subreddit"];
       if (typeof subreddit !== "string" || !subreddit.trim()) return { code: 1, stderr: `log reddit read posts: --subreddit is needed\n${REDDIT_READ_USAGE}` };
-      const daysFlag = parsed.flags["days"];
-      const days = typeof daysFlag === "string" ? Number(daysFlag) : 7;
-      if (!Number.isFinite(days) || days <= 0 || days > 365) return { code: 1, stderr: "log reddit read posts: --days is a number of days, 1 to 365" };
+      const days = numberOf(parsed, "days") ?? 7;
+      if (days <= 0) return { code: 1, stderr: "log reddit read posts: --days is a number of days, 1 to 365" };
       const linksTo = parsed.flags["linksTo"];
       const host = typeof linksTo === "string" && linksTo.trim() ? linksTo.trim() : undefined;
       context.err(`${account.accountName}: reading r/${subreddit}'s newest posts back ${days} days`);
@@ -265,7 +262,7 @@ export const redditReadCommand: Command = {
   },
 };
 
-const APPROVED_BY_FLAG: FlagSpec = { name: "approvedBy", kind: "string", description: "Who approved it: needed with --live (rule 8)" };
+const APPROVED_BY_FLAG: FlagSpec = { name: "approvedBy", kind: "string", approval: true, description: "Who approved it: needed with --live (rule 8)" };
 
 function liveFlag(what: string): FlagSpec {
   return { name: "live", kind: "boolean", live: true, description: `${what} on Reddit, only when matt asked (rule 8); without it a dry run sends nothing` };
@@ -441,12 +438,13 @@ const REDDIT_VOTE_INPUT: CommandInput = {
       flags: [
         REDDIT_ACCOUNT_FLAG,
         { name: "url", kind: "string", description: "The post's link (its permalink), to vote on the post" },
-        { name: "target", kind: "string", description: "A post (t3_…) or comment (t1_…) id, instead of --url" },
+        { name: "target", kind: "string", pattern: "^[tT][13]_[a-zA-Z0-9]+$", takes: "a t3_ post or t1_ comment id", description: "A post (t3_…) or comment (t1_…) id, instead of --url" },
         { name: "direction", kind: "enum", values: ["up", "down", "none"], description: "up (the default), down, or none to take a vote back" },
         APPROVED_BY_FLAG,
         liveFlag("Vote"),
         JSON_FLAG,
       ],
+      groups: [{ rule: "atLeastOne", names: ["url", "target"] }],
     },
   ],
 };

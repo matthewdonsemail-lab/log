@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 45 domains, 513 requirements. Each one's anchors are proved against its code by the syntax tree on every commit, push and pull request (`bun run check:specs`). SubQ reads a requirement against its code only when asked (`bun run check:specs --subq`, rule 170). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 45 domains, 519 requirements. Each one's anchors are proved against its code by the syntax tree on every commit, push and pull request (`bun run check:specs`). SubQ reads a requirement against its code only when asked (`bun run check:specs --subq`, rule 170). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -24,6 +24,12 @@ Every log command has one shape: a command that acts on one platform starts with
 - **REQ-COMMAND-12** The docs check refuses anything out of date
 - **REQ-COMMAND-13** Every diagram parses as Mermaid
 - **REQ-COMMAND-14** A command summary doesn't name one browser
+- **REQ-COMMAND-15** A flag says its kind, range and shape
+- **REQ-COMMAND-16** The CLI parses once into typed values
+- **REQ-COMMAND-17** The tool schema says what run enforces
+- **REQ-COMMAND-18** approvedBy is required on a live tool whose command needs it
+- **REQ-COMMAND-19** Every form tool is driven through its command's own run
+- **REQ-COMMAND-20** The reference lists typed flags from the input forms
 
 ## [MCP server](./mcpServer.md)
 

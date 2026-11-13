@@ -18,6 +18,7 @@ import {
   platformOfTopic,
   renderScorecard,
   sharedNamingPlatform,
+  stringFlagReparses,
   sharedToolsUnderPlatformGuide,
   sharedUnderPlatformGuide,
   toolsInNoUseCase,
@@ -179,6 +180,7 @@ const input = (overrides: Partial<ScorecardInput> = {}): ScorecardInput => ({
   useCaseFiles: [],
   skillFiles: [{ path: "skills/fake/SKILL.md", text: "rule 8 and rule 7" }],
   codeFiles: [],
+  declaredFlags: [],
   hasMachine: (c) => c.name === "dm",
   ...overrides,
 });
@@ -236,5 +238,26 @@ describe("compare with the baseline", () => {
   test("--write lowers, adds new numbers and drops gone ones without --allowWorse", () => {
     const written = writeBaseline([m("argsTools", 20), m("guideChars.accountBrowser", 900)], { argsTools: 25, "guideChars.facebookBrowser": 68_000 }, false);
     expect(written).toEqual({ ok: true, metrics: { argsTools: 20, "guideChars.accountBrowser": 900 }, raised: [] });
+  });
+});
+
+describe("flags declared string that a command parses again", () => {
+  const declared = [
+    { folder: "src/cli/fake/", name: "limit", kind: "string" },
+    { folder: "src/cli/fake/", name: "tags", kind: "string" },
+    { folder: "src/cli/fake/", name: "pages", kind: "integer" },
+    { folder: "src/cli/fake/", name: "files", kind: "list" },
+  ];
+  const file = (text: string) => [{ path: "src/cli/fake/index.ts", text }];
+
+  test("Number(...) or .split(\",\") over a string flag is counted with its file and line", () => {
+    const text = ['const limit = Number(parsed.flags["limit"] ?? 8);', 'const tags = (parsed.flags["tags"] as string).split(",");', "const raw = parsed.flags[\"limit\"];", "const n = Number(raw);", 'const pages = Number(parsed.flags["pages"]);'].join("\n");
+    expect(stringFlagReparses(file(text), declared)).toEqual(["src/cli/fake/index.ts:1 (--limit)", "src/cli/fake/index.ts:2 (--tags)", "src/cli/fake/index.ts:4 (--limit)"]);
+  });
+
+  test("typed reads, tests and other folders are not counted", () => {
+    expect(stringFlagReparses(file('const limit = numberOf(parsed, "limit") ?? 8;'), declared)).toEqual([]);
+    expect(stringFlagReparses([{ path: "src/cli/fake/fake.test.ts", text: 'Number(parsed.flags["limit"])' }], declared)).toEqual([]);
+    expect(stringFlagReparses([{ path: "src/cli/other/index.ts", text: 'Number(parsed.flags["limit"])' }], declared)).toEqual([]);
   });
 });

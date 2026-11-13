@@ -29,7 +29,7 @@ export const RUNS_INPUT: CommandInput = {
       words: ["prune"], effect: "delete",
       summary: "Delete each analysed run after taking out its steps' exchanges, keeping its findings, exchanges, readings and goal findings; a dry run unless apply",
       positionals: [],
-      flags: [{ name: "before", kind: "string", description: "Only runs started before this day, YYYY-MM-DD" }, { name: "apply", kind: "boolean", description: "Delete them (without it, it only lists what would go)" }],
+      flags: [{ name: "before", kind: "string", format: "date", description: "Only runs started before this day, YYYY-MM-DD" }, { name: "apply", kind: "boolean", description: "Delete them (without it, it only lists what would go)" }],
     },
     { words: ["space"], summary: "The size of the runs folder and the disk's free space", positionals: [], flags: [] },
   ],

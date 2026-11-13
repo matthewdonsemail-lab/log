@@ -66,6 +66,12 @@ export interface SourceText {
   text: string;
 }
 
+export interface DeclaredFlag {
+  folder: string;
+  name: string;
+  kind: string;
+}
+
 export interface ScorecardInput {
   commands: readonly ScoredCommand[];
   commandTools: readonly ScoredCommandTool[];
@@ -82,6 +88,7 @@ export interface ScorecardInput {
   useCaseFiles: readonly SourceText[];
   skillFiles: readonly SourceText[];
   codeFiles: readonly SourceText[];
+  declaredFlags: readonly DeclaredFlag[];
   hasMachine: (command: ScoredCommand) => boolean;
 }
 

@@ -58,6 +58,7 @@ export const VOICE_INPUT: CommandInput = {
         { name: "spoken", kind: "boolean", description: "The draft is a voice note: graded as said out loud, its length never counted against it, and it must build on what they are talking about across the whole chat instead of repeating what matt already said (rule 149)" },
         JSON_FLAG,
       ],
+      groups: [{ rule: "atLeastOne", names: ["text", "with"], refusal: "textMissing" }],
     },
     {
       words: ["aiIndex"],

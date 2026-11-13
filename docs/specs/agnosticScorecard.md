@@ -51,6 +51,7 @@ Checked by: code and SubQ
 | `serverInstructionsChars`, `toolsListed`, `toolDescriptionChars`, `toolDescriptionAverage`, `boilerplatePercent` | The server instructions; the listed tools, their description text in total and on average, and the share of it that is the guide line plus the rules line | slice 18 |
 | `guideChars.*`, `guidesOverLimit` | Each generated guide's size in characters, and how many are over 50,000 (the size Claude Code saves to a file, [sources.md](../proposals/sources.md)) | slice 18 |
 | `ruleCitations.*`, `deadRuleCitations.*` | "rule N" and "rules N, M" (lists and ranges) in `docs/useCases/**`, `skills/**` and the listed tool descriptions; dead when AGENTS.md has no rule N | slice 18 |
+| `stringFlagReparses` | Lines under `src/cli/` (not tests) where `Number(...)`, `parseInt`, `parseFloat` or `.split(",")` reads a flag (`flags["x"]`, `flags.x`, `str("x")`, or a variable named from one up to three lines before) that a command in the same folder declares `string` (`stringFlagReparses`) | slice 11 (0) |
 | `platformFallbacks` | `?? 'facebook'` in any quoting and case, and `PLATFORMS[0]`, in `src/` and `scripts/` | slice 1 follow-ups |
 
 **Has a machine.** A command has a machine when the file that declares its export (its module in `COMMAND_INDEX`, or the file under that module's folder that declares `export const <exportName>`) calls `createMachine`, or directly imports a file that calls it or whose folder holds a `machine.ts` that calls it. One import deep, nothing transitive. Commands declared in the same file share the answer.

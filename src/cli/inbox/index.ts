@@ -3,7 +3,7 @@ import { behindOf, resumeGap } from "../../inbox/store/index.ts";
 import type { ActionRecord, ChatClaim } from "../../inbox/claims/index.ts";
 import { lastWordOf, waitingOf } from "../../inbox/lastWord/index.ts";
 import type { LastWord } from "../../inbox/lastWord/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf, refuse } from "../runner/helpers/index.ts";
+import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuse } from "../runner/helpers/index.ts";
 import type { Command, CommandInput, FlagSpec } from "../runner/types.ts";
 
 export const INBOX_USAGE = [
@@ -16,7 +16,7 @@ export const INBOX_USAGE = [
   "Only the session that claims a chat acts on it (rule 133). Every message the push channels bring in has an event id (shown in >>> NEW MESSAGE). claim takes the chat for this session for 10 minutes before you draft or send; a second session is refused (chatClaimedElsewhere). Every send claims the chat itself and releases it once it is sent, interrupted or failed, so two sessions never answer the same chat. A claim held by a session that ended frees itself. resume is matt's go-ahead after a refused catch-up (rule 94): the account's gap opens again and its owner catches up through its own session within 30 s; only when matt says so. claims lists who holds what; actions is the log of every claim, refusal, send and release, oldest first, to search what was already done in a chat before acting. waiting is who wrote last on every platform, read from log.db and nothing else: each chat's messages in time order (never the order they were stored in, since a backfill stores older messages later), one person's chats judged together (an X user's old DM and X Chat), a message mirrored into the other side counted once as whoever sent it first, reactions, read markers and call notices never counted as the last word. It lists the people waiting on a reply, then apart the ones who reacted to your last message (a follow-up), newest first unless --oldest.",
 ].join("\n");
 
-const PLATFORM: FlagSpec = { name: "platform", kind: "string", required: true, description: "The platform: twitter, discord, slack or instagram" };
+const PLATFORM: FlagSpec = { name: "platform", kind: "enum", values: ["twitter", "discord", "slack", "instagram"], required: true, description: "The platform: twitter, discord, slack or instagram" };
 const ACCOUNT: FlagSpec = { name: "account", kind: "string", required: true, description: "The account's accountName" };
 const CHAT: FlagSpec = { name: "chat", kind: "string", required: true, description: "The chat: its conversation id (an X user id or pair, a Discord channel, a Slack chat, an Instagram thread) or the person's handle" };
 
@@ -29,9 +29,9 @@ export const INBOX_INPUT: CommandInput = {
       words: ["waiting"], summary: "Who wrote last on every platform, from log.db in time order: the people waiting on a reply, and apart the ones who reacted to your last message",
       positionals: [],
       flags: [
-        { name: "platform", kind: "string", description: "Only this platform: twitter, discord, slack or instagram" },
+        { name: "platform", kind: "enum", values: ["twitter", "discord", "slack", "instagram"], description: "Only this platform: twitter, discord, slack or instagram" },
         { name: "account", kind: "string", description: "Only this account" },
-        { name: "limit", kind: "string", description: "How many per list, default 50, at most 1000" },
+        { name: "limit", kind: "integer", min: 1, max: 1000, description: "How many per list, default 50, at most 1000" },
         { name: "oldest", kind: "boolean", description: "Oldest first instead of newest first" },
         JSON_FLAG,
       ],
@@ -44,7 +44,7 @@ export const INBOX_INPUT: CommandInput = {
         { name: "platform", kind: "string", description: "Only this platform" },
         { name: "account", kind: "string", description: "Only this account" },
         { name: "chat", kind: "string", description: "Only this chat (its id or the person's handle)" },
-        { name: "limit", kind: "string", description: "How many of the newest, default 50" },
+        { name: "limit", kind: "integer", min: 1, max: 1000, description: "How many of the newest, default 50, at most 1000" },
         JSON_FLAG,
       ],
     },
@@ -88,16 +88,13 @@ export const inboxCommand: Command = {
       return { code: 0, stdout: claims.length ? [`log inbox claims: ${claims.length} live claim(s):`, ...claims.map(claimLine)].join("\n") : "log inbox claims: no chat is claimed by any session right now." };
     }
     if (sub === "actions") {
-      const limit = str("limit") ? Number(str("limit")) : 50;
-      if (!Number.isInteger(limit) || limit < 1 || limit > 1000) return { code: 1, stderr: `log inbox actions: --limit must be 1 to 1000\n${INBOX_USAGE}` };
+      const limit = numberOf(parsed, "limit") ?? 50;
       const rows = readActions({ platform: str("platform") || undefined, account: str("account") || undefined, chat: str("chat") || undefined, limit });
       if (json) return { code: 0, stdout: JSON.stringify({ actions: rows }, null, 2) };
       return { code: 0, stdout: rows.length ? [`log inbox actions: the ${rows.length} newest, oldest first:`, ...rows.map(actionLine)].join("\n") : "log inbox actions: nothing has been done in that chat yet." };
     }
     if (sub === "waiting") {
-      const limit = str("limit") ? Number(str("limit")) : 50;
-      if (!Number.isInteger(limit) || limit < 1 || limit > 1000) return { code: 1, stderr: `log inbox waiting: --limit must be 1 to 1000
-${INBOX_USAGE}` };
+      const limit = numberOf(parsed, "limit") ?? 50;
       const platform = str("platform");
       if (platform && !PLATFORMS.includes(platform)) return { code: 1, stderr: `log inbox waiting: --platform is one of ${PLATFORMS.join(", ")}
 ${INBOX_USAGE}` };

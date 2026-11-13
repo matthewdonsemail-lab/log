@@ -7,7 +7,7 @@ import type { CommandTool } from "../../server/helpers/toolsFromCommands.ts";
 import { TERMINAL_ONLY } from "../../server/types.ts";
 import type { CatalogEntry, CatalogInput, InputType } from "../types.ts";
 
-const TYPE_OF: Readonly<Record<string, InputType>> = { string: "string", integer: "integer", boolean: "boolean", enum: "enum", pairs: "pairs", rest: "list" };
+const TYPE_OF: Readonly<Record<string, InputType>> = { string: "string", integer: "integer", number: "number", boolean: "boolean", booleanValue: "boolean", enum: "enum", pairs: "pairs", rest: "list", list: "list" };
 
 function inputOf(spec: FlagSpec | PositionalSpec, positional: boolean): CatalogInput {
   return { name: spec.name, type: TYPE_OF[spec.kind] ?? "string", required: Boolean(spec.required), note: spec.description, values: spec.values ?? [], positional };

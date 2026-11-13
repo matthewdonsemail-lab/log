@@ -67,6 +67,12 @@ export function repoInput(root: string = REPO_ROOT): ScorecardInput {
     useCaseFiles: filesIn(root, "docs/useCases", [".md"]),
     skillFiles: filesIn(root, "skills", [".md"]),
     codeFiles: [...filesIn(root, "src", [".ts", ".tsx", ".mjs", ".js"]), ...filesIn(root, "scripts", [".ts", ".mjs", ".js"])],
+    declaredFlags: COMMANDS.flatMap((command) => {
+      const entry = modules.get(`${command.platform}:${command.name}`);
+      if (!entry || !command.input) return [];
+      const folder = entry.module.slice(0, entry.module.lastIndexOf("/") + 1);
+      return command.input.forms.flatMap((form) => form.flags.map((flag) => ({ folder, name: flag.name, kind: flag.kind })));
+    }),
     hasMachine: (command: ScoredCommand) => {
       const entry = modules.get(`${command.platform}:${command.name}`);
       return entry ? hasMachine(root, entry.module, entry.exportName) : false;

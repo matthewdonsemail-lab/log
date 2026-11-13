@@ -30,7 +30,7 @@ export function guardCall(called: string, input: LogToolInput | undefined, comma
     for (const forced of entry.forced) if (fields[forced] === true) delete fields[forced];
     const liveField = live ? undefined : command.input?.forms.flatMap((f) => f.flags).find((f) => f.live && f.name in fields && !form.flags.includes(f));
     if (liveField) return { ok: false, message: `${name} never acts on ${platformLabel(command)}: ${liveField.name} is \`${name}${LIVE_SUFFIX}\`, only when matt asked (rule 8)` };
-    const built = argvOfInput(form, fields);
+    const built = argvOfInput(form, fields, { live });
     if (!built.ok) return { ok: false, message: `${name}: ${built.message}` };
     if (live && !entry.forced.length && !built.live) return { ok: false, message: `${name} is for live runs: set ${form.flags.filter((f) => f.live).map((f) => f.name).join(" or ")}, or call \`${name.slice(0, -LIVE_SUFFIX.length)}\`` };
     if (built.bypass && confirmBypass !== true) return { ok: false, message: BYPASS_REFUSAL(name) };

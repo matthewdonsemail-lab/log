@@ -76,7 +76,7 @@ export const QUEUE_INPUT: CommandInput = {
       positionals: [],
       flags: [
         flag("targets", "string", "The targets file: a list (or items) of {handle, tweet_url | post_url | user_id, post_text, text}; text is that target's own line", { required: true }),
-        flag("variations", "string", "The copy files, comma-separated: each a list (or messages) of lines; not needed when every target carries its own text"),
+        flag("variations", "list", "The copy files, comma-separated: each a list (or messages) of lines; not needed when every target carries its own text"),
         flag("out", "string", "The queue file to write (never overwritten)", { required: true }),
         flag("account", "string", "The TWITTER socialAccount that will send it", { required: true }),
         flag("action", "enum", "What each item sends (default reply)", { values: QUEUE_ACTIONS }),
@@ -93,12 +93,12 @@ export const QUEUE_INPUT: CommandInput = {
       summary: "Draw a random time for every like and reply inside a window, contacting nothing",
       positionals: [QUEUE],
       flags: [
-        flag("window", "string", "How long to spread it over: 5h or 90m", { required: true }),
+        flag("window", "string", "How long to spread it over: 5h or 90m", { required: true, pattern: "^\\d+(?:\\.\\d+)?[hm]$", takes: "a span in hours or minutes, e.g. 5h or 90m" }),
         flag("limit", "integer", "Plan at most this many posts"),
         flag("start", "string", "When the window opens (an ISO time, default now)"),
         flag("minGap", "integer", "Seconds between any two events, at least 30 (default 120)"),
         flag("like", "boolean", "Randomly like posts too, each at its own random moment"),
-        flag("likeChance", "string", "The chance a post gets a like, 0-1 (default 0.7)"),
+        flag("likeChance", "number", "The chance a post gets a like, 0-1 (default 0.7)", { min: 0, max: 1 }),
       ],
     },
     {
@@ -109,7 +109,7 @@ export const QUEUE_INPUT: CommandInput = {
       flags: [
         flag("alertChannel", "string", "A buzz channel to post the stop to"),
         flag("alertReplyTo", "string", "A buzz event id to thread them under"),
-        flag("alertMention", "string", "Pubkeys (hex) the halt tags, comma-separated"),
+        flag("alertMention", "list", "Pubkeys (hex) the halt tags, comma-separated"),
         flag("force", "boolean", "Go past the account's governor (its pause and caps) for every send, only when matt asked (rule 86)"),
         flag("keepOpen", "boolean", "Stay running once everything is sent, taking in what queue add puts in, until cancelled"),
         flag("live", "boolean", "Send on X, only when matt asked (rule 8)", { live: true }),
@@ -125,7 +125,7 @@ export const QUEUE_INPUT: CommandInput = {
         flag("targets", "string", "The targets file: a list (or items) of {handle, tweet_url | post_url | user_id, post_text, text}; each target carries its own text", { required: true }),
         flag("action", "enum", "What each added item sends (default reply)", { values: QUEUE_ACTIONS }),
         flag("by", "string", "Who approved what is added (the queue is approved again as it then stands)", { required: true }),
-        flag("window", "string", "How far ahead to fit them: 2h or 90m (default 2h)"),
+        flag("window", "string", "How far ahead to fit them: 2h or 90m (default 2h)", { pattern: "^\\d+(?:\\.\\d+)?[hm]$", takes: "a span in hours or minutes, e.g. 2h or 90m" }),
         flag("minGap", "integer", "Seconds from any other planned send, at least 30 (default the queue's own)"),
       ],
     },
@@ -139,7 +139,7 @@ export const QUEUE_INPUT: CommandInput = {
         flag("n", "integer", "The item's number", { required: true }),
         flag("text", "string", "The new copy, gated with voice first", { required: true }),
         flag("by", "string", "Who approved the new copy", { required: true }),
-        flag("window", "string", "For a held item, how soon to send it again: 30m or 2h (default 30m)"),
+        flag("window", "string", "For a held item, how soon to send it again: 30m or 2h (default 30m)", { pattern: "^\\d+(?:\\.\\d+)?[hm]$", takes: "a span in hours or minutes, e.g. 30m or 2h" }),
       ],
     },
   ],
@@ -217,7 +217,7 @@ async function runCommand(context: CommandContext, path: string, flags: Record<s
   if (!opened.ok) return opened.result;
   const taken = takeQueueLock(path, process.pid, pidAlive);
   if (!taken.ok) return refuse("twitter queue run", "queueBusy", `a run (pid ${taken.holder}) is already going on this queue`);
-  const alertArgs = { channel: typeof flags["alertChannel"] === "string" ? (flags["alertChannel"] as string) : undefined, replyTo: typeof flags["alertReplyTo"] === "string" ? (flags["alertReplyTo"] as string) : undefined, mentions: typeof flags["alertMention"] === "string" ? (flags["alertMention"] as string).split(",").map((m) => m.trim()).filter(Boolean) : [] };
+  const alertArgs = { channel: typeof flags["alertChannel"] === "string" ? (flags["alertChannel"] as string) : undefined, replyTo: typeof flags["alertReplyTo"] === "string" ? (flags["alertReplyTo"] as string) : undefined, mentions: Array.isArray(flags["alertMention"]) ? (flags["alertMention"] as string[]) : [] };
   const nowMs = () => (context.now?.() ?? new Date()).getTime();
   const log = (line: string) => context.err(queueLog(path, line, new Date(nowMs())));
   const approvedBy = queue.approval!.by;
@@ -361,13 +361,13 @@ export const queueCommand: Command = {
     const stray = Object.keys(parsed.flags).filter((name) => !allowed.has(name));
     if (stray.length) return fail(`${word} doesn't take --${stray.join(", --")}`);
     if (extra.length || (word === "build" ? path !== undefined : typeof path !== "string")) return fail(word === "build" ? "build takes only flags" : `${word} needs the queue file`);
-    const flags = parsed.flags;
+    const flags = parsed.values;
     const now = context.now?.() ?? new Date();
     try {
       if (word === "build") {
         const out = flags["out"] as string;
         if (existsSync(out) || queueExists(out)) return refuse("twitter queue build", "queueInvalid", `${out} exists; it is never overwritten`);
-        const files = String(flags["variations"] ?? "").split(",").map((f) => f.trim()).filter(Boolean);
+        const files = (flags["variations"] as string[] | undefined) ?? [];
         let targets;
         let lines: string[];
         try {
@@ -430,8 +430,7 @@ export const queueCommand: Command = {
         return { code: 0, stdout: `log twitter queue approve: ${file} approved by ${queue.approval!.by}, ${queue.approval!.count} pending items. Any edit voids it.` };
       }
       if (word === "plan") {
-        const chance = flags["likeChance"] === undefined ? 0.7 : Number(flags["likeChance"]);
-        if (!(chance >= 0 && chance <= 1)) return fail("--likeChance is a number from 0 to 1");
+        const chance = (flags["likeChance"] as number | undefined) ?? 0.7;
         const start = typeof flags["start"] === "string" ? new Date(flags["start"] as string) : now;
         if (Number.isNaN(start.getTime())) return fail("--start is a time, e.g. 2026-10-26T09:00:00+07:00");
         let queue: Queue;

@@ -99,7 +99,7 @@ Agents call the MCP tools, never a hand-run `log kb …` (rule 106):
 
 ```
 kbSearch { query: "why did the tunnel go down" }               best articles, keyword + meaning
-kbSearch { query: "messenger pin", kind: "pageState", limit: "3" }
+kbSearch { query: "messenger pin", kind: "pageState", limit: 3 }
 kbShow { key: "rule:73" }                                      one article in full
 kbRemember { text: "…", tags: "infra,server" }                 a note, in Twenty and Redis at once
 kbSync {}                                                      refresh from every source (Monitor it, rule 26)

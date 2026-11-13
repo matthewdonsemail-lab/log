@@ -21,4 +21,5 @@ export {
   useCasesWithoutAsks,
   useCasesWithoutSteps,
 } from "./measure.ts";
+export { stringFlagReparses } from "./flagReparses.ts";
 export { isShared, platformOfToolName, platformOfTopic, platformsNamed } from "./platformWords.ts";

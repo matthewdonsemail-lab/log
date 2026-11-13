@@ -5,7 +5,7 @@ import { buildTaste, candidatesFromXPosts, FIT_AT, imageOf, readRatings, readTas
 import type { TasteFit, TasteIndex, TasteRating } from "../../extensions/memeTaste/index.ts";
 import { createDecisionsClient } from "../../subq/decisions/index.ts";
 import type { DecisionsClient } from "../../subq/decisions/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";
+import { JSON_FLAG, numberOf, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
 
 export const MEMELORD_USAGE = [
@@ -27,7 +27,7 @@ export const MEMELORD_INPUT: CommandInput = {
       flags: [
         { name: "type", kind: "enum", values: MEME_TYPES, description: "Only memes (images), videos or stickers" },
         { name: "method", kind: "enum", values: Object.keys(SEARCH_METHOD_FLAGS), description: "How to match: context (default, by meaning), combined, media, fulltext or fuzzy" },
-        { name: "limit", kind: "string", description: "How many, default 5, at most 100" },
+        { name: "limit", kind: "integer", min: 1, max: 100, description: "How many, default 5, at most 100" },
         { name: "noTaste", kind: "boolean", description: "Leave the results in Memelord's order instead of ranking them by matt's taste" },
         JSON_FLAG,
       ],
@@ -42,7 +42,7 @@ export const MEMELORD_INPUT: CommandInput = {
       words: ["trending"],
       summary: "Memelord's trending templates right now, each with its cultural context",
       positionals: [],
-      flags: [{ name: "limit", kind: "string", description: "How many, default 5, at most 12" }, { name: "media", kind: "enum", values: TRENDING_MEDIA, description: "Only still images or only video clips" }, JSON_FLAG],
+      flags: [{ name: "limit", kind: "integer", min: 1, max: 12, description: "How many, default 5, at most 12" }, { name: "media", kind: "enum", values: TRENDING_MEDIA, description: "Only still images or only video clips" }, JSON_FLAG],
     },
     {
       words: ["tools"],
@@ -96,9 +96,9 @@ function refused(sub: string, answer: MemelordAnswer<unknown>) {
   return { code: 1, stderr: `log memelord ${sub}: ${answer.code}${answer.status ? ` (HTTP ${answer.status})` : ""}: ${answer.error ?? "no reason given"}` };
 }
 
-function whole(value: unknown, fallback: number, max: number): number | null {
-  const n = value === undefined ? fallback : Number(value);
-  return Number.isInteger(n) && n >= 1 && n <= max ? n : null;
+function whole(value: number | undefined, fallback: number, max: number): number | null {
+  const n = value ?? fallback;
+  return n >= 1 && n <= max ? n : null;
 }
 
 export const memelordCommand: Command = {
@@ -120,7 +120,7 @@ export const memelordCommand: Command = {
     if (sub === "search") {
       const query = parsed.positionals.join(" ").trim();
       if (!query) return { code: 1, stderr: `log memelord search: say what the moment is\n${MEMELORD_USAGE}` };
-      const limit = whole(parsed.flags["limit"], 5, 100);
+      const limit = whole(numberOf(parsed, "limit"), 5, 100);
       if (limit === null) return { code: 1, stderr: "log memelord search: --limit is a whole number from 1 to 100" };
       const method = typeof parsed.flags["method"] === "string" ? SEARCH_METHOD_FLAGS[parsed.flags["method"] as SearchMethodFlag] : undefined;
       const type = typeof parsed.flags["type"] === "string" ? (parsed.flags["type"] as MemeType) : undefined;
@@ -143,7 +143,7 @@ export const memelordCommand: Command = {
       return { code: 0, stdout: templateLines(answer.data) };
     }
     if (sub === "trending") {
-      const limit = whole(parsed.flags["limit"], 5, 12);
+      const limit = whole(numberOf(parsed, "limit"), 5, 12);
       if (limit === null) return { code: 1, stderr: "log memelord trending: --limit is a whole number from 1 to 12" };
       const media = typeof parsed.flags["media"] === "string" ? (parsed.flags["media"] as string) : undefined;
       const answer = await client.getTrendingMemes(limit, media);
