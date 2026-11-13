@@ -1,0 +1,14 @@
+{
+  "name": "listeningkit-log",
+  "label": "log",
+  "description": "Your accounts, who is waiting on a reply, and what log sent today, read from log's own files on this machine.",
+  "icon": "MessageSquare",
+  "version": "0.2.0",
+  "tab": {
+    "path": "/log",
+    "position": "after:skills"
+  },
+  "entry": "dist/index.js",
+  "api": "plugin_api.py",
+  "css": "dist/style.css"
+}
