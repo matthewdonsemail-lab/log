@@ -441,7 +441,6 @@ export function AgentSession({
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block text-sm font-bold leading-snug text-white/90 sm:text-base md:text-xl">Get log for {item.agent}</span>
-                {item.mark ? null : <span className="mt-1 block break-all font-mono text-xs text-white/85 sm:text-sm">{item.command}</span>}
                 <span className="mt-1.5 block text-xl font-black leading-tight sm:mt-2 sm:text-2xl md:text-3xl">
                   Run your {platformLabel ?? 'social media'} marketing from {item.agent}
                 </span>
