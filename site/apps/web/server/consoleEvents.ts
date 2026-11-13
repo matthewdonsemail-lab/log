@@ -4,9 +4,9 @@ import { join } from 'node:path'
 import type { Plugin } from 'vite'
 import { projectConsoleEvents } from '../../../../src/observability/console/helpers/projection'
 import type { ConsoleDatabase } from '../../../../src/observability/console/types'
+import { consoleRequestAllowed } from '../../../../src/console/web/helpers/guard'
 
 type ReadDatabase = ConsoleDatabase & { close: () => void; exec: (sql: string) => void }
-const loopback = new Set(['localhost', '127.0.0.1', '[::1]'])
 
 export function consoleEvents(): Plugin {
   return {
@@ -19,10 +19,8 @@ export function consoleEvents(): Plugin {
         response.setHeader('X-Content-Type-Options', 'nosniff')
         let database: ReadDatabase | undefined
         try {
-          const host = new URL(`http://${request.headers.host ?? ''}`)
-          const remote = request.socket.remoteAddress ?? ''
-          const origin = request.headers.origin ? new URL(request.headers.origin) : null
-          if (!loopback.has(host.hostname) || !['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(remote) || (origin && origin.host !== host.host) || request.headers['sec-fetch-site'] === 'cross-site') {
+          const fetchSite = request.headers['sec-fetch-site']
+          if (!consoleRequestAllowed({ host: request.headers.host, remote: request.socket.remoteAddress, origin: request.headers.origin, fetchSite: Array.isArray(fetchSite) ? fetchSite[0] : fetchSite })) {
             response.statusCode = 403
             response.end(JSON.stringify({ error: 'consoleWorkspaceAccessDenied' }))
             return

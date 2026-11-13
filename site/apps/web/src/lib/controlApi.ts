@@ -1,4 +1,5 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { localConsole } from './consoleMode'
 
 export type Role = 'owner' | 'admin' | 'member'
 export type TeamView = { id: string; name: string; slug: string; role: Role }
@@ -85,6 +86,7 @@ export function useSession() {
     },
     staleTime: 30_000,
     retry: false,
+    enabled: !localConsole,
   })
 }
 
@@ -98,7 +100,7 @@ export function useWorkspaces(teamId: string | null) {
   return useQuery({
     queryKey: ['controlWorkspaces', teamId],
     queryFn: ({ signal }) => api<WorkspaceView[]>(`/teams/${teamId}/workspaces`, { signal }),
-    enabled: Boolean(teamId),
+    enabled: !localConsole && Boolean(teamId),
     refetchInterval: 15_000,
     staleTime: 5_000,
   })

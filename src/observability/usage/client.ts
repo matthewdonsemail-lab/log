@@ -2,7 +2,7 @@ import { db } from '../../inbox/store/index'
 import type { UsageBreakdown, UsageBucket, UsageKind, UsageSummary, UsageTotals } from './types'
 
 const dayMs = 86400000
-type CallRow = { tool: string; startedAt: number; ms: number; ok: number }
+export type CallRow = { tool: string; startedAt: number; ms: number; ok: number }
 type Accumulator = { calls: number; failed: number; durations: number[] }
 
 function kindOf(tool: string): UsageKind {
@@ -37,13 +37,22 @@ function summarize(group: Accumulator): UsageTotals {
   return { calls: group.calls, succeeded: group.calls - group.failed, failed: group.failed, p50Ms: percentile(0.5), p95Ms: percentile(0.95) }
 }
 
-export function readUsageSummary(fromMs: number, toMs = Date.now()): UsageSummary {
+function checkRange(fromMs: number, toMs: number) {
   if (!Number.isFinite(fromMs) || !Number.isFinite(toMs) || fromMs >= toMs || toMs - fromMs > dayMs * 31) throw new Error('usageRangeInvalid')
+}
+
+export function readUsageSummary(fromMs: number, toMs = Date.now()): UsageSummary {
+  checkRange(fromMs, toMs)
+  const rows = db().prepare("SELECT tool, startedAt, ms, ok FROM spans WHERE parentId IS NULL AND name = 'call' AND startedAt >= ? AND startedAt < ? ORDER BY startedAt").all(fromMs, toMs) as CallRow[]
+  return summarizeUsage(rows, fromMs, toMs)
+}
+
+export function summarizeUsage(rows: readonly CallRow[], fromMs: number, toMs: number): UsageSummary {
+  checkRange(fromMs, toMs)
   const totals = empty()
   const days = new Map<number, Accumulator>()
   const kinds = new Map<UsageKind, Accumulator>()
   for (let day = Math.floor(fromMs / dayMs) * dayMs; day < toMs; day += dayMs) days.set(day, empty())
-  const rows = db().prepare("SELECT tool, startedAt, ms, ok FROM spans WHERE parentId IS NULL AND name = 'call' AND startedAt >= ? AND startedAt < ? ORDER BY startedAt").all(fromMs, toMs) as CallRow[]
   for (const row of rows) {
     const kind = kindOf(row.tool)
     const category = kinds.get(kind) ?? empty()
