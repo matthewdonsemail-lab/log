@@ -12,10 +12,10 @@ import { checkRunnable, findAccount, listFacebookAccounts } from "../../marketpl
 import { createInspector, formatTraceLine } from "../../observability/trace/index.ts";
 import { shouldPrompt } from "../launch/helpers/index.ts";
 import type { LaunchTTY } from "../launch/helpers/index.ts";
-import { refuse, refuseError } from "../runner/helpers/index.ts";
+import { refuse, refuseError, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandContext, CommandResult } from "../runner/types.ts";
 import { takePairs } from "../flow/index.ts";
-import { parseJoinArgs } from "./helpers/index.ts";
+import { JOIN_INPUT, parseJoinArgs } from "./helpers/index.ts";
 
 export * from "./helpers/index.ts";
 
@@ -24,7 +24,7 @@ export const JOIN_USAGE = [
   "       log facebook join group --account <accountName> --group <g> --show",
   "       log facebook join group --account <accountName> --group <g> --answer [--set <n>=<value>]... [--agree]   (Clack steps over the group's questions, or the same answers given here; saved to Twenty, never sent)",
   "       log facebook join group --account <accountName> --group <g> --fill [--live [--submit]]   (the draft into the group's dialog, step by step)",
-  "Every step in the browser runs inside the account's local hours (rule 18); --bypass skips that for one run, only when matt asked (rule 20).",
+  "Every step in the browser runs inside the account's local hours; --bypass skips that for one run, only when the owner asked (rule 86).",
   "The account's browser must be open (log inspect start --account <a>, or log facebook host start): a join is a step in it (rule 35).",
 ].join("\n");
 
@@ -245,7 +245,7 @@ function renderRun(output: GroupJoinOutput, live: boolean): string {
 export async function runJoin(context: CommandContext, argv: string[]): Promise<CommandResult> {
   const sets = takePairs(argv, "set");
   const parsed = parseJoinArgs(sets.rest);
-  if (!parsed.ok) return { code: 1, stderr: `log facebook join: ${parsed.error}\n${JOIN_USAGE}` };
+  if (!parsed.ok) return refuseInput("facebook join", parsed.error, JOIN_USAGE);
   let { account: accountRef, group: groupRef } = parsed;
 
   try {
@@ -350,6 +350,7 @@ export const joinCommand: Command = {
   platform: "facebook",
   name: "join",
   effect: "browser",
+  input: JOIN_INPUT,
   summary: "Join a Facebook group as one account, in its open browser: read the gate, --live presses Join; every step patches agencyGroups.joinSubmission",
   args: "group --account <a> --group <g> [--live] | --show | --answer [--set n=v]... [--agree] | --fill [--live [--submit]] [--bypass] [--json]",
   run: runJoin,

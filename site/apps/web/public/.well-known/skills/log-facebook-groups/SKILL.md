@@ -32,7 +32,7 @@ An account asks to join a neighbourhood group in its town. Once in, each poll br
 
 | # | Step | MCP tool | What decides it | Command |
 | --- | --- | --- | --- | --- |
-| 1 | Join | `facebookJoin`, `facebookJoinLive` | the group's own join state | `log facebook join group --account <a> --group <url or id> [--live]` |
+| 1 | Join | `facebookJoinGroup`, `facebookJoinGroupLive` | the group's own join state | `log facebook join group --account <a> --group <url or id> [--live]` |
 | 2 | Read | `facebookReadGroup` | the feed's answer; the direct API first, the browser behind it | `log facebook read group --account <a> --group <id>` |
 | 3 | Poll | `facebookPoll` | each read's answer; OpenMagpie's watch picks the matches | `log facebook poll <group> <account> <how long>` |
 | 4 | Members | `facebookReadMembers` | the members list's answers, about 10 more per scroll | `log facebook read members --account <a> --group <g> --count 40 --owners` |

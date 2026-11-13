@@ -3,7 +3,7 @@ import { platformStateRoot } from "../../directApi/engine/index.ts";
 import { discordGate, findDiscordAccount } from "../../discord/account/session/index.ts";
 import { benchmark, buildIndex, linearScan, loadConversations, localEmbedder, openIndex, saveConversations, search, twitterConversationOf, updateIndex } from "../../search/conversations/index.ts";
 import type { Conversation, ConversationAttachment, Embedder, SearchHit } from "../../search/conversations/index.ts";
-import { JSON_FLAG, numberOf, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";
+import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandContext, CommandInput } from "../runner/types.ts";
 import { openTwitterAccount } from "../twitter/helpers/account.ts";
 
@@ -139,7 +139,7 @@ export const searchCommand: Command = {
     const sub = first === "index" || first === "bench" ? first : "query";
     const form = SEARCH_INPUT.forms[sub === "index" ? 1 : sub === "bench" ? 2 : 0];
     const parsed = parseArgs(sub === "query" ? argv : argv.slice(1), parserSpecOf({ forms: [{ ...form, words: [] }] }));
-    if (!parsed.ok) return { code: 1, stderr: `log search: ${parsed.error}\n${SEARCH_USAGE}` };
+    if (!parsed.ok) return refuseInput("search", parsed.error, SEARCH_USAGE);
     const json = parsed.flags["json"] === true;
     const embedder = searchDeps.embedder();
     try {

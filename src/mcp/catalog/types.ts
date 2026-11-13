@@ -36,6 +36,7 @@ export interface CatalogEntry {
   longRunning: boolean;
   guide: string | null;
   terminalOnly: string | null;
+  recorded?: true;
 }
 
 export type Verdict = "strong" | "closest" | "none";

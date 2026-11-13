@@ -3,7 +3,7 @@ import { readCurrentInspect } from "../../browser/inspect/index.ts";
 import * as marketplaceCheck from "../../facebook/marketplace/check/index.ts";
 import { homeOf, outsideActiveHours } from "../../marketplace/home/index.ts";
 import { findAccount } from "../../marketplace/socialAccount/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";
+import { JSON_FLAG, parseArgs, parserSpecOf, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
 
 export const CHECK_USAGE = [
@@ -35,10 +35,10 @@ export const checkCommand: Command = {
   args: "--account <a> [--bypass] [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(CHECK_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log facebook check: ${parsed.error}\n${CHECK_USAGE}` };
-    if (parsed.positionals.length) return { code: 1, stderr: `log facebook check: unexpected argument "${parsed.positionals[0]}"\n${CHECK_USAGE}` };
+    if (!parsed.ok) return refuseInput("facebook check", parsed.error, CHECK_USAGE);
+    if (parsed.positionals.length) return { code: 1, error: "inputInvalid", stderr: `log facebook check: unexpected argument "${parsed.positionals[0]}"\n${CHECK_USAGE}` };
     const ref = parsed.flags["account"];
-    if (typeof ref !== "string") return { code: 1, stderr: `log facebook check: --account is needed\n${CHECK_USAGE}` };
+    if (typeof ref !== "string") return { code: 1, error: "inputInvalid", stderr: `log facebook check: --account is needed\n${CHECK_USAGE}` };
     let account;
     try {
       account = await findAccount(context.twenty, ref);

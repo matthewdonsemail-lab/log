@@ -1,6 +1,6 @@
 import { findLinkedinAccount, recordLinkedinSession, linkedinGate } from "../../linkedin/account/session/index.ts";
 import type { PlatformAnswer } from "../../platformKit/session/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../runner/helpers/index.ts";
+import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
 
 export const LINKEDIN_SESSION_USAGE = [
@@ -38,10 +38,10 @@ export const linkedinSessionCommand: Command = {
   args: "check --account <a> [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(LINKEDIN_SESSION_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log linkedin session: ${parsed.error}\n${LINKEDIN_SESSION_USAGE}` };
+    if (!parsed.ok) return refuseInput("linkedin session", parsed.error, LINKEDIN_SESSION_USAGE);
     if (parsed.positionals[0] !== "check" || parsed.positionals.length > 1) return { code: 1, stderr: `log linkedin session: give check\n${LINKEDIN_SESSION_USAGE}` };
     const ref = parsed.flags["account"];
-    if (typeof ref !== "string") return { code: 1, stderr: `log linkedin session check: --account is needed\n${LINKEDIN_SESSION_USAGE}` };
+    if (typeof ref !== "string") return { code: 1, error: "inputInvalid", stderr: `log linkedin session check: --account is needed\n${LINKEDIN_SESSION_USAGE}` };
     try {
       const account = await findLinkedinAccount(context.twenty, ref);
       const gate = linkedinGate(account);

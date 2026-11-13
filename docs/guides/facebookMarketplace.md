@@ -29,8 +29,11 @@ Each tool's own description carries its full usage, notes, live line and rules; 
 | `facebookListingLint` | Check a listing.json against the copy rules and the create form… | `log facebook listing lint --file <listing.json> [--json]   (the copy rules on the file's copy versions, and whether it would publish; nothing is saved)` |
 | `facebookPublish` | Post one Twenty listing | `log facebook publish --listing <agencyListingId> [--live] [--json] [--formUrl <url>] [--bypass] [--now]` |
 | `facebookPublishLive` | Post one Twenty listing, live on Facebook | `log facebook publish --listing <agencyListingId> [--live] [--json] [--formUrl <url>] [--bypass] [--now]` |
-| `facebookCampaign` | Put one ad on N accounts in one place, replace lost accounts, publish… | `log facebook campaign <fill\|heal\|run\|show> --campaign <id> [...]` |
-| `facebookCampaignLive` | Put one ad on N accounts in one place, replace lost…, live on Facebook | `log facebook campaign <fill\|heal\|run\|show> --campaign <id> [...]` |
+| `facebookCampaignFill` | Put one ad on N accounts in the campaign's place, each with its own… | `log facebook campaign fill --campaign <agencyCampaignId> --from <agencyListingId> --accounts <n>` |
+| `facebookCampaignHeal` | Hand each ACCOUNT_LOST listing in the campaign to another account | `log facebook campaign heal --campaign <agencyCampaignId>` |
+| `facebookCampaignRun` | Publish the campaign's READY listings | `log facebook campaign run  --campaign <agencyCampaignId> [--live] [--bypass]` |
+| `facebookCampaignRunLive` | Publish the campaign's READY listings, live on Facebook | `log facebook campaign run  --campaign <agencyCampaignId> [--live] [--bypass]` |
+| `facebookCampaignShow` | The campaign's listings and the account each is on | `log facebook campaign show --campaign <agencyCampaignId> [--json]` |
 | `facebookConversations` | List the buyers' conversations | `log facebook conversations [--account <name>] [--listing <agencyListingId>] [--json]` |
 | `facebookConversationShow` | A conversation and its messages | `log facebook conversation show <id> [--json]` |
 | `facebookConversationRead` | Mark its messages read | `log facebook conversation read <id>` |

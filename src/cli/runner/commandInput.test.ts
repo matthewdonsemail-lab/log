@@ -14,6 +14,12 @@ const SHAPED: Readonly<Record<string, string>> = {
   target: "t3_abc123",
   post: "1900000000000000001",
   where: "isReply=false",
+  homes: "US",
+  home: "IE",
+  name: "fakeFlow",
+  reels: "8-20",
+  watch: "4-25",
+  posts: "8-15",
 };
 
 function sample(spec: FlagSpec | PositionalSpec): unknown {
@@ -44,7 +50,8 @@ function sample(spec: FlagSpec | PositionalSpec): unknown {
 }
 
 function fullInput(form: InputForm): Record<string, unknown> {
-  return Object.fromEntries([...form.positionals, ...form.flags].map((s) => [s.name, sample(s)]));
+  const left = new Set((form.groups ?? []).filter((g) => g.rule === "atMostOne").flatMap((g) => g.names.slice(1)));
+  return Object.fromEntries([...form.positionals, ...form.flags].filter((s) => !left.has(s.name)).map((s) => [s.name, sample(s)]));
 }
 
 const form = (flags: FlagSpec[], extra: Partial<InputForm> = {}): InputForm => ({ words: [], summary: "test", positionals: [], flags, ...extra });
@@ -66,7 +73,7 @@ describe("one flag spec per command", () => {
         if (!parsed.ok) throw new Error(`${formToolName(command, each)}: ${parsed.error}`);
         const positionals = each.positionals.flatMap((p) => (p.kind === "rest" ? (input[p.name] as string[]) : [input[p.name] as string]));
         expect(parsed.positionals).toEqual([...each.words, ...positionals]);
-        for (const flag of each.flags) expect(parsed.values[flag.name]).toEqual(input[flag.name] as never);
+        for (const flag of each.flags) if (flag.name in input) expect(parsed.values[flag.name]).toEqual(input[flag.name] as never);
       }
     }
   });

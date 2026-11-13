@@ -24,7 +24,7 @@ import { profileFor, readProfiles, splitPlan } from "../../voice/pairs/index.ts"
 import type { VoiceProfile } from "../../voice/pairs/index.ts";
 import type { DiscordChat } from "../../discord/chat/match/index.ts";
 import type { PlatformAnswer } from "../../platformKit/session/index.ts";
-import { JSON_FLAG, listOf, numberOf, parseArgs, parserSpecOf, refuse, refuseError, truthOf } from "../runner/helpers/index.ts";
+import { JSON_FLAG, listOf, numberOf, parseArgs, parserSpecOf, refuse, refuseError, truthOf, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandInput, CommandResult, FlagSpec } from "../runner/types.ts";
 
 export const DISCORD_SESSION_USAGE = [
@@ -62,10 +62,10 @@ export const discordSessionCommand: Command = {
   args: "check --account <a> [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(DISCORD_SESSION_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log discord session: ${parsed.error}\n${DISCORD_SESSION_USAGE}` };
+    if (!parsed.ok) return refuseInput("discord session", parsed.error, DISCORD_SESSION_USAGE);
     if (parsed.positionals[0] !== "check" || parsed.positionals.length > 1) return { code: 1, stderr: `log discord session: give check\n${DISCORD_SESSION_USAGE}` };
     const ref = parsed.flags["account"];
-    if (typeof ref !== "string") return { code: 1, stderr: `log discord session check: --account is needed\n${DISCORD_SESSION_USAGE}` };
+    if (typeof ref !== "string") return { code: 1, error: "inputInvalid", stderr: `log discord session check: --account is needed\n${DISCORD_SESSION_USAGE}` };
     try {
       const account = await findDiscordAccount(context.twenty, ref);
       const gate = discordGate(account);
@@ -111,8 +111,8 @@ export const discordChatsCommand: Command = {
   args: "--account <a> [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(DISCORD_CHATS_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log discord chats: ${parsed.error}\n${DISCORD_CHATS_USAGE}` };
-    if (parsed.positionals.length) return { code: 1, stderr: `log discord chats: takes no words, only flags\n${DISCORD_CHATS_USAGE}` };
+    if (!parsed.ok) return refuseInput("discord chats", parsed.error, DISCORD_CHATS_USAGE);
+    if (parsed.positionals.length) return { code: 1, error: "inputInvalid", stderr: `log discord chats: takes no words, only flags\n${DISCORD_CHATS_USAGE}` };
     try {
       const account = await findDiscordAccount(context.twenty, String(parsed.flags["account"]));
       const gate = discordGate(account);
@@ -224,8 +224,8 @@ export const discordReadCommand: Command = {
   args: "--account <a> --channel <id|name> [--limit <n>] [--after <id>] [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(DISCORD_READ_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log discord read: ${parsed.error}\n${DISCORD_READ_USAGE}` };
-    if (parsed.positionals.length) return { code: 1, stderr: `log discord read: takes no words, only flags\n${DISCORD_READ_USAGE}` };
+    if (!parsed.ok) return refuseInput("discord read", parsed.error, DISCORD_READ_USAGE);
+    if (parsed.positionals.length) return { code: 1, error: "inputInvalid", stderr: `log discord read: takes no words, only flags\n${DISCORD_READ_USAGE}` };
     const channel = String(parsed.flags["channel"]).trim();
     const limit = numberOf(parsed, "limit") ?? 20;
     const after = typeof parsed.flags["after"] === "string" ? parsed.flags["after"].trim() : undefined;
@@ -331,8 +331,8 @@ export const discordWatchCommand: Command = {
   args: "--account <a> [--channel <id|name>] [--seconds <s>] [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(DISCORD_WATCH_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log discord watch: ${parsed.error}\n${DISCORD_WATCH_USAGE}` };
-    if (parsed.positionals.length) return { code: 1, stderr: `log discord watch: takes no words, only flags\n${DISCORD_WATCH_USAGE}` };
+    if (!parsed.ok) return refuseInput("discord watch", parsed.error, DISCORD_WATCH_USAGE);
+    if (parsed.positionals.length) return { code: 1, error: "inputInvalid", stderr: `log discord watch: takes no words, only flags\n${DISCORD_WATCH_USAGE}` };
     const seconds = numberOf(parsed, "seconds") ?? 0;
     if (seconds !== 0 && seconds < 5) return refuse("discord watch", "secondsInvalid", "--seconds must be at least 5");
     try {
@@ -435,8 +435,8 @@ export const discordDeleteCommand: Command = {
   args: "--account <a> --channel <id|name> --message <id>[,<id>] [--approvedBy <who>] [--live] [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(DISCORD_DELETE_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log discord delete: ${parsed.error}\n${DISCORD_DELETE_USAGE}` };
-    if (parsed.positionals.length) return { code: 1, stderr: `log discord delete: takes no words, only flags\n${DISCORD_DELETE_USAGE}` };
+    if (!parsed.ok) return refuseInput("discord delete", parsed.error, DISCORD_DELETE_USAGE);
+    if (parsed.positionals.length) return { code: 1, error: "inputInvalid", stderr: `log discord delete: takes no words, only flags\n${DISCORD_DELETE_USAGE}` };
     const channel = String(parsed.flags["channel"]).trim();
     const ids = listOf(parsed, "message") ?? [];
     const approvedBy = typeof parsed.flags["approvedBy"] === "string" ? parsed.flags["approvedBy"].trim() : "";
@@ -549,8 +549,8 @@ export const discordSendCommand: Command = {
   args: '--account <a> --channel <id|name> --text "<message>" [--file <path>[,<path>]] [--brief] [--asOne] [--overGate] [--approvedBy <who>] [--live] [--json]',
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(DISCORD_SEND_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log discord send: ${parsed.error}\n${DISCORD_SEND_USAGE}` };
-    if (parsed.positionals.length) return { code: 1, stderr: `log discord send: takes no words, only flags\n${DISCORD_SEND_USAGE}` };
+    if (!parsed.ok) return refuseInput("discord send", parsed.error, DISCORD_SEND_USAGE);
+    if (parsed.positionals.length) return { code: 1, error: "inputInvalid", stderr: `log discord send: takes no words, only flags\n${DISCORD_SEND_USAGE}` };
     const channel = String(parsed.flags["channel"]).trim();
     const text = embeddableXLinks(String(parsed.flags["text"]));
     const approvedBy = typeof parsed.flags["approvedBy"] === "string" ? parsed.flags["approvedBy"].trim() : "";
@@ -715,7 +715,7 @@ export const discordServersCommand: Command = {
   args: "--account <a> [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(DISCORD_SERVERS_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log discord servers: ${parsed.error}\n${DISCORD_SERVERS_USAGE}` };
+    if (!parsed.ok) return refuseInput("discord servers", parsed.error, DISCORD_SERVERS_USAGE);
     try {
       const start = await serverCommandStart(context, String(parsed.flags["account"]), "discord servers");
       if ("refused" in start) return start.refused;
@@ -757,7 +757,7 @@ export const discordChannelsCommand: Command = {
   args: "--account <a> --server <name> [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(DISCORD_CHANNELS_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log discord channels: ${parsed.error}\n${DISCORD_CHANNELS_USAGE}` };
+    if (!parsed.ok) return refuseInput("discord channels", parsed.error, DISCORD_CHANNELS_USAGE);
     try {
       const start = await serverCommandStart(context, String(parsed.flags["account"]), "discord channels");
       if ("refused" in start) return start.refused;
@@ -817,7 +817,7 @@ export const discordPostsCommand: Command = {
   args: "--account <a> --channel \"<server> #<forum>\" [--limit <n>] [--archived <true|false>] [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(DISCORD_POSTS_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log discord posts: ${parsed.error}\n${DISCORD_POSTS_USAGE}` };
+    if (!parsed.ok) return refuseInput("discord posts", parsed.error, DISCORD_POSTS_USAGE);
     const limit = numberOf(parsed, "limit") ?? 25;
     const archived = truthOf(parsed, "archived");
     try {
@@ -883,7 +883,7 @@ export const discordSearchCommand: Command = {
   args: "--account <a> --server <name> --query \"<words>\" [--channel \"<server> #<channel>\"] [--from <name>] [--limit <n>] [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(DISCORD_SEARCH_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log discord search: ${parsed.error}\n${DISCORD_SEARCH_USAGE}` };
+    if (!parsed.ok) return refuseInput("discord search", parsed.error, DISCORD_SEARCH_USAGE);
     const limit = numberOf(parsed, "limit") ?? 25;
     try {
       const start = await serverCommandStart(context, String(parsed.flags["account"]), "discord search");

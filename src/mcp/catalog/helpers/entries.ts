@@ -1,7 +1,10 @@
 import { isPlatform } from "../../../cli/runner/helpers/platforms.ts";
 import { currentToolName } from "../../server/helpers/toolAliases.ts";
 import type { Command, FlagSpec, InputForm, PositionalSpec } from "../../../cli/runner/types.ts";
-import { guideOfCommand } from "../../server/helpers/guides.ts";
+import { FLOWS_GUIDE, guideOfCommand } from "../../server/helpers/guides.ts";
+import { flowTool } from "../../server/helpers/toolsFromFlows.ts";
+import { flowPlatform } from "../../../browser/flow/index.ts";
+import type { FlowDefinition } from "../../../browser/flow/index.ts";
 import { argsLiveFlags, commandTools, LONG_RUNNING } from "../../server/helpers/toolsFromCommands.ts";
 import type { CommandTool } from "../../server/helpers/toolsFromCommands.ts";
 import { TERMINAL_ONLY } from "../../server/types.ts";
@@ -95,6 +98,36 @@ export function catalogOf(commands: readonly Command[]): CatalogEntry[] {
     .filter((t) => !t.live)
     .map((plain) => entryOf(plain, tools.find((t) => t.live && t.command === plain.command && t.form?.words.join(" ") === plain.form?.words.join(" "))));
   return [...callable, ...terminalEntries(commands)];
+}
+
+export function flowEntries(commands: readonly Command[], flows: readonly FlowDefinition[]): CatalogEntry[] {
+  const command = commands.find((c) => c.name === "flow" && c.input);
+  const form = command?.input?.forms.find((f) => f.words.join(" ") === "run") ?? null;
+  if (!command || !form) return [];
+  return flows.map((flow): CatalogEntry => {
+    const platform = flowPlatform(flow);
+    const params = flow.params.map((p): CatalogInput => ({ name: p.name, type: "string", required: true, note: `${p.description}${p.kind === "file" ? " (a URL or a local path)" : ""}`, values: [], positional: false }));
+    const own = (name: string) => form.flags.find((f) => f.name === name);
+    const optional = ["bypass", "now", "proxyMs"].flatMap((name) => (own(name) ? [inputOf(own(name)!, false)] : []));
+    return {
+      id: [...(platform ? [platform] : []), "flow", flow.name].join("."),
+      tool: flowTool(flow),
+      liveTool: flowTool(flow, true),
+      command,
+      form: null,
+      platform: platform ?? "any",
+      summary: flow.summary,
+      usage: [`log flow run ${flow.name} --account <a> ${flow.params.map((p) => `--set ${p.name}=…`).join(" ")}`.trimEnd()],
+      effect: "read",
+      inputs: [{ name: "account", type: "string", required: true, note: "The account it runs on", values: [], positional: false }, ...params, ...optional],
+      liveInputs: [],
+      bypass: true,
+      longRunning: true,
+      guide: FLOWS_GUIDE,
+      terminalOnly: null,
+      recorded: true,
+    };
+  });
 }
 
 export function entryById(entries: readonly CatalogEntry[], id: string): CatalogEntry | null {

@@ -20,12 +20,12 @@ Each tool's own description carries its full usage, notes, live line and rules; 
 
 | Tool | What it does | Usage |
 |---|---|---|
-| `facebookJoin` | Join a Facebook group as one account, in its open browser | `log facebook join group --account <a> --group <g> [--live] \| --show \| --answer [--set n=v]... [--agree] \| --fill [--live [--submit]] [--bypass] [--json]` |
-| `facebookJoinLive` | Join a Facebook group as one account, in its open…, live on Facebook | `log facebook join group --account <a> --group <g> [--live] \| --show \| --answer [--set n=v]... [--agree] \| --fill [--live [--submit]] [--bypass] [--json]` |
+| `facebookJoinGroup` | Join a Facebook group as one account, in its open browser | `log facebook join group --account <accountName> --group <group url, id or name> [--live] [--json]` |
+| `facebookJoinGroupLive` | Join a Facebook group as one account, in its open…, live on Facebook | `log facebook join group --account <accountName> --group <group url, id or name> [--live] [--json]` |
 | `facebookReadGroup` | Read a Facebook group's new posts and the comments of the new posts… | `log facebook read group --account <accountName> --group <group url or id> [--scrolls <n>] [--commentPosts <n>] [--live] [--bypass] [--json]` |
 | `facebookReadGroupLive` | Read a Facebook group's new posts and the comments of…, live on Facebook | `log facebook read group --account <accountName> --group <group url or id> [--scrolls <n>] [--commentPosts <n>] [--live] [--bypass] [--json]` |
 | `facebookReadMembers` | Read a Facebook group's newest members | `log facebook read members --account <accountName> --group <group url or id> --count <n> [--secondsPerScroll <s>] [--maxScrolls <n>] [--owners] [--bypass] [--json]` |
-| `facebookPoll` | Poll a Facebook group from one account, in its open browser, for a… | `log facebook poll <group> <account> [<how long to poll>] [--bypass] \| --request <json>` |
+| `facebookPoll` | Poll a Facebook group from one account in its open browser, once or… | `log facebook poll <group url or id> <accountName> [<how long to poll: 30m, 2h>] [--bypass]` |
 
 ## The rules these tools fall under
 

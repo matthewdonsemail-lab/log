@@ -55,7 +55,7 @@ describe("AGENTS.md in the MCP server", () => {
       expect(new Set(cited).size).toBe(cited.length);
       if (tool.name !== "newPlatform") expect(cited.filter((n) => DEVELOPER_RULES.has(Number(n)))).toEqual([]);
     }
-    expect(tools.find((t) => t.name === "facebookJoin")?.description).toContain("rules 8, 35, 25, 26, 29, 73, 30, 38, 39, 40, 41.");
+    expect(tools.find((t) => t.name === "facebookJoinGroup")?.description).toContain("rules 8, 35, 25, 26, 29, 73, 30, 38, 39, 40, 41.");
     await client.close();
   });
 
@@ -75,7 +75,7 @@ describe("watching a long call live over MCP (rule 26)", () => {
     for (const name of ["claude-code", "codex-mcp-client"]) {
       const client = await connected(name);
       const { tools } = await client.listTools();
-      for (const tool of ["inspectStart", "inspectDo", "facebookJoin", "warmup", "facebookPublish", "facebookCapture", "facebookFlowProfileSetupLive"]) expect(tools.find((t) => t.name === tool)?.description).toContain("start a Monitor on `tail -f ~/.logCli/mcp/<day>.log`");
+      for (const tool of ["inspectStart", "inspectDo", "facebookJoinGroup", "warmup", "facebookPublish", "facebookCapture", "facebookFlowProfileSetupLive"]) expect(tools.find((t) => t.name === tool)?.description).toContain("start a Monitor on `tail -f ~/.logCli/mcp/<day>.log`");
       expect(tools.find((t) => t.name === "facebookAccounts")?.description).not.toContain("Monitor");
       await client.close();
     }

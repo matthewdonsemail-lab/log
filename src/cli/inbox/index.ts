@@ -3,7 +3,7 @@ import { behindOf, resumeGap } from "../../inbox/store/index.ts";
 import type { ActionRecord, ChatClaim } from "../../inbox/claims/index.ts";
 import { lastWordOf, waitingOf } from "../../inbox/lastWord/index.ts";
 import type { LastWord } from "../../inbox/lastWord/index.ts";
-import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuse } from "../runner/helpers/index.ts";
+import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuse, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandInput, FlagSpec } from "../runner/types.ts";
 
 export const INBOX_USAGE = [
@@ -77,9 +77,9 @@ export const inboxCommand: Command = {
   args: "claim|release|claims|actions|resume|waiting [--by <who>] [--platform <p>] [--account <a>] [--chat <id|handle>] [--event <id>] [--limit <n>] [--oldest]",
   async run(_context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(INBOX_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log inbox: ${parsed.error}\n${INBOX_USAGE}` };
+    if (!parsed.ok) return refuseInput("inbox", parsed.error, INBOX_USAGE);
     const [sub = "claims", ...rest] = parsed.positionals;
-    if (rest.length) return { code: 1, stderr: `log inbox: unexpected argument "${rest[0]}"\n${INBOX_USAGE}` };
+    if (rest.length) return { code: 1, error: "inputInvalid", stderr: `log inbox: unexpected argument "${rest[0]}"\n${INBOX_USAGE}` };
     const json = parsed.flags["json"] === true;
     const str = (name: string) => (typeof parsed.flags[name] === "string" ? String(parsed.flags[name]).trim() : "");
     if (sub === "claims") {
@@ -96,7 +96,7 @@ export const inboxCommand: Command = {
     if (sub === "waiting") {
       const limit = numberOf(parsed, "limit") ?? 50;
       const platform = str("platform");
-      if (platform && !PLATFORMS.includes(platform)) return { code: 1, stderr: `log inbox waiting: --platform is one of ${PLATFORMS.join(", ")}
+      if (platform && !PLATFORMS.includes(platform)) return { code: 1, error: "inputInvalid", stderr: `log inbox waiting: --platform is one of ${PLATFORMS.join(", ")}
 ${INBOX_USAGE}` };
       const oldest = parsed.flags["oldest"] === true;
       const order = (list: LastWord[]) => (oldest ? [...list].reverse() : list).slice(0, limit);
@@ -116,7 +116,7 @@ ${INBOX_USAGE}` };
       const platform = str("platform");
       const account = str("account");
       const by = str("by");
-      if (!PLATFORMS.includes(platform) || !account || !by) return { code: 1, stderr: `log inbox resume: --platform (${PLATFORMS.join(", ")}), --account and --by are needed
+      if (!PLATFORMS.includes(platform) || !account || !by) return { code: 1, error: "inputInvalid", stderr: `log inbox resume: --platform (${PLATFORMS.join(", ")}), --account and --by are needed
 ${INBOX_USAGE}` };
       const gap = behindOf(platform, account);
       const resumed = resumeGap(platform, account, by);
@@ -126,7 +126,7 @@ ${INBOX_USAGE}` };
     }
     if (sub !== "claim" && sub !== "release") return { code: 1, stderr: `log inbox: unknown subcommand "${sub}"\n${INBOX_USAGE}` };
     const platform = str("platform");
-    if (!PLATFORMS.includes(platform)) return { code: 1, stderr: `log inbox ${sub}: --platform is one of ${PLATFORMS.join(", ")}\n${INBOX_USAGE}` };
+    if (!PLATFORMS.includes(platform)) return { code: 1, error: "inputInvalid", stderr: `log inbox ${sub}: --platform is one of ${PLATFORMS.join(", ")}\n${INBOX_USAGE}` };
     const ref = { platform, account: str("account"), conversationId: str("chat").replace(/^@/, ""), ...(/^\d+([-:]\d+)?$|^[CDG][A-Z0-9]+$/.test(str("chat")) ? {} : { with: str("chat").replace(/^@/, "") }), ...(str("event") ? { eventId: str("event") } : {}) };
     if (!ref.account || !ref.conversationId) return { code: 1, stderr: `log inbox ${sub}: --account and --chat can't be empty\n${INBOX_USAGE}` };
     if (sub === "release") {

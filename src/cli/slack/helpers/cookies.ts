@@ -6,7 +6,7 @@ import type { PlatformAccount } from "../../../platformKit/session/index.ts";
 import { TwentyError, upsertLocalAccount } from "../../../twenty/graphql/index.ts";
 import { shouldPrompt } from "../../launch/helpers/index.ts";
 import type { LaunchTTY } from "../../launch/helpers/index.ts";
-import { parseArgs, parserSpecOf, refuse, refuseError } from "../../runner/helpers/index.ts";
+import { parseArgs, parserSpecOf, refuse, refuseError, refuseInput } from "../../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../../runner/types.ts";
 
 export const SLACK_COOKIES_USAGE = [
@@ -75,9 +75,9 @@ export const slackCookiesCommand: Command = {
   async run(context, argv) {
     if (argv[0] !== "save") return { code: 1, stderr: `log slack cookies: save is the only subcommand\n${SLACK_COOKIES_USAGE}` };
     const parsed = parseArgs(argv.slice(1), parserSpecOf({ forms: [{ ...SLACK_COOKIES_INPUT.forms[0], words: [] }] }));
-    if (!parsed.ok) return { code: 1, stderr: `log slack cookies: ${parsed.error}\n${SLACK_COOKIES_USAGE}` };
+    if (!parsed.ok) return refuseInput("slack cookies", parsed.error, SLACK_COOKIES_USAGE);
     const accountName = String(parsed.flags["account"] ?? "").trim();
-    if (!/^[A-Za-z0-9_.\-]{2,64}$/.test(accountName)) return { code: 1, stderr: `log slack cookies save: --account must be a name of letters, digits, _ . or -\n${SLACK_COOKIES_USAGE}` };
+    if (!/^[A-Za-z0-9_.\-]{2,64}$/.test(accountName)) return { code: 1, error: "inputInvalid", stderr: `log slack cookies save: --account must be a name of letters, digits, _ . or -\n${SLACK_COOKIES_USAGE}` };
     const workspace = typeof parsed.flags["workspace"] === "string" ? parsed.flags["workspace"].trim() : "";
     if (!context.directSlack) return { code: 1, stderr: "log slack cookies save: the direct-API engine isn't wired in this context" };
     if (!shouldPrompt(false, slackCookiesDeps.tty())) {

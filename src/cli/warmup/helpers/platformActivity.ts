@@ -58,7 +58,7 @@ function actor(context: CommandContext, current: NonNullable<ReturnType<typeof r
 export async function runPlatformActivity(context: CommandContext, positionals: string[], flags: Record<string, string | true>): Promise<CommandResult> {
   const [platform, activityName, sub = "record"] = positionals;
   if (activityName === "persona") {
-    if (typeof flags.account !== "string") return { code: 1, stderr: `log facebook warmup: --account is required\n${PLATFORM_USAGE}` };
+    if (typeof flags.account !== "string") return { code: 1, error: "inputInvalid", stderr: `log facebook warmup: --account is required\n${PLATFORM_USAGE}` };
     try {
       const account = await findAccount(context.twenty, flags.account);
       const seed = typeof flags.seed === "string" ? Number(flags.seed) : undefined;
@@ -96,8 +96,8 @@ export async function runPlatformActivity(context: CommandContext, positionals: 
     const glanced = steps.filter((s) => s.step.id === "glance").length;
     return { code: 0, stdout: [`Warm-up ${platform} ${activity.activity}, a session (seed ${seed}): ${reels} reels, ${glanced} skipped after a glance, ${reels - glanced} watched, ${steps.length} steps${built.options.likes ? "" : ", no likes (add --likes, rule 8)"}.`, ...describeSession(steps)].join("\n") };
   }
-  if (sub !== "record" && sub !== "run") return { code: 1, stderr: `log facebook warmup ${platform} ${activity.activity}: pick plan, record or run\n${PLATFORM_USAGE}` };
-  if (typeof flags.account !== "string") return { code: 1, stderr: `log facebook warmup: --account is required\n${PLATFORM_USAGE}` };
+  if (sub !== "record" && sub !== "run") return { code: 1, error: "inputInvalid", stderr: `log facebook warmup ${platform} ${activity.activity}: pick plan, record or run\n${PLATFORM_USAGE}` };
+  if (typeof flags.account !== "string") return { code: 1, error: "inputInvalid", stderr: `log facebook warmup: --account is required\n${PLATFORM_USAGE}` };
 
   try {
     const account = await findAccount(context.twenty, flags.account);

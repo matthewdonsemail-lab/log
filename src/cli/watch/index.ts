@@ -10,13 +10,31 @@ import { settleInBackground } from "../../rea/capture/index.ts";
 import { createInspector, formatTraceLine } from "../../observability/trace/index.ts";
 import { keepNewDevice, keepSession, openAccount } from "../live/index.ts";
 import { renderLoss } from "../live/helpers/index.ts";
-import { parseArgs, refuseError } from "../runner/helpers/index.ts";
-import type { Command } from "../runner/types.ts";
+import { BYPASS_FLAG, FACEBOOK_ACCOUNT_FLAG } from "../live/index.ts";
+import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuseError, refuseInput } from "../runner/helpers/index.ts";
+import type { Command, CommandInput } from "../runner/types.ts";
 import { renderMonitorOutput, summarizeMonitor, toCheckOutcome } from "./helpers/index.ts";
 
 export * from "./helpers/index.ts";
 
 export const WATCH_USAGE = "Usage: log facebook watch --account <accountName> [--checks <n>] [--interval <minutes>] [--json] [--bypass]";
+
+export const WATCH_INPUT: CommandInput = {
+  forms: [
+    {
+      words: [],
+      summary: "Run the Marketplace listing monitor (XState) for one Facebook account and print every step",
+      positionals: [],
+      flags: [
+        FACEBOOK_ACCOUNT_FLAG,
+        { name: "checks", kind: "integer", min: 0, description: "How many checks to run, 0 for until stopped (default 1)" },
+        { name: "interval", kind: "number", description: "Minutes between checks, above 0" },
+        JSON_FLAG,
+        BYPASS_FLAG,
+      ],
+    },
+  ],
+};
 
 export const watchDeps = {
   onInterrupt(stop: () => void): () => void {
@@ -30,17 +48,18 @@ export const watchCommand: Command = {
   platform: "facebook",
   name: "watch",
   effect: "browser",
+  input: WATCH_INPUT,
   summary: "Run the listing monitor (XState) for one account and print every step",
   args: "--account <name> [--checks <n>] [--interval <min>] [--json] [--bypass]",
   async run(context, argv) {
-    const parsed = parseArgs(argv, { boolean: ["json", "bypass"], valued: ["account", "checks", "interval"] });
-    if (!parsed.ok) return { code: 1, stderr: `log facebook watch: ${parsed.error}\n${WATCH_USAGE}` };
+    const parsed = parseArgs(argv, parserSpecOf(WATCH_INPUT));
+    if (!parsed.ok) return refuseInput("facebook watch", parsed.error, WATCH_USAGE);
     const bypassHours = Boolean(parsed.flags["bypass"]);
-    if (parsed.positionals.length > 0) return { code: 1, stderr: `log facebook watch: unexpected argument "${parsed.positionals[0]}"\n${WATCH_USAGE}` };
-    const checks = parsed.flags["checks"] === undefined ? 1 : Number(parsed.flags["checks"]);
-    const interval = parsed.flags["interval"] === undefined ? undefined : Number(parsed.flags["interval"]);
-    if (!Number.isInteger(checks) || checks < 0) return { code: 1, stderr: `log facebook watch: --checks must be 0 (forever) or more` };
-    if (interval !== undefined && !(interval > 0)) return { code: 1, stderr: `log facebook watch: --interval must be minutes above 0` };
+    if (parsed.positionals.length > 0) return { code: 1, error: "inputInvalid", stderr: `log facebook watch: unexpected argument "${parsed.positionals[0]}"\n${WATCH_USAGE}` };
+    const checks = numberOf(parsed, "checks") ?? 1;
+    const interval = numberOf(parsed, "interval");
+    if (!Number.isInteger(checks) || checks < 0) return { code: 1, error: "inputInvalid", stderr: `log facebook watch: --checks must be 0 (forever) or more` };
+    if (interval !== undefined && !(interval > 0)) return { code: 1, error: "inputInvalid", stderr: `log facebook watch: --interval must be minutes above 0` };
 
     const opened = await openAccount(context, "watch", WATCH_USAGE, parsed.flags["account"], "run", bypassHours);
     if (!("run" in opened)) return opened;
