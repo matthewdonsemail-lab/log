@@ -80,7 +80,7 @@ Sent:
   "server_timestamps": "true",
   "variables": {
     "input": {
-      "actor_id": "<userId:1>",
+      "actor_id": "<actorId:1>",
       "client_mutation_id": "1",
       "device_time_iso": "2026-10-23T07:54:52.628Z",
       "fb_web_fb_intervals_payload": {
@@ -161,7 +161,7 @@ Sent:
   "server_timestamps": "true",
   "variables": {
     "input": {
-      "actor_id": "<userId:1>",
+      "actor_id": "<actorId:1>",
       "client_mutation_id": "1",
       "device_time_iso": "2026-10-23T07:59:55.380Z",
       "fb_web_fb_intervals_payload": {
@@ -222,7 +222,7 @@ Sent:
   "server_timestamps": "true",
   "variables": {
     "input": {
-      "actor_id": "<userId:2>",
+      "actor_id": "<actorId:2>",
       "client_mutation_id": "1",
       "device_time_iso": "2026-11-11T08:38:37.037Z",
       "fb_web_fb_intervals_payload": {

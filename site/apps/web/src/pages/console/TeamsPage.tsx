@@ -1,11 +1,13 @@
 import { useEffect, useState, type FormEvent } from 'react'
-import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom'
+import { Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
 import { api, errorText, sessionKey, useResetPrivate, useSession, type SessionView, type TeamView } from '@/lib/controlApi'
 import './console.css'
 import { localConsole } from '@/lib/consoleMode'
 import { LocalNoTeamPage } from './LocalNoTeamPage'
-import { toast } from '@listeningkit/ui'
+import { Button, Spinner, toast } from '@listeningkit/ui'
+import { ArrowRight } from 'lucide-react'
+import { AuthShell, authFieldClass } from '../auth/AuthShell'
 
 function slugOf(name: string): string {
   return name.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 48)
@@ -52,7 +54,7 @@ function HostedTeamsPage() {
     }
   }, [invite, session.data?.user.id])
 
-  if (session.isLoading) return <main className="grid min-h-screen place-items-center text-sm text-slate-500">Loading…</main>
+  if (session.isLoading) return <AuthShell><Spinner className="min-h-0 py-10" label="Loading your teams" /></AuthShell>
   if (!session.data) return <Navigate to={`/sign-in?returnPath=${encodeURIComponent(`/teams${invite ? `?invite=${invite}` : ''}`)}`} replace />
 
   async function choose(teamId: string) {
@@ -86,51 +88,47 @@ function HostedTeamsPage() {
   }
 
   const teams = session.data.teams
-  const field = 'h-11 w-full rounded-xl border border-slate-300 bg-white px-4 text-sm outline-none placeholder:text-slate-400 focus:border-[#2A8CFF] focus:ring-2 focus:ring-[#2A8CFF]/20'
   return (
-    <main className="relative min-h-screen bg-[#F8FBFF] px-4 py-10 font-sans text-slate-900 sm:px-6">
-      <div className="mx-auto w-full max-w-lg">
-        <Link to="/" aria-label="ListeningKit home" className="mb-6 inline-flex"><img src="/logo.svg" alt="" className="size-10 rounded-[10px]" /></Link>
-        <h1 className="text-2xl font-black tracking-tight">Your teams</h1>
-        <p className="mt-2 text-sm leading-6 text-slate-600">Signed in as {session.data.user.email}. A team shares one workspace, its accounts and its AI connections.</p>
-        {invite && busy ? <p role="status" className="mt-5 rounded-xl bg-white p-3 text-sm text-slate-600">Joining the team…</p> : null}
+    <AuthShell wide>
+      <h1 className="text-center text-2xl font-bold leading-tight">Your teams</h1>
+      <p className="mt-3 text-center text-sm leading-6 text-slate-500">Signed in as {session.data.user.email}. A team shares one workspace, its accounts and its AI connections.</p>
+      {invite && busy ? (
+        <div role="status" className="mt-6 flex items-center justify-center gap-3 text-sm text-slate-500"><Spinner className="min-h-0 flex-none py-0" label="Joining the team" />Joining the team</div>
+      ) : null}
 
-        {teams.length ? (
-          <section className="mt-8">
-            <h2 className="mb-3 text-xs font-bold uppercase tracking-[0.08em] text-slate-500">Pick a team</h2>
-            <ul className="space-y-2">
-              {teams.map((team) => (
-                <li key={team.id}>
-                  <button type="button" disabled={busy} onClick={() => pick(team.id)} className="flex w-full items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 text-left transition-colors hover:border-[#2A8CFF] disabled:opacity-60">
-                    <span aria-hidden="true" className="flex size-9 items-center justify-center rounded-full bg-[#2A8CFF] text-sm font-bold text-white">{team.name.slice(0, 1).toUpperCase()}</span>
-                    <span className="min-w-0 flex-1">
-                      <span className="block truncate font-semibold">{team.name}</span>
-                      <span className="text-xs text-slate-500">{team.role}{team.id === session.data?.selectedTeamId ? ' · current' : ''}</span>
-                    </span>
-                    <span className="text-sm font-semibold text-[#1B6FD6]">Open →</span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ) : null}
-
-        <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-5">
-          <h2 className="text-base font-bold">Create a team</h2>
-          <form className="mt-4 space-y-3" onSubmit={create}>
-            <label className="block text-sm font-semibold text-slate-700">
-              Name
-              <input value={name} onChange={(event) => setName(event.target.value)} required maxLength={80} placeholder="ListeningKit" className={`${field} mt-1.5`} />
-            </label>
-            <label className="block text-sm font-semibold text-slate-700">
-              Team URL
-              <input value={slug} onChange={(event) => { setSlugTouched(true); setSlug(event.target.value.toLowerCase()) }} required minLength={2} maxLength={48} pattern="[a-z0-9]+(-[a-z0-9]+)*" placeholder="listeningkit" className={`${field} mt-1.5`} />
-            </label>
-            <button type="submit" disabled={busy || !name.trim() || slug.length < 2} className="h-11 w-full rounded-xl bg-[#2A8CFF] text-sm font-bold text-white disabled:opacity-60">{busy ? 'Working…' : 'Create team'}</button>
-          </form>
-          <p className="mt-4 text-xs leading-5 text-slate-500">To join someone else’s team, open the invite link from your email while signed in with that address.</p>
+      {teams.length ? (
+        <section className="mt-7">
+          <h2 className="mb-3 text-sm font-semibold text-slate-700">Pick a team</h2>
+          <ul className="space-y-3">
+            {teams.map((team) => (
+              <li key={team.id}>
+                <button type="button" disabled={busy} onClick={() => pick(team.id)} className="flex h-14 w-full items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 text-left hover:border-[#2A8CFF] hover:bg-[#EFF6FF] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#2A8CFF] disabled:cursor-not-allowed disabled:opacity-60">
+                  <span aria-hidden="true" className="flex size-8 items-center justify-center rounded-lg bg-[#2A8CFF] text-sm font-bold text-white">{team.name.slice(0, 1).toUpperCase()}</span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-bold">{team.name}</span>
+                    <span className="text-xs text-slate-500">{team.role}{team.id === session.data?.selectedTeamId ? ' · current' : ''}</span>
+                  </span>
+                  <ArrowRight size={16} className="text-[#2A8CFF]" />
+                </button>
+              </li>
+            ))}
+          </ul>
+          <div className="flex items-center gap-3 pt-6 text-xs text-slate-400"><span className="h-px flex-1 bg-slate-200" />or create a new team<span className="h-px flex-1 bg-slate-200" /></div>
         </section>
-      </div>
-    </main>
+      ) : null}
+
+      <form className={teams.length ? 'mt-5 space-y-5' : 'mt-7 space-y-5'} onSubmit={create}>
+        <div>
+          <label htmlFor="teamName" className="mb-2 block text-sm font-semibold text-slate-700">Team name</label>
+          <input id="teamName" value={name} onChange={(event) => setName(event.target.value)} required maxLength={80} placeholder="ListeningKit" className={authFieldClass} />
+        </div>
+        <div>
+          <label htmlFor="teamSlug" className="mb-2 block text-sm font-semibold text-slate-700">Team URL</label>
+          <input id="teamSlug" value={slug} onChange={(event) => { setSlugTouched(true); setSlug(event.target.value.toLowerCase()) }} required minLength={2} maxLength={48} pattern="[a-z0-9]+(-[a-z0-9]+)*" placeholder="listeningkit" className={authFieldClass} />
+        </div>
+        <Button type="submit" variant="blue" disabled={busy || !name.trim() || slug.length < 2} className="h-12 w-full rounded-xl text-sm font-bold">{busy ? 'Creating…' : 'Create team'} <ArrowRight size={16} className="ml-2" /></Button>
+      </form>
+      <p className="mt-5 text-center text-xs text-slate-500">To join someone else’s team, open the invite link from your email while signed in with that address.</p>
+    </AuthShell>
   )
 }

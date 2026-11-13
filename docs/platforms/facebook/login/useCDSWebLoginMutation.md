@@ -36,7 +36,7 @@ Sent:
   "server_timestamps": "true",
   "variables": {
     "input": {
-      "actor_id": "0",
+      "actor_id": "<actorId:1>",
       "client_mutation_id": "1",
       "access_flow_version": "pre_mt_behavior",
       "account_recovery_entry_point": null,
@@ -95,7 +95,7 @@ Answered:
     "caa_login_web": {
       "error_code": 1348043,
       "error_message": {
-        "text": "Something went wrong. Please try again.",
+        "text": "<messageText>",
         "inline_style_ranges": [],
         "image_ranges": [],
         "ranges": [],

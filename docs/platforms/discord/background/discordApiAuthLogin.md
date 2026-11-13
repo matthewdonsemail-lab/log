@@ -10,27 +10,28 @@
 | Path | `discord.com/api/auth/login` |
 | Sends | `login`, `undelete`, `login_source`, `gift_code_sku_id` |
 | Reads | `message`, `code`, `errors.login`, `user_id`, `token`, `user_settings.locale`, `user_settings.theme` |
-| Called from | `runs/inspect/20261030T222341_<name:1>/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_<name:1>/script1036.js:1 parse`, `runs/inspect/20261030T222341_<name:1>/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_<name:1>/script1245.js:2 anonymous` |
-| rea | `ev_065e7ad37dcb5911d240f9de7d6e2882220c5a8d7c025d92b46a23de59cf297c` |
+| Called from | `runs/inspect/20261113T044840_<name:1>/script0.js:232 625075`, `runs/inspect/20261113T044840_<name:1>/script0.js:124 559868`, `runs/inspect/20261113T044840_<name:1>/script0.js:124 961943`, `runs/inspect/20261113T044840_<name:1>/script1294.js:1 634654` |
+| rea | `ev_b899f2654496ca2e1d268edecf85c33fe073f4618a1509e9ef65d918f68fc146` |
 
-Seen 4 time(s) in 2 run(s).
+Seen 7 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 5: click e40 | 1 | 200 | 946 ms | 862 ms | — |
 | inspect | step 2: snapshot | 3 | 400, 200 | 575–892 ms | 36683–43074 ms | — |
+| inspect | step 1: goto /login | 3 | 400, 200 | 607–830 ms | 26209–29525 ms | — |
 
-### What it sent and what came back (the newest 2 from our runs)
+### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261030T222341_<name:1>**, step 2: snapshot: 400, 575 ms
+**runs/inspect/20261113T044840_<name:1>**, step 1: goto /login: 400, 607 ms
 
 Sent:
 
 ```json
 {
-  "login": "<email>",
+  "login": "<username:1>",
   "undelete": false,
   "login_source": null,
   "gift_code_sku_id": null
@@ -41,14 +42,46 @@ Answered:
 
 ```json
 {
-  "message": "Invalid Form Body",
+  "message": "<messageText>",
   "code": 50035,
   "errors": {
     "login": {
       "_errors": [
         {
           "code": "INVALID_LOGIN",
-          "message": "Login or password is invalid."
+          "message": "<messageText>"
+        }
+      ]
+    }
+  }
+}
+```
+
+**runs/inspect/20261030T222341_<name:1>**, step 2: snapshot: 400, 575 ms
+
+Sent:
+
+```json
+{
+  "login": "<username:1>",
+  "undelete": false,
+  "login_source": null,
+  "gift_code_sku_id": null
+}
+```
+
+Answered:
+
+```json
+{
+  "message": "<messageText>",
+  "code": 50035,
+  "errors": {
+    "login": {
+      "_errors": [
+        {
+          "code": "INVALID_LOGIN",
+          "message": "<messageText>"
         }
       ]
     }
@@ -62,7 +95,7 @@ Sent:
 
 ```json
 {
-  "login": "<email>",
+  "login": "<username:1>",
   "undelete": false,
   "login_source": null,
   "gift_code_sku_id": null

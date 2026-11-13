@@ -10,10 +10,10 @@
 | Path | `discord.com/api/quests/get-decisions` |
 | Sends | — |
 | Reads | `request_id`, `decisions` |
-| Called from | `runs/inspect/20261030T222341_<name:1>/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_<name:1>/script1036.js:1 parse`, `runs/inspect/20261030T222341_<name:1>/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_<name:1>/script1245.js:2 anonymous` |
-| rea | `ev_065e7ad37dcb5911d240f9de7d6e2882220c5a8d7c025d92b46a23de59cf297c` |
+| Called from | `runs/inspect/20261113T044840_<name:1>/script0.js:232 625075`, `runs/inspect/20261113T044840_<name:1>/script0.js:124 559868`, `runs/inspect/20261113T044840_<name:1>/script0.js:124 961943`, `runs/inspect/20261113T044840_<name:1>/script1294.js:1 634654` |
+| rea | `ev_75e0c23fd6444f1c48be7aa1d3fb551ec7962bf2d92d7d99e9551f5632a33218` |
 
-Seen 6 time(s) in 4 run(s).
+Seen 7 time(s) in 5 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -21,12 +21,37 @@ Seen 6 time(s) in 4 run(s).
 | inspect | step 5: click e40 | 1 | 200 | 362 ms | 16903 ms | — |
 | inspect | step 9: goto /channels/@me | 1 | 200 | 692 ms | 15056 ms | — |
 | inspect | step 25: goto /channels/@me | 1 | 200 | 523 ms | 15461 ms | — |
-| inspect | step 1: goto /login | 1 | 200 | 395 ms | 24174 ms | — |
+| inspect | step 1: goto /login | 2 | 200 | 395–7336 ms | 24174–48704 ms | — |
 | inspect | step 2: snapshot | 1 | 200 | 508 ms | 53252 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261113T044840_<name:1>**, step 1: goto /login: 200, 7336 ms
+
+Sent:
+
+```json
+{
+  "query": {
+    "placement": "3",
+    "num_decisions_requested": "1",
+    "client_heartbeat_session_id": "18fa4278-989f-4a8a-a0cd-a6ac55dae24e",
+    "client_ad_session_id": "f20855a6-d7de-453b-9ffc-da1aa6c9dfe7"
+  },
+  "body": null
+}
+```
+
+Answered:
+
+```json
+{
+  "request_id": "05f4c160-2b54-4f5b-9181-81700c8a6c74",
+  "decisions": []
+}
+```
 
 **runs/inspect/20261030T222341_<name:1>**, step 2: snapshot: 200, 508 ms
 
@@ -49,31 +74,6 @@ Answered:
 ```json
 {
   "request_id": "b5af6f95-b8d1-436e-bf9b-d90acf885631",
-  "decisions": []
-}
-```
-
-**runs/inspect/20261028T074137_<name:1>**, step 1: goto /login: 200, 395 ms
-
-Sent:
-
-```json
-{
-  "query": {
-    "placement": "3",
-    "num_decisions_requested": "1",
-    "client_heartbeat_session_id": "042a6464-5284-440e-831b-0ed816011058",
-    "client_ad_session_id": "8b8ce89d-11bc-4e79-b242-5c10647e14f5"
-  },
-  "body": null
-}
-```
-
-Answered:
-
-```json
-{
-  "request_id": "a4703257-f42f-4dc3-ba6c-7eb5d028d04e",
   "decisions": []
 }
 ```

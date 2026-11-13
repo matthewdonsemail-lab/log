@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRightFromBracket, faBolt, faChartColumn, faCoins, faGear, faGift, faHouse, faPlug, faRobot } from '@fortawesome/free-solid-svg-icons'
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core'
 import './console.css'
-import { toast } from '@listeningkit/ui'
+import { Spinner, toast } from '@listeningkit/ui'
 import { localConsole } from '@/lib/consoleMode'
 
 export type WorkspaceState = 'notConnected' | 'awaitingConnection' | 'connecting' | 'ready' | 'reconnecting' | 'offline' | 'failed' | 'stateMissing'
@@ -216,7 +216,7 @@ export function ConsoleLayout({ title, subtitle, children }: { title: string; su
   }, [])
 
   if (!localConsole) {
-    if (session.isLoading) return <div className="relative z-10 grid min-h-screen place-items-center text-sm text-slate-500">Loading…</div>
+    if (session.isLoading) return <div className="relative z-10 grid min-h-screen place-items-center"><Spinner label="Loading your console" /></div>
     if (session.isError) return <div className="relative z-10 grid min-h-screen place-items-center px-6 text-center text-sm text-slate-600">Could not reach ListeningKit. Check your connection and refresh.</div>
     if (!session.data) return <Navigate to={`/sign-in?returnPath=${encodeURIComponent(pathname + search)}`} replace />
     if (!team) return <Navigate to="/teams" replace />

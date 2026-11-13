@@ -10,22 +10,22 @@
 | Path | `discord.com/api/users/@me/entitlements` |
 | Sends | — |
 | Reads | — |
-| Called from | `runs/inspect/20261030T222341_<name:1>/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_<name:1>/script1036.js:1 parse`, `runs/inspect/20261030T222341_<name:1>/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_<name:1>/script1245.js:2 anonymous` |
-| rea | `ev_065e7ad37dcb5911d240f9de7d6e2882220c5a8d7c025d92b46a23de59cf297c` |
+| Called from | `runs/inspect/20261113T044840_<name:1>/script0.js:232 625075`, `runs/inspect/20261113T044840_<name:1>/script0.js:124 559868`, `runs/inspect/20261113T044840_<name:1>/script0.js:124 961943`, `runs/inspect/20261113T044840_<name:1>/script1294.js:1 634654` |
+| rea | `ev_c14bc1deb4b3a56a8333cf62349b4196c22fe5b92652c9bbd3ddf02da9e13fae` |
 
-Seen 3 time(s) in 3 run(s).
+Seen 4 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 5: click e40 | 1 | 200 | 314 ms | 6487 ms | — |
-| inspect | step 1: goto /login | 1 | 200 | 391 ms | 11361 ms | — |
+| inspect | step 1: goto /login | 2 | 200 | 391–441 ms | 11361–39299 ms | — |
 | inspect | step 2: snapshot | 1 | 200 | 382 ms | 48639 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261030T222341_<name:1>**, step 2: snapshot: 200, 382 ms
+**runs/inspect/20261113T044840_<name:1>**, step 1: goto /login: 200, 441 ms
 
 Sent:
 
@@ -47,7 +47,7 @@ Answered:
 []
 ```
 
-**runs/inspect/20261028T074137_<name:1>**, step 1: goto /login: 200, 391 ms
+**runs/inspect/20261030T222341_<name:1>**, step 2: snapshot: 200, 382 ms
 
 Sent:
 

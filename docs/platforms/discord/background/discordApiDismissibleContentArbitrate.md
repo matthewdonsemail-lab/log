@@ -9,11 +9,11 @@
 | doc_id | — |
 | Path | `discord.com/api/dismissible-content/arbitrate` |
 | Sends | `candidates` |
-| Reads | `message`, `code`, `candidates` |
-| Called from | `runs/inspect/20261030T222341_<name:1>/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_<name:1>/script1036.js:1 parse`, `runs/inspect/20261030T222341_<name:1>/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_<name:1>/script1245.js:2 anonymous` |
-| rea | `ev_065e7ad37dcb5911d240f9de7d6e2882220c5a8d7c025d92b46a23de59cf297c` |
+| Reads | `candidates` |
+| Called from | `runs/inspect/20261113T044840_<name:1>/script0.js:232 625075`, `runs/inspect/20261113T044840_<name:1>/script0.js:124 559868`, `runs/inspect/20261113T044840_<name:1>/script0.js:124 961943`, `runs/inspect/20261113T044840_<name:1>/script1294.js:1 634654` |
+| rea | `ev_d831a118d3660312a92a77e942ba5e4dfcdb0adb351192c986c4e48686162615` |
 
-Seen 5 time(s) in 2 run(s).
+Seen 6 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -22,12 +22,13 @@ Seen 5 time(s) in 2 run(s).
 | inspect | step 25: goto /channels/@me | 1 | 200 | 398 ms | 2733 ms | — |
 | inspect | step 1: goto /channels/@me | 1 | 401 | 308 ms | 9986 ms | — |
 | inspect | step 2: snapshot | 1 | 200 | 495 ms | 49556 ms | — |
+| inspect | step 1: goto /login | 1 | 200 | 393 ms | 43890 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261030T222341_<name:1>**, step 1: goto /channels/@me: 401, 308 ms
+**runs/inspect/20261113T044840_<name:1>**, step 1: goto /login: 200, 393 ms
 
 Sent:
 
@@ -35,7 +36,7 @@ Sent:
 {
   "candidates": [
     {
-      "content": 816
+      "content": "<messageText>"
     }
   ]
 }
@@ -45,7 +46,34 @@ Answered:
 
 ```json
 {
-  "message": "401: Unauthorized",
+  "candidates": [
+    {
+      "content": "<messageText>",
+      "weight": 1
+    }
+  ]
+}
+```
+
+**runs/inspect/20261030T222341_<name:1>**, step 1: goto /channels/@me: 401, 308 ms
+
+Sent:
+
+```json
+{
+  "candidates": [
+    {
+      "content": "<messageText>"
+    }
+  ]
+}
+```
+
+Answered:
+
+```json
+{
+  "message": "<messageText>",
   "code": 0
 }
 ```
@@ -58,7 +86,7 @@ Sent:
 {
   "candidates": [
     {
-      "content": 816
+      "content": "<messageText>"
     }
   ]
 }
@@ -70,34 +98,7 @@ Answered:
 {
   "candidates": [
     {
-      "content": 816,
-      "weight": 1
-    }
-  ]
-}
-```
-
-**runs/inspect/20261028T062914_<name:1>**, step 5: click e40: 200, 428 ms
-
-Sent:
-
-```json
-{
-  "candidates": [
-    {
-      "content": 816
-    }
-  ]
-}
-```
-
-Answered:
-
-```json
-{
-  "candidates": [
-    {
-      "content": 816,
+      "content": "<messageText>",
       "weight": 1
     }
   ]

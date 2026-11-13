@@ -83,13 +83,13 @@ Answered:
       "actor": {
         "__typename": "User",
         "__isProfile": "User",
-        "id": "<userId:1>",
+        "id": "<id:1>",
         "has_professional_features_for_watch": false,
         "name": "<name:1>",
         "profile_picture": {
           "uri": "<mediaUrl> (454 chars)"
         },
-        "url": "https://www.facebook.com/profile.php?id=<userId:1>",
+        "url": "https://www.facebook.com/profile.php?id=<id:1>",
         "short_name": "<name:2>",
         "viewer": {
           "is_additional_profile_plus": false,
@@ -130,7 +130,7 @@ Answered:
       },
       "has_outstanding_conflicts_for_privacy_merge": true,
       "privacy_merge_metadata": {
-        "id": "<id:1>",
+        "id": "<id:2>",
         "has_seen_privacy_merge_disclaimer": false,
         "has_resolved_conflicting_privacy_settings": false
       },
@@ -144,8 +144,8 @@ Answered:
           "privacy_targeting": null,
           "tag_expansion_state": "UNSPECIFIED"
         },
-        "post_param": "<id:2>",
-        "id": "edddefcfe1b499ec9b1a11e02944e2b0"
+        "post_param": "<id:1>",
+        "id": "<id:3>"
       },
       "format_merge_milestone_for_user": "M1"
     },
@@ -167,7 +167,7 @@ Answered:
           "privacy_write_id": "cHJpdmFjeV9zY29wZV9yZW5kZXJlcjp7ImlkIjo4Nzg3NjcwNzMzfQ",
           "show_quick_actions_menu": true
         },
-        "id": "cHJpdmFjeV9zY29wZV9yZW5kZXJlcjp7ImlkIjo4Nzg3NjcwNzMzfQ",
+        "id": "<id:4>",
         "scope_for_exposure": {
           "icon_image": "(1 fields)"
         },
@@ -321,13 +321,13 @@ Answered:
       "actor": {
         "__typename": "User",
         "__isProfile": "User",
-        "id": "<userId:2>",
+        "id": "<id:5>",
         "has_professional_features_for_watch": false,
         "name": "<name:4>",
         "profile_picture": {
           "uri": "<mediaUrl> (403 chars)"
         },
-        "url": "https://www.facebook.com/profile.php?id=<userId:2>",
+        "url": "https://www.facebook.com/profile.php?id=<id:5>",
         "short_name": "<name:5>",
         "viewer": {
           "is_additional_profile_plus": false,
@@ -379,8 +379,8 @@ Answered:
           "privacy_targeting": null,
           "tag_expansion_state": "UNSPECIFIED"
         },
-        "post_param": "<id:2>",
-        "id": "08985f9e673bed42b78e7b9130202447"
+        "post_param": "<id:1>",
+        "id": "<id:6>"
       },
       "format_merge_milestone_for_user": "M1"
     },
@@ -402,7 +402,7 @@ Answered:
           "privacy_write_id": "cHJpdmFjeV9zY29wZV9yZW5kZXJlcjp7ImlkIjo4Nzg3NjcwNzMzfQ",
           "show_quick_actions_menu": true
         },
-        "id": "cHJpdmFjeV9zY29wZV9yZW5kZXJlcjp7ImlkIjo4Nzg3NjcwNzMzfQ",
+        "id": "<id:4>",
         "scope_for_exposure": {
           "icon_image": "(1 fields)"
         },
