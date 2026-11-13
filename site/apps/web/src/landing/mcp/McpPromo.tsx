@@ -2,12 +2,13 @@ import { useEffect, useState, type CSSProperties, type ReactNode } from 'react'
 import { useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'motion/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowRight, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faArrowRight, faPlug, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { MCP_PATH, MCP_PLAY } from './mcpContent'
+import { AskDemo, HubDemo, OutDemo } from '../useCases/UseCasesPage'
 import './McpPromo.css'
 
 const CLOSED_KEY = 'logMcpPromoClosed'
-const STEP_MS = 3400
+const STEP_MS = 4800
 const CARD_STYLE: CSSProperties = { background: 'radial-gradient(ellipse at 50% 0%, #4FA6FF 0%, #2A8CFF 55%, #1F78F0 100%)' }
 
 function readClosed() {
@@ -26,56 +27,10 @@ function saveClosed() {
   }
 }
 
-function AskDemo() {
-  return (
-    <div className="w-full rounded-2xl bg-white px-4 py-3 text-left text-[#0D2A4C] shadow-[0_4px_0_rgba(13,42,76,0.18)]">
-      <span className="font-mono text-[11px] font-bold text-[#2A8CFF]">/log</span>
-      <p className="mt-0.5 text-[15px] font-bold leading-snug">{MCP_PLAY.ask}</p>
-    </div>
-  )
-}
-
-function CallsDemo() {
-  return (
-    <div className="flex w-full flex-wrap justify-center gap-1.5">
-      {MCP_PLAY.calls.map((call, index) => (
-        <motion.span
-          key={call}
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: index * 0.18 }}
-          className="rounded-full bg-white px-2.5 py-1 font-mono text-[12px] font-bold text-[#2A8CFF] shadow-[0_3px_0_rgba(13,42,76,0.18)]"
-        >
-          {call}
-        </motion.span>
-      ))}
-    </div>
-  )
-}
-
-function OutcomeDemo() {
-  return (
-    <div className="flex w-full flex-col gap-1.5">
-      {MCP_PLAY.how.rows.map((row, index) => (
-        <motion.div
-          key={row.who}
-          initial={{ opacity: 0, x: -8 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: index * 0.18 }}
-          className="flex items-center justify-between rounded-xl bg-white px-3 py-1.5 text-[13px] font-bold text-[#0D2A4C] shadow-[0_3px_0_rgba(13,42,76,0.18)]"
-        >
-          {row.who}
-          <span className="rounded-full bg-[#EAF3FF] px-2 py-0.5 text-[11px] text-[#2A8CFF]">{row.status}</span>
-        </motion.div>
-      ))}
-    </div>
-  )
-}
-
 const STEPS: { demo: ReactNode; title: string; body: string }[] = [
-  { demo: <AskDemo />, title: 'Ask your agent', body: 'Say it the way you’d say it, in Claude Code, Codex or Cursor.' },
-  { demo: <CallsDemo />, title: 'log runs the play', body: 'Every log command is a tool, each step checked before the next.' },
-  { demo: <OutcomeDemo />, title: 'It lands on your accounts', body: 'Sent from your own accounts, in your voice, once you say so.' },
+  { demo: <AskDemo ask={MCP_PLAY.ask} icon={faPlug} />, title: 'Ask your agent', body: 'Say it the way you’d say it, in Claude Code, Codex or Cursor.' },
+  { demo: <HubDemo calls={MCP_PLAY.calls} icon={faPlug} />, title: 'log runs the play', body: 'Every log command is a tool, each step checked before the next.' },
+  { demo: <OutDemo rows={MCP_PLAY.outcome} />, title: 'It lands on your accounts', body: 'Sent from your own accounts, in your voice, once you say so.' },
 ]
 
 function useStepCycle(paused: boolean) {
@@ -158,7 +113,7 @@ export function McpPromo() {
                 transition={{ duration: 0.25, ease: 'easeOut' }}
                 className="flex flex-col gap-4"
               >
-                <div className="flex h-[112px] items-center justify-center">{current.demo}</div>
+                <div className="flex h-[12.5rem] items-center justify-center">{current.demo}</div>
                 <div className="flex flex-col gap-1">
                   <p className="text-4xl font-black leading-none tracking-[-0.045em]">Step {step + 1}</p>
                   <p className="mt-1 text-lg font-bold tracking-[-0.01em]">{current.title}</p>

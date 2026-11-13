@@ -720,7 +720,7 @@ function useTyped(text: string, speed = 45, hold = 2200) {
   return text.slice(0, count)
 }
 
-function AskDemo({ ask, icon }: { ask: string; icon: IconDefinition }) {
+export function AskDemo({ ask, icon }: { ask: string; icon: IconDefinition }) {
   const typed = useTyped(ask)
   return (
     <div className="flex w-full flex-col items-center gap-3">
@@ -738,7 +738,7 @@ function AskDemo({ ask, icon }: { ask: string; icon: IconDefinition }) {
   )
 }
 
-function HubDemo({ calls, icon }: { calls: string[]; icon: IconDefinition }) {
+export function HubDemo({ calls, icon }: { calls: string[]; icon: IconDefinition }) {
   const lit = useCycle(calls.length, 900)
   const spots = calls.map((call, index) => {
     const angle = (index / calls.length) * Math.PI * 2 - Math.PI / 2
@@ -781,7 +781,7 @@ function HubDemo({ calls, icon }: { calls: string[]; icon: IconDefinition }) {
   )
 }
 
-function OutDemo({ rows }: { rows: { label: string; tag: string }[] }) {
+export function OutDemo({ rows }: { rows: { label: string; tag: string }[] }) {
   const step = useCycle(rows.length + 2, 1100)
   return (
     <div className="flex w-full flex-col gap-2">
