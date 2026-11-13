@@ -2,7 +2,7 @@
 
 14 November 2026.
 
-Status: proposal. Slice 1 is merged (PR #133). Every other slice is not built. The findings come from read-only audits of `main` on 13 and 14 November 2026; each claim names its file.
+Status: proposal. Slice 1 is merged (PR #133) and slice 0, the scorecard check, is built. Every other slice is not built. The findings come from read-only audits of `main` on 13 and 14 November 2026; each claim names its file.
 
 ## Goal
 
@@ -104,11 +104,12 @@ The same capability has a different name on each platform, so the model can't in
 
 ## Added slices
 
-### Slice 0: the scorecard, as a check (do this first)
+### Slice 0: the scorecard, as a check (built)
 
-- `check:agnostic` prints the table above from the code and fails when a number gets worse than the committed baseline. It runs in pre-commit and CI.
-- This is the answer to rot: a new platform-named shared guide, a new shared command that names a platform, or a new acting command with no machine fails the commit.
-- The baseline file is committed, and each later slice lowers it.
+- Built: `check:agnostic` (`scripts/checks/checkAgnostic.ts`, measuring in `src/surface/scorecard/`) prints the table above from the code, with `--json`, and fails when a number is worse than `scripts/checks/agnosticBaseline.json` or missing from it. It runs in pre-commit, pre-push and `bun run check` (CI). `--write` moves the baseline and refuses to raise a number without `--allowWorse`. What each number means and the "has a machine" rule are in [the scorecard spec](../specs/agnosticScorecard.md).
+- This is the answer to rot: a new platform-named shared guide, a new shared command that names one platform, or a new acting command with no machine fails the commit.
+- The baseline file is committed, and each later slice lowers it in the same PR.
+- First baseline (integration branch, 14 November 2026): 12 shared commands and 27 shared tools under a platform-named guide; 5 shared commands naming exactly one platform; 36 of 38 flow tools with no platform in the name; 10 use cases with no asks line, 2 with no parseable steps; 143 tools named by no use case; 25 raw `args` tools; 46 of 54 acting tools outside `PLAY_REQUIRED`; 24 of 34 live commands with no machine; 2 hook hosts; 4 guides over 50,000 characters; dead rule citations 78 in use cases, 124 in skills, 87 in tool descriptions; 5 hard-coded Facebook fallbacks.
 
 ### Slice 7: capabilities first, the platform as an input
 
