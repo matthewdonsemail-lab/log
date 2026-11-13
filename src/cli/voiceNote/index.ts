@@ -7,6 +7,9 @@ import { PLATFORM_AUDIO, providerOf, readClone, renderVoiceNote, textOnlyProblem
 import type { Rendered, VoiceNote, VoiceNotePlatform, VoiceProvider } from "../../extensions/voiceClone/index.ts";
 import { waitCaughtUp } from "../../inbox/catchUp/index.ts";
 import { guardSend } from "../../inbox/claims/index.ts";
+import type { SendGuard } from "../../inbox/claims/index.ts";
+import { isErrorCode } from "../../errors/catalog/index.ts";
+import { confirmAnswer, rethrowFailure, runAction } from "../../platformKit/action/index.ts";
 import { findInChatList } from "../../inbox/dbRead/index.ts";
 import { findInstagramAccount, instagramGate } from "../../instagram/account/session/index.ts";
 import type { PlatformAnswer } from "../../platformKit/session/index.ts";
@@ -16,6 +19,8 @@ import type { Command, CommandContext, CommandInput, CommandResult, FlagSpec } f
 import { openAccount as openSlackAccount, chatIdOf as slackChatIdOf, inWorkspace } from "../slack/index.ts";
 import { openTwitterAccount } from "../twitter/helpers/account.ts";
 import { gateDeps } from "../twitter/helpers/voice.ts";
+
+type VoiceHeld = { guard: Extract<SendGuard, { ok: true }>; note: VoiceNote };
 
 type Resolved = { ok: true; account: string; chatId: string; label: string; claimWith?: string; gateHandle?: string; room?: () => Room | undefined; send: (note: VoiceNote, approvedBy: string) => PlatformAnswer | Promise<PlatformAnswer> } | { ok: false; result: CommandResult };
 
@@ -94,39 +99,44 @@ export function voiceNoteCommandOf(shape: VoiceShape): Command {
           return { code: 0, stdout: [`log ${label}: dry run: ${resolved.account} would send ${resolved.label} a voice note in the owner's cloned voice (${PLATFORM_AUDIO[shape.platform].container}) saying:`, `  ${text.trim()}`, clone ? `The clone on ${provider} is ready (made ${clone.createdAt}).` : `There is no clone on ${provider} yet: log clone voice --provider ${provider} --apply makes it first.`, ...(mattsWords ? ["These are matt's own dictated words (--mattsWords): the voice gate's read is skipped, the AI artifact check passed (rule 144)."] : []), ...(translationOf ? [`It is a translation into ${language} of: ${translationOf} (--translationOf): the voice gate grades that original (rule 148).`] : language ? [`Spoken in ${language}.`] : []), "Nothing was generated or sent. --live --approvedBy <who> sends it, only when matt asked for a voice note (rules 8, 142)."].join("\n") };
         }
         if (!clone) return refuse(label, "voiceCloneMissing", `log clone voice --provider ${provider} --apply makes it once from matt's own voice notes`);
-        context.err(`${resolved.account}: voice note to ${resolved.label}, approved by ${approvedBy}`);
-        context.err(`${resolved.account}: saying it in the owner's cloned voice on ${provider} and converting it to ${PLATFORM_AUDIO[shape.platform].container}, while the account catches up and the gate reads it`);
-        const rendering = voiceNoteDeps.render(provider, shape.platform, text, language || undefined).catch((error): Rendered => ({ ok: false, code: "voiceProcessingFailed", detail: error instanceof Error ? error.message : String(error) }) as Rendered);
-        const caught = await waitCaughtUp(shape.platform, resolved.account);
-        if (!caught.ok) return refuse(label, "accountBehind", caught.refused);
-        if (mattsWords) context.err(`${resolved.account}: matt's own dictated words (--mattsWords): the voice gate's read of his typing is skipped, the AI artifact check passed`);
-        else {
-          if (translationOf) context.err(`${resolved.account}: a translation into ${language} (--translationOf): the voice gate grades the original words`);
-          const voiced = await gateDeps.gate(context, { platform: shape.platform, account: resolved.account, to: resolved.label, text: translationOf || text, conversationId: resolved.gateHandle ? undefined : resolved.chatId, handle: resolved.gateHandle, spoken: true, ...(resolved.room ? { readRoom: resolved.room } : {}) });
-          if (!voiced.ok) return refuse(label, "voiceGateFailed", voiced.refused);
-          context.err(voiced.line);
-        }
-        const rendered = await rendering;
-        if (!rendered.ok) return refuse(label, rendered.code, rendered.detail);
-        context.err(`${resolved.account}: ${rendered.note.path}, ${rendered.note.seconds} s`);
-        const guard = guardSend({ platform: shape.platform, account: resolved.account, conversationId: resolved.chatId, ...(resolved.claimWith ? { with: resolved.claimWith } : {}) });
-        if (!guard.ok) return refuse(label, "chatClaimedElsewhere", guard.refused);
-        if (guard.part(0, `voice note: ${text.trim()}`) !== "go") {
-          guard.done("failed", "the claim on this chat was lost before the voice note went out");
-          return refuse(label, "chatClaimLost", "the claim on this chat was lost before the voice note went out, so nothing was sent");
-        }
-        let answer: PlatformAnswer;
-        try {
-          answer = await resolved.send(rendered.note, approvedBy);
-        } catch (error) {
-          guard.done("failed", error instanceof Error ? error.message : String(error));
-          throw error;
-        }
+        const acted = await runAction<VoiceHeld, PlatformAnswer>({
+          gate: async () => {
+            context.err(`${resolved.account}: voice note to ${resolved.label}, approved by ${approvedBy}`);
+            context.err(`${resolved.account}: saying it in the owner's cloned voice on ${provider} and converting it to ${PLATFORM_AUDIO[shape.platform].container}, while the account catches up and the gate reads it`);
+            const rendering = voiceNoteDeps.render(provider, shape.platform, text, language || undefined).catch((error): Rendered => ({ ok: false, code: "voiceProcessingFailed", detail: error instanceof Error ? error.message : String(error) }) as Rendered);
+            const caught = await waitCaughtUp(shape.platform, resolved.account);
+            if (!caught.ok) return { ok: false, code: "accountBehind", detail: caught.refused };
+            if (mattsWords) context.err(`${resolved.account}: matt's own dictated words (--mattsWords): the voice gate's read of his typing is skipped, the AI artifact check passed`);
+            else {
+              if (translationOf) context.err(`${resolved.account}: a translation into ${language} (--translationOf): the voice gate grades the original words`);
+              const voiced = await gateDeps.gate(context, { platform: shape.platform, account: resolved.account, to: resolved.label, text: translationOf || text, conversationId: resolved.gateHandle ? undefined : resolved.chatId, handle: resolved.gateHandle, spoken: true, ...(resolved.room ? { readRoom: resolved.room } : {}) });
+              if (!voiced.ok) return { ok: false, code: "voiceGateFailed", detail: voiced.refused };
+              context.err(voiced.line);
+            }
+            const rendered = await rendering;
+            if (!rendered.ok) return { ok: false, code: rendered.code, detail: rendered.detail ?? "" };
+            context.err(`${resolved.account}: ${rendered.note.path}, ${rendered.note.seconds} s`);
+            const guard = guardSend({ platform: shape.platform, account: resolved.account, conversationId: resolved.chatId, ...(resolved.claimWith ? { with: resolved.claimWith } : {}) });
+            if (!guard.ok) return { ok: false, code: "chatClaimedElsewhere", detail: guard.refused };
+            if (guard.part(0, `voice note: ${text.trim()}`) !== "go") {
+              guard.done("failed", "the claim on this chat was lost before the voice note went out");
+              return { ok: false, code: "chatClaimLost", detail: "the claim on this chat was lost before the voice note went out, so nothing was sent" };
+            }
+            return { ok: true, held: { guard, note: rendered.note } };
+          },
+          act: async (held) => resolved.send(held.note, approvedBy),
+          confirm: confirmAnswer,
+        });
+        if (acted.outcome === "uncertain") acted.held?.guard.done("failed", acted.error instanceof Error ? acted.error.message : String(acted.error));
+        rethrowFailure(acted);
+        if (!acted.held || !acted.answer) return refuse(label, isErrorCode(acted.code) ? acted.code : "crashed", acted.detail || undefined);
+        const { guard, note } = acted.held;
+        const answer = acted.answer;
         if (answer.ok) guard.partSent(0, `voice note: ${text.trim()}`, answer.messageId ? String(answer.messageId) : null);
-        guard.done(answer.ok ? "sent" : "failed", `voice note (${rendered.note.seconds} s): ${text.trim().slice(0, 240)}${answer.ok ? "" : `: ${answer.code}`}`);
+        guard.done(answer.ok ? "sent" : "failed", `voice note (${note.seconds} s): ${text.trim().slice(0, 240)}${answer.ok ? "" : `: ${answer.code}`}`);
         const code = answer.ok ? 0 : 1;
-        if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", approvedBy, ...where, file: rendered.note.path, seconds: rendered.note.seconds, ...answer }, null, 2) };
-        if (answer.ok) return { code, stdout: `log ${label}: ${resolved.account} sent ${resolved.label} a ${rendered.note.seconds} s voice note in matt's voice${answer.messageId ? ` (message ${answer.messageId})` : ""}: ${text.trim()}` };
+        if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", approvedBy, ...where, file: note.path, seconds: note.seconds, ...answer }, null, 2) };
+        if (answer.ok) return { code, stdout: `log ${label}: ${resolved.account} sent ${resolved.label} a ${note.seconds} s voice note in matt's voice${answer.messageId ? ` (message ${answer.messageId})` : ""}: ${text.trim()}` };
         return { code, stdout: `log ${label}: ${resolved.account}: ${answer.code}: ${answer.detail ?? ""}. Nothing is retried (rule 94).` };
       } catch (error) {
         return refuseError(label, error);

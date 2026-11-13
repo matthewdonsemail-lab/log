@@ -606,6 +606,40 @@ export const ERROR_CATALOG = {
     monitor: 'blocked',
     action: "Set the account's platform (FACEBOOK, TWITTER, REDDIT, DISCORD, LINKEDIN, SLACK or INSTAGRAM) on its row."
   },
+  accountPlatformMismatch: {
+    layer: 'account',
+    meaning: 'The account named is kept under another platform than the one given. Nothing was contacted.',
+    retryable: false,
+    raisedIn: ['platformKit/capability'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: 'Leave the platform out so the account decides it, or name the account kept on that platform. The detail says where it was found.'
+  },
+  platformAmbiguous: {
+    layer: 'account',
+    meaning: 'More than one platform keeps an account by that name, and no platform was given. Nothing was contacted.',
+    retryable: false,
+    raisedIn: ['platformKit/capability'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: 'Call again with the platform: the detail lists the platforms that keep it.'
+  },
+  capabilityMissing: {
+    layer: 'account',
+    meaning: "The account's platform has no command for this capability, so log can't do it there. Nothing was contacted.",
+    retryable: false,
+    raisedIn: ['platformKit/capability'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: 'The detail lists the platforms that have it. Use an account on one of those, or the platform-specific tool if one does something close.'
+  },
+  inputUnsupported: {
+    layer: 'form',
+    meaning: "An input was given that the resolved platform's command doesn't take for this capability. Nothing was contacted.",
+    retryable: false,
+    raisedIn: ['platformKit/capability'],
+    action: 'Call again without that input. The detail names the input and the platform.'
+  },
   accountNotUsable: {
     layer: 'account',
     meaning: "The account's accountStatus doesn't allow this run (only ACTIVE and WARMING post; connect also takes NEEDS_LOGIN and CHECKPOINT). An empty status counts as not usable.",

@@ -2,7 +2,7 @@
 
 14 November 2026.
 
-Status: proposal. Slice 1 is merged (PR #133) and slice 0, the scorecard check, is built. Every other slice is not built. The findings come from read-only audits of `main` on 13 and 14 November 2026; each claim names its file.
+Status: proposal. Slice 1 is merged (PR #133) and slice 0, the scorecard check, is built. Each other slice says below what of it is built. The findings come from read-only audits of `main` on 13 and 14 November 2026; each claim names its file.
 
 ## Goal
 
@@ -121,11 +121,15 @@ The full design is in [capabilitySchema.md](capabilitySchema.md): the naming rul
 - The per-platform tools stay as the implementation and are not listed to hosts once the shared ones cover them.
 - Use cases name capabilities, not platform tools, unless the play is about one platform. The router matches the task to a capability, then the account picks the platform.
 - Guides: one guide per capability, with a per-platform section generated from the capability table.
+- **Built in part (order steps 2 and 3 of capabilitySchema.md).** The table is `CAPABILITIES` in `src/platformKit/capability/`: per capability its noun, verb, effect and canonical inputs (`account`, `chat`, `space`, `limit`), and per platform the command key, form words and the flag each input becomes. `capabilityRows` derives the rows from `COMMANDS` and throws on a binding to a command, form or flag that doesn't exist, so nothing about a command is restated. `choosePlatform` takes the platform from the account (`platformAmbiguous`, `accountPlatformMismatch`, `accountNotFound`), `argvFor` maps the inputs (`capabilityMissing` with `platformsWithIt`, `inputUnsupported`); all four codes are in the error catalog. The read capabilities ship as shared commands from `capabilityCommandOf` (`src/cli/capabilities/`): `log chats list` / `chatsList` (X, Discord, Slack, Instagram, Facebook) and `log messages read` / `messagesRead` (the same five), in the `inbox` guide; `bossMaxxing` names them. Spec: [capabilities.md](../specs/capabilities.md).
+- Not built: `messagesWatch`; the write capabilities (`messagesSend`, `messagesReact`, `voiceNotesSend` and their Live twins), which need the play gate to resolve a capability tool to the platform tool it runs (`gatedToolOf`, `actsAsOwner` only counts platform commands) so a shared Live tool can't escape a play that doesn't cover it; keying `TERMINAL_ONLY`, `LONG_RUNNING` and `NO_PROMPT` by command key; per-capability guides; hiding the per-platform tools; renaming use cases beyond `bossMaxxing`.
 
 ### Slice 8: every acting capability is a machine
 
 - Each of the 35 acting commands runs through one shared action machine: `gating` (governor, claim, voice gate, play) → `acting` → `confirming` (the platform's answer) → `done | refused | uncertain`. Platforms supply the actors; the states are the same everywhere.
 - The X queue machine drives the run instead of tracing it.
+- **Built in part.** `actionMachine` / `runAction` in `src/platformKit/action/`: `gating` → `acting` → `confirming` → `done | refused | uncertain`, promise actors supplied by the caller, named guards and actions, `onError` on every invoke; a throwing gate is refused with nothing acted, a throwing act or confirm is uncertain, `confirmAnswer` lets only an ok platform answer through. The react and voice note factories run every live call through it (8 commands), so `liveCommandsWithoutMachine` is 16, down from 24. Spec: [platformActions.md](../specs/platformActions.md).
+- Not built: the text sends (`twitter dm`, `discord send`, `slack send`, `instagram send`: multi-part sends with interruption and fencing, each in a file shared with other commands), the X post/reply/quote/like/follow/list/repost commands, Reddit post/reply/vote, `discord delete`, `facebook campaign`, and the X queue machine driving its run.
 
 ### Slice 9: one harness contract
 

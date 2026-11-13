@@ -1,6 +1,6 @@
 # inbox
 
-Every platform's chats as one inbox: who is waiting on a reply, claiming a chat before acting in it, releasing it, and the log of every action taken.
+Every platform's chats as one inbox: listing and reading them, who waits on a reply, claiming a chat before acting in it, and every action's log.
 
 Load next, when the work needs it: getGuide({ topic: "voiceGate" }) (The voice gate every send as the owner passes on every platform: a draft checked against the owner's own writing before it goes out, and the voice and AI-tells indexes behind it).
 
@@ -32,6 +32,8 @@ Each tool's own description carries its full usage, notes, live line and rules; 
 | `inboxWaiting` | Who wrote last on every platform, from log.db in time order | `log inbox waiting [--platform <p>] [--account <a>] [--limit <n>] [--oldest] [--json]` |
 | `inboxClaims` | Every live claim | `log inbox claims [--json]` |
 | `inboxActions` | The log of every claim, refusal, send and release, oldest first, to… | `log inbox actions [--platform <p>] [--account <a>] [--chat <conversationId\|handle>] [--limit <n>] [--json]` |
+| `chatsList` | List an account's chats on its own platform, the platform taken from… | `log chats list --account <account> [--space <space>] [--limit <limit>] [--platform <p>] [--json]` |
+| `messagesRead` | Read one chat's messages on the account's own platform, the platform… | `log messages read --account <account> --chat <chat> [--space <space>] [--limit <limit>] [--platform <p>] [--json]` |
 
 ## The rules these tools fall under
 
@@ -42,9 +44,13 @@ Each by its number and first line. The full text is in AGENTS.md (`log://agents`
 - **Rule 39.** Use only the scope, options and intent the owner stated or implied.
 - **Rule 40.** Do not propose physical infrastructure unless the owner asks.
 - **Rule 41.** Paid work must stay within the authorized task and spend.
+- **Rule 89.** Find conversational context by scoped search and existing private records.
 - **Rule 94.** Every platform call goes through Log and its governor, never a scratch client with account tokens/cookies.
 - **Rule 105.** One platform/account owns one continuous engine session and push connection.
 - **Rule 109.** Read the full relevant chat and current private context before drafting or sending.
 - **Rule 133.** Claim a chat before acting; consult recent actions, preserve claim generation and check it before subsequent message parts.
 - **Rule 134.** Existing workspace log.db is the native private record/coordination foundation.
 - **Rule 138.** Media and voice-note context uses the existing private media descriptions and transcripts.
+- **Rule 154.** Show people/chats by meaningful names and handles; keep routing ids internal unless needed for the specific technical artifact.
+- **Rule 160.** Answer eligible chat reads from log.db when the owner is live, caught up and the needed history is present/backfilled.
+- **Rule 163.** Agent Log actions go through Log MCP tools; never work around a stale or unavailable MCP with shell Log commands or scratch clients.

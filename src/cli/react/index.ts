@@ -4,13 +4,17 @@ import type { DiscordChat } from "../../discord/chat/match/index.ts";
 import { findInstagramAccount, instagramGate } from "../../instagram/account/session/index.ts";
 import { guardSend } from "../../inbox/claims/index.ts";
 import { findInChatList } from "../../inbox/dbRead/index.ts";
+import type { SendGuard } from "../../inbox/claims/index.ts";
+import { confirmAnswer, rethrowFailure, runAction } from "../../platformKit/action/index.ts";
 import type { PlatformAnswer } from "../../platformKit/session/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../runner/helpers/index.ts";
 import type { Command, CommandContext, CommandInput, CommandResult, FlagSpec } from "../runner/types.ts";
 import { openAccount as openSlackAccount, chatIdOf as slackChatIdOf, inWorkspace } from "../slack/index.ts";
 import { openTwitterAccount } from "../twitter/helpers/account.ts";
 
-type ReactPlatform = "twitter" | "discord" | "slack" | "instagram";
+type HeldGuard = Extract<SendGuard, { ok: true }>;
+
+type ReactPlatform ="twitter" | "discord" | "slack" | "instagram";
 
 interface Reaction {
   message: string;
@@ -80,17 +84,22 @@ export function reactCommandOf(shape: ReactShape): Command {
           if (parsed.flags["json"]) return { code: 0, stdout: JSON.stringify({ engine: "directApi", ok: true, dryRun: true, ...where }, null, 2) };
           return { code: 0, stdout: `log ${label}: dry run: ${resolved.account} would ${verb} message ${message} in ${resolved.label}. Nothing was contacted. --live --approvedBy <who> does it (rule 8).` };
         }
-        const guard = guardSend({ platform: shape.platform, account: resolved.account, conversationId: resolved.chatId });
-        if (!guard.ok) return refuse(label, "chatClaimedElsewhere", guard.refused);
-        context.err(`${resolved.account}: ${verb} message ${message} in ${resolved.label} on the direct-API engine, approved by ${approvedBy}`);
-        let answer: PlatformAnswer;
-        try {
-          answer = await resolved.send({ message, emoji, remove, approvedBy });
-        } catch (error) {
-          guard.done("failed", error instanceof Error ? error.message : String(error));
-          throw error;
-        }
-        guard.done(answer.ok ? "sent" : "failed", `${remove ? "reaction taken off" : "reacted"} ${emoji} on ${message}${answer.ok ? "" : `: ${answer.code}`}`);
+        const acted = await runAction<HeldGuard, PlatformAnswer>({
+          gate: async () => {
+            const guard = guardSend({ platform: shape.platform, account: resolved.account, conversationId: resolved.chatId });
+            return guard.ok ? { ok: true, held: guard } : { ok: false, code: "chatClaimedElsewhere", detail: guard.refused };
+          },
+          act: async () => {
+            context.err(`${resolved.account}: ${verb} message ${message} in ${resolved.label} on the direct-API engine, approved by ${approvedBy}`);
+            return resolved.send({ message, emoji, remove, approvedBy });
+          },
+          confirm: confirmAnswer,
+        });
+        if (acted.outcome === "uncertain") acted.held?.done("failed", acted.error instanceof Error ? acted.error.message : String(acted.error));
+        rethrowFailure(acted);
+        if (!acted.held || !acted.answer) return refuse(label, "chatClaimedElsewhere", acted.detail);
+        const answer = acted.answer;
+        acted.held.done(answer.ok ? "sent" : "failed", `${remove ? "reaction taken off" : "reacted"} ${emoji} on ${message}${answer.ok ? "" : `: ${answer.code}`}`);
         const code = answer.ok ? 0 : 1;
         if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", approvedBy, ...where, ...answer }, null, 2) };
         if (answer.ok) return { code, stdout: `log ${label}: ${resolved.account} ${remove ? `took ${emoji} off` : `reacted ${emoji} to`} message ${message} in ${resolved.label}${answer.already ? " (it already was)" : ""}.` };

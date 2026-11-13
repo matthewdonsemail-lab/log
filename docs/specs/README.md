@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 45 domains, 520 requirements. Each one's anchors are proved against its code by the syntax tree on every commit, push and pull request (`bun run check:specs`). SubQ reads a requirement against its code only when asked (`bun run check:specs --subq`, rule 170). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 47 domains, 527 requirements. Each one's anchors are proved against its code by the syntax tree on every commit, push and pull request (`bun run check:specs`). SubQ reads a requirement against its code only when asked (`bun run check:specs --subq`, rule 170). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -57,6 +57,33 @@ The log MCP server is how every agent works with log-cli: it carries matt's rule
 - **REQ-MCP-19** browserView shows an account's live browser where the person is, and only their own gated input reaches it
 - **REQ-MCP-20** report draws a report from log's block catalog in every host, inline where the host can and as markdown where it can't
 - **REQ-MCP-22** Guides are scoped by capability and platform, fit every host, and say "the owner"
+
+## [The platform-neutral scorecard](./agnosticScorecard.md)
+
+`bun run check:agnostic` measures, from the code alone, how far log is from one platform-neutral capability set ([platformNeutralSurfaces.md](../proposals/platformNeutralSurfaces.md)), and fails a commit that makes any number worse than the committed baseline. Each slice of that plan lowers its numbers and lowers the baseline in the same change. Nothing is read from the network or from this machine's state: only the commands, the tool definitions, the committed flows, use cases, guides, skills, AGENTS.md and the source files.
+
+- **REQ-AGNOSTIC-01** Every number is computed from the code
+- **REQ-AGNOSTIC-02** A number worse than its baseline fails, and says which
+- **REQ-AGNOSTIC-03** The baseline only moves down without an explicit flag
+- **REQ-AGNOSTIC-04** It runs on every commit and in CI
+- **REQ-AGNOSTIC-05** The measuring functions are tested over fixtures
+
+## [Capabilities](./capabilities.md)
+
+A capability is one thing log does on any platform, with one name and one input shape: `chatsList` lists an account's chats, `messagesRead` reads one chat. The platform is an input, taken from the account when it isn't given, never a default. Each platform's own command stays the implementation. The design is [capabilitySchema.md](../proposals/capabilitySchema.md), slice 7 of [platformNeutralSurfaces.md](../proposals/platformNeutralSurfaces.md).
+
+- **REQ-CAP-01** One capability table, bound to the commands that exist
+- **REQ-CAP-02** The platform comes from the account
+- **REQ-CAP-03** Canonical inputs become that platform's flags, or a refusal that contacts nothing
+- **REQ-CAP-04** Each noun is one shared command, and its tools are generated like any other
+
+## [Platform actions](./platformActions.md)
+
+An acting command (a send, a reaction, a voice note) runs through one shared machine with the same stages on every platform. Platforms supply what each stage does; the states, and what an outcome means, are the same everywhere. Slice 8 of [platformNeutralSurfaces.md](../proposals/platformNeutralSurfaces.md). Rule 6.
+
+- **REQ-ACTION-01** One machine: gating, acting, confirming, then done, refused or uncertain
+- **REQ-ACTION-02** The platform's answer decides, and a throw is never read as success
+- **REQ-ACTION-03** Which commands run through it
 
 ## [Agent hooks](./agentHooks.md)
 
@@ -655,16 +682,6 @@ Every platform account's governor counts what it sent today (requests, writes, t
 - **REQ-GOVERNOR-02** A reset puts the count back to 0 and proves it held
 - **REQ-GOVERNOR-03** Every reset is a row in log.db
 - **REQ-GOVERNOR-04** A cooldown after a block is kept
-
-## [The platform-neutral scorecard](./agnosticScorecard.md)
-
-`bun run check:agnostic` measures, from the code alone, how far log is from one platform-neutral capability set ([platformNeutralSurfaces.md](../proposals/platformNeutralSurfaces.md)), and fails a commit that makes any number worse than the committed baseline. Each slice of that plan lowers its numbers and lowers the baseline in the same change. Nothing is read from the network or from this machine's state: only the commands, the tool definitions, the committed flows, use cases, guides, skills, AGENTS.md and the source files.
-
-- **REQ-AGNOSTIC-01** Every number is computed from the code
-- **REQ-AGNOSTIC-02** A number worse than its baseline fails, and says which
-- **REQ-AGNOSTIC-03** The baseline only moves down without an explicit flag
-- **REQ-AGNOSTIC-04** It runs on every commit and in CI
-- **REQ-AGNOSTIC-05** The measuring functions are tested over fixtures
 
 ## [Instagram](./instagram.md)
 
