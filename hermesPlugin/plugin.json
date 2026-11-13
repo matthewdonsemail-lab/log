@@ -1,14 +1,14 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
-  "name": "listeningkit-log",
+  "name": "log",
   "version": "0.2.0",
   "description": "Runs your X, Discord, Slack, Instagram and Reddit conversations from Hermes through log by ListeningKit: read inboxes, find what needs a reply, draft it in your own voice and send only after you approve.",
   "author": {
     "name": "ListeningKit",
-    "url": "https://github.com/deepmroot"
+    "url": "https://github.com/matthewdonsemail-lab"
   },
   "homepage": "https://log.listeningkit.com",
-  "repository": "https://github.com/deepmroot/listeningkit-log",
+  "repository": "https://github.com/matthewdonsemail-lab/log",
   "license": "MIT",
   "keywords": ["dms", "inbox", "social", "outreach", "x", "twitter", "discord", "slack", "instagram", "reddit", "mcp"],
   "extensions": {

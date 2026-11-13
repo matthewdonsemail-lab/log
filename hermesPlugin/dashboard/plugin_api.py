@@ -1,10 +1,3 @@
-"""Dashboard routes for log: read-only JSON for the log tab.
-
-Reads only log's own files under ~/.logCli (or LOG_CLI_HOME): each account's session state,
-its request counter for today, and the X inbox log already synced. It makes no network call,
-runs no command and writes nothing.
-"""
-
 from __future__ import annotations
 
 import json

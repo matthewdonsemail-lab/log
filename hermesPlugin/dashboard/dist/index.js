@@ -1,13 +1,10 @@
-/* log dashboard tab. Plain JavaScript on the Hermes dashboard SDK: no build step, no bundled
-   libraries. Read-only: it shows what log already has on this machine and never sends anything.
-   All text is rendered as text, never as HTML. */
 (function () {
   "use strict";
   var SDK = window.__HERMES_PLUGIN_SDK__;
   var React = SDK.React;
   var h = React.createElement;
   var useState = SDK.hooks.useState, useEffect = SDK.hooks.useEffect;
-  var API = "/api/plugins/listeningkit-log";
+  var API = "/api/plugins/log";
   var HIDE_KEY = "lk-log-hide-text";
 
   function readHide() {
@@ -138,5 +135,5 @@
       error ? h("div", { className: "lk-foot lk-muted" }, "Last refresh failed: " + error) : null);
   }
 
-  window.__HERMES_PLUGINS__.register("listeningkit-log", LogPage);
+  window.__HERMES_PLUGINS__.register("log", LogPage);
 })();

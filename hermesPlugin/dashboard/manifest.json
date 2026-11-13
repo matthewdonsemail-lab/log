@@ -1,5 +1,5 @@
 {
-  "name": "listeningkit-log",
+  "name": "log",
   "label": "log",
   "description": "Your accounts, who is waiting on a reply, and what log sent today, read from log's own files on this machine.",
   "icon": "MessageSquare",

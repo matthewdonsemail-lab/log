@@ -54,8 +54,8 @@ An Agent Plugins v1 package:
 2. Install and enable the plugin:
 
    ```bash
-   hermes plugins install listeningkit-log --no-enable
-   hermes plugins enable listeningkit-log
+   hermes plugins install log --no-enable
+   hermes plugins enable log
    ```
 
 ## Disclosure
