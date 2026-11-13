@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import type { ChildProcessWithoutNullStreams } from "node:child_process";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -105,8 +105,9 @@ describe("the browser view as an MCP App", () => {
 });
 
 const python = process.env.LOG_PYTHON;
+const withBrowser = Boolean(python) && spawnSync(python!, ["-c", "import playwright.async_api"], { windowsHide: true, timeout: 30_000 }).status === 0;
 
-describe.skipIf(!python)("end to end with the real viewer on a loopback sign-in page", () => {
+describe.skipIf(!withBrowser)("end to end with the real viewer on a loopback sign-in page", () => {
   let dir = "";
   let child: ChildProcessWithoutNullStreams;
   const previous = process.env.LOG_INSPECT_CURRENT;
