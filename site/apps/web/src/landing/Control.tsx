@@ -5,6 +5,7 @@ import { AgentSession } from './AgentSession'
 import type { SessionEvent } from './agentSessionScript'
 import { BigGithubButton } from './BigGithubButton'
 import { DownArrow } from './VideoCarousel'
+import type { HarnessSetup } from './useCases/harnessPages'
 
 export function Dashed({ children }: { children: ReactNode }) {
   return <span className="font-black text-[#2A8CFF] underline decoration-dashed underline-offset-4">{children}</span>
@@ -65,7 +66,7 @@ const EAR_JITTER = [true, false, false, false, true, false, false, false]
  */
 export type ControlSession = { events: SessionEvent[]; recents: string[]; thread: string }
 
-export function Control({ title, lede, session, platformLabel }: { title?: ReactNode; lede?: ReactNode; session?: ControlSession; platformLabel?: string } = {}) {
+export function Control({ title, lede, session, platformLabel, harness }: { title?: ReactNode; lede?: ReactNode; session?: ControlSession; platformLabel?: string; harness?: HarnessSetup } = {}) {
   return (
     <section id="why-free" className="relative overflow-clip bg-white px-6 pb-24 text-center sm:px-10 sm:pb-36">
       <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-0 z-0 hidden w-[30%] md:block" style={{ maskImage: 'linear-gradient(to right, black 45%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to right, black 45%, transparent 100%)' }}>
@@ -157,7 +158,7 @@ export function Control({ title, lede, session, platformLabel }: { title?: React
             </>
           )}
         </p>
-        <AgentSession events={session?.events} recents={session?.recents} thread={session?.thread} platformLabel={platformLabel} />
+        <AgentSession events={session?.events} recents={session?.recents} thread={session?.thread} platformLabel={platformLabel} harness={harness} />
         <p
           className="mx-auto mt-14 flex max-w-4xl flex-wrap items-center justify-center gap-x-1.5 text-center text-2xl text-[#0D2A4C] md:text-3xl"
           style={{ fontFamily: "'Schoolbell', 'Cabin Sketch', cursive" }}

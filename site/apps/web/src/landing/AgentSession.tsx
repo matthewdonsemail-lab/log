@@ -15,6 +15,7 @@ import { BrandMark } from './BrandMark'
 import { SESSION, type SessionEvent } from './agentSessionScript'
 import { DownArrow } from './VideoCarousel'
 import { AgentToolCall } from '../components/ai-elements/agentToolCall'
+import type { HarnessSetup } from './useCases/harnessPages'
 
 const STEP_MS = { user: 2400, tool: 1700, assistant: 3400 }
 const END_PAUSE_MS = 5000
@@ -231,6 +232,74 @@ function CodexWindow({ visible, settled, round, events, recents, thread }: Windo
   )
 }
 
+function HarnessWindow({ visible, settled, round, events, recents, setup }: WindowProps & { setup: HarnessSetup }) {
+  const look = setup.window
+  return (
+    <div className="flex h-[520px] w-full overflow-hidden rounded-xl text-left" style={{ background: look.bg, color: look.text, fontFamily: look.font, border: `1px solid ${look.line}`, ['--feed-bg' as string]: look.bg }}>
+      <aside className="hidden w-52 shrink-0 flex-col gap-1 p-3 text-sm sm:flex" style={{ background: look.side, borderRight: `1px solid ${look.line}` }}>
+        <div className="mb-3 flex items-center gap-2 px-2 pt-1">
+          <img src={setup.logo} alt="" className={`size-5 object-contain ${look.dark && setup.logo.endsWith('.svg') ? 'invert' : ''}`} />
+          <span className="text-[15px] font-semibold">{setup.name}</span>
+        </div>
+        {look.sideItems.map((label) => (
+          <span key={label} className="rounded-md px-2 py-1.5" style={{ color: look.muted }}>
+            {label}
+          </span>
+        ))}
+        <div className="mt-4 px-2 text-xs" style={{ color: look.muted }}>Recents</div>
+        {recents.map((label, index) => (
+          <span key={label} className="truncate rounded-md px-2 py-1.5" style={index === 0 ? { background: look.user } : { color: look.muted }}>
+            {label}
+          </span>
+        ))}
+      </aside>
+      <div className="flex min-w-0 flex-1 flex-col">
+        <div className="flex items-center gap-2 px-5 py-2.5 text-sm" style={{ borderBottom: `1px solid ${look.line}`, color: look.muted }}>
+          <FontAwesomeIcon icon={faPlus} className="text-xs" />
+          log connected
+        </div>
+        <Feed>
+          {events.slice(0, visible).map((event, index) => {
+            const done = settled > index
+            if (event.kind === 'user') {
+              return (
+                <Appear key={`${round}-${index}`}>
+                  <div className="ml-auto max-w-[80%] rounded-2xl px-4 py-2.5 text-[15px]" style={{ background: look.user }}>
+                    <Typed text={event.text} done={done} />
+                  </div>
+                </Appear>
+              )
+            }
+            if (event.kind === 'assistant') {
+              return (
+                <Appear key={`${round}-${index}`}>
+                  <p className="m-0 text-[15px] leading-6">
+                    <Typed text={event.text} done={done} perWord />
+                  </p>
+                </Appear>
+              )
+            }
+            return (
+              <Appear key={`${round}-${index}`}>
+                <AgentToolCall call={event} done={done} variant={look.variant} />
+              </Appear>
+            )
+          })}
+        </Feed>
+        <div className="px-5 pb-4">
+          <div className="flex items-center gap-3 rounded-2xl px-4 py-3" style={{ border: `1px solid ${look.line}` }}>
+            <FontAwesomeIcon icon={faPlus} style={{ color: look.muted }} />
+            <span className="flex-1 text-[15px]" style={{ color: look.muted }}>{look.placeholder}</span>
+            <span className="flex size-8 items-center justify-center rounded-full" style={{ background: look.accent, color: look.bg }}>
+              <FontAwesomeIcon icon={faArrowUp} className="text-sm" />
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 const APPS = [
   { id: 'claude', label: 'Watch it work in Claude Code', mark: 'claude' as const },
   { id: 'codex', label: 'Watch it work in Codex', mark: 'chatgpt' as const },
@@ -243,11 +312,13 @@ export function AgentSession({
   recents,
   thread = 'Answer my X DMs',
   platformLabel,
+  harness,
 }: {
   events?: SessionEvent[]
   recents?: string[]
   thread?: string
   platformLabel?: string
+  harness?: HarnessSetup
 }) {
   const [app, setApp] = useState(0)
   const [inView, setInView] = useState(false)
@@ -266,7 +337,13 @@ export function AgentSession({
   return (
     <div ref={ref} className="mx-auto mt-12 flex w-full max-w-4xl flex-col items-center gap-5">
       <div role="tablist" aria-label="Agent" className="flex flex-wrap justify-center gap-2">
-        {APPS.map((item, index) => (
+        {harness ? (
+          <span role="tab" aria-selected className="button-glow inline-flex items-center gap-2 rounded-xl border border-white/35 px-4 py-2 text-[15px] font-bold text-white">
+            <img src={harness.logo} alt="" className="size-4 object-contain brightness-0 invert" />
+            Watch it work in {harness.name}
+          </span>
+        ) : null}
+        {(harness ? [] : APPS).map((item, index) => (
           <button
             key={item.id}
             type="button"
@@ -312,13 +389,15 @@ export function AgentSession({
         <SpeedContext.Provider value={speed}>
         <AnimatePresence mode="wait">
           <motion.div
-            key={APPS[app].id}
+            key={harness ? harness.name : APPS[app].id}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.25 }}
           >
-            {app === 0 ? (
+            {harness ? (
+              <HarnessWindow {...shared} recents={recents ?? []} setup={harness} />
+            ) : app === 0 ? (
               <ClaudeWindow {...shared} recents={recents ?? HOME_RECENTS.claude} />
             ) : (
               <CodexWindow {...shared} recents={recents ?? HOME_RECENTS.codex} />
@@ -344,10 +423,13 @@ export function AgentSession({
           <DownArrow />
         </p>
         <div className="flex w-full flex-col gap-4">
-          {[
-            { mark: 'claude' as const, agent: 'Claude Code', command: 'claude mcp add log -- logMcp' },
-            { mark: 'chatgpt' as const, agent: 'Codex', command: 'codex mcp add log -- logMcp' },
-          ].map((item) => (
+          {(harness
+            ? harness.connect.map((item) => ({ mark: null, agent: item.label, command: item.line }))
+            : [
+                { mark: 'claude' as const, agent: 'Claude Code', command: 'claude mcp add log -- logMcp' },
+                { mark: 'chatgpt' as const, agent: 'Codex', command: 'codex mcp add log -- logMcp' },
+              ]
+          ).map((item) => (
             <RepoLink
               key={item.command}
               href={LOG_REPO_URL}
@@ -355,10 +437,11 @@ export function AgentSession({
               style={{ backgroundImage: 'linear-gradient(180deg, #117EFF -12.71%, #1E88FF 44.69%, #5EA7FF 102.1%)', boxShadow: 'inset 0 2px 30px #5EA7FF' }}
             >
               <span className="pointer-events-none grid size-14 shrink-0 place-items-center opacity-95 sm:size-16 md:size-24">
-                <BrandMark id={item.mark} className="!size-full text-white" />
+                {item.mark ? <BrandMark id={item.mark} className="!size-full text-white" /> : <img src={harness!.logo} alt="" className="size-full object-contain brightness-0 invert" />}
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block text-sm font-bold leading-snug text-white/90 sm:text-base md:text-xl">Get log for {item.agent}</span>
+                {item.mark ? null : <span className="mt-1 block break-all font-mono text-xs text-white/85 sm:text-sm">{item.command}</span>}
                 <span className="mt-1.5 block text-xl font-black leading-tight sm:mt-2 sm:text-2xl md:text-3xl">
                   Run your {platformLabel ?? 'social media'} marketing from {item.agent}
                 </span>

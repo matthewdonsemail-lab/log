@@ -20,6 +20,9 @@ import {
   faRetweet,
   faShare,
 } from '@fortawesome/free-solid-svg-icons'
+import { faPlug } from '@fortawesome/free-solid-svg-icons'
+import { HARNESS_PAGES } from './useCases/harnessPages'
+import type { PlatformPage } from './useCases/platformPages'
 
 const SLOT_SECONDS = 1.6
 const SLOTS = 4
@@ -424,6 +427,43 @@ function InstagramDemo() {
   )
 }
 
+function HarnessDemo({ page }: { page: PlatformPage }) {
+  const setup = page.harness!
+  const look = setup.window
+  const calls = page.run.calls.filter((call) => call.tool !== 'getGuide').slice(0, 2)
+  const card = look.dark ? 'bg-white/[0.05] ring-1 ring-white/10' : 'bg-black/[0.03] ring-1 ring-black/5'
+  const acts = page.run.calls.some((call) => call.acts)
+  return (
+    <div className="w-full overflow-hidden rounded-2xl text-left text-[14px]" style={{ background: look.bg, color: look.text, fontFamily: look.font, boxShadow: `0 0 0 1px ${look.line}` }}>
+      <div className="flex items-center gap-2 px-4 py-3" style={{ borderBottom: `1px solid ${look.line}` }}>
+        <img src={setup.logo} alt="" className={`size-5 object-contain ${look.dark && setup.logo.endsWith('.svg') ? 'invert' : ''}`} />
+        <span className="font-bold">{setup.name}</span>
+        <LogTag className="ml-auto">log connected</LogTag>
+      </div>
+      <div className="flex flex-col gap-2.5 p-3">
+        <Step index={0} className="ml-auto max-w-[85%]">
+          <div className="rounded-2xl px-3.5 py-2.5" style={{ background: look.user }}>{page.run.ask}</div>
+        </Step>
+        {calls.map((call, index) => (
+          <Step key={call.tool + index} index={index + 1} className={`px-3 py-2 ${card}`}>
+            <div className="flex items-center gap-2 font-mono text-[12px]">
+              <Icon icon={faPlug} className="text-[11px]" />
+              <span className="font-bold">log · {call.tool}</span>
+            </div>
+            <div className="mt-1 truncate text-[12.5px]" style={{ color: look.muted }}>{call.done}</div>
+          </Step>
+        ))}
+        <Step index={3} className={`px-3 py-2.5 ${card}`}>
+          <div className="flex items-center gap-2">
+            <span className="min-w-0 flex-1 truncate">{page.run.finished}</span>
+            <LogTag className={acts ? 'bg-[#0F1419]' : ''}>{acts ? 'your yes first' : 'reads only'}</LogTag>
+          </div>
+        </Step>
+      </div>
+    </div>
+  )
+}
+
 export const PLATFORM_DEMOS: Record<string, () => ReactNode> = {
   x: XDemo,
   facebook: FacebookDemo,
@@ -432,5 +472,6 @@ export const PLATFORM_DEMOS: Record<string, () => ReactNode> = {
   instagram: InstagramDemo,
   reddit: RedditDemo,
   linkedin: LinkedinDemo,
+  ...Object.fromEntries(HARNESS_PAGES.map((page) => [page.platformId, () => <HarnessDemo page={page} />])),
 }
 

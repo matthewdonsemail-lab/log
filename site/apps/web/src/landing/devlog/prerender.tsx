@@ -4,7 +4,7 @@ import { DEVLOG_ARTICLES, SITE, devlogImage, devlogPath } from './articles'
 import { DEVLOG_DESCRIPTION, DEVLOG_TITLE, DevlogList } from './DevlogIndexPage'
 import { XREACHER_SCHEMA, XreacherStory } from './XreacherAlternativePage'
 import sharePages from '../useCases/sharePages.json'
-import { PLATFORM_PAGES } from '../useCases/platformPages'
+import { SITE_PAGES, SITE_PLATFORMS } from '../useCases/sitePages'
 import { QUICK_ANSWERS } from '../useCases/quickAnswers'
 import { PLATFORMS } from '../PlatformSuite'
 import { UPDATED, devlogIndexSchema, homeSchema, mcpSchema, platformSchema } from '../structuredData'
@@ -21,6 +21,8 @@ export type PrerenderedPage = {
   body: string
   markdown?: string
 }
+
+const FENCE = '```'
 
 const BODIES: Record<string, { Story: ComponentType; schema: object }> = {
   'xreacher-alternative': { Story: XreacherStory, schema: XREACHER_SCHEMA },
@@ -71,12 +73,14 @@ export function prerenderedPages(): PrerenderedPage[] {
     ),
   }
   const platforms: PrerenderedPage[] = sharePages.map((share) => {
-    const page = PLATFORM_PAGES.find((item) => item.id === share.slug)
+    const page = SITE_PAGES.find((item) => item.id === share.slug)
     if (!page) throw new Error(`share page ${share.slug} has no platform page`)
-    const platform = PLATFORMS.find((item) => item.id === page.platformId)
+    const platform = SITE_PLATFORMS.find((item) => item.id === page.platformId)
     if (!platform) throw new Error(`platform page ${page.id} has no platform ${page.platformId}`)
     const faq = QUICK_ANSWERS[page.id]
     const image = `${SITE}/og/pages/${share.slug}.png`
+    const routes = page.harness?.routes ?? []
+    const plays = [page.play, ...(page.harness?.plays ?? [])]
     return {
       path: page.path,
       title: share.title,
@@ -102,12 +106,24 @@ export function prerenderedPages(): PrerenderedPage[] {
         '',
         share.description,
         '',
-        `## The play: ${page.play.name}`,
-        '',
-        `Ask your agent: "${page.play.ask}"`,
-        '',
-        ...page.play.steps.map((step, index) => `${index + 1}. **${step.title}.** ${step.body}`),
-        '',
+        ...routes.flatMap((route) => [
+          `## Connect log to ${platform.label}: ${route.label}`,
+          '',
+          route.best,
+          '',
+          ...route.steps.flatMap((step, index) => [`${index + 1}. ${step.text}`, ...(step.code ? ['', FENCE, step.code, FENCE, ''] : [])]),
+          '',
+          `Sources: ${route.sources.map((source) => source.href).join(', ')}`,
+          '',
+        ]),
+        ...plays.flatMap((play) => [
+          `## The play: ${play.name}`,
+          '',
+          `Ask your agent: "${play.ask}"`,
+          '',
+          ...play.steps.map((step, index) => `${index + 1}. **${step.title}.** ${step.body}`),
+          '',
+        ]),
         `## ${platform.label} with log: quick answers`,
         '',
         ...faq.flatMap((item) => [`### ${item.q}`, '', item.a, '']),
@@ -118,6 +134,26 @@ export function prerenderedPages(): PrerenderedPage[] {
         <main>
           <h1>{share.title}</h1>
           <p>{share.description}</p>
+          {routes.map((route) => (
+            <section key={route.id}>
+              <h2>
+                Connect log to {platform.label}: {route.label}
+              </h2>
+              <p>{route.best}</p>
+              <ol>
+                {route.steps.map((step) => (
+                  <li key={step.text}>
+                    {step.text}
+                    {step.code ? (
+                      <pre>
+                        <code>{step.code}</code>
+                      </pre>
+                    ) : null}
+                  </li>
+                ))}
+              </ol>
+            </section>
+          ))}
           <section className="quick-answers">
             <h2>{platform.label} with log: quick answers</h2>
             {faq.map((item) => (
