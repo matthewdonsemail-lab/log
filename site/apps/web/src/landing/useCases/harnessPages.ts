@@ -468,7 +468,7 @@ const CHATGPT_PLAYS: Play[] = [
 const CHATGPT_SESSION: SessionEvent[] = [
   { kind: 'user', text: 'what are people on r/smallbusiness asking for this week?' },
   GUIDE_CALL,
-  { kind: 'tool', name: 'redditReadPosts', args: '{ account: "you", subreddit: "smallbusiness", days: "7" }', result: ['this week’s posts, 7 asking for a booking website', 'u/sparkleclean: Need a website that takes bookings. Where do I even start?'] },
+  { kind: 'tool', name: 'redditReadPosts', args: '{ account: "you", subreddit: "smallbusiness", days: 7 }', result: ['this week’s posts, 7 asking for a booking website', 'u/sparkleclean: Need a website that takes bookings. Where do I even start?'] },
   { kind: 'tool', name: 'redditReadPost', args: '{ account: "you", post: "1oq…k2" }', result: ['2 vans, losing jobs because people can’t book online', 'u/vanlife_dan: just use wix lol'] },
   { kind: 'assistant', text: 'The top ask this week is a website that takes bookings (7 posts), then more leads without ads. The best thread is u/sparkleclean, losing jobs with no online booking. Want a reply?' },
   { kind: 'user', text: 'yes, value first, no link' },

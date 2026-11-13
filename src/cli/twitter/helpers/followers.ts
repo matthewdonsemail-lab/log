@@ -1,7 +1,7 @@
 import { rememberProfiles } from "../../../inbox/store/index.ts";
 import { twitterFollowerProfile } from "../../../storage/platform/index.ts";
 import type { TwitterFollower, TwitterSessionAnswer } from "../../../twitter/account/session/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../../runner/helpers/index.ts";
+import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuse, refuseError } from "../../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../../runner/types.ts";
 import { governorLine, openTwitterAccount } from "./account.ts";
 
@@ -19,7 +19,7 @@ export const FOLLOWERS_INPUT: CommandInput = {
       positionals: [],
       flags: [
         { name: "account", kind: "string", required: true, description: "The TWITTER socialAccount's accountName (its handle)" },
-        { name: "limit", kind: "string", description: "How many followers to read (default 200, at most 4000)" },
+        { name: "limit", kind: "integer", min: 1, max: 4000, refusal: "limitInvalid", description: "How many followers to read (default 200, at most 4000)" },
         JSON_FLAG,
       ],
     },
@@ -54,9 +54,7 @@ export const followersCommand: Command = {
     if (!parsed.ok) return { code: 1, stderr: `log twitter followers: ${parsed.error}\n${FOLLOWERS_USAGE}` };
     const ref = parsed.flags["account"];
     if (typeof ref !== "string") return { code: 1, stderr: `log twitter followers: --account is needed\n${FOLLOWERS_USAGE}` };
-    const raw = parsed.flags["limit"];
-    const limit = raw === undefined ? 200 : Number(raw);
-    if (!Number.isInteger(limit) || limit < 1 || limit > 4000) return refuse("twitter followers", "limitInvalid", "--limit is a whole number from 1 to 4000");
+    const limit = numberOf(parsed, "limit") ?? 200;
     try {
       const opened = await openTwitterAccount(context, "twitter followers", ref);
       if (!opened.ok) return opened.result;

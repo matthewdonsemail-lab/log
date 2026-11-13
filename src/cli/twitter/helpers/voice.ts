@@ -52,12 +52,13 @@ export const VOICE_INPUT: CommandInput = {
       positionals: [],
       flags: [
         { name: "to", kind: "string", required: true, description: "Who the draft is for (their handle)" },
-        { name: "text", kind: "string", description: "The draft (leave it out with --with to see matt's real replies there first)" },
+        { name: "text", kind: "string", description: "The draft (leave it out with --with to see the owner's real replies there first)" },
         { name: "context", kind: "string", description: "What they said, that the draft answers" },
-        { name: "with", kind: "string", description: "The chat or person as matt says it, to write and gate it the way he writes there" },
-        { name: "spoken", kind: "boolean", description: "The draft is a voice note: graded as said out loud, its length never counted against it, and it must build on what they are talking about across the whole chat instead of repeating what matt already said (rule 149)" },
+        { name: "with", kind: "string", description: "The chat or person as the owner says it, to write and gate it the way he writes there" },
+        { name: "spoken", kind: "boolean", description: "The draft is a voice note: graded as said out loud, its length never counted against it, and it must build on what they are talking about across the whole chat instead of repeating what the owner already said (rule 149)" },
         JSON_FLAG,
       ],
+      groups: [{ rule: "atLeastOne", names: ["text", "with"], refusal: "textMissing" }],
     },
     {
       words: ["aiIndex"],

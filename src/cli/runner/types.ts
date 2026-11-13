@@ -51,15 +51,24 @@ export interface CommandContext {
   directInstagramLive?: (account: import("../../platformKit/session/index.ts").PlatformAccount, spec: import("../../platformKit/session/index.ts").PlatformEngineSpec, onLive: (event: Record<string, unknown>) => void) => Promise<import("../../platformKit/session/index.ts").PlatformEngineRun>;
 }
 
+export type ValueFormat = "date" | "time" | "dateOrSpan" | "jsonObject";
+
 export interface FlagSpec {
   name: string;
-  kind: "string" | "integer" | "boolean" | "enum" | "pairs";
+  kind: "string" | "integer" | "number" | "boolean" | "booleanValue" | "enum" | "pairs" | "list";
   description: string;
   values?: readonly string[];
   required?: boolean;
   live?: true;
   bypass?: true;
   global?: true;
+  min?: number;
+  max?: number;
+  format?: ValueFormat;
+  pattern?: string;
+  takes?: string;
+  refusal?: string;
+  approval?: true;
 }
 
 export interface PositionalSpec {
@@ -70,6 +79,18 @@ export interface PositionalSpec {
   required?: boolean;
 }
 
+export interface InputGroup {
+  rule: "atLeastOne" | "atMostOne";
+  names: readonly string[];
+  refusal?: string;
+}
+
+export interface ValueCount {
+  name: string;
+  min: number;
+  when: { name: string; values: readonly string[] };
+}
+
 export type ToolEffect = "read" | "write" | "delete" | "browser" | "spend";
 
 export interface InputForm {
@@ -78,6 +99,9 @@ export interface InputForm {
   summary: string;
   positionals: readonly PositionalSpec[];
   flags: readonly FlagSpec[];
+  groups?: readonly InputGroup[];
+  counts?: readonly ValueCount[];
+  terminalOnly?: string;
 }
 
 export interface CommandInput {

@@ -50,7 +50,7 @@ export function commandTools(commands: readonly Command[]): CommandTool[] {
   return commands
     .filter((command) => !(command.name in TERMINAL_ONLY))
     .flatMap((command): CommandTool[] => {
-      if (command.input) return command.input.forms.flatMap((form) => formTools(command, form));
+      if (command.input) return command.input.forms.filter((form) => !form.terminalOnly).flatMap((form) => formTools(command, form));
       const plain: CommandTool = { tool: toolBaseName(command), command, form: null, live: false, forced: [], effect: command.effect };
       return argsLiveFlags(command).length ? [plain, { ...plain, tool: `${toolBaseName(command)}${LIVE_SUFFIX}`, live: true }] : [plain];
     });
@@ -75,8 +75,8 @@ export function longRunLine(options: ToolOptions, minutes = "seconds to minutes"
 
 export const WAIT_MS = { type: "integer", description: "How long this call waits for the run, in ms (default 20000, at most 50000). A run still going then comes back as a job: follow it with jobStatus" };
 
-const CONFIRM_LIVE = (place: string) => ({ type: "boolean", description: `Set true only when matt asked for this live run (it acts on ${place})` });
-const CONFIRM_BYPASS = { type: "boolean", description: "Set true only when matt asked for a run outside the account's local waking hours (rule 20)" };
+const CONFIRM_LIVE = (place: string) => ({ type: "boolean", description: `Set true only when the owner asked for this live run (it acts on ${place})` });
+const CONFIRM_BYPASS = { type: "boolean", description: "Set true only when the owner asked for a run outside the account's local waking hours (rule 20)" };
 
 function formUsage(command: Command, form: InputForm): string[] {
   const lines = command.usage.split("\n").map((line) => line.replace(/^\s*Usage:\s*/, "").trim()).filter(Boolean);
@@ -116,7 +116,7 @@ const LIVE_LINE = (place: string) => `Live on ${place}: it acts there (posts, cl
 
 function typedTool(entry: CommandTool, form: InputForm, options: ToolOptions): LogTool {
   const { command } = entry;
-  const { properties, required } = inputSchemaOf(form);
+  const { properties, required } = inputSchemaOf(form, { live: entry.live });
   const bypass = form.flags.some((f) => f.bypass);
   const title = titleOf(form.summary, entry.live, platformLabel(command));
   return {

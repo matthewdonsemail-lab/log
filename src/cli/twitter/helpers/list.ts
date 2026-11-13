@@ -3,8 +3,8 @@ import type { Command, CommandInput, FlagSpec } from "../../runner/types.ts";
 import { governorLine, openTwitterAccount } from "./account.ts";
 
 const ACCOUNT: FlagSpec = { name: "account", kind: "string", required: true, description: "The TWITTER socialAccount's accountName (its handle) whose lists these are" };
-const APPROVED_BY: FlagSpec = { name: "approvedBy", kind: "string", description: "Who approved it: needed with --live (rule 8)" };
-const LIVE: FlagSpec = { name: "live", kind: "boolean", live: true, description: "Make the change on X, only when matt asked (rule 8); without it a dry run contacts nothing" };
+const APPROVED_BY: FlagSpec = { name: "approvedBy", kind: "string", approval: true, description: "Who approved it: needed with --live (rule 8)" };
+const LIVE: FlagSpec = { name: "live", kind: "boolean", live: true, description: "Make the change on X, only when the owner asked (rule 8); without it a dry run contacts nothing" };
 
 export const LIST_USAGE = [
   "Usage: log twitter list show --account <accountName> [--json]",
@@ -21,7 +21,7 @@ export const LIST_INPUT: CommandInput = {
       effect: "write",
       summary: "Make an X list on the account; a dry run unless --live",
       positionals: [],
-      flags: [ACCOUNT, { name: "name", kind: "string", required: true, description: "The list's name, as matt gave it" }, { name: "description", kind: "string", description: "The list's description" }, { name: "private", kind: "boolean", description: "Make the list private (default public)" }, APPROVED_BY, LIVE, JSON_FLAG],
+      flags: [ACCOUNT, { name: "name", kind: "string", required: true, description: "The list's name, as the owner gave it" }, { name: "description", kind: "string", description: "The list's description" }, { name: "private", kind: "boolean", description: "Make the list private (default public)" }, APPROVED_BY, LIVE, JSON_FLAG],
     },
     {
       words: ["add"],
@@ -29,6 +29,7 @@ export const LIST_INPUT: CommandInput = {
       summary: "Put one person on one of the account's X lists; a dry run unless --live",
       positionals: [],
       flags: [ACCOUNT, { name: "list", kind: "string", required: true, description: "The list's name or id (log twitter list show)" }, { name: "handle", kind: "string", description: "The person's handle" }, { name: "userId", kind: "string", description: "The person's numeric X user id" }, APPROVED_BY, LIVE, JSON_FLAG],
+      groups: [{ rule: "atLeastOne", names: ["handle", "userId"], refusal: "listInvalid" }],
     },
   ],
 };

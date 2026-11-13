@@ -7,7 +7,7 @@ import { afterGap, appendEvent, eventIdOf, recordPosition } from "../../../inbox
 import { enqueueAttachments } from "../../../media/describer/index.ts";
 import { recordTwitterSession } from "../../../twitter/account/session/index.ts";
 import type { XChatLiveEvent } from "../../../twitter/account/session/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf, refuse } from "../../runner/helpers/index.ts";
+import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuse } from "../../runner/helpers/index.ts";
 import type { Command, CommandContext, CommandInput, CommandResult } from "../../runner/types.ts";
 import { openTwitterAccount } from "./account.ts";
 import type { Engine } from "./account.ts";
@@ -48,7 +48,7 @@ export const CHAT_INPUT: CommandInput = {
       positionals: [],
       flags: [
         { name: "account", kind: "string", required: true, description: "The TWITTER socialAccount's accountName (its handle)" },
-        { name: "seconds", kind: "string", description: "Stop after this many seconds (default: watch until stopped)" },
+        { name: "seconds", kind: "number", min: 5, refusal: "secondsInvalid", description: "Stop after this many seconds (default: watch until stopped)" },
         { name: "inbox", kind: "boolean", description: "Hand each new message from someone else to the inbox hook" },
         JSON_FLAG,
       ],
@@ -133,9 +133,7 @@ async function watchChat(context: CommandContext, argv: string[]): Promise<Comma
   if (!parsed.ok) return { code: 1, stderr: `log twitter chat watch: ${parsed.error}\n${CHAT_USAGE}` };
   const ref = parsed.flags["account"];
   if (typeof ref !== "string") return { code: 1, stderr: `log twitter chat watch: --account is needed\n${CHAT_USAGE}` };
-  const rawSeconds = parsed.flags["seconds"];
-  const seconds = typeof rawSeconds === "string" ? Number(rawSeconds) : undefined;
-  if (seconds !== undefined && (!Number.isFinite(seconds) || seconds < 5)) return refuse("twitter chat watch", "secondsInvalid", "--seconds is a number of seconds, at least 5");
+  const seconds = numberOf(parsed, "seconds");
   const opened = await openTwitterAccount(context, "twitter chat watch", ref);
   if (!opened.ok) return opened.result;
   const live = context.directTwitterLive;

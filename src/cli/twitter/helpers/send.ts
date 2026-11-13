@@ -6,7 +6,7 @@ import { fileSize, mediaKindOf, planSend } from "../../../twitter/post/send/inde
 import { watermarkLine } from "../../../twitter/copy/watermark/index.ts";
 import type { SendAction } from "../../../twitter/post/send/index.ts";
 import type { TwitterSessionAnswer } from "../../../twitter/account/session/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../../runner/helpers/index.ts";
+import { JSON_FLAG, listOf, parseArgs, parserSpecOf, refuse, refuseError } from "../../runner/helpers/index.ts";
 import type { Command, CommandInput, FlagSpec } from "../../runner/types.ts";
 import { ONE_INBOX_NOTE } from "../../../twitter/dm/person/index.ts";
 import type { TwitterEngineSpec } from "../../../twitter/account/session/index.ts";
@@ -23,9 +23,10 @@ import { governorLine, openTwitterAccount } from "./account.ts";
 import type { Engine } from "./account.ts";
 
 const ACCOUNT: FlagSpec = { name: "account", kind: "string", required: true, description: "The TWITTER socialAccount's accountName (its handle) that sends it" };
-const TWEET: FlagSpec = { name: "tweet", kind: "string", required: true, description: "The post's url (https://x.com/<handle>/status/<id>), from treg research" };
-const USER_ID: FlagSpec = { name: "userId", kind: "string", required: true, description: "The recipient's numeric X user id, from treg research" };
-const MEDIA: FlagSpec = { name: "media", kind: "string", description: "Files to attach, comma separated: one video (.mp4 .mov) or gif, or up to 4 images (.jpg .png .webp) on a post or a reply, one file on a dm (it goes on the first message); a file path or an https url, which is downloaded first; uploaded to X before it is sent" };
+const TWEET: FlagSpec = { name: "tweet", kind: "string", required: true, pattern: "^https?://(?:www\\.)?(?:x|twitter)\\.com/[A-Za-z0-9_]+/status/\\d+", takes: "an x.com post url (https://x.com/<handle>/status/<id>)", refusal: "tweetUrlInvalid", description: "The post's url (https://x.com/<handle>/status/<id>), from treg research" };
+const USER_ID: FlagSpec = { name: "userId", kind: "string", required: true, pattern: "^\\d+$", takes: "an X user id (digits only)", refusal: "userIdInvalid", description: "The recipient's numeric X user id, from treg research" };
+const DM_USER_ID: FlagSpec = { ...USER_ID, pattern: "^(?:\\d+|g\\d+)$", takes: "an X user id (digits only) or an X Chat group id (g and digits)" };
+const MEDIA: FlagSpec = { name: "media", kind: "list", description: "Files to attach, comma separated: one video (.mp4 .mov) or gif, or up to 4 images (.jpg .png .webp) on a post or a reply, one file on a dm (it goes on the first message); a file path or an https url, which is downloaded first; uploaded to X before it is sent" };
 
 export async function localMedia(entries: readonly string[] | undefined, fetcher: typeof fetch = fetch): Promise<string[] | undefined> {
   if (!entries?.length) return entries as string[] | undefined;
@@ -46,12 +47,12 @@ export async function localMedia(entries: readonly string[] | undefined, fetcher
   return out;
 }
 const TEXT: FlagSpec = { name: "text", kind: "string", required: true, description: "The approved copy, in house style (lowercase, no commas, full stops or dashes; urls exempt)" };
-const APPROVED_BY: FlagSpec = { name: "approvedBy", kind: "string", description: "Who approved it: needed with --live (rule 8)" };
-const SKIP_STYLE: FlagSpec = { name: "skipStyleCheck", kind: "boolean", description: "Skip the account's copy style check (copyStyle, empty: house), only when matt asked" };
-export const FORCE: FlagSpec = { name: "force", kind: "boolean", description: "Go past the account's governor (its pause, hourly, daily and write caps) for this call, only when matt asked (rule 86)" };
-const AS_ONE: FlagSpec = { name: "asOne", kind: "boolean", description: "Send the dm as one message, never split, only when matt asked (rule 90)" };
-const OVER_GATE: FlagSpec = { name: "overGate", kind: "boolean", description: "matt said to send this exact dm over the voice gate's refusal: its SubQ read is skipped, the AI artifact check still runs; only when he said so for this message (rule 152)" };
-const LIVE: FlagSpec = { name: "live", kind: "boolean", live: true, description: "Send it on X, only when matt asked (rule 8); without it a dry run checks it and contacts nothing" };
+const APPROVED_BY: FlagSpec = { name: "approvedBy", kind: "string", approval: true, description: "Who approved it: needed with --live (rule 8)" };
+const SKIP_STYLE: FlagSpec = { name: "skipStyleCheck", kind: "boolean", description: "Skip the account's copy style check (copyStyle, empty: house), only when the owner asked" };
+export const FORCE: FlagSpec = { name: "force", kind: "boolean", description: "Go past the account's governor (its pause, hourly, daily and write caps) for this call, only when the owner asked (rule 86)" };
+const AS_ONE: FlagSpec = { name: "asOne", kind: "boolean", description: "Send the dm as one message, never split, only when the owner asked (rule 90)" };
+const OVER_GATE: FlagSpec = { name: "overGate", kind: "boolean", description: "the owner said to send this exact dm over the voice gate's refusal: its SubQ read is skipped, the AI artifact check still runs; only when he said so for this message (rule 152)" };
+const LIVE: FlagSpec = { name: "live", kind: "boolean", live: true, description: "Send it on X, only when the owner asked (rule 8); without it a dry run checks it and contacts nothing" };
 
 interface SendShape {
   action: SendAction;
@@ -85,7 +86,7 @@ function usageOf(shape: SendShape): string {
 }
 
 function inputOf(shape: SendShape): CommandInput {
-  const flags: FlagSpec[] = [ACCOUNT, ...(shape.target === "tweet" ? [TWEET] : shape.target === "userId" ? [USER_ID] : []), ...(shape.text ? [TEXT, SKIP_STYLE] : []), ...(shape.action === "post" || shape.action === "reply" || shape.action === "dm" ? [MEDIA] : []), ...(shape.action === "dm" ? [AS_ONE, OVER_GATE] : []), APPROVED_BY, FORCE, LIVE, JSON_FLAG];
+  const flags: FlagSpec[] = [ACCOUNT, ...(shape.target === "tweet" ? [TWEET] : shape.target === "userId" ? [shape.action === "dm" ? DM_USER_ID : USER_ID] : []), ...(shape.text ? [TEXT, SKIP_STYLE] : []), ...(shape.action === "post" || shape.action === "reply" || shape.action === "dm" ? [MEDIA] : []), ...(shape.action === "dm" ? [AS_ONE, OVER_GATE] : []), APPROVED_BY, FORCE, LIVE, JSON_FLAG];
   return { forms: [{ words: [], effect: "write", summary: shape.summary, positionals: [], flags }] };
 }
 
@@ -182,7 +183,7 @@ function sendCommand(shape: SendShape): Command {
       const live = parsed.flags["live"] === true;
       let media: string[] | undefined;
       try {
-        media = await localMedia(str("media")?.split(",").map((m) => m.trim()).filter(Boolean));
+        media = await localMedia(listOf(parsed, "media"));
       } catch (error) {
         return refuseError(label, error);
       }

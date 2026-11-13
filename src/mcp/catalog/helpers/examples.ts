@@ -29,7 +29,8 @@ const BY_NAME: Readonly<Record<string, string>> = {
   platform: "twitter",
   key: "exampleKey",
   emoji: "👍",
-  message: "messageId",
+  message: "1234567890123456789",
+  window: "90m",
   workspace: "example",
   list: "exampleList",
   topic: "logMcpInstructions",
@@ -39,10 +40,10 @@ const PLACEHOLDER = /^<([^>]+)>$/;
 
 export function exampleValue(input: CatalogInput): unknown {
   if (input.type === "boolean") return true;
-  if (input.type === "integer") return 1;
+  if (input.type === "integer" || input.type === "number") return 1;
   if (input.type === "enum") return input.values[0] ?? "value";
   if (input.type === "pairs") return { key: "value" };
-  if (input.type === "list") return ["value"];
+  if (input.type === "list") return [BY_NAME[input.name] ?? "value"];
   if (input.values.length) return input.values[0];
   return BY_NAME[input.name] ?? `example${input.name[0].toUpperCase()}${input.name.slice(1)}`;
 }
@@ -71,7 +72,16 @@ export function exampleArgs(entry: CatalogEntry): string[] {
 
 export function exampleInputs(entry: CatalogEntry): Record<string, unknown> {
   if (!entry.form) return { args: exampleArgs(entry) };
-  return Object.fromEntries(entry.inputs.filter((i) => i.required).map((i) => [i.name, exampleValue(i)]));
+  const out: Record<string, unknown> = Object.fromEntries(entry.inputs.filter((i) => i.required).map((i) => [i.name, exampleValue(i)]));
+  for (const group of entry.form.groups ?? []) {
+    const first = entry.inputs.find((i) => i.name === group.names[0]);
+    if (group.rule === "atLeastOne" && first && !group.names.some((n) => n in out)) out[first.name] = exampleValue(first);
+  }
+  for (const rule of entry.form.counts ?? []) {
+    const when = out[rule.when.name];
+    if (typeof when === "string" && rule.when.values.includes(when)) out[rule.name] = Array.from({ length: rule.min }, () => BY_NAME.url);
+  }
+  return out;
 }
 
 export function cliExample(entry: CatalogEntry, inputs: Record<string, unknown>): string {
@@ -88,6 +98,7 @@ export function cliExample(entry: CatalogEntry, inputs: Record<string, unknown>)
     if (input.positional) parts.push(Array.isArray(value) ? value.map(String).map(quoted).join(" ") : quoted(String(value)));
     else if (value === true) parts.push(`--${input.name}`);
     else if (input.type === "pairs") for (const [k, v] of Object.entries(value as Record<string, string>)) parts.push(`--${input.name}`, quoted(`${k}=${v}`));
+    else if (Array.isArray(value)) parts.push(`--${input.name}`, quoted(value.map(String).join(",")));
     else parts.push(`--${input.name}`, quoted(String(value)));
   }
   return [...words, ...parts].join(" ");

@@ -1,6 +1,6 @@
 import { readTwitterSenders, SENDER_SOURCES, SENDERS_DEFAULT_LIMIT, SENDERS_MAX_LIMIT } from "../../inbox/senders/index.ts";
 import type { SendersReport } from "../../inbox/senders/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";
+import { JSON_FLAG, numberOf, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
 
 export const REPORT_USAGE = [
@@ -20,7 +20,7 @@ export const REPORT_INPUT: CommandInput = {
       flags: [
         { name: "source", kind: "enum", values: SENDER_SOURCES, required: true, description: "What to count: twitterDmsBySender, who messaged the X account in one-to-one DMs" },
         { name: "account", kind: "string", description: "One X account's accountName (default every X account in log.db)" },
-        { name: "since", kind: "string", description: "Only messages from this date (2026-11-01) or span (7d, 4w, 12h) on" },
+        { name: "since", kind: "string", format: "dateOrSpan", description: "Only messages from this date (2026-11-01) or span (7d, 4w, 12h) on" },
         { name: "limit", kind: "integer", description: `How many people to list (default ${SENDERS_DEFAULT_LIMIT}, at most ${SENDERS_MAX_LIMIT}); the totals count everyone` },
         JSON_FLAG,
       ],
@@ -53,8 +53,7 @@ export const reportCommand: Command = {
     const source = parsed.flags["source"];
     if (source !== "twitterDmsBySender") return { code: 1, stderr: `log report data: --source is one of ${SENDER_SOURCES.join(", ")}\n${REPORT_USAGE}` };
     const str = (name: string) => (typeof parsed.flags[name] === "string" ? String(parsed.flags[name]).trim() : "");
-    const limit = str("limit") ? Number(str("limit")) : undefined;
-    if (limit !== undefined && !Number.isInteger(limit)) return { code: 1, stderr: `log report data: --limit is a whole number\n${REPORT_USAGE}` };
+    const limit = numberOf(parsed, "limit");
     try {
       const report = reportDeps.read({ account: str("account") || null, since: str("since") || null, limit });
       return { code: 0, stdout: parsed.flags["json"] ? JSON.stringify(report, null, 2) : sendersText(report) };

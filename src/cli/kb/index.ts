@@ -5,7 +5,7 @@ import type { KbConfig, KbHit, KbIndex, KbKind, KbStore } from "../../knowledge/
 import { listFacebookAccounts } from "../../marketplace/socialAccount/index.ts";
 import { localEmbedder } from "../../search/conversations/index.ts";
 import type { Embedder } from "../../search/conversations/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";
+import { JSON_FLAG, listOf, numberOf, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
 
 export const KB_USAGE = [
@@ -24,7 +24,7 @@ export const KB_INPUT: CommandInput = {
       words: ["search"],
       summary: "Search the knowledge base (rules, skills, docs, infra, agent memory, page states, accounts, notes) by keyword and meaning at once",
       positionals: [{ name: "query", kind: "rest", required: true, description: "What to look for, in plain words" }],
-      flags: [KIND_FLAG, { name: "limit", kind: "string", description: "How many articles, default 8, at most 50" }, JSON_FLAG],
+      flags: [KIND_FLAG, { name: "limit", kind: "integer", min: 1, max: 50, description: "How many articles, default 8, at most 50" }, JSON_FLAG],
     },
     {
       words: ["sync"],
@@ -38,7 +38,7 @@ export const KB_INPUT: CommandInput = {
       effect: "write",
       summary: "Save an agent memory as a knowledge base note, in Twenty and Redis at once",
       positionals: [{ name: "text", kind: "rest", required: true, description: "What to remember, in plain words; secrets are scrubbed" }],
-      flags: [{ name: "title", kind: "string", description: "Its title (default: the first line)" }, { name: "tags", kind: "string", description: "Comma-separated tags" }, JSON_FLAG],
+      flags: [{ name: "title", kind: "string", description: "Its title (default: the first line)" }, { name: "tags", kind: "list", description: "Comma-separated tags" }, JSON_FLAG],
     },
     {
       words: ["show"],
@@ -116,7 +116,7 @@ export const kbCommand: Command = {
       if (sub === "remember") {
         const text = parsed.positionals.join(" ").trim();
         if (!text) return { code: 1, stderr: `log kb remember: say what to remember\n${KB_USAGE}` };
-        const tags = typeof parsed.flags["tags"] === "string" ? (parsed.flags["tags"] as string).split(",").map((t) => t.trim()).filter(Boolean) : [];
+        const tags = listOf(parsed, "tags") ?? [];
         const title = typeof parsed.flags["title"] === "string" ? (parsed.flags["title"] as string) : undefined;
         const saved = await rememberKnowledge({ text, title, tags }, store, index, embedder);
         if (json) return { code: 0, stdout: JSON.stringify(saved, null, 2) };
@@ -124,8 +124,7 @@ export const kbCommand: Command = {
       }
       const query = parsed.positionals.join(" ").trim();
       if (!query) return { code: 1, stderr: `log kb search: say what to look for\n${KB_USAGE}` };
-      const limit = Number(parsed.flags["limit"] ?? 8);
-      if (!Number.isInteger(limit) || limit < 1 || limit > 50) return { code: 1, stderr: "log kb search: --limit is a whole number from 1 to 50" };
+      const limit = numberOf(parsed, "limit") ?? 8;
       const kind = typeof parsed.flags["kind"] === "string" ? (parsed.flags["kind"] as KbKind) : undefined;
       const started = performance.now();
       const hits = await searchKnowledge(index, embedder, query, { kind, limit });

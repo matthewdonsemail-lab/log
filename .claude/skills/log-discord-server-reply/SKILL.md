@@ -41,7 +41,7 @@ Say: **"go on docs/useCases/discord/serverReply.md for <server> #<channel>"**. T
 | --- | --- | --- | --- |
 | 1 | Find the server's channel by its name | `discordChannels` { account, server: "<server>" } | the channel by its name and kind; for a forum, the post from `discordPosts`, named `"<server> #<forum> > <post title>"` |
 | 2 | Claim the channel, so no other session answers it | `inboxClaim` { platform: "discord", account, chat: "<channel id>", event: "<event id from the hook>" } | this session holds the channel |
-| 3 | Read the channel or post from Discord, far enough back to have what they said, what it answers and anything the owner already said after it | `discordRead` { account, channel: "<server> #<channel>", limit: "50" } | their message with its `fromId`, the messages before it, and none from the owner after it |
+| 3 | Read the channel or post from Discord, far enough back to have what they said, what it answers and anything the owner already said after it | `discordRead` { account, channel: "<server> #<channel>", limit: 50 } | their message with its `fromId`, the messages before it, and none from the owner after it |
 | 4 | Write the answer to that one person, from what they asked and what the owner said to tell them, in the owner's words and length, then gate it | `voice` { to: "<who>", context: "<what they said and what came before>", text: "<draft>" } | `PASS`, or the owner's own words given for this message |
 | 5 | Send it to the channel by its name, tagging the person with `<@their fromId>` | `discordSendLive` { account, channel: "<server> #<channel>", text: "<@fromId> <draft>", approvedBy: "<owner>", confirmLive: true } | Discord answers `sent` with the message id |
 

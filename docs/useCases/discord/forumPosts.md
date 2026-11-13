@@ -28,9 +28,9 @@ flowchart TD
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
 | 1 | Find the server's forums | `discordChannels` { account, server: "<server>" } | the `forum` and `media` channels, with their tags; when the owner named the forum, that one |
-| 2 | List the forum's posts, newest activity first | `discordPosts` { account, channel: "<server> #<forum>", limit: "50" } | each post's title, author, tags, replies, open or closed, and opening message |
+| 2 | List the forum's posts, newest activity first | `discordPosts` { account, channel: "<server> #<forum>", limit: 50 } | each post's title, author, tags, replies, open or closed, and opening message |
 | 3 | When the owner is looking for one subject, search the server for it too | `discordSearch` { account, server: "<server>", query: "<words>", channel: "<server> #<forum>" } | the posts whose replies mention it, not only their titles |
-| 4 | Read each post that looks right, text only | `discordRead` { account, channel: "<server> #<forum> > <post title>", limit: "50", noMedia: true } | what was asked, what was answered, and whether the owner already wrote there |
+| 4 | Read each post that looks right, text only | `discordRead` { account, channel: "<server> #<forum> > <post title>", limit: 50, noMedia: true } | what was asked, what was answered, and whether the owner already wrote there |
 | 5 | Tell the owner which posts are worth answering | the reply to the owner | each one named as `"<server> #<forum> > <title>"`, who asked, when, what they need, whether anyone answered, and why it fits |
 
 ## What to know

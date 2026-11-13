@@ -105,9 +105,9 @@ export const PUBLISH_INPUT: CommandInput = {
       positionals: [],
       flags: [
         { name: "listing", kind: "string", required: true, description: "The agencyListing id" },
-        { name: "live", kind: "boolean", live: true, description: "Click Publish, only when matt asked (rule 10)" },
+        { name: "live", kind: "boolean", live: true, description: "Click Publish, only when the owner asked (rule 10)" },
         { name: "formUrl", kind: "string", description: "Fill a saved form instead (file://...), not counted as a launch" },
-        { name: "bypass", kind: "boolean", bypass: true, description: "Outside the account's waking hours, only when matt asked (rule 20)" },
+        { name: "bypass", kind: "boolean", bypass: true, description: "Outside the account's waking hours, only when the owner asked (rule 20)" },
         { name: "now", kind: "boolean", description: "Skip the 10-minute launch gap only (rule 24)" },
         JSON_FLAG,
         PROXY_MS_FLAG,

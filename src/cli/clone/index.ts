@@ -3,7 +3,7 @@ import { basename } from "node:path";
 import { CLONE_TITLE, clonePath, mattsRecordings, pickReferences, providerOf, readClone, replacedClone, secondsOf, SPEAK_FORMATS, speakToFile, VOICE_PROVIDERS, voiceProvider, voiceSettingsOf, wavOf, writeClone } from "../../extensions/voiceClone/index.ts";
 import { hashOf, readTranscript } from "../../media/voiceNotes/index.ts";
 import type { ReferenceAudio, Recording, SpeakFormat, VoiceProvider, VoiceProviderClient } from "../../extensions/voiceClone/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf, refuse } from "../runner/helpers/index.ts";
+import { JSON_FLAG, listOf, parseArgs, parserSpecOf, refuse } from "../runner/helpers/index.ts";
 import type { Command, CommandInput, FlagSpec } from "../runner/types.ts";
 
 export const CLONE_USAGE = [
@@ -20,7 +20,7 @@ export const CLONE_INPUT: CommandInput = {
       words: ["voice"],
       summary: "the owner's voice cloned once on the voice provider from their own voice notes; without --apply it lists the recordings it would use",
       positionals: [],
-      flags: [PROVIDER, { name: "from", kind: "string", description: "matt's own recordings to clone from instead of his voice notes (his voiceovers, comma separated), each one's exact words in a .txt of the same name beside it when there is one (rule 146)" }, { name: "apply", kind: "boolean", description: "Make the clone on the provider from the recordings listed" }, { name: "replace", kind: "boolean", description: "Make the clone again though one exists; the old voice id is kept in the clone file under previous, never deleted (rule 145)" }, JSON_FLAG],
+      flags: [PROVIDER, { name: "from", kind: "list", description: "the owner's own recordings to clone from instead of his voice notes (his voiceovers, comma separated), each one's exact words in a .txt of the same name beside it when there is one (rule 146)" }, { name: "apply", kind: "boolean", description: "Make the clone on the provider from the recordings listed" }, { name: "replace", kind: "boolean", description: "Make the clone again though one exists; the old voice id is kept in the clone file under previous, never deleted (rule 145)" }, JSON_FLAG],
     },
     {
       words: ["speak"],
@@ -113,7 +113,7 @@ export const cloneCommand: Command = {
         if (json) return { code: 0, stdout: JSON.stringify({ exists: true, clonePath: clonePath(), ...existing }, null, 2) };
         return { code: 0, stdout: [`log clone voice: matt's voice is already cloned on ${provider} (its voice id kept in log.db, made ${existing.createdAt}, speaking with ${existing.model}), from:`, ...existing.references.map(recordingLine), `It is made once per provider; nothing was sent to ${provider}.`].join("\n") };
       }
-      const named = typeof parsed.flags["from"] === "string" ? String(parsed.flags["from"]).split(",").map((p) => p.trim()).filter(Boolean) : [];
+      const named = listOf(parsed, "from") ?? [];
       context.err(`clone: ${provider} (${chosen.from}): ${named.length ? `${named.length} recording(s) of matt's own named with --from` : "finding the voice notes matt sent himself"}`);
       const fromFiles = named.length ? namedRecordings(named, cloneDeps.seconds) : null;
       if (typeof fromFiles === "string") return refuse(label, "voiceRecordingsMissing", fromFiles);

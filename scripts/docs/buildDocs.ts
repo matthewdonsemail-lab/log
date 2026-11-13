@@ -229,7 +229,7 @@ for (const command of COMMANDS) {
     const head = `${entry?.words ?? command.name}${form.words.length ? ` ${form.words.join(" ")}` : ""}`;
     if (!entry?.usage.some((line) => line === `log ${head}` || line.startsWith(`log ${head} `) || (form.words[0] === "list" && line.startsWith(`log ${entry.words} [list]`)))) problems.push(`log ${command.name}: its input form "${form.words.join(" ") || "(no words)"}" has no usage line starting \`log ${head}\` (rule 56)`);
   }
-  for (const flag of command.input.forms.flatMap((f) => f.flags)) if (!flag.global && !entry?.flags.some((f) => f.name === flag.name)) problems.push(`log ${command.name}: its input has --${flag.name}, but its usage doesn't name it (rule 56)`);
+  for (const flag of command.input.forms.flatMap((f) => f.flags)) if (!flag.global && !flagsOf(entry?.usage.join("\n") ?? "").some((f) => f.name === flag.name)) problems.push(`log ${command.name}: its input has --${flag.name}, but its usage doesn't name it (rule 56)`);
 }
 
 const BROWSER_NAME = /\b(camoufox|adspower|firefox|chromium)\b/i;

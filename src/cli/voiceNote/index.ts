@@ -32,9 +32,9 @@ export const voiceNoteDeps: { render: (provider: VoiceProvider, platform: VoiceN
   render: (provider, platform, text, language) => renderVoiceNote(voiceProvider(provider), platform, text, undefined, undefined, undefined, language),
 };
 
-const TEXT: FlagSpec = { name: "text", kind: "string", required: true, description: "What matt says in the voice note, as text in his words; never an audio file" };
+const TEXT: FlagSpec = { name: "text", kind: "string", required: true, description: "What the owner says in the voice note, as text in his words; never an audio file" };
 const PROVIDER: FlagSpec = { name: "provider", kind: "enum", values: VOICE_PROVIDERS, description: "Which voice provider says it: inworld or fishAudio (default: LOG_VOICE_PROVIDER, else inworld)" };
-const APPROVED_BY: FlagSpec = { name: "approvedBy", kind: "string", description: "Who approved it: needed with --live (rule 8)" };
+const APPROVED_BY: FlagSpec = { name: "approvedBy", kind: "string", approval: true, description: "Who approved it: needed with --live (rule 8)" };
 
 function usageOf(shape: VoiceShape): string {
   return [
@@ -48,7 +48,7 @@ function usageOf(shape: VoiceShape): string {
 
 function inputOf(shape: VoiceShape): CommandInput {
   const summary = `Send a voice note in the owner's cloned voice as ${shape.platform[0].toUpperCase() + shape.platform.slice(1)}'s own voice note, from text; a dry run unless --live`;
-  return { forms: [{ words: [], effect: "write", summary, positionals: [], flags: [{ name: "account", kind: "string", required: true, description: `The ${shape.platform.toUpperCase()} socialAccount's accountName (its handle)` }, shape.chat, TEXT, ...shape.extra, PROVIDER, { name: "mattsWords", kind: "boolean", description: "The text is matt's own words, dictated by him for this voice note: the voice gate's read of his typing is skipped, the AI artifact check still runs (rule 144)" }, { name: "translationOf", kind: "string", description: "The text is a translation matt asked for, of these original words: the voice gate grades the original instead of the translation; needs --language (rule 148)" }, { name: "language", kind: "string", description: "The language the clone speaks it in (zh-CN, es-ES ...), instead of the clone's own (rule 148)" }, APPROVED_BY, { name: "live", kind: "boolean", live: true, description: "Send it, only when matt asked for a voice note (rules 8, 142); without it a dry run generates and contacts nothing" }, JSON_FLAG] }] };
+  return { forms: [{ words: [], effect: "write", summary, positionals: [], flags: [{ name: "account", kind: "string", required: true, description: `The ${shape.platform.toUpperCase()} socialAccount's accountName (its handle)` }, shape.chat, TEXT, ...shape.extra, PROVIDER, { name: "mattsWords", kind: "boolean", description: "The text is the owner's own words, dictated by him for this voice note: the voice gate's read of his typing is skipped, the AI artifact check still runs (rule 144)" }, { name: "translationOf", kind: "string", description: "The text is a translation the owner asked for, of these original words: the voice gate grades the original instead of the translation; needs --language (rule 148)" }, { name: "language", kind: "string", description: "The language the clone speaks it in (zh-CN, es-ES ...), instead of the clone's own (rule 148)" }, APPROVED_BY, { name: "live", kind: "boolean", live: true, description: "Send it, only when the owner asked for a voice note (rules 8, 142); without it a dry run generates and contacts nothing" }, JSON_FLAG] }] };
 }
 
 export function voiceNoteCommandOf(shape: VoiceShape): Command {
@@ -137,7 +137,7 @@ export function voiceNoteCommandOf(shape: VoiceShape): Command {
 
 export const discordVoiceCommand = voiceNoteCommandOf({
   platform: "discord",
-  chat: { name: "channel", kind: "string", required: true, description: "The chat as matt says it, matched to one DM or group; or a channel id" },
+  chat: { name: "channel", kind: "string", required: true, description: "The chat as the owner says it, matched to one DM or group; or a channel id" },
   extra: [],
   native: "a voice message (flags 8192, its waveform and duration), the bubble Discord's own app records",
   engine: "vendor/endcord",
@@ -187,7 +187,7 @@ export const instagramVoiceCommand = voiceNoteCommandOf({
 
 export const slackVoiceCommand = voiceNoteCommandOf({
   platform: "slack",
-  chat: { name: "chat", kind: "string", required: true, description: "The chat as matt says it, matched to one DM or group; or its id (D…, G…, C…)" },
+  chat: { name: "chat", kind: "string", required: true, description: "The chat as the owner says it, matched to one DM or group; or its id (D…, G…, C…)" },
   extra: [{ name: "workspace", kind: "string", description: "The workspace's domain; needed when the session is signed in to more than one" }],
   native: "an audio file shared into the chat through Slack's own upload (files.getUploadURLExternal, the bytes, files.completeUploadExternal), which Slack plays inline",
   engine: "vendor/gabrielSlack on curl_cffi",

@@ -390,7 +390,7 @@ describe("log twitter queue", () => {
     expect(planned.out).toContain("at least 600s apart");
     const times = loadQueue(f.queue).randomRun!.events.map((e) => Date.parse(e.at)).sort((a, b) => a - b);
     for (let i = 1; i < times.length; i++) expect(times[i] - times[i - 1]).toBeGreaterThanOrEqual(600_000);
-    expect((await h.run(["twitter", "queue", "plan", f.queue, "--window", "60m", "--minGap", "ten"])).err).toContain("--minGap is a whole number");
+    expect((await h.run(["twitter", "queue", "plan", f.queue, "--window", "60m", "--minGap", "ten"])).err).toContain("inputInvalid: --minGap got \"ten\"; it takes a whole number");
   });
 
   test("a target that carries its own text keeps it, and the rest draw from the variations", async () => {

@@ -24,7 +24,7 @@ import { profileFor, readProfiles, splitPlan } from "../../voice/pairs/index.ts"
 import type { VoiceProfile } from "../../voice/pairs/index.ts";
 import type { DiscordChat } from "../../discord/chat/match/index.ts";
 import type { PlatformAnswer } from "../../platformKit/session/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../runner/helpers/index.ts";
+import { JSON_FLAG, listOf, numberOf, parseArgs, parserSpecOf, refuse, refuseError, truthOf } from "../runner/helpers/index.ts";
 import type { Command, CommandInput, CommandResult, FlagSpec } from "../runner/types.ts";
 
 export const DISCORD_SESSION_USAGE = [
@@ -144,8 +144,8 @@ export const DISCORD_READ_INPUT: CommandInput = {
       positionals: [],
       flags: [
         DISCORD_ACCOUNT,
-        { name: "channel", kind: "string", required: true, description: "The chat as matt says it, matched to one DM or group; or a channel id (a server channel by its id)" },
-        { name: "limit", kind: "string", description: "How many of the latest messages, default 20, at most 1000, read 100 a page as Discord's app scrolls back" },
+        { name: "channel", kind: "string", required: true, description: "The chat as the owner says it, matched to one DM or group; or a channel id (a server channel by its id)" },
+        { name: "limit", kind: "integer", min: 1, max: 1000, description: "How many of the latest messages, default 20, at most 1000, read 100 a page as Discord's app scrolls back" },
         { name: "after", kind: "string", description: "Only messages after this message id" },
         { name: "noMedia", kind: "boolean", description: "Text only: skip saving images and files and transcribing voice notes, for a fast read of a busy channel" },
         JSON_FLAG,
@@ -227,8 +227,7 @@ export const discordReadCommand: Command = {
     if (!parsed.ok) return { code: 1, stderr: `log discord read: ${parsed.error}\n${DISCORD_READ_USAGE}` };
     if (parsed.positionals.length) return { code: 1, stderr: `log discord read: takes no words, only flags\n${DISCORD_READ_USAGE}` };
     const channel = String(parsed.flags["channel"]).trim();
-    const limit = parsed.flags["limit"] === undefined ? 20 : Number(parsed.flags["limit"]);
-    if (!Number.isInteger(limit) || limit < 1 || limit > 1000) return { code: 1, stderr: `log discord read: --limit must be 1 to 1000\n${DISCORD_READ_USAGE}` };
+    const limit = numberOf(parsed, "limit") ?? 20;
     const after = typeof parsed.flags["after"] === "string" ? parsed.flags["after"].trim() : undefined;
     try {
       const account = await findDiscordAccount(context.twenty, String(parsed.flags["account"]));
@@ -296,8 +295,8 @@ export const DISCORD_WATCH_INPUT: CommandInput = {
       positionals: [],
       flags: [
         DISCORD_ACCOUNT,
-        { name: "channel", kind: "string", description: "Only this chat (as matt says it) or channel id" },
-        { name: "seconds", kind: "string", description: "Stop after this many seconds (at least 5); default: until stopped" },
+        { name: "channel", kind: "string", description: "Only this chat (as the owner says it) or channel id" },
+        { name: "seconds", kind: "number", min: 0, refusal: "secondsInvalid", description: "Stop after this many seconds (at least 5); default: until stopped" },
         { name: "inbox", kind: "boolean", description: "Hand each new DM, group message, mention or reply to the account to the inbox hook" },
         JSON_FLAG,
       ],
@@ -334,8 +333,8 @@ export const discordWatchCommand: Command = {
     const parsed = parseArgs(argv, parserSpecOf(DISCORD_WATCH_INPUT));
     if (!parsed.ok) return { code: 1, stderr: `log discord watch: ${parsed.error}\n${DISCORD_WATCH_USAGE}` };
     if (parsed.positionals.length) return { code: 1, stderr: `log discord watch: takes no words, only flags\n${DISCORD_WATCH_USAGE}` };
-    const seconds = parsed.flags["seconds"] === undefined ? 0 : Number(parsed.flags["seconds"]);
-    if (!Number.isFinite(seconds) || (seconds !== 0 && seconds < 5)) return refuse("discord watch", "secondsInvalid", "--seconds must be at least 5");
+    const seconds = numberOf(parsed, "seconds") ?? 0;
+    if (seconds !== 0 && seconds < 5) return refuse("discord watch", "secondsInvalid", "--seconds must be at least 5");
     try {
       const account = await findDiscordAccount(context.twenty, String(parsed.flags["account"]));
       const gate = discordGate(account);
@@ -416,10 +415,10 @@ export const DISCORD_DELETE_INPUT: CommandInput = {
       positionals: [],
       flags: [
         DISCORD_ACCOUNT,
-        { name: "channel", kind: "string", required: true, description: "The chat as matt says it, matched to one DM or group; or a channel id" },
-        { name: "message", kind: "string", required: true, description: "The message id to delete, or several separated by commas (ids from log discord read)" },
-        { name: "approvedBy", kind: "string", description: "Who approved it: needed with --live (rule 8)" },
-        { name: "live", kind: "boolean", live: true, description: "Delete on Discord, only when matt asked (rule 8); without it a dry run deletes nothing" },
+        { name: "channel", kind: "string", required: true, description: "The chat as the owner says it, matched to one DM or group; or a channel id" },
+        { name: "message", kind: "list", required: true, pattern: "^\\d{15,22}$", takes: "Discord message ids (15 to 22 digits)", refusal: "messageInvalid", description: "The message id to delete, or several separated by commas (ids from log discord read)" },
+        { name: "approvedBy", kind: "string", approval: true, description: "Who approved it: needed with --live (rule 8)" },
+        { name: "live", kind: "boolean", live: true, description: "Delete on Discord, only when the owner asked (rule 8); without it a dry run deletes nothing" },
         JSON_FLAG,
       ],
     },
@@ -439,7 +438,7 @@ export const discordDeleteCommand: Command = {
     if (!parsed.ok) return { code: 1, stderr: `log discord delete: ${parsed.error}\n${DISCORD_DELETE_USAGE}` };
     if (parsed.positionals.length) return { code: 1, stderr: `log discord delete: takes no words, only flags\n${DISCORD_DELETE_USAGE}` };
     const channel = String(parsed.flags["channel"]).trim();
-    const ids = String(parsed.flags["message"]).split(",").map((s) => s.trim()).filter(Boolean);
+    const ids = listOf(parsed, "message") ?? [];
     const approvedBy = typeof parsed.flags["approvedBy"] === "string" ? parsed.flags["approvedBy"].trim() : "";
     const live = parsed.flags["live"] === true;
     if (!ids.length || ids.some((id) => !/^\d{15,22}$/.test(id))) return refuse("discord delete", "messageInvalid", "--message takes Discord message ids (from log discord read), separated by commas");
@@ -498,9 +497,8 @@ export function fileRoots(env: Record<string, string | undefined> = process.env)
   return [resolvePath(env.LOG_OUTBOX || join(homedir(), ".buzz", "OUTBOX")), resolvePath(join(homedir(), ".logCli"))];
 }
 
-export function filesOf(flag: unknown, roots = fileRoots()): { ok: true; paths: string[] } | { ok: false; refused: string } {
-  if (typeof flag !== "string" || !flag.trim()) return { ok: true, paths: [] };
-  const paths = flag.split(",").map((p) => p.trim()).filter(Boolean).map((p) => resolvePath(p));
+export function filesOf(given: readonly string[] | undefined, roots = fileRoots()): { ok: true; paths: string[] } | { ok: false; refused: string } {
+  const paths = (given ?? []).map((p) => resolvePath(p));
   for (const path of paths) {
     const inside = roots.some((root) => { const rel = relative(root, path); return !!rel && !rel.startsWith("..") && !isAbsolute(rel); });
     if (!inside) return { ok: false, refused: `${path} isn't under OUTBOX or ~/.logCli, so it isn't sent` };
@@ -527,14 +525,14 @@ export const DISCORD_SEND_INPUT: CommandInput = {
       positionals: [],
       flags: [
         DISCORD_ACCOUNT,
-        { name: "channel", kind: "string", required: true, description: "The chat as matt says it (\"the log group\", \"wren\", \"the partners group\"), matched to one DM or group; or a channel id" },
-        { name: "text", kind: "string", required: true, description: "The message, as matt gave it" },
-        { name: "approvedBy", kind: "string", description: "Who approved it: needed with --live (rule 8)" },
-        { name: "file", kind: "string", description: "Files to attach to the last message, comma-separated paths under OUTBOX or ~/.logCli, at most 10 MB each" },
+        { name: "channel", kind: "string", required: true, description: "The chat as the owner says it (\"the log group\", \"wren\", \"the partners group\"), matched to one DM or group; or a channel id" },
+        { name: "text", kind: "string", required: true, description: "The message, as the owner gave it" },
+        { name: "approvedBy", kind: "string", approval: true, description: "Who approved it: needed with --live (rule 8)" },
+        { name: "file", kind: "list", description: "Files to attach to the last message, comma-separated paths under OUTBOX or ~/.logCli, at most 10 MB each" },
         { name: "brief", kind: "boolean", description: "The message hands someone a task: gated as a brief (clear, why, done when, kind, how to ask), not as casual chat (rule 162)" },
         { name: "asOne", kind: "boolean", description: "Send it as one message, never split" },
-        { name: "overGate", kind: "boolean", description: "matt said to send this exact message over the voice gate's refusal: its SubQ read is skipped, the AI artifact check still runs; only when he said so for this message (rule 152)" },
-        { name: "live", kind: "boolean", live: true, description: "Send it on Discord, only when matt asked (rule 8); without it a dry run contacts nothing" },
+        { name: "overGate", kind: "boolean", description: "the owner said to send this exact message over the voice gate's refusal: its SubQ read is skipped, the AI artifact check still runs; only when he said so for this message (rule 152)" },
+        { name: "live", kind: "boolean", live: true, description: "Send it on Discord, only when the owner asked (rule 8); without it a dry run contacts nothing" },
         JSON_FLAG,
       ],
     },
@@ -559,7 +557,7 @@ export const discordSendCommand: Command = {
     const live = parsed.flags["live"] === true;
     if (!channel || !text.trim()) return { code: 1, stderr: `log discord send: --channel and --text can't be empty\n${DISCORD_SEND_USAGE}` };
     if (live && !approvedBy) return refuse("discord send", "notApproved", "--live needs --approvedBy <who> (rule 8)");
-    const files = filesOf(parsed.flags["file"]);
+    const files = filesOf(listOf(parsed, "file"));
     if (!files.ok) return refuse("discord send", "fileRefused", files.refused);
     const watermark = watermarkReadingOf(text);
     if (watermark.level === "artifacts") return refuse("discord send", "aiArtifacts", `the copy carries what AI chat interfaces leave in text: ${watermark.findings.filter((f) => f.deterministic).map((f) => `${f.label} ×${f.count}`).join(", ")}`);
@@ -745,7 +743,7 @@ export const DISCORD_CHANNELS_INPUT: CommandInput = {
     words: [],
     summary: "One server's channels by category, each with its kind",
     positionals: [],
-    flags: [DISCORD_ACCOUNT, { name: "server", kind: "string", required: true, description: "The server by its name, as matt says it" }, JSON_FLAG],
+    flags: [DISCORD_ACCOUNT, { name: "server", kind: "string", required: true, description: "The server by its name, as the owner says it" }, JSON_FLAG],
   }],
 };
 
@@ -802,8 +800,8 @@ export const DISCORD_POSTS_INPUT: CommandInput = {
     flags: [
       DISCORD_ACCOUNT,
       { name: "channel", kind: "string", required: true, description: "The forum or channel as \"<server> #<channel>\"" },
-      { name: "limit", kind: "string", description: "How many posts, default 25, at most 200" },
-      { name: "archived", kind: "string", description: "true for only closed (archived) posts, false for only open ones; both when left out" },
+      { name: "limit", kind: "integer", min: 1, max: 200, description: "How many posts, default 25, at most 200" },
+      { name: "archived", kind: "booleanValue", description: "true for only closed (archived) posts, false for only open ones; both when left out" },
       JSON_FLAG,
     ],
   }],
@@ -820,10 +818,8 @@ export const discordPostsCommand: Command = {
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(DISCORD_POSTS_INPUT));
     if (!parsed.ok) return { code: 1, stderr: `log discord posts: ${parsed.error}\n${DISCORD_POSTS_USAGE}` };
-    const limit = parsed.flags["limit"] === undefined ? 25 : Number(parsed.flags["limit"]);
-    if (!Number.isInteger(limit) || limit < 1 || limit > 200) return { code: 1, stderr: `log discord posts: --limit must be 1 to 200\n${DISCORD_POSTS_USAGE}` };
-    const archivedFlag = parsed.flags["archived"];
-    if (archivedFlag !== undefined && archivedFlag !== "true" && archivedFlag !== "false") return { code: 1, stderr: `log discord posts: --archived is true or false\n${DISCORD_POSTS_USAGE}` };
+    const limit = numberOf(parsed, "limit") ?? 25;
+    const archived = truthOf(parsed, "archived");
     try {
       const start = await serverCommandStart(context, String(parsed.flags["account"]), "discord posts");
       if ("refused" in start) return start.refused;
@@ -834,7 +830,7 @@ export const discordPostsCommand: Command = {
       const chat = looked.found.chat as KeptChannel;
       if (chat.kind !== "channel") return refuse("discord posts", "chatNotFound", `"${said}" is a ${chat.kind}, not a server channel: a DM or group DM has no posts`);
       context.err(`"${said}" is ${labelOf(chat)}`);
-      const run = start.direct(start.account, { action: "posts", channel: chat.id, limit, serverName: chat.server ?? labelOf(chat).split(" #")[0], ...(archivedFlag !== undefined ? { archived: archivedFlag === "true" } : {}) });
+      const run = start.direct(start.account, { action: "posts", channel: chat.id, limit, serverName: chat.server ?? labelOf(chat).split(" #")[0], ...(archived !== undefined ? { archived } : {}) });
       const posts = (run.answer.posts as ForumPost[] | undefined) ?? [];
       const code = run.answer.ok ? 0 : 1;
       if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", platform: "discord", account: start.account.accountName, ...run.answer }, null, 2) };
@@ -867,11 +863,11 @@ export const DISCORD_SEARCH_INPUT: CommandInput = {
     positionals: [],
     flags: [
       DISCORD_ACCOUNT,
-      { name: "server", kind: "string", required: true, description: "The server by its name, as matt says it" },
+      { name: "server", kind: "string", required: true, description: "The server by its name, as the owner says it" },
       { name: "query", kind: "string", required: true, description: "The words to look for" },
       { name: "channel", kind: "string", description: "Only this channel, as \"<server> #<channel>\"" },
       { name: "from", kind: "string", description: "Only messages from this person, by their name" },
-      { name: "limit", kind: "string", description: "How many hits, default 25, at most 200" },
+      { name: "limit", kind: "integer", min: 1, max: 200, description: "How many hits, default 25, at most 200" },
       JSON_FLAG,
     ],
   }],
@@ -888,8 +884,7 @@ export const discordSearchCommand: Command = {
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(DISCORD_SEARCH_INPUT));
     if (!parsed.ok) return { code: 1, stderr: `log discord search: ${parsed.error}\n${DISCORD_SEARCH_USAGE}` };
-    const limit = parsed.flags["limit"] === undefined ? 25 : Number(parsed.flags["limit"]);
-    if (!Number.isInteger(limit) || limit < 1 || limit > 200) return { code: 1, stderr: `log discord search: --limit must be 1 to 200\n${DISCORD_SEARCH_USAGE}` };
+    const limit = numberOf(parsed, "limit") ?? 25;
     try {
       const start = await serverCommandStart(context, String(parsed.flags["account"]), "discord search");
       if ("refused" in start) return start.refused;

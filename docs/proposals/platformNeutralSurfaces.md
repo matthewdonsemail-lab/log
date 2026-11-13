@@ -158,12 +158,17 @@ Change:
 
 The evidence, with every file, is in [schemaParityAudit.md](schemaParityAudit.md). An MCP call runs the CLI in the same process, so the parser is shared; the gaps are in the schema, the result and the gates around it.
 
-**Slice 11: one schema source, tested through `run`.**
-- `FlagSpec` gains number, list, date and span kinds, ranges, patterns and one-of groups, so the schema says what `run` enforces. Today 51 of 151 form tools refuse schema-valid input for a reason the schema can't express.
-- `approvedBy` becomes required in every `*Live` schema.
-- `docs/reference.md` is built from the input forms, not a regex over usage text.
-- A round-trip test runs every form through `run` with a stubbed context.
-- Files: `src/cli/runner/types.ts`, `src/cli/runner/helpers/commandInput.ts`, `src/cli/runner/helpers/parseArgs.ts`, `src/cli/runner/commandInput.test.ts`, `src/surface/catalog/index.ts`, `src/mcp/server/helpers/toolsFromCommands.ts`, and every `src/cli/**/index.ts` that re-parses a flag.
+**Slice 11: one schema source, tested through `run` (built).**
+- Built: `FlagSpec` kinds are `string`, `integer`, `number` (with `min`/`max`), `boolean`, `booleanValue` (`true`/`false`), `enum`, `list` and `pairs`; a string or list item takes a `pattern` (with the words it `takes`) or a `format` (`date`, `time`, `dateOrSpan`, `jsonObject`); a form takes `groups` (`atLeastOne`, `atMostOne`), `counts` (`inspect do` values per action, from the action's own arity) and `terminalOnly`. A flag keeps the refusal code it already had (`limitInvalid`, `secondsInvalid`, `messageInvalid`, `userIdInvalid`, `tweetUrlInvalid`, `notificationQueryInvalid`, `tregParamsInvalid`, `tregTrimInvalid`, `listInvalid`, `textMissing`); everything else is the one new code, `inputInvalid`. The contract is REQ-COMMAND-15 to 20 in [the command shape spec](../specs/commandShape.md).
+- `parseArgs` parses once, by the form its words pick, into `values`; a repeated scalar flag is refused on every spec; `pairs` and `global` flags are in `parserSpecOf`. The commands the audit listed read `numberOf`, `listOf` and `truthOf`, with their range limits moved into the spec. `check:agnostic` counts a flag declared `string` read through `Number(...)` or `.split(",")` (`stringFlagReparses`): 32 on the integration branch, 0 now.
+- `inputSchemaOf` emits `integer`/`number` with `minimum`/`maximum`, arrays, `pattern` and `format`. Groups and counts are a sentence on each property and never a top-level `anyOf`: some providers refuse a combinator at the top of a tool's input, and which accept it is not verified per host ([sources.md](sources.md) row 6). Groups are declared on `redditVote`, `instagramSend`, `twitterListAdd` and `voice`; `proxy` has no input forms yet (slice 12).
+- `approvedBy` is required on 24 `*Live` schemas, not 25: `tregCallLive` runs a free endpoint without it.
+- For one release the MCP layer coerces `"20"` to 20, `"a,b"` to a list and `"true"` to true; the hook prompts, the use cases under `docs/useCases/`, the knowledge-base skill and the site's examples now send typed values (`limit: 20`, lists as arrays).
+- `docs/reference.md` lists each flag from the input forms with its kind and range. `log console --web`, `--port` and `--noOpen` are a terminal-only form. `facebook read --worker` is not an accepted flag (it is refused with the command it became), so it needs no form.
+- `src/cli/runner/runRoundTrip.test.ts` drives every non-live form tool through its command's own `run` with stubbed engines, Twenty, treg and fetch in a temporary home: a minimal input, each optional field on its own, and each bound at its minimum, maximum and one past. On the integration branch it finds 53 refusals across 29 tools; now none. Skipped: `inspectStart`, `facebookHostStart` and `mediaDescriber`, which start a process.
+- `facebook read`, `facebook host` and `job` read their integer flags through the typed values too, with the ranges in the spec.
+- Not built: `connect --wait`, `proxy`, `warmup` and the other raw `args` commands have no forms (slice 12).
+- Files: `src/cli/runner/types.ts`, `src/cli/runner/helpers/{flagValues,commandInput,parseArgs}.ts`, `src/cli/runner/{commandInput,runRoundTrip}.test.ts`, `src/surface/catalog/index.ts`, `src/surface/readme/index.ts`, `src/surface/scorecard/helpers/flagReparses.ts`, `src/mcp/server/helpers/{toolsFromCommands,guardCall}.ts`, `src/mcp/catalog/helpers/{entries,examples}.ts`, and the commands under `src/cli/` that re-parsed a flag.
 
 **Slice 12: every tool has named inputs.**
 - The 25 raw `args` tools get input forms. `flow`, `join` and `warmup` need a redesign.

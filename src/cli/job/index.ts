@@ -1,6 +1,6 @@
 import { DEFAULT_STATUS_WAIT_MS, jobView, listJobs, readJob, requestCancel, waitForJob } from "../../mcp/jobs/index.ts";
 import type { JobView } from "../../mcp/jobs/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";
+import { JSON_FLAG, numberOf, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
 
 export const JOB_USAGE = [
@@ -18,8 +18,8 @@ export const JOB_INPUT: CommandInput = {
       summary: "A long run's status, the lines after afterLine, and its result once it ends",
       positionals: [JOB_ID],
       flags: [
-        { name: "afterLine", kind: "integer", description: "How many progress lines you already have (the last call's afterLine)" },
-        { name: "waitMs", kind: "integer", description: "How long to wait for a new line or the end, in ms (default 10000, at most 50000)" },
+        { name: "afterLine", kind: "integer", min: 0, description: "How many progress lines you already have (the last call's afterLine)" },
+        { name: "waitMs", kind: "integer", min: 0, description: "How long to wait for a new line or the end, in ms (default 10000, at most 50000)" },
         JSON_FLAG,
       ],
     },
@@ -35,7 +35,6 @@ export function renderJob(view: JobView): string {
   return [head, ...lines, ...tail].join("\n");
 }
 
-const int = (value: string | true | undefined, fallback: number) => (typeof value === "string" && /^\d+$/.test(value) ? Number(value) : fallback);
 
 export const jobCommand: Command = {
   usage: JOB_USAGE,
@@ -63,7 +62,7 @@ export const jobCommand: Command = {
     }
     if (sub !== "status") return { code: 1, stderr: `log job: pick status, cancel or list\n${JOB_USAGE}` };
     if (!readJob(id)) return { code: 1, stderr: `log job status: no job ${id}` };
-    const view = await waitForJob(id, int(parsed.flags["afterLine"], 0), int(parsed.flags["waitMs"], DEFAULT_STATUS_WAIT_MS));
+    const view = await waitForJob(id, numberOf(parsed, "afterLine") ?? 0, numberOf(parsed, "waitMs") ?? DEFAULT_STATUS_WAIT_MS);
     if (!view) return { code: 1, stderr: `log job status: no job ${id}` };
     if (parsed.flags["json"]) return { code: 0, stdout: JSON.stringify({ job: view }, null, 2) };
     return { code: 0, stdout: renderJob(view) };

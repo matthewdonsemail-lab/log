@@ -24,4 +24,5 @@ export {
   useCasesWithoutSteps,
 } from "./measure.ts";
 export { platformNeutralProblems, PLATFORM_NEUTRAL_ZERO } from "./neutral.ts";
+export { stringFlagReparses } from "./flagReparses.ts";
 export { isShared, platformOfToolName, platformOfTopic, platformsNamed } from "./platformWords.ts";

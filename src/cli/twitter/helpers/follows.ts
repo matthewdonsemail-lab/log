@@ -1,5 +1,5 @@
 import type { TwitterSessionAnswer } from "../../../twitter/account/session/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../../runner/helpers/index.ts";
+import { JSON_FLAG, listOf, parseArgs, parserSpecOf, refuse, refuseError } from "../../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../../runner/types.ts";
 import { governorLine, openTwitterAccount } from "./account.ts";
 
@@ -17,7 +17,7 @@ export const FOLLOWS_INPUT: CommandInput = {
       positionals: [],
       flags: [
         { name: "account", kind: "string", required: true, description: "The TWITTER socialAccount's accountName (its handle)" },
-        { name: "handles", kind: "string", required: true, description: "The handles to check, comma-separated (an @ is dropped)" },
+        { name: "handles", kind: "list", required: true, description: "The handles to check, comma-separated (an @ is dropped)" },
         JSON_FLAG,
       ],
     },
@@ -42,9 +42,9 @@ export const followsCommand: Command = {
     const parsed = parseArgs(argv, parserSpecOf(FOLLOWS_INPUT));
     if (!parsed.ok) return { code: 1, stderr: `log twitter follows: ${parsed.error}\n${FOLLOWS_USAGE}` };
     const ref = parsed.flags["account"];
-    const raw = parsed.flags["handles"];
-    if (typeof ref !== "string" || typeof raw !== "string") return { code: 1, stderr: `log twitter follows: --account and --handles are needed\n${FOLLOWS_USAGE}` };
-    const handles = [...new Set(raw.split(",").map((h) => h.trim().replace(/^@/, "")).filter(Boolean))];
+    const given = listOf(parsed, "handles");
+    if (typeof ref !== "string" || !given) return { code: 1, stderr: `log twitter follows: --account and --handles are needed\n${FOLLOWS_USAGE}` };
+    const handles = [...new Set(given.map((h) => h.replace(/^@/, "")).filter(Boolean))];
     if (!handles.length) return refuse("twitter follows", "targetMissing", "--handles names no handle");
     try {
       const opened = await openTwitterAccount(context, "twitter follows", ref);

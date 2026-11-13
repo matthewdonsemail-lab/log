@@ -139,7 +139,7 @@ describe("guardCall", () => {
     expect(guardCall("facebookCheck", { account: "a", bogus: 1 }, COMMANDS)).toEqual({ ok: false, message: 'facebookCheck: unknown field "bogus"' });
     expect(guardCall("facebookAccountStatus", { account: "a", status: "NOPE" }, COMMANDS).ok).toBe(false);
     expect(guardCall("inspectDo", { action: "teleport" }, COMMANDS).ok).toBe(false);
-    expect(guardCall("facebookHostStart", { account: "a", gapSeconds: "5" }, COMMANDS).ok).toBe(false);
+    expect(guardCall("facebookHostStart", { account: "a", gapSeconds: "five" }, COMMANDS).ok).toBe(false);
     expect(guardCall("facebookListings", { args: ["--json"] }, COMMANDS).ok).toBe(false);
   });
 
