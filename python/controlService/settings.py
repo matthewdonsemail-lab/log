@@ -44,6 +44,11 @@ class Settings:
     clerkIssuer: str | None
     clerkSecretKey: str | None
     secureCookies: bool
+    devOrigins: tuple[str, ...] = ()
+
+    @property
+    def browserOrigins(self) -> set[str]:
+        return {self.appOrigin, self.consoleOrigin, *self.devOrigins}
 
     @property
     def mcpResourceUrl(self) -> str:
@@ -65,6 +70,15 @@ def required(name: str) -> str:
     return value
 
 
+def dev_origins(value: str | None) -> tuple[str, ...]:
+    origins = tuple(part.strip().rstrip("/") for part in (value or "").split(",") if part.strip())
+    for origin in origins:
+        parsed = urlparse(origin)
+        if parsed.scheme != "http" or parsed.hostname not in {"localhost", "127.0.0.1"} or parsed.path:
+            raise MissingSetting(f"CONSOLE_DEV_ORIGINS only takes http://localhost or http://127.0.0.1 origins, not {origin}")
+    return origins
+
+
 def load_settings() -> Settings:
     origin = required("APP_ORIGIN").rstrip("/")
     consoleOrigin = (os.environ.get("CONSOLE_ORIGIN") or origin).rstrip("/")
@@ -81,4 +95,5 @@ def load_settings() -> Settings:
         clerkIssuer=os.environ.get("CLERK_ISSUER") or None,
         clerkSecretKey=os.environ.get("CLERK_SECRET_KEY") or None,
         secureCookies=urlparse(origin).scheme == "https",
+        devOrigins=dev_origins(os.environ.get("CONSOLE_DEV_ORIGINS")),
     )

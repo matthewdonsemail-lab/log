@@ -33,7 +33,7 @@ def verified_email(token: str, settings: Settings) -> str:
         key = key_client(issuer).get_signing_key_from_jwt(token)
         claims = jwt.decode(token, key.key, algorithms=["RS256"], issuer=issuer,
                             options={"require": ["exp", "iat", "sub", "iss"], "verify_aud": False})
-        if claims.get("azp") not in {settings.consoleOrigin, settings.appOrigin}:
+        if claims.get("azp") not in settings.browserOrigins:
             raise ApiError("unauthenticated")
         subject = claims["sub"]
         if not isinstance(subject, str) or not subject.startswith("user_") or not subject.replace("_", "").isalnum():

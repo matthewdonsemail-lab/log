@@ -45,7 +45,7 @@ def parse_id(value: str) -> uuid.UUID:
 
 def check_origin(request: Request, settings: Settings) -> None:
     origin = request.headers.get("origin")
-    if origin and origin.rstrip("/") not in {settings.appOrigin, settings.consoleOrigin}:
+    if origin and origin.rstrip("/") not in settings.browserOrigins:
         raise ApiError("forbidden", "origin not allowed")
 
 
