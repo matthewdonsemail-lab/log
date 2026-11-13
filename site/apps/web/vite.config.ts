@@ -3,8 +3,9 @@ import react from '@vitejs/plugin-react'
 import path from 'path'
 import { consoleEvents } from './server/consoleEvents'
 
-const controlService = process.env.CONTROL_SERVICE_URL || 'http://127.0.0.1:8765'
-const controlServiceIsRemote = controlService.startsWith('https://')
+const controlServiceUrl = process.env.CONTROL_SERVICE_URL || 'http://127.0.0.1:8765'
+const controlServiceIsRemote = controlServiceUrl.startsWith('https://')
+const controlServiceProxy = { target: controlServiceUrl, changeOrigin: controlServiceIsRemote }
 
 export default defineConfig({
   plugins: [react(), consoleEvents()],
@@ -19,11 +20,11 @@ export default defineConfig({
   server: {
     port: 3000,
     proxy: {
-      '/api/v1': { target: controlService, changeOrigin: controlServiceIsRemote },
-      '/oauth': { target: controlService, changeOrigin: controlServiceIsRemote },
-      '/.well-known': { target: controlService, changeOrigin: controlServiceIsRemote },
-      '/bridge': { target: controlService, ws: true, changeOrigin: controlServiceIsRemote },
-      '/mcp': { target: controlService, changeOrigin: controlServiceIsRemote, bypass: (req) => (req.method === 'GET' ? req.url : undefined) },
+      '/api/v1': controlServiceProxy,
+      '/oauth': controlServiceProxy,
+      '/.well-known': controlServiceProxy,
+      '/bridge': { ...controlServiceProxy, ws: true },
+      '/mcp': { ...controlServiceProxy, bypass: (req) => (req.method === 'GET' ? req.url : undefined) },
       // The repo modal posts newsletter signups to the member-site endpoint on listeningkit.com
       // (vercel.json rewrites the same path in production). Listed before /api so it wins.
       '/api/kit': {
