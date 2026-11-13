@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { api, errorText, HOSTED_MCP_URL, useSelectedTeam, type ConsentRequestView, type GrantView } from '@/lib/controlApi'
 import { ConsoleLayout, SectionHeading } from './ConsoleLayout'
-import { toast } from '@listeningkit/ui'
+import { Spinner, toast } from '@listeningkit/ui'
 import { useErrorToast } from '@/lib/useErrorToast'
 import { localConsole } from '@/lib/consoleMode'
 import { loadLocalAiClients } from './aiClientsData'
@@ -89,7 +89,7 @@ function Grants({ teamId }: { teamId: string }) {
       </section>
       <section>
         <SectionHeading title="Connected AI apps" count={live.length} />
-        {grants.isLoading ? <p className="text-sm text-slate-500">Loading…</p> : live.length ? (
+        {grants.isLoading ? <Spinner className="min-h-0 py-6" label="Loading your AI connections" /> : live.length ? (
           <ul className="divide-y divide-slate-100 rounded-2xl border border-slate-200 bg-white">
             {live.map((grant) => (
               <li key={grant.id} className="flex items-center gap-3 p-4">

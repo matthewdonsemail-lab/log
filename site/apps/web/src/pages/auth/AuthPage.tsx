@@ -3,13 +3,11 @@ import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-do
 import { useQueryClient } from '@tanstack/react-query'
 import { useAuth, useSignIn, useSignUp } from '@clerk/react'
 import { api, errorText, safeReturnPath, sessionKey, type SessionView } from '@/lib/controlApi'
-import { Button, toast } from '@listeningkit/ui'
-import { ArrowLeft, ArrowRight } from 'lucide-react'
-import { UsecaseLoop } from '@/landing/UsecaseLoop'
-import { ClayClouds } from '@/landing/ClayClouds'
-import { DitherFade } from '@/landing/useCases/DitherFade'
+import { Button, Spinner, toast } from '@listeningkit/ui'
+import { ArrowRight } from 'lucide-react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGithub, faGoogle } from '@fortawesome/free-brands-svg-icons'
+import { AuthShell, authFieldClass } from './AuthShell'
 import { clerkErrorText, exchangeClerkSession, nextPath, sendEmailCode, signInPath, startProvider, verifyEmailCode, type EmailFlow, type ProviderStrategy } from './clerkFlow'
 
 type VerifyState = { email?: string; flow?: EmailFlow } | null
@@ -88,25 +86,13 @@ export function AuthPage({ mode }: { mode: 'signIn' | 'verify' }) {
   function provider(strategy: ProviderStrategy) {
     void run(() => startProvider(signIn, strategy, returnPath))
   }
-  const fieldClass = 'h-12 w-full rounded-xl border border-slate-300 bg-white px-4 text-base outline-none placeholder:text-slate-400 focus:border-[#2A8CFF] focus:ring-2 focus:ring-[#2A8CFF]/20'
   return (
-    <main className="relative min-h-screen overflow-hidden bg-white font-sans text-slate-900">
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden bg-white lg:hidden">
-        <div className="absolute inset-x-0 top-0 h-[54rem] bg-[#2A8CFF]">
-          <DitherFade stops={['#2A8CFF', '#9CCBFF', '#FFFFFF']} cell={5} hold={0.18} className="absolute inset-x-0 bottom-0 h-[46rem]" />
-          <div className="absolute inset-x-0 top-0 h-[30rem] bg-[radial-gradient(ellipse_130%_100%_at_50%_0%,rgba(92,167,255,0.85)_0%,transparent_80%)]" />
-          <ClayClouds className="absolute inset-x-0 top-0 h-[18rem] [mask-image:linear-gradient(to_bottom,black_72%,transparent)]" />
-        </div>
-      </div>
-      <div className="relative grid min-h-screen w-full items-stretch lg:grid-cols-2">
-        <section className="flex flex-col px-5 pb-6 pt-5 sm:px-10 lg:px-20 lg:py-10 xl:px-32">
-          <Link to="/" className="inline-flex w-fit items-center gap-2 text-sm font-semibold text-white/90 drop-shadow-[0_1px_3px_rgba(6,32,72,0.45)] hover:text-white lg:text-slate-500 lg:drop-shadow-none lg:hover:text-slate-900"><ArrowLeft size={16} /> Back to ListeningKit</Link>
-          <div className="mx-auto mt-[8.5rem] flex w-full max-w-sm flex-1 flex-col justify-center rounded-[1.75rem] border-2 border-[#C3D3E8] bg-[#F8FBFF] px-6 py-8 sm:px-8 lg:mt-0 lg:max-w-xs lg:flex-none lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:py-16">
-            <Link to="/" aria-label="ListeningKit home" className="mb-6 self-center"><img src="/logo.svg" alt="" className="size-14 rounded-[14px] object-contain" /></Link>
+    <AuthShell>
             {exchange.signedIn ? (
               <>
                 <h1 className="text-center text-2xl font-bold leading-tight">{exchange.failed ? 'Your workspace is not open yet' : 'Opening your workspace…'}</h1>
                 <p role="status" className="mt-3 text-center text-sm leading-6 text-slate-500">{exchange.failed ? 'You are signed in. Try opening your workspace again.' : 'You are signed in. One moment.'}</p>
+                {!exchange.failed && <Spinner className="min-h-0 py-6" label="Opening your workspace" />}
                 {exchange.failed && <Button type="button" variant="blue" onClick={exchange.retry} className="mt-6 h-12 w-full rounded-xl text-sm font-bold">Try again <ArrowRight size={16} className="ml-2" /></Button>}
               </>
             ) : (
@@ -127,7 +113,7 @@ export function AuthPage({ mode }: { mode: 'signIn' | 'verify' }) {
                 <form className="mt-6 space-y-5" onSubmit={submit}>
                   <div>
                     <label htmlFor={verifying ? 'code' : 'email'} className="mb-2 block text-sm font-semibold text-slate-700">{verifying ? 'Sign-in code' : 'Email address'}</label>
-                    {verifying ? <input id="code" name="code" type="text" inputMode="numeric" pattern="[0-9 ]{6,7}" maxLength={7} autoComplete="one-time-code" required autoFocus placeholder="123456" className={fieldClass} /> : <input id="email" name="email" type="email" autoComplete="email" required placeholder="you@example.com" className={fieldClass} />}
+                    {verifying ? <input id="code" name="code" type="text" inputMode="numeric" pattern="[0-9 ]{6,7}" maxLength={7} autoComplete="one-time-code" required autoFocus placeholder="123456" className={authFieldClass} /> : <input id="email" name="email" type="email" autoComplete="email" required placeholder="you@example.com" className={authFieldClass} />}
                   </div>
                   {!verifying && <div id="clerk-captcha" />}
                   <Button type="submit" variant="blue" disabled={!ready} className="h-12 w-full rounded-xl text-sm font-bold">{busy ? (verifying ? 'Checking…' : 'Sending…') : verifying ? 'Verify code' : 'Send sign-in code'} <ArrowRight size={16} className="ml-2" /></Button>
@@ -136,10 +122,6 @@ export function AuthPage({ mode }: { mode: 'signIn' | 'verify' }) {
                 {verifying && <Link to={signInPath(returnPath)} className="mt-6 text-center text-sm font-semibold text-[#2A8CFF]">Use a different email</Link>}
               </>
             )}
-          </div>
-        </section>
-        <aside aria-label="ListeningKit showcase" className="hidden overflow-hidden bg-white p-8 lg:sticky lg:top-0 lg:flex lg:h-screen lg:max-h-screen lg:flex-col lg:justify-center"><div className="flex min-h-0 flex-1 flex-col overflow-hidden"><UsecaseLoop /></div></aside>
-      </div>
-    </main>
+    </AuthShell>
   )
 }

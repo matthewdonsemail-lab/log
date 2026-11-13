@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { api, errorText, useSelectedTeam, useWorkspaces, type InviteView, type MemberView, type PairingView, type WorkspaceView } from '@/lib/controlApi'
 import { ConsoleLayout, SectionHeading, WorkspaceChip, workspaceStateOf } from './ConsoleLayout'
-import { toast } from '@listeningkit/ui'
+import { Spinner, toast } from '@listeningkit/ui'
 import { useErrorToast } from '@/lib/useErrorToast'
 import { localConsole } from '@/lib/consoleMode'
 import { loadLocalSettings } from './settingsData'
@@ -151,7 +151,7 @@ function Members({ teamId, canInvite, manageOwners }: { teamId: string; canInvit
     <section className="mb-10">
       <SectionHeading title="Members" count={members.data?.filter((item) => item.status === 'active').length} />
       <ul className="divide-y divide-slate-100 rounded-2xl border border-slate-200 bg-white">
-        {members.isLoading ? <li className="p-4 text-sm text-slate-500">Loading…</li> : null}
+        {members.isLoading ? <li><Spinner className="min-h-0 py-6" label="Loading members" /></li> : null}
         {members.data?.map((member) => (
           <li key={member.id} className="flex flex-wrap items-center gap-3 p-4">
             <span className="min-w-0 flex-1 truncate text-sm font-semibold">{member.email}</span>
