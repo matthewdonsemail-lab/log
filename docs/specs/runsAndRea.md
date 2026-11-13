@@ -36,7 +36,7 @@ Checked by: code and SubQ
 
 ### REQ-RUNS-05: Facebook's requests are documented by domain
 
-`log facebook capture --docs` writes one doc per Facebook request at `docs/platforms/facebook/<domain>/<request>.md`, the domain taken from the request's name (`groups`, `reels`, `login` and the others), and lists them in `operations.json`.
+`log facebook capture --docs` writes one doc per Facebook request at `docs/platforms/facebook/<domain>/<request>.md`, the domain taken from the request's name (`groups`, `reels`, `login` and the others), and lists them in `operations.json`. Every doc goes through `redactDoc` (`src/privacy/redact`) before it is written: tokens, cookies, csrf values and passwords, emails, phones, IPs, user/actor/account ids, names, usernames and message text become typed placeholders (`<slackToken>`, `<email>`, `<userId:1>`, `<messageText>`), numbered the same way across one doc. The raw captures in `~/.logCli/runs/` and the facts store are not touched.
 
 Checked by: code and SubQ
 
