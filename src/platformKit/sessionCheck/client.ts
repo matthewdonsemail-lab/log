@@ -44,18 +44,20 @@ export function verdictOf(answer: SessionToolAnswer): { verdict: SessionVerdict;
 export function nextStepOf(account: Pick<SessionCheckAccount, "name" | "platform">, verdict: SessionVerdict): SessionNextStep | null {
   const site = PLATFORM_SITES[account.platform];
   if (verdict === "signInNeeded" || verdict === "browserCheck") {
-    if (signInRouteOf(account.platform).kind === "cookies") {
-      return { says: `Save ${account.name}'s ${account.platform} cookies again (a masked prompt in a terminal, for the owner), then check again.`, tool: null, cli: `log ${account.platform} cookies save --account ${account.name}` };
+    const cookies = signInRouteOf(account.platform).kind === "cookies" ? { says: `Save ${account.name}'s ${account.platform} cookies (a masked prompt in a terminal, for the owner).`, cli: `log ${account.platform} cookies save --account ${account.name}` } : null;
+    if (!site.browser) {
+      return { says: `${cookies?.says ?? "Sign in again."} Then check again.`, tool: null, cli: cookies?.cli ?? null, alternative: null };
     }
     const url = site.home;
     return {
-      says: `Open ${account.name}'s own browser on ${url}. The owner signs in themself; closing it (inspectDo stop) saves the new session. Then check again.`,
+      says: `Open ${account.name}'s own browser on ${url}. The owner signs in themself on the login screen; closing it (inspectDo stop) saves the cookies and session from the browser. Then check again.`,
       tool: { name: "inspectStart", input: { account: account.name, url, detach: true, goal: SIGN_IN_GOAL } },
       cli: `log inspect start --account ${account.name} --url ${url} --detach`,
+      alternative: cookies,
     };
   }
-  if (verdict === "stopped") return { says: "The platform refused. Nothing retries on this account until matt says so (rule 94).", tool: null, cli: null };
-  if (verdict === "unknown") return { says: "Check it again; the platform gave no answer this time.", tool: { name: "sessionsCheck", input: { account: account.name, platform: account.platform } }, cli: `log sessions check --platform ${account.platform} --account ${account.name}` };
+  if (verdict === "stopped") return { says: "The platform refused. Nothing retries on this account until matt says so (rule 94).", tool: null, cli: null, alternative: null };
+  if (verdict === "unknown") return { says: "Check it again; the platform gave no answer this time.", tool: { name: "sessionsCheck", input: { account: account.name, platform: account.platform } }, cli: `log sessions check --platform ${account.platform} --account ${account.name}`, alternative: null };
   return null;
 }
 

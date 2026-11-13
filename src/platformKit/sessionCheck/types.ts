@@ -11,6 +11,7 @@ export interface SessionNextStep {
   says: string;
   tool: { name: string; input: Record<string, unknown> } | null;
   cli: string | null;
+  alternative: { says: string; cli: string } | null;
 }
 
 export interface SessionReport {

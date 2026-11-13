@@ -103,12 +103,22 @@ describe("checkSessions", () => {
 });
 
 describe("sign-in route per platform", () => {
-  test("linkedin and slack sign in with cookies, like the console and the launcher say", () => {
-    expect(nextStepOf({ name: "fakeLink", platform: "linkedin" }, "signInNeeded")?.cli).toBe("log linkedin cookies save --account fakeLink");
-    expect(nextStepOf({ name: "fakeSlack", platform: "slack" }, "signInNeeded")?.tool).toBeNull();
+  test("linkedin and slack open the browser first, with cookies as the other way", () => {
+    const linkedin = nextStepOf({ name: "fakeLink", platform: "linkedin" }, "signInNeeded");
+    expect(linkedin?.tool?.name).toBe("inspectStart");
+    expect(linkedin?.alternative?.cli).toBe("log linkedin cookies save --account fakeLink");
+    expect(nextStepOf({ name: "fakeSlack", platform: "slack" }, "signInNeeded")?.alternative?.cli).toBe("log slack cookies save --account fakeSlack");
   });
-  test("reddit and instagram open the account's browser", () => {
-    expect(nextStepOf({ name: "fakeRed", platform: "reddit" }, "signInNeeded")?.tool?.name).toBe("inspectStart");
-    expect(nextStepOf({ name: "fakeGram", platform: "instagram" }, "signInNeeded")?.tool?.name).toBe("inspectStart");
+  test("reddit, instagram and discord open the browser, with no cookie prompt", () => {
+    for (const platform of ["reddit", "instagram", "discord"] as const) {
+      const next = nextStepOf({ name: "fake", platform }, "signInNeeded");
+      expect(next?.tool?.name).toBe("inspectStart");
+      expect(next?.alternative).toBeNull();
+    }
+  });
+  test("x has no browser yet, so it is cookies", () => {
+    const next = nextStepOf({ name: "fakeBird", platform: "twitter" }, "signInNeeded");
+    expect(next?.tool).toBeNull();
+    expect(next?.cli).toBe("log twitter cookies save --account fakeBird");
   });
 });
