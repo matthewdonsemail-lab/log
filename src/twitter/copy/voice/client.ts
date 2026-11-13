@@ -21,6 +21,21 @@ export function neverSaysIn(text: string): string[] {
   return NEVER_SAYS.filter((p) => lower.includes(p))
 }
 
+export function messagesOf(text: string): string[] {
+  return text.split('\n').map((line) => line.trim()).filter(Boolean)
+}
+
+export function burstOf(text: string): { messages: string[]; words: number[] } {
+  const messages = messagesOf(text)
+  return { messages, words: messages.map((m) => (m.match(/[\p{L}\p{N}']+/gu) ?? []).length) }
+}
+
+export function outsideXVoice(draft: Pick<VoiceDraft, 'evidence'>): { where: string } | null {
+  const platform = draft.evidence?.platform
+  if (!platform || platform === 'twitter') return null
+  return { where: `${platform} ${draft.evidence?.kind ?? 'chat'}` }
+}
+
 export function alreadyTalkedIn(draft: Pick<VoiceDraft, 'evidence' | 'conversation'>): boolean {
   if ((draft.evidence?.recent?.length ?? 0) > 0) return true
   if ((draft.conversation ?? []).some((m) => m.from === 'matt')) return true
@@ -34,11 +49,16 @@ export function nobodyToAnswer(draft: Pick<VoiceDraft, 'room'>): boolean {
 export async function readVoice(draft: VoiceDraft, guide: string, decide: DecisionsClient): Promise<VoiceReading> {
   const neverSays = neverSaysIn(draft.text)
   const alreadyTalked = alreadyTalkedIn(draft)
+  const burst = burstOf(draft.text)
+  const outside = outsideXVoice(draft)
+  const notX = outside ? ` howMattWrites is how he writes on X only, his public posts and replies; this is ${outside.where}, where he writes in bursts of shorter lines and does ask questions, so read howMattWritesInThisChat (its burst median, messageWords and medianWords) and mattsRealRepliesHere first, and use howMattWrites only for his vocabulary and his spelling.` : ''
   const response = await decide({
     model: VOICE_MODEL,
     state: {
       howMattWrites: guide,
       dmsMattWroteHimself: MATT_DMS,
+      ...(burst.messages.length > 1 ? { dmAsItWillBeSent: burst.messages, wordsInEachMessageAsSent: burst.words } : {}),
+      ...(outside ? { howMattWritesIsOnlyHisX: true, thisChatIsNotX: outside.where } : {}),
       ...(draft.everywhere ? { howMattWritesEverywhere: draft.everywhere.profile, mattsRealRepliesEverywhere: draft.everywhere.replies, mattsClosestWordingEverywhere: draft.everywhere.wording ?? [] } : {}),
       ...(draft.evidence ? { thisChat: draft.evidence.chat, howMattWritesInThisChat: draft.evidence.profile, mattsRealRepliesHere: draft.evidence.replies, mattsClosestRealWording: draft.evidence.wording ?? [], mattsLatestMessagesHere: draft.evidence.recent ?? [] } : {}),
       phrasesMattNeverSays: NEVER_SAYS,
@@ -53,7 +73,7 @@ export async function readVoice(draft: VoiceDraft, guide: string, decide: Decisi
       dm: draft.text,
     },
     questions: {
-      voice: draft.spoken ? { type: 'noul', instructions: 'This is a voice note matt sends, said out loud in his own voice, not a typed message, so it runs longer than his texts and its length, capitals and punctuation never count against it. Going first by how matt actually talks in his own voice notes (howMattTalksInHisOwnVoiceNotes, transcribed from his real recordings: his fillers, his slang, how he strings things together), then by matt\'s own messages across all his conversations (mattsRealRepliesEverywhere, mattsClosestWordingEverywhere, howMattWritesEverywhere), and in this chat when there is one (mattsRealRepliesHere, mattsClosestRealWording, mattsLatestMessagesHere), with howMattWrites and dmsMattWroteHimself behind them, would someone who knows him believe matt said this himself: his words and phrasing, his slang, the way he talks, nothing he never says, nothing that reads polished or written for him?', criteria: { true: 'It sounds like matt saying it', false: 'It sounds like ai or a copywriter wrote it for him' } } : { type: 'noul', instructions: 'Going by matt\'s own messages across all his conversations (mattsRealRepliesEverywhere, mattsClosestWordingEverywhere, howMattWritesEverywhere), and in this chat when there is one (mattsRealRepliesHere, mattsClosestRealWording, mattsLatestMessagesHere), with howMattWrites and dmsMattWroteHimself behind them, would someone who knows him believe matt typed this himself: his words and phrasing, his slang, his length, nothing he never writes, nothing that reads polished or written for him?', criteria: { true: 'It sounds like matt typed it', false: 'It sounds like ai or a copywriter wrote it for him' } },
+      voice: draft.spoken ? { type: 'noul', instructions: 'This is a voice note matt sends, said out loud in his own voice, not a typed message, so it runs longer than his texts and its length, capitals and punctuation never count against it. Going first by how matt actually talks in his own voice notes (howMattTalksInHisOwnVoiceNotes, transcribed from his real recordings: his fillers, his slang, how he strings things together), then by matt\'s own messages across all his conversations (mattsRealRepliesEverywhere, mattsClosestWordingEverywhere, howMattWritesEverywhere), and in this chat when there is one (mattsRealRepliesHere, mattsClosestRealWording, mattsLatestMessagesHere), with howMattWrites and dmsMattWroteHimself behind them, would someone who knows him believe matt said this himself: his words and phrasing, his slang, the way he talks, nothing he never says, nothing that reads polished or written for him?', criteria: { true: 'It sounds like matt saying it', false: 'It sounds like ai or a copywriter wrote it for him' } } : { type: 'noul', instructions: 'Going by matt\'s own messages across all his conversations (mattsRealRepliesEverywhere, mattsClosestWordingEverywhere, howMattWritesEverywhere), and in this chat when there is one (mattsRealRepliesHere, mattsClosestRealWording, mattsLatestMessagesHere), with howMattWrites and dmsMattWroteHimself behind them, would someone who knows him believe matt typed this himself: his words and phrasing, his slang, his length, nothing he never writes, nothing that reads polished or written for him? A draft written on several lines goes out as one message per line, so read it as the messages it will be sent as (dmAsItWillBeSent, with wordsInEachMessageAsSent) and as the burst of them, never as one block: his length is each message against howMattWritesInThisChat burst messageWords and medianWords, and how many he sends in a row against its burst median. A subject he has never written about never counts against him: words for a new subject are new vocabulary, not a voice problem, so judge the phrasing, the shape and the register, never the topic.' + notX, criteria: { true: 'It sounds like matt typed it', false: 'It sounds like ai or a copywriter wrote it for him' } },
       inContext: { type: 'noul', instructions: 'Does the dm answer what they actually said or asked (whatTheySaid), read in this conversation (thisConversationRankedForThisMoment, the moments of this chat that matter most to what is being answered, media described in brackets), including anything they sent that it should have answered? With nothing given, does it pick up on something specific about them?', criteria: { true: 'It answers them specifically', false: 'It is generic and could go to anyone' } },
       openerOnly: { type: 'noul', instructions: 'If matt has never talked with them (alreadyTalkedInThisChat is false and nothing of theirs is in whatTheySaid, or it says they have never chatted), is this first dm only an opener about something relevant to them (their post, their work, how they are connected to matt), with no ask: no pitch, no question about a tool, product or service of matt\'s (treg, log, his consulting), no call, no link to his own stuff? If they have already talked, answer true.', criteria: { true: 'It is only a relevant opener, or they have already talked', false: 'A first message that goes in with an ask or a pitch' } },
       friendLike: { type: 'noul', instructions: 'Does this dm read like matt messaging someone he is friendly with: casual, natural and human, not a sales template or a bot?', criteria: { true: 'It reads like a mate texting', false: 'It reads like a template, a pitch or a bot' } },

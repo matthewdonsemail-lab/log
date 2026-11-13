@@ -65,14 +65,17 @@ export function readPhrases(text: string, index: PhraseIndex, theirText = ''): P
   const theirs = new Set(wordsOf(theirText).filter((word) => usesOfWord(index, word) < OWN_WORD_USES))
   const pairs = wordPairsOf(wordsOf(text)).filter((pair) => !pair.split(' ').some((word) => theirs.has(word)))
   const floor = index.baseline[FAMILIARITY_FLOOR]
-  if (pairs.length < MIN_WORDS - 1) return { familiarity: null, floor, unfamiliar: [], pass: true }
+  if (pairs.length < MIN_WORDS - 1) return { familiarity: null, floor, unfamiliar: [], newPhrasing: [], newWords: [], pass: true }
   const familiarity = share(pairs, index.wordPairs, new Map())
   const unfamiliar = [...new Set(pairs.filter((pair) => (index.wordPairs[pair] ?? 0) < FAMILIAR_MIN_USES))]
-  return { familiarity, floor, unfamiliar, pass: familiarity >= floor }
+  const newWords = unfamiliar.filter((pair) => pair.split(' ').some((word) => usesOfWord(index, word) === 0))
+  const newPhrasing = unfamiliar.filter((pair) => !newWords.includes(pair))
+  return { familiarity, floor, unfamiliar, newPhrasing, newWords, pass: familiarity >= floor }
 }
 
 export function phrasesLine(reading: PhraseReading): string {
   if (reading.familiarity === null) return 'his phrasing: too short to measure'
   const pct = (n: number) => `${Math.round(n * 100)}%`
-  return `his phrasing: ${pct(reading.familiarity)} of its word pairs are ones he has written (his own floor ${pct(reading.floor)})${reading.unfamiliar.length ? `; never from him: ${reading.unfamiliar.slice(0, 8).join(', ')}` : ''}`
+  const newSubject = reading.newWords.length ? `; new subject words he has never written, not counted against it: ${reading.newWords.slice(0, 8).join(', ')}` : ''
+  return `his phrasing: ${pct(reading.familiarity)} of its word pairs are ones he has written (his own floor ${pct(reading.floor)})${reading.newPhrasing.length ? `; never from him: ${reading.newPhrasing.slice(0, 8).join(', ')}` : ''}${newSubject}`
 }

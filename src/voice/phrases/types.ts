@@ -16,6 +16,8 @@ export interface PhraseReading {
   familiarity: number | null
   floor: number
   unfamiliar: string[]
+  newPhrasing: string[]
+  newWords: string[]
   pass: boolean
 }
 

@@ -1,6 +1,8 @@
 import type { WatermarkReading } from '../watermark/types'
 export interface VoiceEvidence {
   chat: string
+  platform?: string
+  kind?: string
   profile: unknown
   replies: { said: string; reply: string; chat: string; tier: string }[]
   wording?: { reply: string; chat: string; tier: string }[]
