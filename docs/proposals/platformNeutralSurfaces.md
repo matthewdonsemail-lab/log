@@ -130,7 +130,7 @@ The full design is in [capabilitySchema.md](capabilitySchema.md): the naming rul
 - One table in code: `harness × capability` (prompt hook, session-start hook, tool hooks, MCP Apps, server instructions, skills, plugin format, elicitation). `HookHost` grows from 2 to every harness log supports.
 - One adapter per harness, generated from the same router, guides and skills:
   - Claude Code and Codex: the prompt hooks that exist today.
-  - Hermes: the plugin in `hermesPlugin/` gains a `pre_llm_call` hook that runs the router and ships every log skill.
+  - Hermes: a native plugin (`plugin.yaml`, `__init__.py`) registers a `pre_llm_call` hook that runs the router. The portable plugin in `hermesPlugin/` can't register hooks; it ships every log skill.
   - Cursor: a `sessionStart` hook (its prompt hook can't add context).
   - ChatGPT, Claude app, Grok: server instructions plus `getGuide({ ask })`.
 - `docs/harnesses/*.md`, the README's install section and the site's harness pages are generated from that table, so no harness is described by hand and the README stops being Claude Code first.
@@ -200,7 +200,7 @@ The evidence, with every file, is in [contextInjectionAudit.md](contextInjection
 - Files: `src/useCases/router/client.ts`, `src/useCases/router/types.ts`, `src/mcp/server/helpers/guideAnswer.ts`, `scripts/contextLayer/service.ts`, `src/contextLayer/hook/client.ts`, `docs/useCases/**`.
 
 **Slice 17: the play state.**
-- The play is per session and expires. Today it is one per process and never cleared.
+- The play is keyed by a handle the server mints and the client passes back, and it expires. Today it is one per process and never cleared. It is not keyed by the session header, which the 2026-07-28 revision removes.
 - A play unlocks only the sends it covers. Today any play unlocks every send.
 - The play gate is derived from each tool's effect. Today 18 live acting tools are ungated.
 - The hosted path gets the play footer and keeps `next`.
@@ -210,6 +210,8 @@ The evidence, with every file, is in [contextInjectionAudit.md](contextInjection
 - 27 tools point at another platform's guide, not 10: the inbox tools point at `xInbox`, the voice gate at `xSending`, `sessionsCheck` at a Twenty accounts guide. These move to shared topics (extends slice 2).
 - The 38 flow tools get their platform.
 - Guides are rendered without shell text for hosts with no shell, shared rules appear once, and developer rules stop being cited as operating rules.
+- No guide is larger than one host will take. Claude Code limits MCP output to 25,000 tokens and saves text over 50,000 characters to a file; four guides are over that today (`xSending`, `facebookFlows`, `facebookBrowser`, `facebookMarketplace`).
+- Hook and router text is written as statements of fact, not instructions, as Claude Code's hook reference advises.
 - Dead rule citations (78 in use cases, 124 in skills), the Twenty text and the owner's name in hosted text are removed.
 - Hook output names MCP tools, not shell lines that another hook then refuses.
 - Files: `src/mcp/server/helpers/guides.ts`, `src/mcp/server/helpers/agentRules.ts`, `src/mcp/server/helpers/toolsFromCommands.ts`, `src/mcp/server/helpers/toolsFromFlows.ts`, `scripts/docs/buildDocs.ts`, `python/controlService/mcpRoutes.py`, `src/agentHooks/answers/client.ts`, `src/agentHooks/pageState/index.ts`, `src/browser/runStore/helpers/storageVerdict.ts`, `skills/**`, `docs/useCases/**`.
@@ -217,7 +219,9 @@ The evidence, with every file, is in [contextInjectionAudit.md](contextInjection
 **Slice 19: hooks as adapters from one contract (extends slice 9).**
 - `HookHost` covers every harness, with a capability table per harness. Today it is Claude Code and Codex, and nothing installs their hooks for a user: they run only inside the log checkout.
 - `log launch --setup` installs user-level hooks and skills for each harness.
-- The Hermes plugin gets the router hook and the 38 play skills, generated. Its two hand-written skills call sends that the play gate refuses today.
+- The Hermes plugin ships the 38 play skills, generated. Its two hand-written skills call sends that the play gate refuses today. The router hook needs a native Hermes plugin, because a portable one can't register hooks.
+- Hooks ship as a plugin per harness. Claude Code, Codex and Cursor each load hooks from a plugin, so nothing edits a user's settings file.
+- Each adapter cuts its text to the harness's limit: 10,000 characters per context string in Claude Code, about 2,500 tokens per hook in Codex.
 - Watchers and pending messages stop depending on a hook (slice 10).
 - Files: `src/agentHooks/registry/types.ts`, `src/agentHooks/registry/index.ts`, `src/cli/launch/index.ts`, `src/cli/launch/helpers/setup.ts`, `src/cli/launch/helpers/start.ts`, `hermesPlugin/**`, `.opencode/plugins/logHooks/**`, `.agents/hooks.json`, `scripts/hooks/antigravity.ts`, `docs/harnesses/*.md`.
 
@@ -229,12 +233,12 @@ The detail, with schemas, files and acceptance tests, is in [inAppVerificationAn
 - The sign-in machine from slice 3 is reached through one tool, `sessionsSignIn { platform?, account }`, on the local and the hosted server. Today the hosted model is told to call `inspectStart`, which it cannot.
 - What the owner sees is decided per session, from what the host declares:
   1. The host draws MCP Apps: the live browser shows inline, as `browserView` does today.
-  2. The host has no MCP Apps but supports URL elicitation: the answer is a signed, single-use console link that expires in ten minutes. It is never the raw stream URL.
+  2. The host has no MCP Apps but supports URL elicitation: the answer is a console link that expires in ten minutes and works once. It is never the raw stream URL, and it grants nothing by itself: the console page checks that the signed-in person is the one the request was made for.
   3. Neither: plain text with the same link.
 - A missing account answers with a structured `accountNotConfigured { platform, next }`, so any host can show a connect step.
 - Page states are classified per platform, from a fixture login page for each, not from Facebook's flow.
 - Polling by the live view stops writing a hosted journal row per frame.
-- Which hosts support which rung comes from web research and is not verified by running each one; the matrix is a list of claims to test.
+- URL elicitation is verified for Claude Code and VS Code only ([sources.md](sources.md)). Every other host is unknown until tested, and gets rung 3.
 - Files: `src/platformKit/sessionCheck/client.ts`, `src/mcp/apps/browserView/client.ts`, `src/mcp/server/index.ts`, `src/cli/browser/index.ts`, `python/browser/browserViewer.py`, `python/controlService/tools.py`, `python/controlService/dispatcher.py`, `src/runtime/bridge/client.ts`, `src/console/operations/types.ts`, and a new console route for the link.
 
 **Slice 21: people data stored once, so `report` draws it without a platform call.**
@@ -243,7 +247,19 @@ The detail, with schemas, files and acceptance tests, is in [inAppVerificationAn
 - `report` gains an `identityProfile` source that reads that table.
 - On the hosted path, `report` and `sessionsSignIn` results are redacted before they are journaled. Today a `report` result is journaled as it is.
 - A view written by the agent can't reach a module through a dynamic `import()`. Today only static imports are blocked.
-- Files: `src/storage/schema/helpers/migrations.ts`, `src/storage/schema/helpers/platformTables.ts`, `src/storage/platform/client.ts`, `src/storage/platform/types.ts`, `src/inbox/senders/types.ts`, `src/mcp/apps/report/client.ts`, `src/mcp/apps/report/view/run.ts`, `src/twitter/notification/helpers/extenders.ts`, the Discord, Slack and LinkedIn session callers, `src/console/operations/types.ts`, `src/runtime/bridge/client.ts`.
+- Files: `src/storage/schema/helpers/migrations.ts`, `src/storage/schema/helpers/platformTables.ts`, `src/storage/platform/client.ts`, `src/storage/platform/types.ts`, `src/inbox/senders/types.ts`, `src/mcp/apps/report/client.ts`, `src/mcp/apps/report/view/run.ts`, `src/storage/platform/helpers/extenders.ts`, the Discord, Slack and LinkedIn session callers, `src/console/operations/types.ts`, `src/runtime/bridge/client.ts`.
+
+### Slice 22: serve the 2026-07-28 revision as well as the older ones
+
+The detail and the quotes are in [sources.md](sources.md).
+
+- log's servers speak 2025-11-25 and earlier. The local server uses `@modelcontextprotocol/sdk` 1.32.1; the hosted one lists its revisions in `python/controlService/settings.py:30`. A client on 2026-07-28 that has no fallback can't connect.
+- The 2026-07-28 revision has no `initialize` handshake and no `Mcp-Session-Id` header. Each request carries its version and the client's capabilities in `_meta`. Both servers become dual-era: a request with per-request `_meta` is served statelessly, and `initialize` keeps the legacy behaviour.
+- `server/discover` is implemented on both.
+- `tools/list` must not vary per connection. Today the list depends on whether the host draws MCP Apps and whether it has a shell. It becomes one list in a fixed order, and what differs per host moves into each result.
+- The hosted server carries the UI flag in the session header today (`python/controlService/mcpRoutes.py:196-204`). It reads the capability from each request.
+- Every result carries `resultType`. A step that needs the owner returns `InputRequiredResult`, not a server-initiated request.
+- Files: `src/mcp/server/index.ts`, `src/mcp/server/helpers/toolsFromCommands.ts`, `src/mcp/apps/browserView/client.ts`, `src/mcp/apps/report/client.ts`, `python/controlService/mcpRoutes.py`, `python/controlService/settings.py`, `package.json`.
 
 ## Order
 
@@ -256,6 +272,7 @@ The detail, with schemas, files and acceptance tests, is in [inAppVerificationAn
 7. Slices 9 and 19, the harness contract.
 8. Slice 21, the people data for `report`.
 9. Slices 5 and 6, renames and console twins.
+10. Slice 22, the 2026-07-28 revision. It can start as soon as slice 17 has moved the play off the session.
 
 ## Found while building slice 1 (PR #133)
 
@@ -270,6 +287,47 @@ The detail, with schemas, files and acceptance tests, is in [inAppVerificationAn
   - `src/marketplace/account/helpers/accountLabel.ts:4`
   - `scripts/checks/checkPlatforms.ts:16`
 - **Removing the aliases next release:** delete `toolAliases.ts`, its test and the alias half of REQ-MCP-21 together.
+
+## Conventions
+
+From `AGENTS.md` and the sources in [sources.md](sources.md). Every slice follows these.
+
+**Names and layout**
+- camelCase for files, folders, values, ids, statuses and error codes (rule 1). External names are converted once at the boundary.
+- Platform code lives in `src/<platform>/<area>/<domain>`; shared code in its shared library, such as `src/platformKit/<domain>`. A domain has `index.ts`, `types.ts`, `client.ts`, `machine.ts` and `helpers/` as it needs them (rule 2).
+- Platform commands are `log <platform> <command> <what>`; shared commands stay shared (rule 63). A capability is a shared command: `log <noun> <verb>`, tool `<noun><Verb>`, catalog id `<noun>.<verb>`.
+- No comments or docstrings in owned TypeScript, JavaScript or Python (rule 70).
+
+**Machines**
+- Anything that runs over time is an XState machine (rule 6), built with `setup()`, with named actions and guards.
+- Every `invoke` has `onError`. A callback actor's rejections aren't caught by `onError`, so promise actors are used for async work.
+- State that must survive a restart is the machine's persisted snapshot or a row in `log.db`, never a module variable.
+
+**Tools**
+- One source for a tool's name, schema, description, gates and docs. Nothing restates a tool name or an input by hand.
+- `inputSchema` says what the command enforces: types, ranges, lists and one-of groups.
+- Annotations are set from the command's effect: `readOnlyHint` for reads, `destructiveHint` for deletes. They are hints to the host and never a gate.
+- Tools are listed in a fixed order, and the list is the same for every connection.
+- Every refusal carries a code from the error catalog as a field. A shared code names no platform.
+
+**What reaches the model**
+- The platform is an input, never a default, in names, guides, plays, error text and hook text.
+- Guides, skills, hook files and the harness docs are generated from one source (rule 55). Only sources are edited.
+- Text served to hosted clients carries no owner's name, memory or secret (rule 47).
+- Injected text stays inside each harness's limits and is written as statements of fact.
+
+**Evidence**
+- A claim about the code names its file and line. A claim about a host or a protocol names its page in `sources.md`.
+- Current behaviour belongs in its domain spec with code anchors (rule 117). A proposal says what is built and what isn't.
+- No real person's name, handle or message in a tracked file (rule 178).
+
+**Checks**
+- Each slice adds the check that stops its problem coming back, and the check runs in the hooks.
+- Tests use fixtures and stubbed engines. Nothing calls a platform.
+
+## Every file
+
+[fileIndex.md](fileIndex.md) lists every file these proposals name, whether it exists on `main`, and which document names it.
 
 ## Rules for whoever builds this
 

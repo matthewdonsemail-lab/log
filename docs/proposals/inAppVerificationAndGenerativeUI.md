@@ -36,6 +36,8 @@ The sign-in tool is named `sessionsSignIn` here, the name [capabilitySchema.md](
 
 From web research in mid-November 2026, marked 1P or 3P by source. None of it was verified by running the harness, so treat each cell as a claim to test.
 
+[sources.md](sources.md) re-checked the elicitation columns against the primary pages. URL mode is verified for Claude Code and VS Code only; every other host's URL cell below, including ChatGPT, Codex and Cursor, should be read as unknown. The MCP Apps column was not re-read.
+
 ```
 Host                    MCP Apps render   Form elicit     URL elicit        In-app webview for URL elicit
 Claude web/Desktop      yes (1P)          no* (3P)        no* (3P)          no host does this (no source found)
@@ -87,7 +89,7 @@ Design B wins because it needs no new transport, reuses the existing `browserVie
 input:  { platform: string, account?: string }
 output (success, MCP Apps): CallToolResult with structuredContent.view = browserView's ViewerView, _meta.ui.resourceUri = "ui://log/browserView"
 output (success, URL elicitation): InputRequiredResult-shaped tools/call response naming the one input request
-          { inputRequests: [{ type: "url", url: "<signed console deep link>", message: "Finish verifying <platform> here." }] }
+          { resultType: "input_required", inputRequests: [{ method: "elicitation/create", params: { mode: "url", url: "<console verify page>", message: "Finish verifying <platform> here." } }] }
         (2025-11-25 clients instead get elicitation/create with mode:"url")
 output (success, text-only fallback): { content: [{ type: "text", text: "Open <link> to finish signing in to <platform>." }] }
 error:  { error: "accountNotConfigured", platform, next: "<how to configure>" }
@@ -101,7 +103,7 @@ _meta:  { ui: { resourceUri: "ui://log/browserView", visibility: ["model","app"]
 
 ### Security requirements
 
-- A console deep link used for URL elicitation must be single-use, short-TTL (≤10 minutes), scoped to one account/platform, and must verify the requester matches the session that triggered it (spec requirement, "the user who opens the URL is the user who triggered the request").
+- A console link used for URL elicitation must not be pre-authenticated: opening it grants nothing by itself. The console page requires the person's own console session and checks it is the same person the request was made for (the spec: "The MCP Server MUST verify the identity of the user who opens the URL"). The link is also single-use, expires within ten minutes and is scoped to one account and platform.
 - The stream/frame URL (voxl password, viewer bearer token) must never appear in `inputRequests[].url`, in hosted `operations.result`, or in any text content — only inside the app-only tool's `structuredContent`, as today.
 - `sessionsSignIn`'s hosted path must add itself to `STREAM_TOOLS`/`FRAME_TOOLS`-equivalent redaction (`src/console/operations/types.ts`) before going into the hosted allowlist, or its structured content leaks into the journal unredacted the same way `report`'s does (Area 2, item 8).
 
@@ -206,7 +208,7 @@ CREATE INDEX identityProfiles_fetchedAt ON identityProfiles(fetchedAt);
 ### Phased work
 
 1. **`identityProfiles` table + raw blob codec.** Files: `src/storage/schema/helpers/migrations.ts` (version 19), `src/storage/schema/helpers/platformTables.ts`, `src/storage/platform/client.ts` (`putBlob`/`readBlob` raw codec), `src/storage/platform/types.ts` (`DERIVED_TABLES`). Acceptance: migration applies cleanly on a fresh and an existing v18 DB; a round-trip test stores and reads back a raw (non-gzipped) blob unchanged.
-2. **Extender writers stop discarding profile fields.** Files: `src/twitter/notification/helpers/extenders.ts`, Discord/Slack/LinkedIn session callers under `src/discord/account/`, `src/slack/`, `src/linkedin/` (per-platform `PlatformAnswer` builders). Acceptance: a fixture engine response with bio/avatar/follower fields produces an `identityProfiles` row after ingest, proven per platform.
+2. **Extender writers stop discarding profile fields.** Files: `src/storage/platform/helpers/extenders.ts`, Discord/Slack/LinkedIn session callers under `src/discord/account/`, `src/slack/`, `src/linkedin/` (per-platform `PlatformAnswer` builders). Acceptance: a fixture engine response with bio/avatar/follower fields produces an `identityProfiles` row after ingest, proven per platform.
 3. **`report` gains an `identityProfile` data source.** Files: `src/inbox/senders/types.ts` (or a sibling registry), `src/mcp/apps/report/client.ts` (dispatch on `source`, not just `twitterDmsBySender` unconditionally — this also fixes the existing dead `source` field). Acceptance: `report { data: { person: { source: "identityProfile", account, ... } } }` renders a person card from the stored row with no live platform call.
 4. **Hosted redaction for `report`/`sessionsSignIn`.** Files: `src/console/operations/types.ts`, `src/runtime/bridge/client.ts`. Acceptance: a journaled `report` call's `operations.result` row contains redacted content, proven by a test asserting the stored row excludes bio/avatar text present in the tool's actual result.
 5. **Dynamic-import sandbox fix.** Files: `src/mcp/apps/report/view/run.ts`. Acceptance: a view calling `await import("node:fs")` (or any non-allowlisted module) throws at call time, with a test for both static and dynamic forms.

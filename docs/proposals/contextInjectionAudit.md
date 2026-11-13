@@ -104,7 +104,7 @@ Why (R, `src/useCases/router/client.ts`):
 
 **Twenty-era text (R).** The knowledge hook, the `accountsAndProxies` topic and the notes for `connect` and `join` (`toolsFromCommands.ts:83,91`) still describe Twenty. The guides mention it 210 times.
 
-**The Hermes plugin's skills (R, I).** `hermesPlugin/skills/*` never call `getGuide`, so their own sends are all play-gated and are refused with `playMissing`. They name tools `mcp__log__*`, while `docs/harnesses/hermes.md` says Hermes exposes `mcp_log_*`.
+**The Hermes plugin's skills (R, I).** `hermesPlugin/skills/*` never call `getGuide`, so their own sends are all play-gated and are refused with `playMissing`. They name tools `mcp__log__*`, which is right for a plugin install: Hermes names a portable plugin's tools `mcp__<server>__<tool>` ([sources.md](sources.md)). `docs/harnesses/hermes.md` gives `mcp_log_*`, the name for a server added in `config.yaml`, and doesn't say the two differ.
 
 **No deterministic check covers use cases (R).** `check:useCases` is a paid review that reads Claude Code session files only (`scripts/checks/checkUseCases.ts`), and it is in neither `lefthook.yml` nor the `check` script.
 
@@ -166,7 +166,7 @@ Why (R, `src/useCases/router/client.ts`):
 | **Hooks as adapters from one contract** | `src/agentHooks/registry/types.ts`, `index.ts` | `HookHost` covers claudeCode, codex, opencode, antigravity, cursor and hermes; a capability table per harness |
 | | `.opencode/plugins/logHooks/**`, `.agents/hooks.json`, `scripts/hooks/antigravity.ts` | generated from `AGENT_HOOKS` |
 | | `src/cli/launch/index.ts:87-88`, `src/cli/launch/helpers/setup.ts`, `start.ts` | install user-level hooks and skills for each harness |
-| | `hermesPlugin/` | a `pre_llm_call` hook that runs the shared router; the 38 play skills, generated; the right tool prefix |
+| | `hermesPlugin/` | the 38 play skills, generated. A portable plugin can't register hooks, so the router hook needs a native plugin (`plugin.yaml`, `__init__.py`) beside it or in its place |
 | | `src/agentHooks/answers/client.ts:92-138` | watchers and the describer start from the runtime or the MCP server too; the X-only hooks become per platform; MCP tool names, not shell lines |
 | | `src/agentHooks/pageState/index.ts:28`, `src/browser/runStore/helpers/storageVerdict.ts:5` | name MCP tools |
 | | `src/mcp/server/helpers/toolsFromCommands.ts:56-60` | shell detection per harness from the capability table |

@@ -190,7 +190,7 @@ The existing test (`src/cli/runner/commandInput.test.ts:36-50`) only round-trips
 | | `src/errors/catalog/types.ts` | platform-neutral copy for `limitInvalid`, `secondsInvalid`, `mediaInvalid`, `crashed`; new `inputInvalid` |
 | | `src/mcp/server/index.ts` | always fill `json`; guard refusals carry codes; getGuide and report use the same envelope |
 | | `src/mcp/apps/report/client.ts`, `src/mcp/apps/browserView/client.ts` | same envelope |
-| | `src/cli/{twitter/helpers/send,dms}.ts`, `src/cli/{discord,slack,instagram,reddit,linkedin,react,voiceNote}/index.ts`, `python/*Api/engine.py` | one answer shape per capability |
+| | `src/cli/twitter/helpers/{send,dms}.ts`, `src/cli/{discord,slack,instagram,reddit,linkedin,react,voiceNote}/index.ts`, `python/*Api/engine.py` | one answer shape per capability |
 | | `src/cli/runtime/index.ts:116-118` | forward `code`; stop dropping `next` |
 | | `src/platformKit/sessionCheck/client.ts:36-39` | read `code`, not a regex over stderr |
 | | `src/cli/sessions/index.ts:62` | a check that worked exits 0 |
