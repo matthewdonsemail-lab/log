@@ -11,7 +11,7 @@ export function isCredentialProvider(value: unknown): value is CredentialProvide
 }
 
 export function savedCredential(name: string, env: Env = process.env): string | null {
-  if (env !== process.env && !env.LOG_USER_ENV) return null;
+  if (!env.LOG_USER_ENV && (env !== process.env || process.env.NODE_ENV === "test")) return null;
   const path = userEnvPath(env);
   if (!existsSync(path)) return null;
   return parseEnvFile(readFileSync(path, "utf8"))[name]?.trim() || null;
