@@ -26,6 +26,17 @@ WRITE_TOOLS = frozenset({
 })
 
 
+CONSOLE_TOOLS = {
+    "connectionsList": "readTools",
+    "usage": "readTools",
+    "events": "readTools",
+    "accountCheck": "readTools",
+    "credentialsRead": "providerAdmin",
+    "credentialsSave": "providerAdmin",
+    "accountSignIn": "browserAdmin",
+}
+
+
 def tool_kind(tool: str) -> str | None:
     if tool in READ_TOOLS:
         return "read"

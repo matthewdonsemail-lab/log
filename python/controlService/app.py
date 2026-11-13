@@ -4,6 +4,7 @@ from sqlalchemy.engine import Engine
 
 from controlService.authRoutes import auth_router
 from controlService.clerkRoutes import clerk_router
+from controlService.consoleRoutes import console_router
 from controlService.bridge import Bridges
 from controlService.bridgeRoutes import bridge_router
 from controlService.db import make_engine, session_maker
@@ -36,6 +37,7 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None, m
     app.include_router(workspace_router(settings, open_db, bridges), prefix=API_BASE)
     dispatcher = Dispatcher(settings, engine, bridges)
     app.include_router(operation_router(settings, engine, bridges, dispatcher), prefix=API_BASE)
+    app.include_router(console_router(settings, engine, dispatcher), prefix=API_BASE)
     app.include_router(oauth_router(settings, open_db))
     app.include_router(mcp_router(settings, engine, dispatcher))
     bridgeRoutes, serveBridge = bridge_router(engine, bridges)
