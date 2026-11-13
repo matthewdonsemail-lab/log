@@ -95,7 +95,7 @@ describe("OAuth on the HTTP server, signed in through Twenty (Duet plan step 5)"
     const client = new Client({ name: "claude-ai", version: "0" });
     await client.connect(new StreamableHTTPClientTransport(new URL(env.mcp), { requestInit: { headers: { Authorization: `Bearer ${tokens.access_token}` } } }));
     stops.push(() => void client.close());
-    expect((await client.listTools()).tools.some((t) => t.name === "accounts")).toBe(true);
+    expect((await client.listTools()).tools.some((t) => t.name === "facebookAccounts")).toBe(true);
 
     const rotated = (await (await redeem({ grant_type: "refresh_token", refresh_token: tokens.refresh_token, client_id: again.clientId })).json()) as { access_token: string };
     expect(rotated.access_token).toBeTruthy();

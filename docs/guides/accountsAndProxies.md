@@ -21,17 +21,17 @@ When the owner asks for one of these, follow its page step by step.
 
 | Tool | What it does |
 |---|---|
-| `accounts` | List the Facebook accounts |
-| `accountShow` | One account's record |
-| `accountResave` | Save a run's device and session that Twenty didn't take |
-| `accountResetOpens` | Restart today's count of launches and host opens, only when matt asks |
-| `accountStatus` | Set an account's status |
+| `facebookAccounts` | List the Facebook accounts |
+| `facebookAccountShow` | One account's record |
+| `facebookAccountResave` | Save a run's device and session that Twenty didn't take |
+| `facebookAccountResetOpens` | Restart today's count of launches and host opens, only when matt asks |
+| `facebookAccountStatus` | Set an account's status |
 | `proxy` | Check an account's proxy, give it one from a provider |
 | `sessionsCheck` | Check every account's saved session through its platform's own answer |
 
 ## Every tool, in full
 
-### `accounts`
+### `facebookAccounts`
 
 List the Facebook accounts.
 List the FACEBOOK accounts in Twenty: status, home, proxy, and whether each may run
@@ -40,7 +40,7 @@ Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "accountsAndProxies" }) (Accounts in Twenty, their status and secrets, their proxies, and the interactive launcher).
 AGENTS.md (log://agents): rules 175, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
-### `accountShow`
+### `facebookAccountShow`
 
 One account's record.
 Show one account, or set its status (banned/dead/restricted replace its campaign listings)
@@ -49,7 +49,7 @@ Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "accountsAndProxies" }) (Accounts in Twenty, their status and secrets, their proxies, and the interactive launcher).
 AGENTS.md (log://agents): rules 175, 35, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
-### `accountResave`
+### `facebookAccountResave`
 
 Save a run's device and session that Twenty didn't take.
 Show one account, or set its status (banned/dead/restricted replace its campaign listings)
@@ -58,7 +58,7 @@ Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "accountsAndProxies" }) (Accounts in Twenty, their status and secrets, their proxies, and the interactive launcher).
 AGENTS.md (log://agents): rules 175, 35, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
-### `accountResetOpens`
+### `facebookAccountResetOpens`
 
 Restart today's count of launches and host opens, only when matt asks (rule 37).
 Show one account, or set its status (banned/dead/restricted replace its campaign listings)
@@ -67,7 +67,7 @@ Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "accountsAndProxies" }) (Accounts in Twenty, their status and secrets, their proxies, and the interactive launcher).
 AGENTS.md (log://agents): rules 175, 35, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
-### `accountStatus`
+### `facebookAccountStatus`
 
 Set an account's status (a lost account gets its listings replaced).
 Show one account, or set its status (banned/dead/restricted replace its campaign listings)

@@ -112,6 +112,14 @@ Every answer ends with `helpLines`. `src/mcp/catalog/catalog.test.ts` fails when
 
 Checked by: code and SubQ
 
+### REQ-MCP-21: Every platform's tools carry the platform's name, and renamed tools still answer for one release
+
+`toolBaseName` in `src/cli/runner/helpers/platforms.ts` names a command's tool `<platform><Command>` for every command whose platform is one of `PLATFORMS`, Facebook included (`facebookAccounts`, `facebookCheck`, `facebookPublishLive`), and leaves a shared command (`any`, `byArgument`) its own name. No platform is the one with no name, and no command or account falls back to a platform: `platformOfAccount` throws `accountPlatformMissing` for an account with no platform or an unknown one, `platformLabel` says "the platform" for a shared command, and `titleOf` takes the place it names.
+
+The Facebook tools had bare names until 2026-11-13. `RENAMED_TOOLS` in `src/mcp/server/helpers/toolAliases.ts` is the one table of those old names and their new ones, kept for one release. The ListTools handler lists only the new names. `runToolCall` runs the new tool for an old name and adds a line saying it was renamed; `guardCall` and `entryById` (so `logGet` and `logCall`) take an old name as its new one. `src/mcp/server/toolAliases.test.ts` fails when a platform command's tool lacks its platform, or when the table and the Facebook tools differ. Rule 63.
+
+Checked by: code and SubQ
+
 ### REQ-MCP-17: One warm context layer routes matt's prompts and puts the play back after compaction
 
 `scripts/contextLayer/service.ts` keeps the route index and its embedder loaded on `127.0.0.1` at `CONTEXT_PORT` (`src/contextLayer/service/types.ts`), and answers `/hook` with `hookAnswer` (`src/contextLayer/hook/client.ts`). The UserPromptSubmit hook for `scripts/hooks/useCases.ts` carries `service: "/hook"` in `src/agentHooks/registry/index.ts`. For Codex, `hookCommand` writes `serviceHookCommand`: a curl to the service, with the bun script after `||`. Claude Code reaches it through the event's http hook (as the agent hooks spec says), and `useCasesAnswer` calls the same `hookAnswer`. `routePrompt` in `src/useCases/router/client.ts`:

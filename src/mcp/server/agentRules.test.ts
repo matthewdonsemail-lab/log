@@ -50,7 +50,7 @@ describe("AGENTS.md in the MCP server", () => {
     const client = await connected();
     const { tools } = await client.listTools();
     for (const tool of tools.filter((t) => t.name !== "getGuide")) expect((tool.description ?? "").split("\n").at(-1)).toMatch(/^AGENTS\.md \(log:\/\/agents\): rules [\d, ]+\. When matt says to do something, do it completely \(rule 30\)\.$/);
-    expect(tools.find((t) => t.name === "join")?.description).toContain("rules 8, 35, 25, 26, 29, 175, 2, 73, 30, 38, 39, 40, 41");
+    expect(tools.find((t) => t.name === "facebookJoin")?.description).toContain("rules 8, 35, 25, 26, 29, 175, 2, 73, 30, 38, 39, 40, 41");
     await client.close();
   });
 
@@ -70,8 +70,8 @@ describe("watching a long call live over MCP (rule 26)", () => {
     for (const name of ["claude-code", "codex-mcp-client"]) {
       const client = await connected(name);
       const { tools } = await client.listTools();
-      for (const tool of ["inspectStart", "inspectDo", "join", "warmup", "publish", "capture", "flowProfileSetupLive"]) expect(tools.find((t) => t.name === tool)?.description).toContain("start a Monitor on `tail -f ~/.logCli/mcp/<day>.log`");
-      expect(tools.find((t) => t.name === "accounts")?.description).not.toContain("Monitor");
+      for (const tool of ["inspectStart", "inspectDo", "facebookJoin", "warmup", "facebookPublish", "facebookCapture", "flowProfileSetupLive"]) expect(tools.find((t) => t.name === tool)?.description).toContain("start a Monitor on `tail -f ~/.logCli/mcp/<day>.log`");
+      expect(tools.find((t) => t.name === "facebookAccounts")?.description).not.toContain("Monitor");
       await client.close();
     }
   });
@@ -80,7 +80,7 @@ describe("watching a long call live over MCP (rule 26)", () => {
     expect(SERVER_INSTRUCTIONS).toContain("A client without a shell");
     const client = await connected("claude-ai");
     const { tools } = await client.listTools();
-    for (const tool of ["inspectStart", "publish", "flowProfileSetupLive"]) {
+    for (const tool of ["inspectStart", "facebookPublish", "flowProfileSetupLive"]) {
       const description = tools.find((t) => t.name === tool)!.description!;
       expect(description).not.toContain("Monitor");
       expect(description).toContain("`progress`");

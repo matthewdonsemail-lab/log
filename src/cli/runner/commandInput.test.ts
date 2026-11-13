@@ -63,7 +63,7 @@ describe("one flag spec per command", () => {
   test("a form's tool name is the command and its words, and no two forms share one", () => {
     const names = typed.flatMap((c) => c.input!.forms.map((f) => formToolName(c, f)));
     expect(new Set(names).size).toBe(names.length);
-    expect(names).toEqual(expect.arrayContaining(["inspectStart", "inspectDo", "hostSend", "conversationLead", "accountResetOpens", "runsSpace"]));
+    expect(names).toEqual(expect.arrayContaining(["inspectStart", "inspectDo", "facebookHostSend", "facebookConversationLead", "facebookAccountResetOpens", "runsSpace"]));
   });
 
   test("false booleans and unset fields add nothing", () => {

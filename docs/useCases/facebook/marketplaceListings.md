@@ -36,18 +36,18 @@ Every Facebook command starts with the platform (`log facebook …`), and each h
 | Import | `scripts/twenty/importVendorAccounts.mjs` | – | the row in Twenty `socialAccounts` |
 | Proxy | `log proxy assign --account <a> --vendor <vendor>`, `log proxy check` | `proxy` | the exit IP is in the home country and within 100 km of the home town |
 | Browser profile | `log adsPower sync --apply` | `adsPower` | one [AdsPower](https://www.adspower.com/share/pD25Iu) profile per account, linked in `adsPowerProfileId` |
-| Ready? | `log facebook preflight` | `preflight` | hours, proxy, kernel, opens left, photo on disk, before anything opens |
-| Open the day | `log facebook host start --account <a> --live` | `hostStartLive` | the browser's own timezone, language and exit IP match the account |
-| Sign in | `log facebook connect --account <a>` (the host does it) | `connect` | Facebook's `c_user` and `xs` cookies |
-| Account check | `log facebook check --account <a>` | `check` | `/marketplace/status` says selling is open |
-| Photo, cover, name | `log facebook profile setup --account <a> --live` | `profileLive` | the photo and name saves answer without an error |
+| Ready? | `log facebook preflight` | `facebookPreflight` | hours, proxy, kernel, opens left, photo on disk, before anything opens |
+| Open the day | `log facebook host start --account <a> --live` | `facebookHostStartLive` | the browser's own timezone, language and exit IP match the account |
+| Sign in | `log facebook connect --account <a>` (the host does it) | `facebookConnect` | Facebook's `c_user` and `xs` cookies |
+| Account check | `log facebook check --account <a>` | `facebookCheck` | `/marketplace/status` says selling is open |
+| Photo, cover, name | `log facebook profile setup --account <a> --live` | `facebookProfileLive` | the photo and name saves answer without an error |
 | Location | `log inspect do setLocation "<City>, <State>" --live` (the host does it) | `inspectDoLive` | the location save's answer names the town |
 | Warm-up | `log facebook warmup stages run`, `log facebook warmup reel` | `warmup`, `warmupLive` | the five browsing activities each see their own answer; then 24 h before it's ready |
-| Copy | `log facebook listing create`, `listing lint` | `listingCreate`, `listingLint` | an ad on more than one listing in a city: at least 3 versions and one per listing live there, every two titles at least half different (the city not counted); `campaign fill` refuses too few (`notEnoughCopyVersions`) |
+| Copy | `log facebook listing create`, `listing lint` | `facebookListingCreate`, `facebookListingLint` | an ad on more than one listing in a city: at least 3 versions and one per listing live there, every two titles at least half different (the city not counted); `campaign fill` refuses too few (`notEnoughCopyVersions`) |
 | Publish | `log flow run marketplaceListingPublish --account <a> --live` | `flowMarketplaceListingPublishLive` | the create answer returns the listing id |
-| Many towns | `log facebook campaign fill`, `run`, `heal` | `campaign`, `campaignLive` | one copy per account, a lost account's copy handed to another in the same area |
-| Watch | the host, every 12 minutes, or `log facebook check` | `check` | each listing's state and clicks from the Selling page, into `agencyListings` |
-| Take down | `log facebook listing remove <id> --live` | `listingRemoveLive` | the delete answer names the listing |
+| Many towns | `log facebook campaign fill`, `run`, `heal` | `facebookCampaign`, `facebookCampaignLive` | one copy per account, a lost account's copy handed to another in the same area |
+| Watch | the host, every 12 minutes, or `log facebook check` | `facebookCheck` | each listing's state and clicks from the Selling page, into `agencyListings` |
+| Take down | `log facebook listing remove <id> --live` | `facebookListingRemoveLive` | the delete answer names the listing |
 
 ## What keeps an account safe
 

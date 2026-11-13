@@ -29,10 +29,10 @@ An account asks to join a neighbourhood group in its town. Once in, each poll br
 
 | Step | Command | MCP tool | What decides it |
 | --- | --- | --- | --- |
-| Join | `log facebook join group --account <a> --group <url or id> [--live]` | `join`, `joinLive` | the group's own join state |
-| Read | `log facebook read group --account <a> --group <id>` | `readGroup` | the feed's answer; the direct API first, the browser behind it |
-| Poll | `log facebook poll <group> <account> <how long>` | `poll` | each read's answer; OpenMagpie's watch picks the matches |
-| Members | `log facebook read members --account <a> --group <g> --count 40 --owners` | `readMembers` | the members list's answers, about 10 more per scroll |
+| Join | `log facebook join group --account <a> --group <url or id> [--live]` | `facebookJoin`, `facebookJoinLive` | the group's own join state |
+| Read | `log facebook read group --account <a> --group <id>` | `facebookReadGroup` | the feed's answer; the direct API first, the browser behind it |
+| Poll | `log facebook poll <group> <account> <how long>` | `facebookPoll` | each read's answer; OpenMagpie's watch picks the matches |
+| Members | `log facebook read members --account <a> --group <g> --count 40 --owners` | `facebookReadMembers` | the members list's answers, about 10 more per scroll |
 
 `read members --owners` keeps people whose bio says owner, founder, CEO or self-employed, or who run a page, saved under `~/.logCli/members/`.
 

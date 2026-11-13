@@ -1,9 +1,10 @@
-import { argvOfInput, isPlatform, platformLabel, PLATFORMS } from "../../../cli/runner/helpers/index.ts";
+import { argvOfInput, isPlatform, platformLabel, toolBaseName } from "../../../cli/runner/helpers/index.ts";
 import type { Command } from "../../../cli/runner/types.ts";
 import type { GuardResult, LogToolInput } from "../types.ts";
 import { NO_PROMPT, TERMINAL_ONLY } from "../types.ts";
 import { LIVE_SUFFIX } from "./toolAnnotations.ts";
 import { argsLiveFlags, commandTools } from "./toolsFromCommands.ts";
+import { currentToolName } from "./toolAliases.ts";
 
 export function commandLine(command: Command, args: string[]): string[] {
   if (isPlatform(command.platform)) return [command.platform, command.name, ...args];
@@ -11,12 +12,13 @@ export function commandLine(command: Command, args: string[]): string[] {
   return [command.name, ...args];
 }
 
-const LIVE_REFUSAL = (name: string, place = "Facebook") => `${name} acts on ${place}. Only run it when matt asked, and pass confirmLive: true (AGENTS.md rule 10).`;
+const LIVE_REFUSAL = (name: string, place: string) => `${name} acts on ${place}. Only run it when matt asked, and pass confirmLive: true (AGENTS.md rule 10).`;
 const BYPASS_REFUSAL = (name: string) => `${name} with bypass runs outside the account's local waking hours (rule 18). Only when matt asked for it, and pass confirmBypass: true (AGENTS.md rule 20). The proxy gate, self-check and launch budget still apply.`;
 
 const flagName = (arg: string) => (arg.startsWith("--") ? arg.slice(2).split("=")[0] : null);
 
-export function guardCall(name: string, input: LogToolInput | undefined, commands: Command[]): GuardResult {
+export function guardCall(called: string, input: LogToolInput | undefined, commands: Command[]): GuardResult {
+  const name = currentToolName(called);
   if (name in TERMINAL_ONLY) return { ok: false, message: `log ${name} is not a tool: it ${TERMINAL_ONLY[name]}` };
   const entry = commandTools(commands).find((t) => t.tool === name);
   if (!entry) return { ok: false, message: `Unknown tool: ${name}` };
@@ -40,7 +42,7 @@ export function guardCall(name: string, input: LogToolInput | undefined, command
   const given = args.map(flagName).filter((f): f is string => f !== null && liveFlags.includes(f));
   if (!live && given.length) return { ok: false, message: `${name} never acts on ${platformLabel(command)}: --${given[0]} is \`${name}${LIVE_SUFFIX}\`, only when matt asked (rule 8)` };
   if (!live && args.some((arg) => arg === "--live" || arg.startsWith("--live="))) return { ok: false, message: LIVE_REFUSAL(`log ${name} --live`, platformLabel(command)) };
-  if (live && !given.length) return { ok: false, message: `${name} is for live runs: pass ${liveFlags.map((f) => `--${f}`).join(" or ")} in args, or call \`${command.name}\`` };
+  if (live && !given.length) return { ok: false, message: `${name} is for live runs: pass ${liveFlags.map((f) => `--${f}`).join(" or ")} in args, or call \`${toolBaseName(command)}\`` };
   const bypass = args.some((arg) => arg === "--bypass" || arg.startsWith("--bypass="));
   if (bypass && input?.confirmBypass !== true) return { ok: false, message: BYPASS_REFUSAL(`log ${name} --bypass`) };
   const noPrompt = NO_PROMPT[command.name];

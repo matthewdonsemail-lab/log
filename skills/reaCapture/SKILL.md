@@ -47,8 +47,8 @@ Why a HAR plus scripts, read offline: `docs/rea/matrix/` and
 
 ### 1. Capture (live)
 
-Any action records one. Through the MCP, `mcp__log__connect` / `scan` /
-`publish` do the same.
+Any action records one. Through the MCP, `mcp__log__facebookConnect` /
+`facebookScan` / `facebookPublish` do the same.
 
 ```bash
 log facebook connect --account <a> --noPrompt   # the login, step by step

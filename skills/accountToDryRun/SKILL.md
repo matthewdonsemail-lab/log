@@ -22,8 +22,8 @@ matt says so.
 3. **Someone watches the window (rule 11).** Camoufox is always visible. If
    the cookies don't hold, matt signs in in that window during step 3.
 4. **`checkpointed` or `suspended`: stop.** Tell matt and don't retry.
-5. **Dry run only.** `publish` without `--live` stops before the Publish
-   button. Live is its own tool, `publishLive`, with `confirmLive: true` and matt's go (rule 10).
+5. **Dry run only.** `facebookPublish` without `--live` stops before the Publish
+   button. Live is its own tool, `facebookPublishLive`, with `confirmLive: true` and matt's go (rule 10).
 
 ## The steps
 
@@ -32,7 +32,7 @@ matt says so.
 ### 1. Proxy (no browser)
 
 ```text
-mcp__log__accountShow   { account: "<a>" }                  Proxy set? Exit checked?
+mcp__log__facebookAccountShow   { account: "<a>" }                  Proxy set? Exit checked?
 mcp__log__proxy     args ["check", "--account", "<a>"]    exit IP in the home country
 ```
 
@@ -43,13 +43,13 @@ retries until the exit is within 100 km of the home city, or says
 ### 2. Setup (no Facebook)
 
 ```text
-mcp__log__doctor    args ["--json"]    Python, Camoufox and Twenty OK
+mcp__log__facebookDoctor    args ["--json"]    Python, Camoufox and Twenty OK
 ```
 
 ### 3. Sign in: NEEDSLOGIN → ACTIVE
 
 ```text
-mcp__log__connect   args ["--account", "<a>"]
+mcp__log__facebookConnect   args ["--account", "<a>"]
 ```
 
 The tool always runs `--noPrompt`. Camoufox opens through the proxy on the
@@ -75,7 +75,7 @@ field `<set>`/`<empty>`), then `--apply`. It reads every `docs/vendors/*.txt`.
 Check it:
 
 ```text
-mcp__log__accountShow   { account: "<a>" }    Status ACTIVE, May run yes
+mcp__log__facebookAccountShow   { account: "<a>" }    Status ACTIVE, May run yes
 ```
 
 `signInNotFinished` or `checkpointed` means the wait ran out on the page it
@@ -84,7 +84,7 @@ names. Run step 3 again with someone at the window.
 ### 4. Read the account (read-only)
 
 ```text
-mcp__log__scan      args ["--account", "<a>"]    Marketplace > Selling loads
+mcp__log__facebookScan      args ["--account", "<a>"]    Marketplace > Selling loads
 ```
 
 ### 5. The listing row in Twenty
@@ -99,18 +99,18 @@ the cover:
 ```
 
 ```text
-mcp__log__listingCreate   { account: "<a>", file: "<path.json>" }
-mcp__log__listing         { id: "<listingId>" }
+mcp__log__facebookListingCreate   { account: "<a>", file: "<path.json>" }
+mcp__log__facebookListing         { id: "<listingId>" }
 ```
 
-`create` checks the ad the way `publish` will (price, category, photos,
+`create` checks the ad the way `facebookPublish` will (price, category, photos,
 location) and refuses one that can't post.
 
 ### 6. Dry run
 
 ```text
-mcp__log__publish   { listing: "<listingId>", formUrl: "file:///<repo>/python/fixtures/createItem.html" }
-mcp__log__publish   { listing: "<listingId>" }
+mcp__log__facebookPublish   { listing: "<listingId>", formUrl: "file:///<repo>/python/fixtures/createItem.html" }
+mcp__log__facebookPublish   { listing: "<listingId>" }
 ```
 
 The first run fills the saved copy of the form and never touches Facebook. The
@@ -156,8 +156,8 @@ own answer to Publish (`useCometMarketplaceListingCreateMutation`), says
 2026-10-19, was held this way.
 
 ```text
-mcp__log__publishLive   { listing: "<listingId>", confirmLive: true }
-mcp__log__scan      args ["--account", "<a>"]
+mcp__log__facebookPublishLive   { listing: "<listingId>", confirmLive: true }
+mcp__log__facebookScan      args ["--account", "<a>"]
 ```
 
 Once Publish is clicked nothing is retried (rule 10).

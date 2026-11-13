@@ -20,23 +20,23 @@ When the owner asks for one of these, follow its page step by step.
 
 | Tool | What it does |
 |---|---|
-| `listings` | List the Twenty listings |
-| `listing` | One listing in full |
-| `listingCreate` | Create a listing in Twenty from a listing.json |
-| `listingRemove` | Delete a listing on Facebook from its account's Selling page, then… |
-| `listingRemoveLive` | Delete a listing on Facebook from its account's…, live on Facebook |
-| `listingSweep` | Mark every listing of a blocked account ACCOUNT_LOST |
-| `listingLint` | Check a listing.json against the copy rules and the create form… |
-| `publish` | Post one Twenty listing |
-| `publishLive` | Post one Twenty listing, live on Facebook |
-| `campaign` | Put one ad on N accounts in one place, replace lost accounts, publish… |
-| `campaignLive` | Put one ad on N accounts in one place, replace lost…, live on Facebook |
-| `conversations` | List the buyers' conversations |
-| `conversationShow` | A conversation and its messages |
-| `conversationRead` | Mark its messages read |
-| `conversationLead` | Set its lead status |
-| `conversationLink` | Link it to its listing |
-| `conversationRecord` | Store scanned threads |
+| `facebookListings` | List the Twenty listings |
+| `facebookListing` | One listing in full |
+| `facebookListingCreate` | Create a listing in Twenty from a listing.json |
+| `facebookListingRemove` | Delete a listing on Facebook from its account's Selling page, then… |
+| `facebookListingRemoveLive` | Delete a listing on Facebook from its account's…, live on Facebook |
+| `facebookListingSweep` | Mark every listing of a blocked account ACCOUNT_LOST |
+| `facebookListingLint` | Check a listing.json against the copy rules and the create form… |
+| `facebookPublish` | Post one Twenty listing |
+| `facebookPublishLive` | Post one Twenty listing, live on Facebook |
+| `facebookCampaign` | Put one ad on N accounts in one place, replace lost accounts, publish… |
+| `facebookCampaignLive` | Put one ad on N accounts in one place, replace lost…, live on Facebook |
+| `facebookConversations` | List the buyers' conversations |
+| `facebookConversationShow` | A conversation and its messages |
+| `facebookConversationRead` | Mark its messages read |
+| `facebookConversationLead` | Set its lead status |
+| `facebookConversationLink` | Link it to its listing |
+| `facebookConversationRecord` | Store scanned threads |
 
 ## The work, step by step: accountToDryRun
 
@@ -61,8 +61,8 @@ matt says so.
 3. **Someone watches the window (rule 11).** Camoufox is always visible. If
    the cookies don't hold, matt signs in in that window during step 3.
 4. **`checkpointed` or `suspended`: stop.** Tell matt and don't retry.
-5. **Dry run only.** `publish` without `--live` stops before the Publish
-   button. Live is its own tool, `publishLive`, with `confirmLive: true` and matt's go (rule 10).
+5. **Dry run only.** `facebookPublish` without `--live` stops before the Publish
+   button. Live is its own tool, `facebookPublishLive`, with `confirmLive: true` and matt's go (rule 10).
 
 ### The steps
 
@@ -71,7 +71,7 @@ matt says so.
 #### 1. Proxy (no browser)
 
 ```text
-mcp__log__accountShow   { account: "<a>" }                  Proxy set? Exit checked?
+mcp__log__facebookAccountShow   { account: "<a>" }                  Proxy set? Exit checked?
 mcp__log__proxy     args ["check", "--account", "<a>"]    exit IP in the home country
 ```
 
@@ -82,13 +82,13 @@ retries until the exit is within 100 km of the home city, or says
 #### 2. Setup (no Facebook)
 
 ```text
-mcp__log__doctor    args ["--json"]    Python, Camoufox and Twenty OK
+mcp__log__facebookDoctor    args ["--json"]    Python, Camoufox and Twenty OK
 ```
 
 #### 3. Sign in: NEEDSLOGIN → ACTIVE
 
 ```text
-mcp__log__connect   args ["--account", "<a>"]
+mcp__log__facebookConnect   args ["--account", "<a>"]
 ```
 
 The tool always runs `--noPrompt`. Camoufox opens through the proxy on the
@@ -114,7 +114,7 @@ field `<set>`/`<empty>`), then `--apply`. It reads every `docs/vendors/*.txt`.
 Check it:
 
 ```text
-mcp__log__accountShow   { account: "<a>" }    Status ACTIVE, May run yes
+mcp__log__facebookAccountShow   { account: "<a>" }    Status ACTIVE, May run yes
 ```
 
 `signInNotFinished` or `checkpointed` means the wait ran out on the page it
@@ -123,7 +123,7 @@ names. Run step 3 again with someone at the window.
 #### 4. Read the account (read-only)
 
 ```text
-mcp__log__scan      args ["--account", "<a>"]    Marketplace > Selling loads
+mcp__log__facebookScan      args ["--account", "<a>"]    Marketplace > Selling loads
 ```
 
 #### 5. The listing row in Twenty
@@ -138,18 +138,18 @@ the cover:
 ```
 
 ```text
-mcp__log__listingCreate   { account: "<a>", file: "<path.json>" }
-mcp__log__listing         { id: "<listingId>" }
+mcp__log__facebookListingCreate   { account: "<a>", file: "<path.json>" }
+mcp__log__facebookListing         { id: "<listingId>" }
 ```
 
-`create` checks the ad the way `publish` will (price, category, photos,
+`create` checks the ad the way `facebookPublish` will (price, category, photos,
 location) and refuses one that can't post.
 
 #### 6. Dry run
 
 ```text
-mcp__log__publish   { listing: "<listingId>", formUrl: "file:///<repo>/python/fixtures/createItem.html" }
-mcp__log__publish   { listing: "<listingId>" }
+mcp__log__facebookPublish   { listing: "<listingId>", formUrl: "file:///<repo>/python/fixtures/createItem.html" }
+mcp__log__facebookPublish   { listing: "<listingId>" }
 ```
 
 The first run fills the saved copy of the form and never touches Facebook. The
@@ -195,8 +195,8 @@ own answer to Publish (`useCometMarketplaceListingCreateMutation`), says
 2026-10-19, was held this way.
 
 ```text
-mcp__log__publishLive   { listing: "<listingId>", confirmLive: true }
-mcp__log__scan      args ["--account", "<a>"]
+mcp__log__facebookPublishLive   { listing: "<listingId>", confirmLive: true }
+mcp__log__facebookScan      args ["--account", "<a>"]
 ```
 
 Once Publish is clicked nothing is retried (rule 10).
@@ -669,7 +669,7 @@ recording.
 
 ## Every tool, in full
 
-### `listings`
+### `facebookListings`
 
 List the Twenty listings.
 List the Twenty listings, by status, account or campaign
@@ -678,7 +678,7 @@ Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookMarketplace" }) (Marketplace listings from copy to publish, campaigns that fill and heal them, and the buyers' conversations).
 AGENTS.md (log://agents): rules 175, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
-### `listing`
+### `facebookListing`
 
 One listing in full.
 Show one Twenty listing, or create one for an account from a JSON file
@@ -688,7 +688,7 @@ Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookMarketplace" }) (Marketplace listings from copy to publish, campaigns that fill and heal them, and the buyers' conversations).
 AGENTS.md (log://agents): rules 175, 35, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
-### `listingCreate`
+### `facebookListingCreate`
 
 Create a listing in Twenty from a listing.json.
 Show one Twenty listing, or create one for an account from a JSON file
@@ -699,17 +699,17 @@ Use cases that call it, each a workflow the owner asks for, tool by tool: getGui
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookMarketplace" }) (Marketplace listings from copy to publish, campaigns that fill and heal them, and the buyers' conversations).
 AGENTS.md (log://agents): rules 175, 35, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
-### `listingRemove`
+### `facebookListingRemove`
 
 Delete a listing on Facebook from its account's Selling page, then set it REMOVED in Twenty (the row stays); a dry run unless live.
 Show one Twenty listing, or create one for an account from a JSON file
 log facebook listing remove <agencyListingId|facebookListingId> [--live] [--bypass] [--now] [--json]   (delete it on Facebook through the recorded flow marketplaceListingDelete, then REMOVED in Twenty; a dry run unless --live)
 The file: title, description, price, priceCurrency, category, condition (new|usedLikeNew|usedGood|usedFair), photos (paths or URLs), locationQuery ('City, State' with the state written out, 'Bethlehem, Pennsylvania', or 'City, Country': an abbreviation, zip or number is refused, rule 72), locationCity, locationCountry, locationPostalCode (kept, never typed), copyVersions ([{ id, title, description }], written by skills/listingCopy; the first is the ad's own title and description; each copy of the ad picks the one least like what is live in its city).
-Fill the named fields; each value goes through whole. `bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked. What acts on Facebook is `listingRemoveLive`.
+Fill the named fields; each value goes through whole. `bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked. What acts on Facebook is `facebookListingRemoveLive`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookMarketplace" }) (Marketplace listings from copy to publish, campaigns that fill and heal them, and the buyers' conversations).
 AGENTS.md (log://agents): rules 175, 35, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
-### `listingRemoveLive`
+### `facebookListingRemoveLive`
 
 Delete a listing on Facebook from its account's Selling page, then set it REMOVED in Twenty (the row stays); a dry run unless live.
 Live on Facebook: it acts there (posts, clicks, joins or changes something). Call it only when matt asked for this live run, with confirmLive: true (rules 8, 10).
@@ -721,7 +721,7 @@ Use cases that call it, each a workflow the owner asks for, tool by tool: getGui
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookMarketplace" }) (Marketplace listings from copy to publish, campaigns that fill and heal them, and the buyers' conversations).
 AGENTS.md (log://agents): rules 175, 35, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
-### `listingSweep`
+### `facebookListingSweep`
 
 Mark every listing of a blocked account ACCOUNT_LOST (a dry run unless --apply).
 Show one Twenty listing, or create one for an account from a JSON file
@@ -731,7 +731,7 @@ Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookMarketplace" }) (Marketplace listings from copy to publish, campaigns that fill and heal them, and the buyers' conversations).
 AGENTS.md (log://agents): rules 175, 35, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
-### `listingLint`
+### `facebookListingLint`
 
 Check a listing.json against the copy rules and the create form, saving nothing.
 Show one Twenty listing, or create one for an account from a JSON file
@@ -742,7 +742,7 @@ Use cases that call it, each a workflow the owner asks for, tool by tool: getGui
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookMarketplace" }) (Marketplace listings from copy to publish, campaigns that fill and heal them, and the buyers' conversations).
 AGENTS.md (log://agents): rules 175, 35, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
-### `publish`
+### `facebookPublish`
 
 Post one Twenty listing; a dry run unless live.
 Post one Twenty listing (dry run unless --live), printing every machine step
@@ -751,12 +751,12 @@ Dry run unless --live: fills and checks everything, never clicks Publish.
 The listing, its account and the account's proxy all come from Twenty.
 --bypass skips only the account's waking hours (rule 18); every other gate still runs.
 --now skips only the 10-minute launch gap (rule 24); the 8 launches a day still hold.
-Fill the named fields; each value goes through whole. `bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked. What acts on Facebook is `publishLive`.
+Fill the named fields; each value goes through whole. `bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked. What acts on Facebook is `facebookPublishLive`.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookMarketplace" }) (Marketplace listings from copy to publish, campaigns that fill and heal them, and the buyers' conversations).
 AGENTS.md (log://agents): rules 8, 35, 19, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
-### `publishLive`
+### `facebookPublishLive`
 
 Post one Twenty listing; a dry run unless live.
 Live on Facebook: it acts there (posts, clicks, joins or changes something). Call it only when matt asked for this live run, with confirmLive: true (rules 8, 10).
@@ -771,7 +771,7 @@ Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookMarketplace" }) (Marketplace listings from copy to publish, campaigns that fill and heal them, and the buyers' conversations).
 AGENTS.md (log://agents): rules 8, 35, 19, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
-### `campaign`
+### `facebookCampaign`
 
 log facebook campaign <fill|heal|run|show> --campaign <id> [...]
 Put one ad on N accounts in one place, replace lost accounts, publish the campaign
@@ -785,7 +785,7 @@ Use cases that call it, each a workflow the owner asks for, tool by tool: getGui
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookMarketplace" }) (Marketplace listings from copy to publish, campaigns that fill and heal them, and the buyers' conversations).
 AGENTS.md (log://agents): rules 175, 35, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
-### `campaignLive`
+### `facebookCampaignLive`
 
 log facebook campaign <fill|heal|run|show> --campaign <id> [...]
 Live on Facebook: it acts there (posts, clicks, joins or changes something). Call it only when matt asked for this live run, with confirmLive: true (rules 8, 10).
@@ -800,7 +800,7 @@ Use cases that call it, each a workflow the owner asks for, tool by tool: getGui
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookMarketplace" }) (Marketplace listings from copy to publish, campaigns that fill and heal them, and the buyers' conversations).
 AGENTS.md (log://agents): rules 175, 35, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
-### `conversations`
+### `facebookConversations`
 
 List the buyers' conversations.
 List buyers' Marketplace conversations in Twenty, newest first, by account or listing
@@ -809,7 +809,7 @@ Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookMarketplace" }) (Marketplace listings from copy to publish, campaigns that fill and heal them, and the buyers' conversations).
 AGENTS.md (log://agents): rules 175, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
-### `conversationShow`
+### `facebookConversationShow`
 
 A conversation and its messages.
 One conversation: show its messages, mark read, set its lead status, link its listing, or store a scanned thread
@@ -818,7 +818,7 @@ Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookMarketplace" }) (Marketplace listings from copy to publish, campaigns that fill and heal them, and the buyers' conversations).
 AGENTS.md (log://agents): rules 175, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
-### `conversationRead`
+### `facebookConversationRead`
 
 Mark its messages read.
 One conversation: show its messages, mark read, set its lead status, link its listing, or store a scanned thread
@@ -827,7 +827,7 @@ Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookMarketplace" }) (Marketplace listings from copy to publish, campaigns that fill and heal them, and the buyers' conversations).
 AGENTS.md (log://agents): rules 175, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
-### `conversationLead`
+### `facebookConversationLead`
 
 Set its lead status.
 One conversation: show its messages, mark read, set its lead status, link its listing, or store a scanned thread
@@ -836,7 +836,7 @@ Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookMarketplace" }) (Marketplace listings from copy to publish, campaigns that fill and heal them, and the buyers' conversations).
 AGENTS.md (log://agents): rules 175, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
-### `conversationLink`
+### `facebookConversationLink`
 
 Link it to its listing.
 One conversation: show its messages, mark read, set its lead status, link its listing, or store a scanned thread
@@ -845,7 +845,7 @@ Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookMarketplace" }) (Marketplace listings from copy to publish, campaigns that fill and heal them, and the buyers' conversations).
 AGENTS.md (log://agents): rules 175, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
-### `conversationRecord`
+### `facebookConversationRecord`
 
 Store scanned threads.
 One conversation: show its messages, mark read, set its lead status, link its listing, or store a scanned thread

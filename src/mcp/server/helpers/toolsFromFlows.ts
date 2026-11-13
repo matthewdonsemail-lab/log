@@ -2,6 +2,7 @@ import type { FlowDefinition } from "../../../browser/flow/index.ts";
 import { toolName } from "../../../browser/flow/index.ts";
 import type { LogTool } from "../types.ts";
 import { TOOL_RESULT_SCHEMA } from "../types.ts";
+import { ANY_PLATFORM_LABEL } from "../../../cli/runner/helpers/platforms.ts";
 import { FLOWS_GUIDE, guideLine } from "./guides.ts";
 import { rulesLine } from "./agentRules.ts";
 import { annotationsOf, LIVE_SUFFIX, titleOf } from "./toolAnnotations.ts";
@@ -19,7 +20,7 @@ function flowTool(flow: FlowDefinition, live: boolean, options: ToolOptions): Lo
   if (live) properties.confirmLive = { type: "boolean", description: "Set true only when matt asked for this live run" };
   properties.confirmBypass = { type: "boolean", description: "Set true with bypass, only when matt asked for a run outside the account's hours (rule 20)" };
   properties.waitMs = WAIT_MS;
-  const title = titleOf(flow.summary, live);
+  const title = titleOf(flow.summary, live, ANY_PLATFORM_LABEL);
   return {
     name: `${toolName(flow.name)}${live ? LIVE_SUFFIX : ""}`,
     title,

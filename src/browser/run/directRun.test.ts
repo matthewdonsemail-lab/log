@@ -3,7 +3,7 @@ import { spawnSync } from 'node:child_process'
 import { mkdtempSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { hostOnPlatforms, platformOfAccount, siteOfAccount } from '../../cli/runner/helpers/platforms'
+import { hostOnPlatforms, knownPlatformOfAccount, platformOfAccount, siteOfAccount } from '../../cli/runner/helpers/platforms'
 import { checkRunnable } from '../../marketplace/socialAccount/index'
 import type { FacebookAccount } from '../../marketplace/socialAccount/index'
 import { nameOf } from '../../subq/stepReading/helpers/exchangesOf'
@@ -24,7 +24,9 @@ describe('runs by platform', () => {
   test("an account's platform and site come from its Twenty value", () => {
     expect(platformOfAccount({ platform: 'TWITTER' })).toBe('twitter')
     expect(siteOfAccount({ platform: 'FACEBOOK' }).proxy).toBe('required')
-    expect(platformOfAccount({ platform: null })).toBe('facebook')
+    expect(() => platformOfAccount({ platform: null })).toThrow('accountPlatformMissing')
+    expect(() => platformOfAccount({ platform: 'YOUTUBE' })).toThrow('accountPlatformMissing')
+    expect(knownPlatformOfAccount({ platform: null })).toBeNull()
   })
 
   test('inspect goes only to the hosts of a platform log-cli knows', () => {

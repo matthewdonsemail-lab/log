@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { inputFlagNames, isPlatform } from "../../src/cli/runner/helpers/index.ts";
-import { commandKey } from "../../src/cli/runner/helpers/platforms.ts";
+import { commandKey, commandWordOfKey } from "../../src/cli/runner/helpers/platforms.ts";
 import { COMMANDS } from "../../src/cli/runner/index.ts";
 import { agentsSection, commandTools, CORE_GUIDE, CORE_PRINCIPLES, GUIDE_TOOL, GUIDE_TOPICS, guideOfCommand, listUseCases, longRunLine, renderGuide, savedFlows, toolsFromCommands, toolsFromFlows, withUseCases } from "../../src/mcp/server/index.ts";
 import { catalog, flagsOf, flowEntries, GLOBAL_FLAGS } from "../../src/surface/catalog/index.ts";
@@ -263,7 +263,7 @@ for (const dir of readdirSync(cliRoot)) {
   }
 }
 for (const [name, route] of Object.entries(DIRECT_ROUTES)) {
-  const dir = route.platform === "facebook" ? name : route.platform;
+  const dir = route.platform === "facebook" ? commandWordOfKey(name, route.platform) : route.platform;
   const index = join(cliRoot, dir, "index.ts");
   if (!existsSync(index) || !readFileSync(index, "utf8").includes(`context.${route.seam}`)) problems.push(`DIRECT_ROUTES.${name} says it runs on the direct-API engine through context.${route.seam}, but src/cli/${dir}/index.ts never calls it`);
   if (!new RegExp(`\\b${route.seam}\\??:`).test(contextType)) problems.push(`DIRECT_ROUTES.${name}: context.${route.seam} isn't on CommandContext (src/cli/runner/types.ts)`);

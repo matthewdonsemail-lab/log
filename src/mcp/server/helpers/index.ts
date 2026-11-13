@@ -4,6 +4,7 @@ export { argsLiveFlags, commandTools, hasShell, LONG_RUNNING, longRunLine, SHELL
 export type { ToolOptions } from "./toolsFromCommands.ts";
 export type { CommandTool } from "./toolsFromCommands.ts";
 export { flowArgv, flowOfTool, toolsFromFlows } from "./toolsFromFlows.ts";
+export { currentToolName, renamedLine, renamedTool, RENAMED_TOOLS, withRenamedNote } from "./toolAliases.ts";
 export { annotationsOf, LIVE_SUFFIX, titleOf } from "./toolAnnotations.ts";
 export { formatLogLine, logFileName } from "./formatLogLine.ts";
 export type { LogStream } from "./formatLogLine.ts";

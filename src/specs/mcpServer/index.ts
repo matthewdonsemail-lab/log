@@ -46,6 +46,9 @@ export const mcpServer = {
     'src/mcp/catalog/helpers/examples.ts',
     'src/mcp/catalog/helpers/view.ts',
     'src/mcp/catalog/catalog.test.ts',
+    'src/mcp/server/helpers/toolAliases.ts',
+    'src/mcp/server/toolAliases.test.ts',
+    'src/cli/runner/helpers/platforms.ts',
   ],
   anchors: {
     'REQ-MCP-01': [
@@ -121,6 +124,14 @@ export const mcpServer = {
       { kind: 'uses', file: SERVER, name: 'catalogTools' },
       { kind: 'uses', file: SERVER, name: 'resolveCall' },
     ],
+    'REQ-MCP-21': [
+      { kind: 'symbol', file: 'src/cli/runner/helpers/platforms.ts', name: 'toolBaseName' },
+      { kind: 'symbol', file: 'src/mcp/server/helpers/toolAliases.ts', name: 'RENAMED_TOOLS' },
+      { kind: 'symbol', file: 'src/mcp/server/helpers/toolAliases.ts', name: 'currentToolName' },
+      { kind: 'uses', file: SERVER, name: 'withRenamedNote' },
+      { kind: 'uses', file: 'src/mcp/server/helpers/guardCall.ts', name: 'currentToolName' },
+      { kind: 'uses', file: 'src/mcp/catalog/helpers/entries.ts', name: 'currentToolName' },
+    ],
     'REQ-MCP-17': [
       { kind: 'symbol', file: 'src/useCases/router/client.ts', name: 'routePrompt' },
       { kind: 'symbol', file: 'src/useCases/router/helpers/typos.ts', name: 'correctTypos' },
@@ -160,6 +171,7 @@ export const mcpServer = {
     'REQ-MCP-12': noul('Is staleServerLine(repo) one of the parts the engines hook joins into its text; when the recorded server pid is alive and codeStamp of the checkout is newer than the recorded stamp, does it return a line telling matt to restart and never to work around it with a hand-run command only when readProxyState shows no live reload proxy, and when a proxy is live, the proxy lastError or waitingOn line, or null; and null when the server is current?'),
     'REQ-MCP-13': noul('Does localChangesLine return null when there are no files, and otherwise a line starting with >>> UNCOMMITTED LOCAL CHANGES that lists the files and says to read each diff and never overwrite, revert, stage, publish or ship them without matt?'),
     'REQ-MCP-18': noul('Does the ListTools handler list logSearch, logGet and logCall right after getGuide; does catalogOf make one entry per command tool with its Live twin as liveTool and every TERMINAL_ONLY command as an entry with terminalOnly and no tool; does searchCatalog keep only the named platform and any when a platform is named and answer strong, closest or none with up to 3 near misses; and does resolveCall refuse an unknown id, a terminal-only entry, live without a liveTool and any input not among the entry inputs, and otherwise run the entry tool or liveTool through runToolCall so guardCall applies?'),
+    'REQ-MCP-21': noul('Does toolBaseName prefix every command whose platform is a platform with that platform, Facebook included, and leave a shared command its own name; is RENAMED_TOOLS the one table of old Facebook tool names to new ones; does runToolCall run the new tool for an old name and add the renamed line, while the ListTools handler lists only the new names; do guardCall and entryById take an old name as its new one?'),
     'REQ-MCP-17': noul('For Codex, does the UserPromptSubmit useCases hook run as a curl to the context layer service with the bun script only after ||, while for Claude Code does useCasesAnswer in src/agentHooks/answers/client.ts call the same hookAnswer, does routePrompt skip text isPrompt refuses, correct typos, embed windows and combine denseScores and sparseScores at DENSE_WEIGHT, naming matches at or above the threshold and otherwise a menu at or above DEFAULT_MENU_FLOOR, and does hookAnswer on SessionStart return playReminder for the last play sessionPlayOf finds in the transcript?'),
     'REQ-MCP-16': noul('Does matchPlays score the prompt content words against each use case asks and title, keep only matches at or above MATCH_FLOOR best first and at most MATCHES_SHOWN, does playMatchText return a >>> PLAY MATCH line naming getGuide with the top use case id, a >>> MAYBE A PLAY list for a menu, and nothing when there is neither, and does scripts/hooks/useCases.ts ask the context service for the route and write it through hookOutput only when there is text?'),
     'REQ-MCP-15': noul('Does runToolCall answer getGuide through guideAnswer, which calls setActivePlay when getGuide is given a useCase or an ask that matchPlays matches to a use case (returning a >>> PLAY MATCH line, or the list of use cases when none matches), does stepsOf read each steps-table row into its number, step, the tools named in backticks and done when, does the server add playFooter to every non-guide tool answer naming the step that tool is and the next step, or that it is not a step of the play, and does playRefusal refuse a PLAY_REQUIRED tool with playMissing while no play is loaded, naming the use cases whose pages name the tool?'),
@@ -184,6 +196,7 @@ export const mcpServer = {
     'REQ-MCP-16': MET,
     'REQ-MCP-17': MET,
     'REQ-MCP-18': MET,
+    'REQ-MCP-21': MET,
     unspecifiedBehavior: NOT_VIOLATED,
   },
 }

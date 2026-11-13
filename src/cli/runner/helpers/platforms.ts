@@ -1,13 +1,13 @@
 import type { Command } from "../types.ts";
 
 export function toolBaseName(command: Pick<Command, "name" | "platform">): string {
-  return isPlatform(command.platform) && command.platform !== PLATFORMS[0] ? `${command.platform}${command.name[0].toUpperCase()}${command.name.slice(1)}` : command.name;
+  return isPlatform(command.platform) ? `${command.platform}${command.name[0].toUpperCase()}${command.name.slice(1)}` : command.name;
 }
 
 export const commandKey = toolBaseName;
 
 export function commandWordOfKey(key: string, platform: string): string {
-  if (platform === PLATFORMS[0] || !key.startsWith(platform)) return key;
+  if (!key.startsWith(platform)) return key;
   const rest = key.slice(platform.length);
   return rest[0].toLowerCase() + rest.slice(1);
 }
@@ -44,9 +44,15 @@ export const PLATFORM_SITES: Readonly<Record<Platform, PlatformSite>> = {
   instagram: { twenty: "INSTAGRAM", domain: ".instagram.com", hosts: ["instagram.com", "www.instagram.com"], home: "https://www.instagram.com/", proxy: "none", browser: true },
 };
 
+export function knownPlatformOfAccount(account: { platform?: string | null }): Platform | null {
+  const twenty = String(account.platform ?? "").toUpperCase();
+  return PLATFORMS.find((p) => PLATFORM_SITES[p].twenty === twenty) ?? null;
+}
+
 export function platformOfAccount(account: { platform?: string | null }): Platform {
-  const twenty = String(account.platform ?? "FACEBOOK").toUpperCase();
-  return PLATFORMS.find((p) => PLATFORM_SITES[p].twenty === twenty) ?? PLATFORMS[0];
+  const platform = knownPlatformOfAccount(account);
+  if (!platform) throw new Error(`accountPlatformMissing: the account's platform is ${account.platform ? `${account.platform}, which log doesn't know` : "not set"}`);
+  return platform;
 }
 
 export function siteOfAccount(account: { platform?: string | null }): PlatformSite {
@@ -54,8 +60,7 @@ export function siteOfAccount(account: { platform?: string | null }): PlatformSi
 }
 
 export function isKnownPlatformAccount(account: { platform?: string | null }): boolean {
-  const twenty = String(account.platform ?? "").toUpperCase();
-  return PLATFORMS.some((p) => PLATFORM_SITES[p].twenty === twenty);
+  return knownPlatformOfAccount(account) !== null;
 }
 
 export function hostOnPlatforms(url: string): boolean {
@@ -69,8 +74,10 @@ export function hostOnPlatforms(url: string): boolean {
 }
 
 export function platformLabel(command: Pick<Command, "platform">): string {
-  return isPlatform(command.platform) ? PLATFORM_LABELS[command.platform] : PLATFORM_LABELS[PLATFORMS[0]];
+  return isPlatform(command.platform) ? PLATFORM_LABELS[command.platform] : ANY_PLATFORM_LABEL;
 }
+
+export const ANY_PLATFORM_LABEL = "the platform";
 
 export const isPlatform = (word: string | undefined): word is Platform => (PLATFORMS as readonly string[]).includes(word ?? "");
 
@@ -91,6 +98,6 @@ export function resolvePlatformForm<C extends { name: string; platform: string }
   if (command.platform === "any") return { ok: true, command, argv: [second, ...rest].filter((a): a is string => a !== undefined) };
   if (command.platform === "byArgument" && !isPlatform(second)) return { ok: true, command, argv: [second, ...rest].filter((a): a is string => a !== undefined) };
   const tail = isPlatform(second) ? rest : [second, ...rest].filter((a): a is string => a !== undefined);
-  const platform = isPlatform(second) ? second : isPlatform(command.platform) ? command.platform : PLATFORMS[0];
+  const platform = isPlatform(second) ? second : isPlatform(command.platform) ? command.platform : "<platform>";
   return { ok: false, error: `log ${command.name}: the platform comes first (rule 63): log ${[platform, command.name, ...tail].join(" ")}` };
 }
