@@ -10,6 +10,7 @@ export type StateScope =
   | 'mcpServerStart'
   | 'mcpReload'
   | 'voicePasses'
+  | 'consoleAccountCheck'
 
 export interface StateRow<T> {
   body: T

@@ -1,8 +1,9 @@
 import { db } from '../../inbox/store/index'
-import type { UsageBreakdown, UsageBucket, UsageKind, UsageSummary, UsageTotals } from './types'
+import type { UsageBreakdown, UsageBucket, UsageCall, UsageKind, UsageSummary, UsageTotals } from './types'
 
 const dayMs = 86400000
-export type CallRow = { tool: string; startedAt: number; ms: number; ok: number }
+export const RECENT_CALLS = 40
+export type CallRow = { spanId?: string; tool: string; startedAt: number; ms: number; ok: number }
 type Accumulator = { calls: number; failed: number; durations: number[] }
 
 function kindOf(tool: string): UsageKind {
@@ -43,7 +44,7 @@ function checkRange(fromMs: number, toMs: number) {
 
 export function readUsageSummary(fromMs: number, toMs = Date.now()): UsageSummary {
   checkRange(fromMs, toMs)
-  const rows = db().prepare("SELECT tool, startedAt, ms, ok FROM spans WHERE parentId IS NULL AND name = 'call' AND startedAt >= ? AND startedAt < ? ORDER BY startedAt").all(fromMs, toMs) as CallRow[]
+  const rows = db().prepare("SELECT spanId, tool, startedAt, ms, ok FROM spans WHERE parentId IS NULL AND name = 'call' AND startedAt >= ? AND startedAt < ? ORDER BY startedAt").all(fromMs, toMs) as CallRow[]
   return summarizeUsage(rows, fromMs, toMs)
 }
 
@@ -64,5 +65,5 @@ export function summarizeUsage(rows: readonly CallRow[], fromMs: number, toMs: n
   }
   const buckets: UsageBucket[] = [...days].map(([start, group]) => ({ start: new Date(start).toISOString(), ...summarize(group) }))
   const breakdown: UsageBreakdown[] = [...kinds].map(([kind, group]) => ({ kind, ...summarize(group) })).sort((left, right) => right.calls - left.calls)
-  return { schemaVersion: 1, source: 'workspace', generatedAt: new Date().toISOString(), from: new Date(fromMs).toISOString(), to: new Date(toMs).toISOString(), totals: summarize(totals), buckets, kinds: breakdown }
+  return { schemaVersion: 1, source: 'workspace', generatedAt: new Date().toISOString(), from: new Date(fromMs).toISOString(), to: new Date(toMs).toISOString(), totals: summarize(totals), buckets, kinds: breakdown, recentCalls: rows.slice(-RECENT_CALLS).reverse().map((row): UsageCall => ({ id: String(row.spanId ?? row.startedAt), time: row.startedAt, kind: kindOf(row.tool), status: row.ok === 0 ? 'failed' : 'succeeded', durationMs: Math.max(0, row.ms) })) }
 }

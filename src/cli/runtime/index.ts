@@ -1,3 +1,5 @@
+import { consoleErrorCode, isConsoleOperation, redactConsoleArgs, runConsoleOperation } from "../../console/operations/index.ts";
+import type { ConsoleOperationDeps } from "../../console/operations/index.ts";
 import { finishPairing, keepConnected, readBinding, startPairing } from "../../runtime/bridge/index.ts";
 import type { ResultPayload, RunTool } from "../../runtime/bridge/index.ts";
 import { defaultDbPath, openDatabase, SCHEMA_VERSION } from "../../storage/schema/index.ts";
@@ -60,10 +62,20 @@ export async function toolManifest(args: Record<string, unknown>): Promise<Resul
   return { state: "succeeded", result: { tools } };
 }
 
+export async function consoleOperation(tool: string, args: Record<string, unknown>, callTool: ToolCaller, deps: Omit<ConsoleOperationDeps, "callTool"> = {}): Promise<ResultPayload> {
+  try {
+    return { state: "succeeded", result: await runConsoleOperation(tool, args, { ...deps, callTool }) };
+  } catch (error) {
+    const code = consoleErrorCode(error);
+    return { state: "failed", error: { code, message: code } };
+  }
+}
+
 export function toolRunner(callTool: ToolCaller): RunTool {
   return async (tool, args) => {
     if (tool === "accountsList") return accountsList(args);
     if (tool === "toolManifest") return toolManifest(args);
+    if (isConsoleOperation(tool)) return consoleOperation(tool, args, callTool);
     const answer = await callTool(tool, args);
     const content = (answer.structuredContent ?? {}) as Record<string, unknown>;
     const { browsers: _browsers, next: _next, ...result } = content;
@@ -122,6 +134,7 @@ export const runtimeCommand: Command = {
       db,
       runTool,
       isLive: (tool) => tool.endsWith("Live"),
+      redact: redactConsoleArgs,
       hello: () => ({ runtimeVersion: "log", schemaVersion: SCHEMA_VERSION, capabilities: { persistentStorage: true, browserAvailable: Boolean(process.env.ADSPOWER_API_KEY || process.env.ADSPOWER_HOST), driver: process.env.ADSPOWER_API_KEY || process.env.ADSPOWER_HOST ? "adsPower" : "none", protocolVersion: 1, checkedAt: new Date().toISOString(), status: "passed" } }),
       onLine,
     });

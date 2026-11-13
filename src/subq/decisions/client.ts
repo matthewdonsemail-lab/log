@@ -1,3 +1,4 @@
+import { savedCredential } from '../../auth/credentials/index.ts'
 import { existsSync, readFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join, resolve } from 'node:path'
@@ -12,6 +13,8 @@ export function subqKeyFile(home = homedir()): string {
 }
 
 export function subqKey(env: Record<string, string | undefined> = process.env, keyFile = subqKeyFile()): string | null {
+  const saved = savedCredential('SUBQ_API_KEY', env)
+  if (saved) return saved
   if (env.SUBQ_API_KEY) return env.SUBQ_API_KEY
   if (existsSync(keyFile)) {
     const text = readFileSync(keyFile, 'utf8')
