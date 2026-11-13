@@ -82,6 +82,14 @@ export default function App({ data, title, subtitle }) {
   - Wrap it in `<Query q={…}>{(data) => …}</Query>`.
   - Only call read tools.
 
+- Interaction, from Lynx:
+  - Pages: `Routes` with `Link` and `BackLink` (`useRoute` gives the path), so a table can open a page per person.
+  - Asking: `AskButton { prompt }` and `FollowUps { prompts }` put a question into the chat, and `askAgent(text)` does it from code. End an overview with 2 or 3 follow-ups.
+  - Pointing: `Pointable { about }` and `tellAgent(text)` tell the agent what the person is looking at without sending a message.
+  - Forms: `Button`, `Input`, `Select`, `Textarea`, `Field`, `Modal` and `useAction(fn)`.
+  - Also `Markdown`, `FullscreenButton`, `downloadCsv(name, rows)` and `openExternal(url)`. `ErrorNote` offers "Ask the agent to fix it".
+  - A view never sends anything itself: an ask goes through the chat, where every send gate still applies.
+
 A view that doesn't compile, imports from anywhere else, or breaks while drawing is refused with `reportFieldInvalid`, with the line or error to fix.
 
 The older `blocks` list (`heading`, `text`, `stat`, `barChart`, `lineChart`, `table`, `personList`, `callout`) still works and is drawn with the same kit.

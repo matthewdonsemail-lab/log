@@ -98,6 +98,14 @@ export default function App({ data, title, subtitle }) {
   - Wrap it in `<Query q={…}>{(data) => …}</Query>`.
   - Only call read tools.
 
+- Interaction, from Lynx:
+  - Pages: `Routes` with `Link` and `BackLink` (`useRoute` gives the path), so a table can open a page per person.
+  - Asking: `AskButton { prompt }` and `FollowUps { prompts }` put a question into the chat, and `askAgent(text)` does it from code. End an overview with 2 or 3 follow-ups.
+  - Pointing: `Pointable { about }` and `tellAgent(text)` tell the agent what the person is looking at without sending a message.
+  - Forms: `Button`, `Input`, `Select`, `Textarea`, `Field`, `Modal` and `useAction(fn)`.
+  - Also `Markdown`, `FullscreenButton`, `downloadCsv(name, rows)` and `openExternal(url)`. `ErrorNote` offers "Ask the agent to fix it".
+  - A view never sends anything itself: an ask goes through the chat, where every send gate still applies.
+
 A view that doesn't compile, imports from anywhere else, or breaks while drawing is refused with `reportFieldInvalid`, with the line or error to fix.
 
 The older `blocks` list (`heading`, `text`, `stat`, `barChart`, `lineChart`, `table`, `personList`, `callout`) still works and is drawn with the same kit.
@@ -123,6 +131,7 @@ Generative UI: show the person a view you build for their question, drawn in the
 One call: { title, data: { dms: { source: "twitterDmsBySender", since?: "30d", account?, limit? } } } reads log.db and draws a starter view (headline stats, messages per day, who messages most, a table of people with activity and their latest message).
 Your own view: add code, a React component in JSX. import { Page, Card, Grid, Row, Stack, Stat, Badge, Table, Bars, BarChart, LineChart, Sparkline, Avatar, Quote, Icon, Tabs, Details, Empty, Query, Time, fmt, rel, useTool, useData } from "log". End with export default function App({ data, title, subtitle }) { return <Page title={title}>…</Page> }.
 Components: Page { title, subtitle, actions }, Card { title, actions, pad }, Grid { min }, Row/Stack { gap }, Stat { label, value, hint, tone }, Badge { tone: neutral|good|bad|warn|accent }, Table { rows, columns: [{ key, title, render, align, width }], limit }, Bars { data: [{ label, value }], unit } for ranked lists, BarChart { data: [{ label, value }] } for columns, LineChart { series: [{ name, values }], labels }, Sparkline { values, width }, Avatar { name, size }, Quote, Icon { name } (Font Awesome 6 names in camelCase: xTwitter, discord, message, users, clock, fire…), Time { value } (relative), fmt(n). Plain CSS works with the --sb-* variables (--sb-text, --sb-muted, --sb-accent, --sb-surface).
+Interaction (from Lynx): Routes { routes: { "/": Overview, "/person/:handle": Person } } with Link { to } and BackLink for list-to-detail pages; AskButton { prompt } and FollowUps { prompts } put a question into the chat; askAgent(text); Pointable { about } and tellAgent(text) tell the agent what the person is looking at; ErrorNote offers Ask the agent to fix it; Button, Input, Select, Textarea, Field, Modal, useAction(fn) for forms; Markdown; FullscreenButton; downloadCsv(name, rows); openExternal(url). End overviews with 2 or 3 FollowUps. A send never happens from the view: AskButton prompts go through the chat and its gates.
 Data: data.<name> from the data field is there at once. useTool(name, args) calls a log read tool live from the view and returns { data, loading, error, reload }; wrap it in Query. Only call read tools.
 Shown inline in MCP Apps hosts (Claude, ChatGPT, Cursor); other hosts (Claude Code, Codex) get the same view as text. A view that doesn't compile is refused with reportFieldInvalid and the line to fix.
 Before first using this tool in a session, load its guide: getGuide({ topic: "ui" }) (Generative UI in the chat: the report tool, where you write a small React view against log's kit (in the spirit of Lynx workspaces) and log draws it with data from log.db, or send just data for a starter view; text everywhere else).

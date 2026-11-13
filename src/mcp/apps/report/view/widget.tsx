@@ -69,6 +69,16 @@ const host: KitHost = {
   data: {},
 };
 
+function hostActions(): void {
+  const can = app.getHostCapabilities() ?? {};
+  host.ask = can.message ? async (text) => void (await app.sendMessage({ role: "user", content: [{ type: "text", text }] })) : undefined;
+  host.tell = can.updateModelContext ? async (text) => void (await app.updateModelContext({ content: [{ type: "text", text }] })) : undefined;
+  host.open = can.openLinks ? async (url) => void (await app.openLink({ url })) : undefined;
+  host.download = can.downloadFile ? async (name, text, mimeType) => void (await app.downloadFile({ contents: [{ type: "resource", resource: { uri: `file:///${encodeURIComponent(name)}`, mimeType, text } }] })) : undefined;
+  const modes = app.getHostContext()?.availableDisplayModes ?? [];
+  host.fullscreen = modes.includes("fullscreen") ? async (on) => (await app.requestDisplayMode({ mode: on ? "fullscreen" : "inline" })).mode === "fullscreen" : undefined;
+}
+
 function loading() {
   root.render(
     <div className="sb-skeleton" aria-busy="true">
@@ -140,9 +150,16 @@ app.onhostcontextchanged = (context) => themed(context as McpUiHostContext);
 app.onteardown = async () => ({});
 
 const baked = document.getElementById("log:view-data")?.textContent;
-if (baked) draw(JSON.parse(baked) as ViewPayload);
+if (baked) {
+  const seen = ((window as unknown as { __logViewSent?: string[] }).__logViewSent = [] as string[]);
+  host.ask = async (text) => void seen.push(`ask: ${text}`);
+  host.tell = async (text) => void seen.push(`tell: ${text}`);
+  host.download = async (name, text) => void seen.push(`download: ${name} (${text.split("\n").length - 1} rows)`);
+  draw(JSON.parse(baked) as ViewPayload);
+}
 else {
   loading();
   await app.connect();
+  hostActions();
   themed(app.getHostContext());
 }

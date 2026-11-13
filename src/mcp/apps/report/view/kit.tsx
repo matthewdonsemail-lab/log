@@ -1,17 +1,29 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
-import type { CSSProperties, ReactNode } from "react";
+import type { ButtonHTMLAttributes, CSSProperties, InputHTMLAttributes, ReactNode, SelectHTMLAttributes, TextareaHTMLAttributes } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { faSvg } from "./icons.ts";
 
 const cx = (...parts: (string | false | null | undefined)[]) => parts.filter(Boolean).join(" ");
 
 export type ToolCaller = (tool: string, args: Record<string, unknown>) => Promise<unknown>;
 
-export interface KitHost {
+export interface HostActions {
+  ask?: (text: string) => Promise<void>;
+  tell?: (text: string) => Promise<void>;
+  open?: (url: string) => Promise<void>;
+  fullscreen?: (on: boolean) => Promise<boolean>;
+  download?: (name: string, text: string, mimeType: string) => Promise<void>;
+}
+
+export interface KitHost extends HostActions {
   call: ToolCaller;
   data: Record<string, unknown>;
 }
 
-const HostContext = createContext<KitHost>({ call: async () => Promise.reject(new Error("This view can't call log tools here")), data: {} });
+const offline: KitHost = { call: async () => Promise.reject(new Error("This view can't call log tools here")), data: {} };
+
+const HostContext = createContext<KitHost>(offline);
 
 export const KitProvider = HostContext.Provider;
 
@@ -19,7 +31,7 @@ export function call(tool: string, args: Record<string, unknown> = {}): Promise<
   return activeHost.call(tool, args);
 }
 
-let activeHost: KitHost = { call: async () => Promise.reject(new Error("This view can't call log tools here")), data: {} };
+let activeHost: KitHost = offline;
 
 export function setHost(host: KitHost): void {
   activeHost = host;
@@ -107,16 +119,25 @@ export const Empty = ({ title, children, action }: { title?: ReactNode; children
   </div>
 );
 
-export const ErrorNote = ({ error, retry }: { error?: Error | string | null; retry?: () => void }) => {
+export const ErrorNote = ({ error, retry, fix }: { error?: Error | string | null; retry?: () => void; fix?: string | false }) => {
   if (!error) return null;
+  const message = typeof error === "string" ? error : error.message;
+  const canAsk = fix !== false && Boolean(activeHost.ask);
   return (
     <div className="sb-error">
-      <span>{typeof error === "string" ? error : error.message}</span>
-      {retry && (
+      <span>{message}</span>
+      {(retry || canAsk) && (
         <span className="sb-error-acts">
-          <button className="sb-btn sm ghost" onClick={retry}>
-            Try again
-          </button>
+          {retry && (
+            <button className="sb-btn sm ghost" onClick={retry}>
+              Try again
+            </button>
+          )}
+          {canAsk && (
+            <button className="sb-btn sm ghost" onClick={() => void askAgent(`The log view shows this error${fix ? ` (${fix})` : ""}. Find out why and fix it.\n\n${message.slice(0, 2000)}`)}>
+              Ask the agent to fix it
+            </button>
+          )}
         </span>
       )}
     </div>
@@ -365,4 +386,221 @@ export function Sparkline({ values, width = 96, height = 24, color = "var(--sb-a
 
 export function Quote({ children }: { children?: ReactNode }) {
   return <blockquote className="sb-quote">{children}</blockquote>;
+}
+
+export function askAgent(text: string): Promise<void> {
+  return activeHost.ask ? activeHost.ask(text) : Promise.reject(new Error("This host can't take a message from the view"));
+}
+
+export function tellAgent(text: string): Promise<void> {
+  return activeHost.tell ? activeHost.tell(text) : Promise.resolve();
+}
+
+export function openExternal(url: string): Promise<void> {
+  if (activeHost.open) return activeHost.open(url);
+  window.open(url, "_blank", "noopener");
+  return Promise.resolve();
+}
+
+export const canAsk = (): boolean => Boolean(activeHost.ask);
+
+const csvCell = (value: unknown): string => {
+  const text = value === null || value === undefined ? "" : typeof value === "object" ? JSON.stringify(value) : String(value);
+  return /[",\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+};
+
+export function toCsv(rows: Record<string, unknown>[], columns?: string[]): string {
+  const keys = columns ?? [...new Set(rows.flatMap((row) => Object.keys(row)))];
+  return [keys.map(csvCell).join(","), ...rows.map((row) => keys.map((key) => csvCell(row[key])).join(","))].join("\n");
+}
+
+export function downloadCsv(name: string, rows: Record<string, unknown>[], columns?: string[]): Promise<void> {
+  const text = toCsv(rows, columns);
+  if (activeHost.download) return activeHost.download(name.endsWith(".csv") ? name : `${name}.csv`, text, "text/csv");
+  return Promise.reject(new Error("This host can't save files from the view"));
+}
+
+export function Button({ variant = "default", size, busy, children, ...rest }: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: "default" | "primary" | "ghost" | "danger"; size?: "sm"; busy?: boolean }) {
+  return (
+    <button {...rest} disabled={rest.disabled || busy} className={cx("sb-btn", variant, size, rest.className)}>
+      {busy && <Spinner />}
+      {children}
+    </button>
+  );
+}
+
+export const Input = (p: InputHTMLAttributes<HTMLInputElement>) => <input {...p} className={cx("sb-input", p.className)} />;
+export const Textarea = (p: TextareaHTMLAttributes<HTMLTextAreaElement>) => <textarea {...p} className={cx("sb-input", p.className)} />;
+export const Select = (p: SelectHTMLAttributes<HTMLSelectElement>) => <select {...p} className={cx("sb-input sb-select", p.className)} />;
+export const Field = ({ label, hint, children }: { label: ReactNode; hint?: ReactNode; children: ReactNode }) => (
+  <label className="sb-field">
+    <span>{label}</span>
+    {children}
+    {hint && <small>{hint}</small>}
+  </label>
+);
+
+export function Modal({ title, onClose, children, footer, width = 480 }: { title?: ReactNode; onClose: () => void; children?: ReactNode; footer?: ReactNode; width?: number }) {
+  return (
+    <div className="sb-overlay" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="sb-modal" style={{ width }} role="dialog">
+        {title && <h2>{title}</h2>}
+        <div className="sb-modal-body">{children}</div>
+        {footer && <footer>{footer}</footer>}
+      </div>
+    </div>
+  );
+}
+
+export function useAction<A extends unknown[], R>(fn: (...args: A) => Promise<R>): { run: (...args: A) => Promise<R | undefined>; running: boolean; error: Error | null; result: R | undefined } {
+  const [state, setState] = useState<{ running: boolean; error: Error | null; result: R | undefined }>({ running: false, error: null, result: undefined });
+  const run = useCallback(
+    async (...args: A) => {
+      setState((s) => ({ ...s, running: true, error: null }));
+      try {
+        const result = await fn(...args);
+        setState({ running: false, error: null, result });
+        return result;
+      } catch (error) {
+        setState((s) => ({ ...s, running: false, error: error instanceof Error ? error : new Error(String(error)) }));
+        return undefined;
+      }
+    },
+    [fn],
+  );
+  return { ...state, run };
+}
+
+export function AskButton({ prompt, children = "Ask the agent", variant = "default", size = "sm" }: { prompt: string; children?: ReactNode; variant?: "default" | "primary" | "ghost"; size?: "sm" }) {
+  const [sent, setSent] = useState(false);
+  if (!activeHost.ask) return null;
+  return (
+    <Button variant={variant} size={size} disabled={sent} onClick={() => void askAgent(prompt).then(() => setSent(true))}>
+      {sent ? "Sent to the chat" : children}
+    </Button>
+  );
+}
+
+export function FollowUps({ prompts, title = "Ask next" }: { prompts: string[]; title?: ReactNode }) {
+  if (!activeHost.ask || !prompts.length) return null;
+  return (
+    <div className="sb-followups">
+      <span className="sb-stat-hint">{title}</span>
+      <div className="sb-followup-row">
+        {prompts.map((p) => (
+          <AskButton key={p} prompt={p}>
+            {p}
+          </AskButton>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function Pointable({ about, children }: { about: string; children: ReactNode }) {
+  const [on, setOn] = useState(false);
+  return (
+    <div
+      className={cx("sb-point", on && "on")}
+      onClick={() => {
+        setOn(true);
+        void tellAgent(`The person is pointing at this in the log view: ${about}`);
+      }}
+      title="Click to show the agent what you mean"
+    >
+      {children}
+    </div>
+  );
+}
+
+export function FullscreenButton() {
+  const [full, setFull] = useState(false);
+  if (!activeHost.fullscreen) return null;
+  return (
+    <Button size="sm" variant="ghost" onClick={() => void activeHost.fullscreen?.(!full).then((now) => setFull(now))}>
+      {full ? "Exit full screen" : "Full screen"}
+    </Button>
+  );
+}
+
+export function Markdown({ children }: { children: string }) {
+  return (
+    <div className="sb-md">
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        components={{
+          a: ({ href, children: inner }) => (
+            <a
+              href={href}
+              onClick={(e) => {
+                e.preventDefault();
+                if (href) void openExternal(href);
+              }}
+            >
+              {inner}
+            </a>
+          ),
+        }}
+      >
+        {children}
+      </ReactMarkdown>
+    </div>
+  );
+}
+
+const RouteContext = createContext<{ path: string; navigate: (to: string) => void }>({ path: "/", navigate: () => {} });
+
+const matchRoute = (pattern: string, path: string): Record<string, string> | null => {
+  const want = pattern.split("/").filter(Boolean);
+  const have = path.split("/").filter(Boolean);
+  if (want.length !== have.length) return null;
+  const params: Record<string, string> = {};
+  for (let i = 0; i < want.length; i++) {
+    if (want[i].startsWith(":")) params[want[i].slice(1)] = decodeURIComponent(have[i]);
+    else if (want[i] !== have[i]) return null;
+  }
+  return params;
+};
+
+export function Routes({ routes, start = "/" }: { routes: Record<string, (props: Record<string, string>) => ReactNode>; start?: string }) {
+  const [path, setPath] = useState(start);
+  const navigate = useCallback((to: string) => {
+    setPath(to);
+    if (typeof window !== "undefined") window.scrollTo(0, 0);
+  }, []);
+  for (const [pattern, View] of Object.entries(routes)) {
+    const params = matchRoute(pattern, path);
+    if (params) return <RouteContext.Provider value={{ path, navigate }}>{View(params)}</RouteContext.Provider>;
+  }
+  return (
+    <RouteContext.Provider value={{ path, navigate }}>
+      <Empty title="No page here" action={<Button size="sm" onClick={() => navigate(start)}>Back</Button>} />
+    </RouteContext.Provider>
+  );
+}
+
+export const useRoute = () => useContext(RouteContext);
+
+export function Link({ to, children }: { to: string; children: ReactNode }) {
+  const { navigate } = useRoute();
+  return (
+    <a
+      href={to}
+      className="sb-link"
+      onClick={(e) => {
+        e.preventDefault();
+        navigate(to);
+      }}
+    >
+      {children}
+    </a>
+  );
+}
+
+export function BackLink({ to = "/", children = "Back" }: { to?: string; children?: ReactNode }) {
+  return (
+    <Link to={to}>
+      <span className="sb-back">‹ {children}</span>
+    </Link>
+  );
 }
