@@ -135,5 +135,174 @@
         }
       ]
     }
+  },
+  {
+    "slug": "cursor",
+    "icon": "faCursorMark",
+    "title": "log for Cursor: connect log to Cursor and run your DMs from the editor",
+    "description": "Add log to Cursor with one mcp.json entry, then tell everyone who asked the moment you ship, answer bug reports and read every inbox in your own voice, from the same Agent chat.",
+    "card": {
+      "lead": "your",
+      "name": "Cursor",
+      "pitch": "DMs, run from <span class=\"u\">Cursor</span>"
+    },
+    "headline": [
+      "run your DMs",
+      "from"
+    ],
+    "agent": {
+      "name": "Cursor",
+      "logo": "/logos/tools/cursor.svg"
+    },
+    "chat": {
+      "ask": "i shipped dark mode, tell who asked",
+      "done": "Told 4 people, each in your voice.",
+      "rows": [
+        {
+          "who": "dana_builds",
+          "status": "Sent"
+        },
+        {
+          "who": "mila",
+          "status": "Sent"
+        }
+      ]
+    }
+  },
+  {
+    "slug": "claude",
+    "icon": "faClaudeMark",
+    "title": "log for Claude: connect log to Claude Code or the Claude app and clear every inbox",
+    "description": "Add log to Claude Code with claude mcp add, or to the Claude app as a custom connector, then ask who is waiting on you everywhere and answer each person in your own voice.",
+    "card": {
+      "lead": "your",
+      "name": "Claude",
+      "pitch": "every inbox, run from <span class=\"u\">Claude</span>"
+    },
+    "headline": [
+      "run your DMs",
+      "from"
+    ],
+    "agent": {
+      "name": "Claude",
+      "logo": "/logos/tools/claude-desktop.svg"
+    },
+    "chat": {
+      "ask": "who is waiting on me everywhere?",
+      "done": "3 people. Replied to each in your voice.",
+      "rows": [
+        {
+          "who": "Sarah",
+          "status": "Replied"
+        },
+        {
+          "who": "Priya",
+          "status": "Replied"
+        },
+        {
+          "who": "maya.makes",
+          "status": "Replied"
+        }
+      ]
+    }
+  },
+  {
+    "slug": "chatgpt",
+    "icon": "faChatgptMark",
+    "title": "log for ChatGPT: add log as a custom MCP server and research your buyers",
+    "description": "Add log to ChatGPT as a custom MCP server, then research what your buyers ask for, sort your inbox and draft each reply in your own voice, sent only when you say so.",
+    "card": {
+      "lead": "your",
+      "name": "ChatGPT",
+      "pitch": "buyers researched by <span class=\"u\">ChatGPT</span>"
+    },
+    "headline": [
+      "run your DMs",
+      "from"
+    ],
+    "agent": {
+      "name": "ChatGPT",
+      "logo": "/logos/tools/chatgpt.svg"
+    },
+    "chat": {
+      "ask": "what is r/smallbusiness asking for?",
+      "done": "Read 40 posts. Here is what they want:",
+      "rows": [
+        {
+          "who": "a booking website",
+          "status": "#1"
+        },
+        {
+          "who": "more leads",
+          "status": "#2"
+        }
+      ]
+    }
+  },
+  {
+    "slug": "hermes",
+    "icon": "faHermesMark",
+    "title": "log for Hermes: add log to Hermes Agent and approve replies from your phone",
+    "description": "Add log to Hermes Agent in config.yaml, then get a scheduled list of who is waiting on you on Telegram, with replies drafted in your voice and sent when you say yes.",
+    "card": {
+      "lead": "your",
+      "name": "Hermes",
+      "pitch": "inboxes watched by <span class=\"u\">Hermes</span>, all day"
+    },
+    "headline": [
+      "run your DMs",
+      "from"
+    ],
+    "agent": {
+      "name": "Hermes",
+      "logo": "/logos/tools/hermes.svg"
+    },
+    "chat": {
+      "ask": "every morning, who is waiting on me?",
+      "done": "3 waiting. Sarah’s reply is sent.",
+      "rows": [
+        {
+          "who": "Sarah",
+          "status": "Sent"
+        },
+        {
+          "who": "Priya",
+          "status": "Drafted"
+        }
+      ]
+    }
+  },
+  {
+    "slug": "grok",
+    "icon": "faGrokMark",
+    "title": "log for Grok: add log as a custom connector and answer your X DMs",
+    "description": "Add log as a custom connector on grok.com, or as an MCP tool in the xAI API, then ask Grok who is waiting on you in your X DMs and answer each person in your own voice.",
+    "card": {
+      "lead": "your",
+      "name": "Grok",
+      "pitch": "X DMs answered from <span class=\"u\">Grok</span>"
+    },
+    "headline": [
+      "run your DMs",
+      "from"
+    ],
+    "agent": {
+      "name": "Grok",
+      "logo": "/logos/tools/grokBot.svg"
+    },
+    "chat": {
+      "ask": "who is waiting in my x dms?",
+      "done": "2 people. Replied in your voice.",
+      "rows": [
+        {
+          "who": "@dana_builds",
+          "status": "Replied"
+        },
+        {
+          "who": "@leo_ops",
+          "status": "Replied"
+        }
+      ]
+    }
   }
 ]

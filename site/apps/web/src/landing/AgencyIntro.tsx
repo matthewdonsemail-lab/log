@@ -1,4 +1,5 @@
 import { Dashed } from './Control'
+import { HARNESS_PAGES } from './useCases/harnessPages'
 
 const WHY: Record<string, { name: string; why: string }> = {
   x: { name: 'X', why: 'so the people in your DMs and replies turn into calls, answered in your own voice before they go cold' },
@@ -6,6 +7,7 @@ const WHY: Record<string, { name: string; why: string }> = {
   slack: { name: 'Slack', why: 'so the clients and communities you’re already in turn into your next jobs' },
   instagram: { name: 'Instagram', why: 'so everyone who DMs about your offer gets a real answer the moment it lands, not hours later' },
   reddit: { name: 'Reddit', why: 'so the research is done for you and every reply you send from your real account is the one that helps' },
+  ...Object.fromEntries(HARNESS_PAGES.map((page) => [page.platformId, { name: 'social media', why: page.harness!.why }])),
 }
 
 export function AgencyIntro({ platformId }: { platformId?: string }) {

@@ -1,12 +1,12 @@
 import { useEffect, useRef } from 'react'
+import { SiteHeader } from '../SiteHeader'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDiscord, faXTwitter } from '@fortawesome/free-brands-svg-icons'
 import { faAnglesRight, faArrowRight, faComments, faImage, faMicrophone } from '@fortawesome/free-solid-svg-icons'
-import { Header } from '../Header'
 import { SiteFooter } from '../SiteFooter'
 import { ClayClouds } from '../ClayClouds'
 import { PLATFORMS } from '../PlatformSuite'
-import { LOG_REPO_URL, RepoLink, parseRepoUrl } from '../RepoLink'
+import { LOG_REPO_URL, RepoLink } from '../RepoLink'
 import { DitherFade } from './DitherFade'
 import { HowItWorks } from './HowItWorks'
 import { PlatformScroll } from './platformStories'
@@ -18,7 +18,6 @@ import { REA_LOOKSMAXXING } from './reaLooksmaxxing'
 
 const HAND = { fontFamily: "'Schoolbell', 'Cabin Sketch', cursive" }
 const STICKER = 'sticker-word inline-block px-[0.08em] text-[1.18em] leading-none'
-const LOG_REPO = parseRepoUrl(LOG_REPO_URL)!
 const X = PLATFORMS.find((platform) => platform.id === 'x')!
 const ICONS = { platform: faXTwitter, meme: faImage, voice: faMicrophone, react: faComments, voiceGate: faComments }
 const iconOfTool = (tool: string, kind: keyof typeof ICONS) => (tool.startsWith('discord') ? faDiscord : ICONS[kind])
@@ -139,14 +138,7 @@ export function ReaLooksmaxxingPage() {
   }, [])
   return (
     <div className="flex min-h-screen flex-col bg-white" style={{ fontFamily: "'Satoshi', 'Inter', system-ui, sans-serif" }}>
-      <Header
-        tone="light"
-        homeHref="/"
-        logoLabel="ListeningKit"
-        githubRepo={`${LOG_REPO.owner}/${LOG_REPO.repo}`}
-        className="z-[70]"
-        accountItems={[{ href: LOG_REPO_URL, label: 'Set up log', variant: 'cta' }]}
-      />
+      <SiteHeader cta={{ href: LOG_REPO_URL, label: 'Set up log' }} />
       <Hero />
       <PlatformScroll platformId="reaLooksmaxxing" ctaHref={LOG_REPO_URL} />
       <Control

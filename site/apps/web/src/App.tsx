@@ -93,6 +93,11 @@ export function App() {
             <Route path="/slack" element={<UseCasesPage key="slack" platform="slack" />} />
             <Route path="/instagram" element={<UseCasesPage key="instagram" platform="instagram" />} />
             <Route path="/reddit" element={<UseCasesPage key="reddit" platform="reddit" />} />
+            <Route path="/cursor" element={<UseCasesPage key="cursor" platform="cursor" />} />
+            <Route path="/claude" element={<UseCasesPage key="claude" platform="claude" />} />
+            <Route path="/chatgpt" element={<UseCasesPage key="chatgpt" platform="chatgpt" />} />
+            <Route path="/hermes" element={<UseCasesPage key="hermes" platform="hermes" />} />
+            <Route path="/grok" element={<UseCasesPage key="grok" platform="grok" />} />
             <Route path="/mcp" element={<McpPage />} />
             <Route path="/rea-looksmaxxing" element={<ReaLooksmaxxingPage />} />
             <Route path="/devlog" element={<DevlogIndexPage />} />

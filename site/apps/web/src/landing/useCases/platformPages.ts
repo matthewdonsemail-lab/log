@@ -1,6 +1,9 @@
 import type { ShowcaseId } from './useCaseCatalog'
+import type { HarnessId, HarnessSetup } from './harnessPages'
 
-export type PageId = 'slack' | 'instagram' | 'discord' | 'twitter' | 'reddit'
+export type PlatformPageId = 'slack' | 'instagram' | 'discord' | 'twitter' | 'reddit'
+
+export type PageId = PlatformPageId | HarnessId
 
 export type RunCall = { tool: string; done: string; acts: boolean }
 
@@ -44,6 +47,7 @@ export type PlatformPage = {
   prompt: string
   moments: Moment[]
   play: Play
+  harness?: HarnessSetup
 }
 
 export const SLACK_RUN: Run = {

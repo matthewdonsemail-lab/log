@@ -14,7 +14,7 @@ if (live.trim() !== key) throw new Error(`${SITE}/${keyFile} does not serve the 
 
 const xml = await fetch(`${SITE}/sitemap.xml`).then((response) => response.text())
 const urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]).filter((url) => url.startsWith(SITE))
-for (const page of ['twitter', 'discord', 'slack', 'instagram', 'reddit']) urls.push(`${SITE}/${page}.md`)
+for (const page of ['twitter', 'discord', 'slack', 'instagram', 'reddit', 'cursor', 'claude', 'chatgpt', 'hermes', 'grok']) urls.push(`${SITE}/${page}.md`)
 urls.push(`${SITE}/llms.txt`, `${SITE}/llms-full.txt`)
 
 const response = await fetch('https://api.indexnow.org/indexnow', {

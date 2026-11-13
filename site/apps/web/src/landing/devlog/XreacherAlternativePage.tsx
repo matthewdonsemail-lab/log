@@ -1,10 +1,10 @@
 import { useEffect, type ReactNode } from 'react'
+import { SiteHeader } from '../SiteHeader'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAnglesRight, faArrowRight } from '@fortawesome/free-solid-svg-icons'
-import { Header } from '../Header'
 import { SiteFooter } from '../SiteFooter'
 import { ClayClouds } from '../ClayClouds'
-import { LOG_REPO_URL, RepoLink, parseRepoUrl } from '../RepoLink'
+import { LOG_REPO_URL, RepoLink } from '../RepoLink'
 import { DitherFade } from '../useCases/DitherFade'
 import { PromptCta } from '../useCases/UseCasesPage'
 import { Control } from '../Control'
@@ -31,7 +31,6 @@ function Doc({ to, children }: { to: string; children: ReactNode }) {
     </a>
   )
 }
-const LOG_REPO = parseRepoUrl(LOG_REPO_URL)!
 const X_PAGE = { ...pageForPlatform('x')!, play: XREACHER_ALTERNATIVE }
 const ARTICLE = articleOf('xreacher-alternative')
 export const XREACHER_FAQ: FaqItem[] = [
@@ -324,14 +323,7 @@ export function XreacherAlternativePage() {
   useMeta()
   return (
     <div className="flex min-h-screen flex-col bg-white" style={{ fontFamily: "'Satoshi', 'Inter', system-ui, sans-serif" }}>
-      <Header
-        tone="light"
-        homeHref="/"
-        logoLabel="ListeningKit"
-        githubRepo={`${LOG_REPO.owner}/${LOG_REPO.repo}`}
-        className="z-[70]"
-        accountItems={[{ href: LOG_REPO_URL, label: 'Set up log', variant: 'cta' }]}
-      />
+      <SiteHeader cta={{ href: LOG_REPO_URL, label: 'Set up log' }} />
       <Hero />
       <XreacherStory />
       <Control />

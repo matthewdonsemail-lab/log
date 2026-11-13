@@ -240,3 +240,9 @@ media-outlet video {
     animation: none;
   }
 }
+
+.fa-cursorMark path,
+.fa-hermesMark path,
+.fa-grokMark path {
+  fill-rule: evenodd;
+}
