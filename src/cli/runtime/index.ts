@@ -60,16 +60,27 @@ export async function toolManifest(args: Record<string, unknown>): Promise<Resul
   const tools = toolsFromCommands(COMMANDS, { shell: false })
     .filter((tool) => names.has(tool.name))
     .map((tool) => ({ name: tool.name, title: tool.title, description: tool.description, inputSchema: tool.inputSchema, annotations: tool.annotations }));
-  if (args.ui !== true) return { state: "succeeded", result: { tools } };
-  const { appTools, withBrowserViewUi } = await import("../../mcp/apps/index.ts");
-  return { state: "succeeded", result: { tools: [...tools.map((tool) => withBrowserViewUi(tool as typeof tool & { _meta?: Record<string, unknown> })), ...appTools()] } };
+  const { appTools, reportTool, withBrowserViewUi, withReportUi } = await import("../../mcp/apps/index.ts");
+  const report = names.has("report") ? [args.ui === true ? withReportUi(reportTool()) : reportTool()] : [];
+  if (args.ui !== true) return { state: "succeeded", result: { tools: [...tools, ...report] } };
+  return { state: "succeeded", result: { tools: [...tools.map((tool) => withBrowserViewUi(tool as typeof tool & { _meta?: Record<string, unknown> })), ...report, ...appTools()] } };
 }
 
 export async function uiResources(tool: string, args: Record<string, unknown>): Promise<ResultPayload> {
-  const { BROWSER_VIEW_URI, browserViewResource, readBrowserViewResource } = await import("../../mcp/apps/index.ts");
-  if (tool === "uiResourcesList") return { state: "succeeded", result: { resources: [browserViewResource()] } };
-  if (args.uri !== BROWSER_VIEW_URI) return { state: "failed", error: { code: "resourceNotFound", message: "no such ui resource" } };
-  return { state: "succeeded", result: await readBrowserViewResource() };
+  const { BROWSER_VIEW_URI, REPORT_URI, browserViewResource, readBrowserViewResource, readReportResource, reportResource } = await import("../../mcp/apps/index.ts");
+  if (tool === "uiResourcesList") return { state: "succeeded", result: { resources: [browserViewResource(), reportResource()] } };
+  if (args.uri === BROWSER_VIEW_URI) return { state: "succeeded", result: await readBrowserViewResource() };
+  if (args.uri === REPORT_URI) return { state: "succeeded", result: await readReportResource() };
+  return { state: "failed", error: { code: "resourceNotFound", message: "no such ui resource" } };
+}
+
+export async function reportOperation(args: Record<string, unknown>): Promise<ResultPayload> {
+  const { runReport } = await import("../../mcp/apps/index.ts");
+  const { ui, ...spec } = args;
+  const answer = runReport(spec, ui === true);
+  const text = answer.content.map((part) => (part.type === "text" ? part.text : "")).join("\n");
+  if (answer.isError) return { state: "failed", error: { code: text.split(":")[0] || "reportFieldInvalid", message: text.slice(0, 2000) } };
+  return { state: "succeeded", result: { text, spec: answer.structuredContent ?? null } };
 }
 
 export function isolationRefusal(env: Record<string, string | undefined>): string | null {
@@ -91,6 +102,7 @@ export function toolRunner(callTool: ToolCaller): RunTool {
     if (tool === "accountsList") return accountsList(args);
     if (tool === "toolManifest") return toolManifest(args);
     if (tool === "uiResourcesList" || tool === "uiResourceRead") return uiResources(tool, args);
+    if (tool === "report") return reportOperation(args);
     if (isConsoleOperation(tool)) return consoleOperation(tool, args, callTool);
     const answer = await callTool(tool, args);
     const content = (answer.structuredContent ?? {}) as Record<string, unknown>;

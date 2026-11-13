@@ -28,6 +28,9 @@ def answer(envelope: dict) -> dict:
         return {"kind": "result", "payload": {"state": "succeeded", "result": {"resources": [{"uri": "ui://log/browserView", "name": "Live browser", "mimeType": "text/html;profile=mcp-app"}, {"uri": "log://agents", "name": "not ui"}]}}}
     if tool == "uiResourceRead":
         return {"kind": "result", "payload": {"state": "succeeded", "result": {"contents": [{"uri": args["uri"], "mimeType": "text/html;profile=mcp-app", "text": "<html>view</html>"}]}}}
+    if tool == "report":
+        spec = {"title": args["title"], "blocks": []} if args.get("ui") else None
+        return {"kind": "result", "payload": {"state": "succeeded", "result": {"text": "# " + args["title"], "spec": spec}}}
     if tool == "browserViewStream":
         return {"kind": "result", "payload": {"state": "succeeded", "result": {"generation": "a" * 32, "stream": {"kind": "voxl", "url": STREAM_URL, "page": {"width": 10, "height": 10}, "window": {"left": 0, "top": 0, "width": 10, "height": 10}}}}}
     return {"kind": "result", "payload": {"state": "succeeded", "result": {"stdout": "ok"}}}
@@ -117,3 +120,18 @@ def test_app_tools_cannot_be_run_as_team_operations(world: World) -> None:
     world.app.cookies.set(SESSION_COOKIE, world.tokens["owner"])
     response = world.app.post(f"/api/v1/teams/{world.teamId}/operations", json={"operationId": "00000000-0000-4000-8000-000000000002", "tool": "browserViewStream", "args": {}}, headers={CSRF_HEADER: csrf_token("sessionSecret", world.tokens["owner"])})
     assert response.status_code == 400
+
+
+def test_a_report_reaches_widget_clients_as_a_spec_and_others_as_markdown(world: World) -> None:
+    link = attach(world, answer)
+    token = bearer(world)
+    session = initialize(world, token, UI_CAPS)
+    drawn = rpc(world, token, "tools/call", {"name": "report", "arguments": {"title": "Fake report", "blocks": []}}, session=session).json()["result"]
+    assert drawn["structuredContent"]["title"] == "Fake report"
+    assert drawn["content"][0]["text"] == "# Fake report"
+    sent = next(envelope for envelope in link.sent if envelope["payload"]["tool"] == "report")
+    assert sent["payload"]["args"]["ui"] is True
+    plain = initialize(world, token, {})
+    text = rpc(world, token, "tools/call", {"name": "report", "arguments": {"title": "Fake report", "blocks": []}}, session=plain).json()["result"]
+    assert "structuredContent" not in text
+    assert text["content"][0]["text"] == "# Fake report"

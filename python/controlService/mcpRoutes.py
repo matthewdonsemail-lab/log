@@ -151,6 +151,8 @@ def mcp_router(settings: Settings, engine: Engine, dispatcher: Dispatcher) -> AP
             return {"isError": True, "content": [{"type": "text", "text": "unknown tool"}]}
         if name in APP_TOOLS:
             return await call_app_tool(actor, name, arguments)
+        if name == "report":
+            arguments = {**arguments, "ui": ui}
         try:
             view = await dispatcher.run(actor, uuid.uuid4(), name, arguments)
         except ApiError as error:
@@ -159,6 +161,12 @@ def mcp_router(settings: Settings, engine: Engine, dispatcher: Dispatcher) -> AP
             detail = (view.error or {}).get("message") if isinstance(view.error, dict) else None
             text = tool_text(view.result) if view.result else (detail or f"the operation is {view.state}; ask again later with the same request")
             return {"isError": True, "content": [{"type": "text", "text": f"{view.state}: {text}"}]}
+        if name == "report" and isinstance(view.result, dict):
+            spec = view.result.get("spec")
+            answer = {"content": [{"type": "text", "text": str(view.result.get("text") or "")}]}
+            if isinstance(spec, dict):
+                answer["structuredContent"] = spec
+            return answer
         answer = {"content": [{"type": "text", "text": tool_text(view.result)}]}
         if ui and name == "browserView" and isinstance(view.result, dict):
             answer["structuredContent"] = view.result
