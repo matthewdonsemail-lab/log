@@ -107,7 +107,7 @@ describe('a group People tab that answered with its newest members', () => {
     const { resolveCallOf } = await import('./helpers/pageState')
     const state = pageStateOf(MEMBERS, '- heading "New to the group"', { exchanges: [refetch([{ node: { __typename: 'User', id: '1' } }])] })
     expect(state).toMatchObject({ id: 'groupMembersList', person: false, needsNothing: true })
-    expect(resolveCallOf(state!, { account: '61594063207669', text: '' })).toBeNull()
+    expect(resolveCallOf(state!, { account: '99900000000001', text: '' })).toBeNull()
     expect(pageStateOf(MEMBERS, '', { exchanges: [refetch([])] })).toBeNull()
     expect(pageStateOf('https://www.facebook.com/groups/junkremovalwinners', '', { exchanges: [refetch([{ node: { __typename: 'User', id: '1' } }])] })).toBeNull()
     expect(pageStateOf(MEMBERS, '- heading "New to the group"')).toBeNull()

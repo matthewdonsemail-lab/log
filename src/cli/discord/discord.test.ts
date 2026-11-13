@@ -73,14 +73,14 @@ describe("log discord session check", () => {
     expect(loads.stdout.trim()).toBe("Discord");
   }, 20_000);
   test("chats lists the account's DMs and groups from the engine", async () => {
-    const r = await run(["discord", "chats", "--account", "discordOne"], { answer: { ok: true, loginState: "loggedIn", chats: [{ id: "1547936265436012645", kind: "group", name: "log", members: ["QuadScorpion", "John"] }] }, refreshed: null });
+    const r = await run(["discord", "chats", "--account", "discordOne"], { answer: { ok: true, loginState: "loggedIn", chats: [{ id: "1000000000000000001", kind: "group", name: "log", members: ["QuietSparrow", "Jon"] }] }, refreshed: null });
     expect(r.code).toBe(0);
     expect(r.calls).toEqual(["discordOne:chats"]);
-    expect(r.out).toContain("1547936265436012645  group  log  (QuadScorpion, John)");
+    expect(r.out).toContain("1000000000000000001  group  log  (QuietSparrow, Jon)");
   });
 
   test("send without --live is a dry run and calls nothing", async () => {
-    const r = await run(["discord", "send", "--account", "discordOne", "--channel", "1547936265436012645", "--text", "yo"]);
+    const r = await run(["discord", "send", "--account", "discordOne", "--channel", "1000000000000000001", "--text", "yo"]);
     expect(r.code).toBe(0);
     expect(r.out).toContain("dry run");
     expect(r.calls).toEqual([]);
@@ -93,7 +93,7 @@ describe("log discord session check", () => {
   });
 
   test("send --live goes to the engine and Discord's message id decides", async () => {
-    const r = await run(["discord", "send", "--account", "discordOne", "--channel", "1547936265436012645", "--text", "yo", "--approvedBy", "matt", "--live"], { answer: { ok: true, event: "sent", loginState: "loggedIn", messageId: "1564911647925997649", channelId: "1547936265436012645", timestamp: "2026-10-28T08:00:11Z" }, refreshed: null });
+    const r = await run(["discord", "send", "--account", "discordOne", "--channel", "1000000000000000001", "--text", "yo", "--approvedBy", "matt", "--live"], { answer: { ok: true, event: "sent", loginState: "loggedIn", messageId: "1564911647925997649", channelId: "1000000000000000001", timestamp: "2026-10-28T08:00:11Z" }, refreshed: null });
     expect(r.code).toBe(0);
     expect(r.calls).toEqual(["discordOne:send"]);
     expect(r.out).toContain("sent message 1564911647925997649");
@@ -166,19 +166,19 @@ describe("log discord session check", () => {
       err: () => {},
       directDiscord: (_account, spec) => {
         sent.push(spec);
-        if (spec.action === "chats") return { answer: { ok: true, chats: [{ id: "1547936265436012645", kind: "group", name: "log", members: ["John"] }, { id: "1555254123148873869", kind: "dm", name: null, members: ["Jilly"] }] }, refreshed: null };
+        if (spec.action === "chats") return { answer: { ok: true, chats: [{ id: "1000000000000000001", kind: "group", name: "log", members: ["Jon"] }, { id: "1555254123148873869", kind: "dm", name: null, members: ["Jinny"] }] }, refreshed: null };
         return { answer: { ok: true, event: "sent", messageId: "1", channelId: String(spec.channel), timestamp: "t" }, refreshed: null };
       },
     });
     expect(code).toBe(0);
-    expect(sent).toMatchObject([{ action: "chats" }, { action: "send", channel: "1547936265436012645" }]);
+    expect(sent).toMatchObject([{ action: "chats" }, { action: "send", channel: "1000000000000000001" }]);
   });
   test("every line after the first goes as a continuation, so the governor doesn't stack its own gap on the line gap", async () => {
     const wait = discordDeps.wait;
     discordDeps.wait = async () => {};
     const sent: Record<string, unknown>[] = [];
     try {
-      const code = await runCli(["discord", "send", "--account", "discordOne", "--channel", "1547936265436012645", "--text", "first line here\nsecond line here", "--approvedBy", "matt", "--live"], {
+      const code = await runCli(["discord", "send", "--account", "discordOne", "--channel", "1000000000000000001", "--text", "first line here\nsecond line here", "--approvedBy", "matt", "--live"], {
         twenty: fixture(),
         out: () => {},
         err: () => {},
@@ -219,7 +219,7 @@ describe("log discord session check", () => {
         gated.push(send as Record<string, unknown>);
         return { ok: true, line: "brief gate: passed (test)" };
       };
-      const code = await runCli(["discord", "send", "--account", "discordOne", "--channel", "1547936265436012645", "--text", "here is the guide\nhave a read", "--file", guide, "--brief", "--approvedBy", "matt", "--live"], { twenty: fixture(), out: () => {}, err: () => {}, directDiscord: engine as never }).finally(() => {
+      const code = await runCli(["discord", "send", "--account", "discordOne", "--channel", "1000000000000000001", "--text", "here is the guide\nhave a read", "--file", guide, "--brief", "--approvedBy", "matt", "--live"], { twenty: fixture(), out: () => {}, err: () => {}, directDiscord: engine as never }).finally(() => {
         gateDeps.gate = gate;
       });
       expect(code).toBe(0);
@@ -229,7 +229,7 @@ describe("log discord session check", () => {
       expect(sends[1].files).toEqual([guide]);
       sent.length = 0;
       const out: string[] = [];
-      const refused = await runCli(["discord", "send", "--account", "discordOne", "--channel", "1547936265436012645", "--text", "here", "--file", stray, "--approvedBy", "matt", "--live"], { twenty: fixture(), out: (l) => out.push(l), err: (l) => out.push(l), directDiscord: engine as never });
+      const refused = await runCli(["discord", "send", "--account", "discordOne", "--channel", "1000000000000000001", "--text", "here", "--file", stray, "--approvedBy", "matt", "--live"], { twenty: fixture(), out: (l) => out.push(l), err: (l) => out.push(l), directDiscord: engine as never });
       expect(refused).toBe(2);
       expect(out.join("\n")).toContain("fileRefused");
       expect(sent).toHaveLength(0);
@@ -280,29 +280,29 @@ describe("log discord session check", () => {
 
 describe("log discord send reads the copy for AI artifacts (rule 111)", () => {
   test("copy with a zero-width character is refused with aiArtifacts and nothing is called, even with --live", async () => {
-    const r = await run(["discord", "send", "--account", "discordOne", "--channel", "1547936265436012645", "--text", "yo​ what's up", "--approvedBy", "matt", "--live"], { answer: { ok: true, event: "sent", messageId: "1", channelId: "1547936265436012645", timestamp: "t" }, refreshed: null });
+    const r = await run(["discord", "send", "--account", "discordOne", "--channel", "1000000000000000001", "--text", "yo​ what's up", "--approvedBy", "matt", "--live"], { answer: { ok: true, event: "sent", messageId: "1", channelId: "1000000000000000001", timestamp: "t" }, refreshed: null });
     expect(r.code).toBe(1);
     expect(r.err).toContain("aiArtifacts");
     expect(r.calls).toEqual([]);
   });
 
   test("a dry run is refused the same way", async () => {
-    const r = await run(["discord", "send", "--account", "discordOne", "--channel", "1547936265436012645", "--text", "yo​"]);
+    const r = await run(["discord", "send", "--account", "discordOne", "--channel", "1000000000000000001", "--text", "yo​"]);
     expect(r.code).toBe(1);
     expect(r.err).toContain("aiArtifacts");
   });
 
   test("clean copy carries its reading in the dry run, its --json and the log line", async () => {
-    const r = await run(["discord", "send", "--account", "discordOne", "--channel", "1547936265436012645", "--text", "yo", "--json"]);
+    const r = await run(["discord", "send", "--account", "discordOne", "--channel", "1000000000000000001", "--text", "yo", "--json"]);
     expect(r.code).toBe(0);
     expect(JSON.parse(r.out)).toMatchObject({ dryRun: true, watermark: { level: "clean", statistical: "unknown" } });
     expect(r.err).toContain("discordOne: watermark clean");
-    const plain = await run(["discord", "send", "--account", "discordOne", "--channel", "1547936265436012645", "--text", "yo"]);
+    const plain = await run(["discord", "send", "--account", "discordOne", "--channel", "1000000000000000001", "--text", "yo"]);
     expect(plain.out).toContain("watermark clean");
   });
 
   test("a live send logs the reading and carries it in --json", async () => {
-    const r = await run(["discord", "send", "--account", "discordOne", "--channel", "1547936265436012645", "--text", "yo", "--approvedBy", "matt", "--live", "--json"], { answer: { ok: true, event: "sent", messageId: "1", channelId: "1547936265436012645", timestamp: "t" }, refreshed: null });
+    const r = await run(["discord", "send", "--account", "discordOne", "--channel", "1000000000000000001", "--text", "yo", "--approvedBy", "matt", "--live", "--json"], { answer: { ok: true, event: "sent", messageId: "1", channelId: "1000000000000000001", timestamp: "t" }, refreshed: null });
     expect(r.code).toBe(0);
     expect(JSON.parse(r.out)).toMatchObject({ watermark: { level: "clean" } });
     expect(r.err).toContain("discordOne: watermark clean");
@@ -344,7 +344,7 @@ out = {
     "exportDrop": run([(DMS, 200), (None, None), (json.dumps([msg(2)]).encode(), 200), (json.dumps([msg(3)]).encode(), 200)], lambda: engine.export_of("t", 200, 0)),
     "export403": run([(DMS, 200), (b'{"message": "Missing Access"}', 403)], lambda: engine.export_of("t", 200, 0)),
     "chats429": run([(b"{}", 429)], lambda: engine.chats_of("t")),
-    "send429": run([(b"{}", 429)], lambda: engine.send_of("t", "jilly", "yo")),
+    "send429": run([(b"{}", 429)], lambda: engine.send_of("t", "jinny", "yo")),
     "read429": run([(json.dumps([msg(i) for i in range(100)]).encode(), 200), (b"{}", 429)], lambda: engine.read_of("t", "10", 300, None)),
 }
 print(json.dumps(out))
@@ -400,7 +400,7 @@ describe("the Discord engine stops the whole read on a refusal (rule 94)", () =>
 describe("reads keep the chat's history in the .db as backfill, for the gate inside a send", () => {
   test("a Discord read stores each message once, and none of it shows as new", async () => {
     const channel = String(1500000000000000000n + BigInt(Date.now()));
-    const answer = { ok: true, channelId: channel, messages: [{ id: "11", at: "2026-11-03T13:29:00Z", from: "rvaclassic", bot: false, fromMe: false, replyTo: null, text: "Tmrw i will", embeds: [] }, { id: "12", at: "2026-11-03T13:30:00Z", from: "me", bot: false, fromMe: true, replyTo: null, text: "sound lad", embeds: [] }] };
+    const answer = { ok: true, channelId: channel, messages: [{ id: "11", at: "2026-11-03T13:29:00Z", from: "handle_r1", bot: false, fromMe: false, replyTo: null, text: "Tmrw i will", embeds: [] }, { id: "12", at: "2026-11-03T13:30:00Z", from: "me", bot: false, fromMe: true, replyTo: null, text: "sound lad", embeds: [] }] };
     await run(["discord", "read", "--account", "discordOne", "--channel", channel], { answer, refreshed: null });
     await run(["discord", "read", "--account", "discordOne", "--channel", channel], { answer, refreshed: null });
     expect(chatEvents("discord", "discordOne", (id) => id === channel).map((e) => [e.type, e.text, e.source])).toEqual([["message", "Tmrw i will", "backfill"], ["ownMessage", "sound lad", "backfill"]]);
@@ -429,7 +429,7 @@ describe("a Discord image is shown with where it was saved", () => {
   });
 
   test("the inbox keeps the watch's saved image path and the message id", () => {
-    const m = discordInboxMessageOf("acct", { kind: "message", channelId: "c", id: "77", from: "Kennedy", text: "", at: "2026-11-07T11:00:00Z", attachments: [{ name: "shot.png", type: "image/png", url: "https://cdn", path: "C:/media/77_shot.png" }] }, new Date("2026-11-07T11:00:01Z"));
+    const m = discordInboxMessageOf("acct", { kind: "message", channelId: "c", id: "77", from: "Kira", text: "", at: "2026-11-07T11:00:00Z", attachments: [{ name: "shot.png", type: "image/png", url: "https://cdn", path: "C:/media/77_shot.png" }] }, new Date("2026-11-07T11:00:01Z"));
     expect(m.id).toBe("77");
     expect(m.attachments).toEqual([{ name: "shot.png", type: "image/png", path: "C:/media/77_shot.png" }]);
   });

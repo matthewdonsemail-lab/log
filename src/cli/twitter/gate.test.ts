@@ -30,9 +30,9 @@ describe("the voice gate inside every send (rule 137)", () => {
     const words = ["camera", "video", "tax", "weather"];
     voiceDeps.aiEmbedder = () => ({ model: "fake", dimensions: 4, embed: async (texts: string[]) => texts.map((t) => words.map((w) => (t.toLowerCase().includes(w) ? 1 : 0))), rerank: async (query: string, docs: string[]) => docs.map((d) => (d.toLowerCase().includes(query.split(" ")[0].toLowerCase()) ? 1 : 0)) });
     try {
-      for (const [i, text] of ["the weather is grim", "camera arrived today, sent you the video", "tax return done"].entries()) appendEvent({ platform: "discord", account: "acct", conversationId: "D1", type: "message", with: "abel", text, sourceAt: `2026-11-04T0${i}:00:00Z`, receivedAt: `2026-11-04T0${i}:00:01Z` });
+      for (const [i, text] of ["the weather is grim", "camera arrived today, sent you the video", "tax return done"].entries()) appendEvent({ platform: "discord", account: "acct", conversationId: "D1", type: "message", with: "abby", text, sourceAt: `2026-11-04T0${i}:00:00Z`, receivedAt: `2026-11-04T0${i}:00:01Z` });
       const ranked = await rankedContext("discord", "acct", { conversationId: "D1" }, "camera ok?", 1);
-      expect(ranked).toEqual([{ from: "abel", text: "camera arrived today, sent you the video", at: "2026-11-04T01:00:00Z" }]);
+      expect(ranked).toEqual([{ from: "abby", text: "camera arrived today, sent you the video", at: "2026-11-04T01:00:00Z" }]);
     } finally {
       voiceDeps.aiEmbedder = before;
     }
@@ -42,27 +42,27 @@ describe("the voice gate inside every send (rule 137)", () => {
 describe("the gate inside a send finds the chat's real replies by what the send knows", () => {
   const conversations = [
     { platform: "twitter", account: "matthewsoldit", conversationId: "1491032180553920513:1974596626342686720", with: ["SalesPsych0"], box: "xchat", messages: [] },
-    { platform: "twitter", account: "matthewsoldit", conversationId: "1663390258099101696-1974596626342686720", with: ["shaw_gtm"], box: "dm", messages: [] },
-    { platform: "discord", account: "sourcedandsoldtothehighestbidder", conversationId: "1565734133609668780", with: ["rvaclassic"], box: "dm", messages: [] },
+    { platform: "twitter", account: "matthewsoldit", conversationId: "1663390258099101696-1974596626342686720", with: ["sage_gtm"], box: "dm", messages: [] },
+    { platform: "discord", account: "myDiscordName", conversationId: "1565734133609668780", with: ["handle_r1"], box: "dm", messages: [] },
   ] as never[];
 
   test("an X send with only the user id finds the person's chat, whichever pair names it", () => {
     expect(chatIdFor(conversations, { platform: "twitter", userId: "1491032180553920513" })).toBe("twitter:salespsych0");
-    expect(chatIdFor(conversations, { platform: "twitter", userId: "1663390258099101696" })).toBe("twitter:shaw_gtm");
+    expect(chatIdFor(conversations, { platform: "twitter", userId: "1663390258099101696" })).toBe("twitter:sage_gtm");
   });
 
   test("an X copy of the chat with nobody named in it is never the chat a send is gated against", () => {
     const copies = [
       { platform: "twitter", account: "a", conversationId: "20891065-1974596626342686720", with: [], box: "inbox", messages: [] },
-      { platform: "twitter", account: "a", conversationId: "20891065:1974596626342686720", with: ["Nefer_L"], box: "xchat", messages: [] },
+      { platform: "twitter", account: "a", conversationId: "20891065:1974596626342686720", with: ["Handle_N1_L"], box: "xchat", messages: [] },
     ] as unknown as Parameters<typeof chatIdFor>[0];
-    expect(chatIdFor(copies, { platform: "twitter", userId: "20891065" })).toBe("twitter:nefer_l");
+    expect(chatIdFor(copies, { platform: "twitter", userId: "20891065" })).toBe("twitter:handle_n1_l");
     expect(chatIdFor(copies.slice(0, 1), { platform: "twitter", userId: "20891065" })).toBeNull();
   });
 
   test("another platform's send finds its chat by the conversation id, never another platform's chat of the same name", () => {
     expect(chatIdFor(conversations, { platform: "discord", conversationId: "1565734133609668780" })).toBe("discord:1565734133609668780");
-    expect(chatIdFor(conversations, { platform: "slack", handle: "rvaclassic" })).toBeNull();
+    expect(chatIdFor(conversations, { platform: "slack", handle: "handle_r1" })).toBeNull();
   });
 });
 

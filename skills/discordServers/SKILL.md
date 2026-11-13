@@ -11,7 +11,7 @@ A Discord server is not a group DM. A group DM is a private chat of a few people
 
 | Thing | What it is | How it is named | Listed by | Read by |
 | --- | --- | --- | --- | --- |
-| Server | The whole space: an owner, mods, rules, members | its name, `"paulchrisluke"` | `discordServers` | `discordChannels`, `discordSearch` |
+| Server | The whole space: an owner, mods, rules, members | its name, `"pennyserver"` | `discordServers` | `discordChannels`, `discordSearch` |
 | Category | A heading that groups channels; holds no messages | its name, shown above its channels | `discordChannels` | nothing to read |
 | Text channel | A room of messages in time order | `"<server> #<channel>"` | `discordChannels` (`text`) | `discordRead` |
 | Announcement channel | A text channel only some can post in, others follow it | `"<server> #<channel>"` | `discordChannels` (`announcement`) | `discordRead` |
@@ -28,7 +28,7 @@ A Discord server is not a group DM. A group DM is a private chat of a few people
 - **Know what's there:** `discordServers`, then `discordChannels` { server } shows every channel by category and kind in one request.
 - **Find a conversation:** `discordSearch` { server, query } searches every channel, post and thread at once with Discord's own search, and names where each hit is. Add `channel` to keep one channel and `from` to keep one person. Never read a channel back hundreds of messages to look for something search can find.
 - **Work a forum:** `discordPosts` { channel: "<server> #<forum>" } lists its posts newest activity first, with each one's title, author, tags, replies and opening message, so most posts are judged without opening them. Read the ones worth it with `discordRead` { channel: "<server> #<forum> > <post title>" }.
-- **Skim a busy channel:** `discordRead` with `noMedia` reads text only. Without it, every image is saved and every voice note transcribed first, which took most of a minute for 400 messages of "paulchrisluke #general".
+- **Skim a busy channel:** `discordRead` with `noMedia` reads text only. Without it, every image is saved and every voice note transcribed first, which took most of a minute for 400 messages of "pennyserver #general".
 - **Never run a script over saved output.** Every answer above is plain text made for reading. When it isn't enough, the tool is missing a flag: add it to the tool, don't filter a dump.
 
 ## Hard boundaries

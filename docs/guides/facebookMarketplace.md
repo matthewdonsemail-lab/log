@@ -66,7 +66,7 @@ matt says so.
 
 ### The steps
 
-`<a>` is the account's name (the Facebook id, e.g. `61594387282311`).
+`<a>` is the account's name (the Facebook id, e.g. `99900000000029`).
 
 #### 1. Proxy (no browser)
 

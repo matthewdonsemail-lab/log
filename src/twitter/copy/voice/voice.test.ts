@@ -14,7 +14,7 @@ const answering = (voice: number, inContext = 0.95, friendLike = 0.95, openerOnl
 describe('the voice gate', () => {
   test('a draft in matt\'s voice that answers them passes, and SubQ is given his guide, his own dms and what they said', async () => {
     const { asked, decide } = answering(0.97)
-    const reading = await readVoice({ to: 'lluclin', text: 'yeah lets chop it up lad', context: 'we should chop it up some time' }, 'GUIDE', decide)
+    const reading = await readVoice({ to: 'handle_l1', text: 'yeah lets chop it up lad', context: 'we should chop it up some time' }, 'GUIDE', decide)
     expect(reading.pass).toBe(true)
     const state = asked[0].state as Record<string, unknown>
     expect(state.howMattWrites).toBe('GUIDE')
@@ -29,7 +29,7 @@ describe('the voice gate', () => {
       return { model: 'subq-snap-1.1', answers: { voice: { type: 'noul' as const, noul: 0.9 }, inContext: { type: 'noul' as const, noul: 0.9 }, friendLike: { type: 'noul' as const, noul: 0.9 }, openerOnly: { type: 'noul' as const, noul: 1 }, buildsOn: { type: 'noul' as const, noul: buildsOn } }, usage: { input_tokens: 1, output_tokens: 1 } }
     }
     const said = 'ye the trending niches bit is a good shout and it ties into what you said about the api'
-    const builds = await readVoice({ to: 'beining', text: said, context: 'it auto posts in trending niches', spoken: true, howMattTalks: ['I think so, to be honest, mate'] }, 'GUIDE', decideWith(0.9))
+    const builds = await readVoice({ to: 'bea', text: said, context: 'it auto posts in trending niches', spoken: true, howMattTalks: ['I think so, to be honest, mate'] }, 'GUIDE', decideWith(0.9))
     expect((asked[0].state as Record<string, unknown>).howMattTalksInHisOwnVoiceNotes).toEqual(['I think so, to be honest, mate'])
     expect(builds.pass).toBe(true)
     expect(builds.buildsOn).toBe(0.9)
@@ -37,9 +37,9 @@ describe('the voice gate', () => {
     expect(questions.voice.instructions).toContain('howMattTalksInHisOwnVoiceNotes')
     expect(questions.voice.instructions).toContain('never count against it')
     expect(questions.buildsOn.instructions).toContain('rather than repeating')
-    const repeats = await readVoice({ to: 'beining', text: said, context: 'it auto posts in trending niches', spoken: true }, 'GUIDE', decideWith(0.3))
+    const repeats = await readVoice({ to: 'bea', text: said, context: 'it auto posts in trending niches', spoken: true }, 'GUIDE', decideWith(0.3))
     expect(repeats.pass).toBe(false)
-    const typed = await readVoice({ to: 'beining', text: said, context: 'x' }, 'GUIDE', decideWith(0.1))
+    const typed = await readVoice({ to: 'bea', text: said, context: 'x' }, 'GUIDE', decideWith(0.1))
     expect(typed.buildsOn).toBe(null)
     expect((asked[2].questions as Record<string, unknown>).buildsOn).toBeUndefined()
   })
@@ -57,8 +57,8 @@ describe('the voice gate', () => {
       asked.push(request)
       return { model: 'subq-snap-1.1', answers: { voice: { type: 'noul' as const, noul: 0.95 }, inContext: { type: 'noul' as const, noul: 0.95 }, friendLike: { type: 'noul' as const, noul: 0.95 }, openerOnly: { type: 'noul' as const, noul: 0.4 }, toThem: { type: 'noul' as const, noul: 0.95 } }, usage: { input_tokens: 1, output_tokens: 1 } }
     }
-    const evidence = { chat: 'lior', profile: 'short lowercase', replies: [], recent: [{ said: 'lets do it matt', reply: 'let goo' }] }
-    const reading = await readVoice({ to: 'lior', text: 'whats the plan with it', context: 'do you have some reddit knowledge', evidence } as never, 'GUIDE', decide)
+    const evidence = { chat: 'lina', profile: 'short lowercase', replies: [], recent: [{ said: 'lets do it matt', reply: 'let goo' }] }
+    const reading = await readVoice({ to: 'lina', text: 'whats the plan with it', context: 'do you have some reddit knowledge', evidence } as never, 'GUIDE', decide)
     expect(reading.openerOnly).toBe(1)
     expect(reading.pass).toBe(true)
     expect((asked[0].state as Record<string, unknown>).alreadyTalkedInThisChat).toBe(true)
@@ -99,7 +99,7 @@ describe('the voice gate', () => {
 describe("the opener rule only reads a first message (rule 98)", () => {
   test("a chat with matt's own messages in it, or his replies from that chat or person, is already talking", () => {
     expect(alreadyTalkedIn({ conversation: [{ from: "1663390258099101696", text: "i cannot even mention to you who they are", at: "2026-11-03T15:51:49Z" }, { from: "matt", text: "fair enough", at: "2026-11-03T15:40:00Z" }] })).toBe(true);
-    expect(alreadyTalkedIn({ evidence: { chat: "shaw_gtm (twitter dm)", profile: null, replies: [{ said: "x", reply: "y", chat: "shaw_gtm", tier: "samePerson" }], recent: [] } as never })).toBe(true);
+    expect(alreadyTalkedIn({ evidence: { chat: "sage_gtm (twitter dm)", profile: null, replies: [{ said: "x", reply: "y", chat: "sage_gtm", tier: "samePerson" }], recent: [] } as never })).toBe(true);
   });
 
   test("someone matt has never talked with is still a first message", () => {

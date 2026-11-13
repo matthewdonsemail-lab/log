@@ -95,6 +95,6 @@ Checked by: code and SubQ
 - reactions, read markers, "could not open" and call or channel notices (`NOT_SAID`) are never the last word; an empty message is (a voice note, image or sticker);
 - their reaction after matt's last message is a follow-up (`followUp`), never a reply waiting on him; matt's reaction alone after theirs leaves them waiting (`youReactedOnly`).
 
-A "DM" with more than one other sender is a group. `log inbox waiting` (MCP `inboxWaiting`) lists it for every platform and account. `log twitter dms --waiting` takes each person's last word from it over X's pages and the saved files (`withDbLastWord`), and the SessionStart hook's X list (`storedWaiting`) reads it too. matt, 2026-11-08, after the waiting list showed @W2Warrior and @wolfie_ as waiting when he had written last: "fix who i last message and who is last to message me in order of the database".
+A "DM" with more than one other sender is a group. `log inbox waiting` (MCP `inboxWaiting`) lists it for every platform and account. `log twitter dms --waiting` takes each person's last word from it over X's pages and the saved files (`withDbLastWord`), and the SessionStart hook's X list (`storedWaiting`) reads it too. matt, 2026-11-08, after the waiting list showed @HandleW2 and @handle_w1 as waiting when he had written last: "fix who i last message and who is last to message me in order of the database".
 
 Checked by: code and SubQ

@@ -1,6 +1,6 @@
 # Finding a conversation in a Discord server
 
-Find what someone said in a server, or a conversation matt had there, with Discord's own search across every channel, forum post and thread at once, then read around it. This is how "the conversation I had with Paul about OpenAI widgets in the paulchrisluke server" is found in one search instead of reading a channel back hundreds of messages. This page reads and sends nothing.
+Find what someone said in a server, or a conversation matt had there, with Discord's own search across every channel, forum post and thread at once, then read around it. This is how "the conversation I had with <someone> about <a topic> in the <server> server" is found in one search instead of reading a channel back hundreds of messages. This page reads and sends nothing.
 
 How the owner asks for it: "find the conversation I had with <someone> in <server> about <thing>", "what did <someone> say in <server> about <thing>", "search <server> for <words>", "read through the <server> server and find <thing>"
 

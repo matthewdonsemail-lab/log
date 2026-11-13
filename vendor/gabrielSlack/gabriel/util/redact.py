@@ -1,7 +1,7 @@
 """Redaction helpers.
 
 Credentials must never appear in logs, errors or events: only a short prefix and the length
-are kept, e.g. ``xoxc-12345...[REDACTED, len=109]``.
+are kept, e.g. ``xoxc-NNNNN...[REDACTED, len=109]``.
 """
 
 from __future__ import annotations

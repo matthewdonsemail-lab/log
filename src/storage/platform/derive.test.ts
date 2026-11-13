@@ -18,12 +18,12 @@ function message(over: Partial<EventInsert> = {}): EventInsert {
 describe("the typed tables come only from events", () => {
   test("a conversation read appends events, and the typed rows are derived from them", () => {
     const handle = fresh();
-    saveConversationRows(handle, [{ platform: "discord", account: "a", conversationId: "g1", box: "group", with: ["jd", "deepman"], messages: [{ id: "10", at: "2026-11-08T01:00:00Z", from: "jd", fromMe: false, text: "yo" }, { id: "11", at: "2026-11-08T01:01:00Z", from: null, fromMe: true, text: "sup" }] }]);
+    saveConversationRows(handle, [{ platform: "discord", account: "a", conversationId: "g1", box: "group", with: ["jd", "dex"], messages: [{ id: "10", at: "2026-11-08T01:00:00Z", from: "jd", fromMe: false, text: "yo" }, { id: "11", at: "2026-11-08T01:01:00Z", from: null, fromMe: true, text: "sup" }] }]);
     const events = handle.prepare("SELECT type, source FROM events ORDER BY seq").all() as { type: string; source: string }[];
     expect(events).toEqual([{ type: "message", source: "read" }, { type: "ownMessage", source: "read" }, { type: "conversationSeen", source: "read" }]);
     expect(lastMessagesOf(handle, "discord:a:g1").map((m) => m.text)).toEqual(["yo", "sup"]);
     expect(handle.prepare("SELECT box FROM chats WHERE chatId = 'discord:a:g1'").get()).toEqual({ box: "group" });
-    expect((handle.prepare("SELECT userId FROM memberships WHERE roomId = 'discord:a:g1' ORDER BY position").all() as { userId: string }[]).map((m) => m.userId)).toEqual(["@jd", "@deepman"]);
+    expect((handle.prepare("SELECT userId FROM memberships WHERE roomId = 'discord:a:g1' ORDER BY position").all() as { userId: string }[]).map((m) => m.userId)).toEqual(["@jd", "@dex"]);
   });
 
   test("a changed text is a new event, never an edit of the old one", () => {
@@ -66,7 +66,7 @@ describe("rebuild and verify", () => {
   test("rebuilding from the events gives the same tables, and verify notices a row nothing derived", () => {
     const handle = fresh();
     insertEventRow(handle, message());
-    insertEventRow(handle, message({ payload: { id: "2", senderId: "43" }, with: "deepman", text: "yo", sourceAt: "2026-11-08T01:02:00Z" }));
+    insertEventRow(handle, message({ payload: { id: "2", senderId: "43" }, with: "dex", text: "yo", sourceAt: "2026-11-08T01:02:00Z" }));
     const before = derivedFingerprint(handle);
     expect(verifyDerived(handle).ok).toBe(true);
     handle.exec("UPDATE messages SET text = 'tampered' WHERE platformMessageId = '2'");

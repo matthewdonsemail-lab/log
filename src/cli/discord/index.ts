@@ -526,7 +526,7 @@ export const DISCORD_SEND_INPUT: CommandInput = {
       positionals: [],
       flags: [
         DISCORD_ACCOUNT,
-        { name: "channel", kind: "string", required: true, description: "The chat as matt says it (\"the log group\", \"jilly\", \"listaro\"), matched to one DM or group; or a channel id" },
+        { name: "channel", kind: "string", required: true, description: "The chat as matt says it (\"the log group\", \"jinny\", \"listaro\"), matched to one DM or group; or a channel id" },
         { name: "text", kind: "string", required: true, description: "The message, as matt gave it" },
         { name: "approvedBy", kind: "string", description: "Who approved it: needed with --live (rule 8)" },
         { name: "file", kind: "string", description: "Files to attach to the last message, comma-separated paths under OUTBOX or ~/.logCli, at most 10 MB each" },

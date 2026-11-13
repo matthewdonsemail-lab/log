@@ -9,7 +9,7 @@ const rating = (handle: string, role: string, skipped: boolean): TasteRating => 
 describe('niche map trainer', () => {
   test('a post is kept only when it stands on its own in English', () => {
     expect(cleanPost('shipped the thing today and the first customer paid for it https://t.co/x')).toBe('shipped the thing today and the first customer paid for it')
-    expect(cleanPost('@nateherk why does this fit so well for life in general lol')).toBeNull()
+    expect(cleanPost('@handle_n2 why does this fit so well for life in general lol')).toBeNull()
     expect(cleanPost('RT @someone: shipped the thing today and the first customer paid')).toBeNull()
     expect(cleanPost('Historias de un azafato con Robert de El Cuido, dale pa que vean')).toBeNull()
   })

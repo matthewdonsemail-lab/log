@@ -132,7 +132,7 @@ export const PAGE_STATES: readonly StateRule[] = [
     id: 'groupMembersList',
     url: /\/groups\/[^/?#]+\/members/i,
     answer: newMembersAnswered,
-    what: 'a group\'s People tab answered with more of its newest members: `GroupsCometMembersPageNewMembersSectionRefetchQuery` gave `new_members` edges, about 10 a call, each a profile with its bio, page category, followers and when they joined (61594063207669, inspect 20261024T060921 steps 04-21)',
+    what: 'a group\'s People tab answered with more of its newest members: `GroupsCometMembersPageNewMembersSectionRefetchQuery` gave `new_members` edges, about 10 a call, each a profile with its bio, page category, followers and when they joined (99900000000001, inspect 20261024T060921 steps 04-21)',
     resolve: 'nothing to resolve: the list loaded. Scroll on for more, or read the members with `log facebook read members --account <a> --group <g> --count <n>`',
     person: false,
     needsNothing: true

@@ -3,12 +3,12 @@ import { matchChat, normalizedName } from './index'
 import type { DiscordChat } from './index'
 
 const CHATS: DiscordChat[] = [
-  { id: '1547936265436012645', kind: 'group', name: 'log', members: ['QuadScorpion', 'Kennedy', 'John', 'deepman'] },
-  { id: '1555254123148873869', kind: 'dm', name: null, members: ['Jilly'] },
+  { id: '1000000000000000001', kind: 'group', name: 'log', members: ['QuietSparrow', 'Kira', 'Jon', 'dex'] },
+  { id: '1555254123148873869', kind: 'dm', name: null, members: ['Jinny'] },
   { id: '1486058706532827228', kind: 'group', name: 'InferenceSaver x Listaro', members: ['Mommi Live', 'Afreca'] },
-  { id: '1491844115107680287', kind: 'group', name: 'InferenceSaver x Roger Holden', members: ['Mommi Live'] },
-  { id: '1445349429094649991', kind: 'dm', name: 'John', members: ['John'] },
-  { id: '1477596248683839538', kind: 'dm', name: 'John', members: ['John'] },
+  { id: '1491844115107680287', kind: 'group', name: 'InferenceSaver x Client Example', members: ['Mommi Live'] },
+  { id: '1000000000000000002', kind: 'dm', name: 'Jon', members: ['Jon'] },
+  { id: '1000000000000000003', kind: 'dm', name: 'Jon', members: ['Jon'] },
   { id: '1547711712906448947', kind: 'group', name: 'Shit and chat shit', members: ['Tin', 'x'] },
   { id: '1481763504003354704', kind: 'group', name: null, members: ['Tin', 'Careless'] },
 ]
@@ -16,23 +16,23 @@ const CHATS: DiscordChat[] = [
 describe('a chat said the way matt says it', () => {
   test('filler words go, the name stays', () => {
     expect(normalizedName('the log community group chat')).toBe('log')
-    expect(normalizedName('DM with Jilly')).toBe('jilly')
+    expect(normalizedName('DM with Jinny')).toBe('jinny')
     expect(normalizedName('Shit and chat shit')).toBe('shit shit')
   })
 
   test('the log group, however it is said', () => {
     for (const said of ['log', 'the log group chat', 'log community group chat', 'LOG gc'])
-      expect(matchChat(CHATS, said)).toMatchObject({ ok: true, chat: { id: '1547936265436012645' } })
+      expect(matchChat(CHATS, said)).toMatchObject({ ok: true, chat: { id: '1000000000000000001' } })
   })
 
   test('a DM with no name is found by who it is with', () => {
-    expect(matchChat(CHATS, 'jilly')).toMatchObject({ ok: true, chat: { id: '1555254123148873869' }, label: 'Jilly' })
-    expect(matchChat(CHATS, 'my dm with jilly')).toMatchObject({ ok: true, chat: { id: '1555254123148873869' } })
+    expect(matchChat(CHATS, 'jinny')).toMatchObject({ ok: true, chat: { id: '1555254123148873869' }, label: 'Jinny' })
+    expect(matchChat(CHATS, 'my dm with jinny')).toMatchObject({ ok: true, chat: { id: '1555254123148873869' } })
   })
 
   test('one word of a longer name finds it when only one chat has it', () => {
     expect(matchChat(CHATS, 'listaro')).toMatchObject({ ok: true, chat: { id: '1486058706532827228' }, how: 'words' })
-    expect(matchChat(CHATS, 'roger')).toMatchObject({ ok: true, chat: { id: '1491844115107680287' } })
+    expect(matchChat(CHATS, 'client')).toMatchObject({ ok: true, chat: { id: '1491844115107680287' } })
   })
 
   test('the start of a word is enough', () => {
@@ -40,9 +40,9 @@ describe('a chat said the way matt says it', () => {
   })
 
   test('two chats that fit equally are refused with both, never guessed', () => {
-    const r = matchChat(CHATS, 'john')
+    const r = matchChat(CHATS, 'jon')
     expect(r).toMatchObject({ ok: false, code: 'chatAmbiguous' })
-    expect(!r.ok && r.candidates.map((c) => c.id)).toEqual(['1445349429094649991', '1477596248683839538'])
+    expect(!r.ok && r.candidates.map((c) => c.id)).toEqual(['1000000000000000002', '1000000000000000003'])
     expect(matchChat(CHATS, 'inferencesaver')).toMatchObject({ ok: false, code: 'chatAmbiguous' })
   })
 
@@ -53,15 +53,15 @@ describe('a chat said the way matt says it', () => {
 
   test('a person named exactly is their DM, never an unnamed group they are in', () => {
     const chats = [
-      { id: '1517088406520467456', kind: 'dm', name: null, members: ['Luke'] },
-      { id: '1538434988964577351', kind: 'group', name: null, members: ['beining', 'Luke', 'deepman', 'OMGPKR'] },
+      { id: '1000000000000000004', kind: 'dm', name: null, members: ['Lars'] },
+      { id: '1000000000000000005', kind: 'group', name: null, members: ['bea', 'Lars', 'dex', 'ORCAFAN'] },
     ] as never
-    expect(matchChat(chats, 'luke')).toMatchObject({ ok: true, chat: { id: '1517088406520467456' }, how: 'exact' })
-    expect(matchChat(chats, 'deepman')).toMatchObject({ ok: true, chat: { id: '1538434988964577351' } })
+    expect(matchChat(chats, 'lars')).toMatchObject({ ok: true, chat: { id: '1000000000000000004' }, how: 'exact' })
+    expect(matchChat(chats, 'dex')).toMatchObject({ ok: true, chat: { id: '1000000000000000005' } })
   })
 
   test('an id is taken as it is, and nothing matching is said so', () => {
-    expect(matchChat(CHATS, '1547936265436012645')).toMatchObject({ ok: true, how: 'id' })
+    expect(matchChat(CHATS, '1000000000000000001')).toMatchObject({ ok: true, how: 'id' })
     expect(matchChat(CHATS, 'nobody here')).toMatchObject({ ok: false, code: 'chatNotFound' })
   })
 })

@@ -77,6 +77,6 @@ describe("log linkedin cookies save", () => {
     expect(r.err).toContain("interactive terminal");
     expect(r.calls).toEqual([]);
     expect(publicIdOf("https://www.linkedin.com/in/mandeepSingh/?trk=x")).toBe("mandeepSingh");
-    expect(publicIdOf("@mandeep")).toBe("mandeep");
+    expect(publicIdOf("@mandy")).toBe("mandy");
   });
 });

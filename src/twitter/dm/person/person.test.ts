@@ -8,7 +8,7 @@ const thread = (conversationId: string, lastAt: string, over: Partial<TwitterDmT
   conversationId,
   box: conversationId.includes(':') ? 'xchat' : 'inbox',
   type: 'oneToOne',
-  with: [{ userId: '1653922877803036672', handle: 'brad_agi' }],
+  with: [{ userId: '1653922877803036672', handle: 'handle_b1' }],
   lastAt,
   lastFromMe: false,
   lastText: 'hi',
@@ -28,7 +28,7 @@ describe('one conversation per person', () => {
     const rows = mergeThreads([
       thread('1653922877803036672-1974596626342686720', '2026-10-27T12:25:00Z', { lastFromMe: true, lastText: 'nice one mate' }),
       thread('1653922877803036672:1974596626342686720', '2026-10-26T20:39:56Z', { unread: true, lastText: 'news processing' }),
-      thread('1413126935912325128-1974596626342686720', '2026-10-26T11:18:30Z', { with: [{ userId: '1413126935912325128', handle: 'gabesweats' }] }),
+      thread('1413126935912325128-1974596626342686720', '2026-10-26T11:18:30Z', { with: [{ userId: '1413126935912325128', handle: 'gabetests' }] }),
     ])
     expect(rows).toHaveLength(2)
     expect(rows[0].lastText).toBe('nice one mate')
@@ -40,17 +40,17 @@ describe('one conversation per person', () => {
 
   test('a message mirrored into both threads is shown once, even with its link rewritten', () => {
     const kept = dropMirrors([
-      { time: '2026-10-26T03:43:21.565Z', fromMe: true, text: 'https://x.com/brad_agi/status/1 saw this you using treg yet' },
+      { time: '2026-10-26T03:43:21.565Z', fromMe: true, text: 'https://x.com/handle_b1/status/1 saw this you using treg yet' },
       { time: '2026-10-26T03:43:21.565Z', fromMe: true, text: 'https://t.co/jLYW4cDzs8 saw this you using treg yet' },
-      { time: '2026-10-26T20:39:56Z', fromMe: false, from: 'brad_agi', text: 'news processing' },
-      { time: '2026-10-26T20:45:00Z', fromMe: false, from: 'brad_agi', text: 'news processing' },
+      { time: '2026-10-26T20:39:56Z', fromMe: false, from: 'handle_b1', text: 'news processing' },
+      { time: '2026-10-26T20:45:00Z', fromMe: false, from: 'handle_b1', text: 'news processing' },
     ])
     expect(kept).toHaveLength(3)
   })
 
   test('search indexes the pair as one conversation, so one hit', () => {
-    const base = { platform: 'twitter', account: 'matthewsoldit', with: ['travis'], box: 'inbox' }
-    const said = { id: 'a', at: '2026-10-26T08:00:00Z', from: 'travis', fromMe: false, text: 'affiliate program referral fee' }
+    const base = { platform: 'twitter', account: 'matthewsoldit', with: ['tester_t'], box: 'inbox' }
+    const said = { id: 'a', at: '2026-10-26T08:00:00Z', from: 'tester_t', fromMe: false, text: 'affiliate program referral fee' }
     const merged = onePerPerson([
       { ...base, conversationId: '1-2', messages: [said] },
       { ...base, box: 'xchat', conversationId: '1:2', messages: [{ ...said, id: 'b' }] },
@@ -62,7 +62,7 @@ describe('one conversation per person', () => {
 
   test('the watcher alerts once for one reply seen in both threads', () => {
     const now = new Date('2026-10-27T00:00:00Z')
-    const reply = { with: 'brad_agi', lastAt: '2026-10-26T20:39:56Z', lastFromMe: false, lastText: 'news processing' }
+    const reply = { with: 'handle_b1', lastAt: '2026-10-26T20:39:56Z', lastFromMe: false, lastText: 'news processing' }
     const seen = { '1-2': '2026-10-26T00:00:00Z' }
     const first = newMessages('twitter', 'matthewsoldit', [{ ...reply, conversationId: '1:2', box: 'xchat' }, { ...reply, conversationId: '1-2', box: 'inbox' }], seen, now)
     expect(first.messages).toHaveLength(1)
@@ -106,26 +106,26 @@ describe('every stored chat in the waiting list', () => {
 
   test('one thread per person, its last real message deciding who wrote last', () => {
     const threads = storedThreads([
-      chat('1:2', 'aymanemsi', [{ at: '2026-11-07T19:01:05Z', fromMe: true, text: 'never do i trust any service like revolut' }, { at: '2026-11-07T20:14:27Z', fromMe: false, text: 'But what can we do' }]),
-      chat('1-2', 'aymanemsi', [{ at: '2026-11-07T18:00:00Z', fromMe: false, text: 'old dm' }]),
+      chat('1:2', 'aylatest', [{ at: '2026-11-07T19:01:05Z', fromMe: true, text: 'never do i trust any service like revolut' }, { at: '2026-11-07T20:14:27Z', fromMe: false, text: 'But what can we do' }]),
+      chat('1-2', 'aylatest', [{ at: '2026-11-07T18:00:00Z', fromMe: false, text: 'old dm' }]),
       chat('3:2', 'claudeebum', [{ at: '2026-11-07T17:12:59Z', fromMe: true, text: 'star my repo when you can bro' }, { at: '2026-11-08T02:18:21Z', fromMe: false, text: '(reacted 🫡)' }]),
       chat('4:2', 'seanlongden', [{ at: '2026-10-30T00:00:00Z', fromMe: true, text: 'yo' }, { at: '2026-11-01T16:05:00Z', fromMe: false, text: '(could not open: Crypto error: Signature verification failed: ReadReceipt)' }]),
     ])
-    expect(threads.map((t) => [t.with[0].handle, t.lastFromMe])).toEqual([['aymanemsi', false], ['claudeebum', true], ['seanlongden', true]])
-    expect(threads.filter(waitingOnYou).map((t) => t.with[0].handle)).toEqual(['aymanemsi'])
+    expect(threads.map((t) => [t.with[0].handle, t.lastFromMe])).toEqual([['aylatest', false], ['claudeebum', true], ['seanlongden', true]])
+    expect(threads.filter(waitingOnYou).map((t) => t.with[0].handle)).toEqual(['aylatest'])
   })
 
   test('a person the newest thread could not name keeps the name a stored chat has', () => {
     const fromX = { conversationId: '362012227:1974596626342686720', box: 'xchat' as const, type: 'oneToOne' as const, with: [{ userId: '362012227' }], lastAt: '2026-11-07T20:25:49Z', lastFromMe: false, lastText: 'Idk. Team manages that.', unread: true, messagesLoaded: 1 }
-    const stored = storedThreads([chat('362012227-1974596626342686720', 'honeydreamss', [{ at: '2026-11-06T21:21:47Z', fromMe: false, text: 'Nope.' }])])
-    expect(mergeThreads([fromX, ...stored])[0].with[0].handle).toBe('honeydreamss')
+    const stored = storedThreads([chat('362012227-1974596626342686720', 'handle_h1', [{ at: '2026-11-06T21:21:47Z', fromMe: false, text: 'Nope.' }])])
+    expect(mergeThreads([fromX, ...stored])[0].with[0].handle).toBe('handle_h1')
   })
 })
 
 describe('your own reaction is not a reply', () => {
   test('a person you only reacted to is still waiting on you, marked so', () => {
-    const fromX = { conversationId: '1797030036727611392:1974596626342686720', box: 'xchat' as const, type: 'oneToOne' as const, with: [{ userId: '1797030036727611392', handle: 'tahaha_a' }], lastAt: '2026-11-02T13:28:31Z', lastFromMe: true, lastText: '(reacted 😂)', unread: false, messagesLoaded: 1 }
-    const stored = storedThreads([{ conversationId: '1797030036727611392:1974596626342686720', box: 'xchat', with: ['tahaha_a'], messages: [{ at: '2026-11-02T10:20:00Z', fromMe: false, text: 'Yea bro, respect the grind' }] }])
+    const fromX = { conversationId: '1797030036727611392:1974596626342686720', box: 'xchat' as const, type: 'oneToOne' as const, with: [{ userId: '1797030036727611392', handle: 'handle_t1' }], lastAt: '2026-11-02T13:28:31Z', lastFromMe: true, lastText: '(reacted 😂)', unread: false, messagesLoaded: 1 }
+    const stored = storedThreads([{ conversationId: '1797030036727611392:1974596626342686720', box: 'xchat', with: ['handle_t1'], messages: [{ at: '2026-11-02T10:20:00Z', fromMe: false, text: 'Yea bro, respect the grind' }] }])
     const [merged] = mergeThreads([fromX, ...stored])
     expect(waitingOnYou(merged)).toBe(true)
     expect(merged.youReactedOnly).toBe(true)

@@ -151,6 +151,6 @@ Checked by: code and SubQ
 
 ### REQ-HOOKS-23: Only the platform's refusal stops a catch-up
 
-`notThePlatform` (`src/inbox/relay/client.ts`) is true for a failure that `NETWORK_FAILURE` or `OWN_FAILURE` matches and `PLATFORM_REFUSAL` does not. Such a failure leaves the gap open for the next check, and a gap once refused for one is reopened. A 429, 226, 344, soft block or rate limit is still a refusal, and nothing resumes until matt says so (rules 94, 150). On 2026-11-08, matthewsoldit had been held since a DNS failure on 7 Nov, and abelqxr since a crash of log's own on 5 Nov.
+`notThePlatform` (`src/inbox/relay/client.ts`) is true for a failure that `NETWORK_FAILURE` or `OWN_FAILURE` matches and `PLATFORM_REFUSAL` does not. Such a failure leaves the gap open for the next check, and a gap once refused for one is reopened. A 429, 226, 344, soft block or rate limit is still a refusal, and nothing resumes until matt says so (rules 94, 150). Once, one account had been held since a DNS failure and another since a crash of log's own.
 
 Checked by: code and SubQ

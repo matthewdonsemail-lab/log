@@ -152,7 +152,7 @@ describe("python/browser/proxyGate.py (pure parts)", () => {
       [{ ip: WANT.exitIp, page: { ...realm, intlLocale: "en" }, worker: realm }, "browserLocaleMismatch"],
       [{ ip: WANT.exitIp, page: realm, worker: { ...realm, language: "en-US" } }, "browserLocaleMismatch"],
       [{ ip: WANT.exitIp, page: { ...realm, languages: ["ga-IE", "ga"] }, worker: realm }, "browserLocaleMismatch"],
-      [{ ip: "116.105.162.81", page: realm, worker: realm }, "browserExitIpMismatch"],
+      [{ ip: "203.0.113.81", page: realm, worker: realm }, "browserExitIpMismatch"],
       [{ ip: null, page: realm, worker: realm }, "selfCheckFailed"],
       [{ ip: WANT.exitIp, page: realm, worker: { error: "the worker did not answer in 5s" } }, "selfCheckFailed"],
     ];

@@ -6,7 +6,7 @@ import type { StepExchange } from '../../subq/stepReading/types'
 import { answersIssue, answerWait, keepAnswers, listFlows, loadFlow, renderFlowDoc, saveFlow } from './index'
 import type { AnswerExpect, FlowDefinition } from './index'
 
-const BETHLEHEM = { uid: '61594063207669', homeCity: 'Bethlehem', homeCountry: 'US' }
+const BETHLEHEM = { uid: '99900000000001', homeCity: 'Bethlehem', homeCountry: 'US' }
 
 const page = (name: string, status: number, fields: Record<string, unknown>): StepExchange => ({ offsetMs: 0, kind: 'document', name, method: 'GET', host: 'www.facebook.com', path: name.slice(5), status, ms: 3000, sent: null, answer: { title: 'Facebook', bytes: 1, fields }, errors: [], known: true })
 

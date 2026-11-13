@@ -18,7 +18,7 @@ describe('the shared audio detector', () => {
     expect(isAudio({ name: 'voiceNote', waveform: true })).toBe(true)
     expect(isAudio({ name: 'voiceNote', duration: 4 }, DISCORD_VOICE_FLAG)).toBe(true)
     expect(isAudio({ name: 'audio_message', subtype: 'slack_audio' })).toBe(true)
-    expect(isAudio({ name: 'oni3BlgcXC', audio: true })).toBe(true)
+    expect(isAudio({ name: 'handleO1', audio: true })).toBe(true)
   })
 
   test('audioOf keeps only the named audio attachments', () => {

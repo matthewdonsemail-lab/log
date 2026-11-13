@@ -14,8 +14,8 @@ const PROFILE = "https://www.facebook.com/profile.php";
 const NOTICE = fixture("browserNotificationsNotice");
 const PAST = fixture("pastNoticeDialog");
 const CLEAN = '- main [ref=e99]:\n  - button "Profile picture actions" [ref=e133] [cursor=pointer]:';
-const HAZLETON = { uid: "61593939852820", homeCity: "Hazleton", homeCountry: "US" };
-const current: CurrentInspect = { account: "61593939852820", runDir: "x", commandsPath: "x", repliesPath: "x", startedAt: "2026-10-24T21:15:41Z" };
+const HAZLETON = { uid: "99900000000007", homeCity: "Hazleton", homeCountry: "US" };
+const current: CurrentInspect = { account: "99900000000007", runDir: "x", commandsPath: "x", repliesPath: "x", startedAt: "2026-10-24T21:15:41Z" };
 
 function scripted(pages: string[], clearAnswer: boolean | null = true) {
   const root = mkdtempSync(join(tmpdir(), "overlays"));

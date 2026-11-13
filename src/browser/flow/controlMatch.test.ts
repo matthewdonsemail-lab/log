@@ -155,16 +155,16 @@ describe('flows carry what makes each step deterministic', () => {
 describe("the picture steps' answers decide them (rule 73)", () => {
   const steps = loadFlow('profileSetup')!.steps
   const at = (id: string) => steps.find((s) => s.id === id)!.answers!
-  const EXETER = { uid: '61593843527201', homeCity: 'Exeter', homeCountry: 'US' }
+  const EXETER = { uid: '99900000000002', homeCity: 'Exeter', homeCountry: 'US' }
   const exchange = (name: string, answer: unknown): StepExchange => ({ offsetMs: 0, kind: 'api', name, method: 'POST', host: 'www.facebook.com', path: '/', status: 200, ms: 400, sent: {}, answer, errors: [], known: true })
 
   test("the dialog must be for this account, the upload must name it and return the photo's id", () => {
     const dialog = (id: string) => exchange('ProfileCometProfilePictureEditDialogQuery', { data: { viewer: { actor: { id, profile_picture_is_silhouette: true } } } })
-    expect(answersIssue(at('s03_clickChooseProfilePicture'), [dialog('61593843527201')], EXETER)).toBeNull()
+    expect(answersIssue(at('s03_clickChooseProfilePicture'), [dialog('99900000000002')], EXETER)).toBeNull()
     expect(answersIssue(at('s03_clickChooseProfilePicture'), [dialog('100000000000001')], EXETER)).not.toBeNull()
     const upload = (profileID: string, fbid: string | null) => exchange('profilePictureUpload', { __ar: 1, payload: { fbid, profileID, imageWidth: 896, imageHeight: 1200 } })
-    expect(answersIssue(at('s04_uploadUploadPhoto'), [upload('61593843527201', '122123515989461450')], EXETER)).toBeNull()
-    expect(answersIssue(at('s04_uploadUploadPhoto'), [upload('61593843527201', null)], EXETER)).not.toBeNull()
+    expect(answersIssue(at('s04_uploadUploadPhoto'), [upload('99900000000002', '122123515989461450')], EXETER)).toBeNull()
+    expect(answersIssue(at('s04_uploadUploadPhoto'), [upload('99900000000002', null)], EXETER)).not.toBeNull()
   })
 
   test("the session names a plain endpoint the way the readings do, so a step can wait on it", () => {

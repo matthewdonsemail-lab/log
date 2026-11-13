@@ -27,7 +27,7 @@ function fakeBlaster(validTokens = new Set(["tokenGood123456"])) {
     if (url.endsWith("/api/auth/me")) {
       const auth = new Headers(init?.headers).get("Authorization") ?? "";
       return validTokens.has(auth.replace("Bearer ", ""))
-        ? Response.json({ username: "matt@rheos.app", scope: "api" })
+        ? Response.json({ username: "owner@example.com", scope: "api" })
         : new Response("no", { status: 401 });
     }
     if (url.endsWith("/api/auth/refresh")) {
@@ -105,7 +105,7 @@ describe("log login / whoami / logout", () => {
     const { code, out, err } = await run(["login", "--apiUrl", "https://api.test"]);
     expect(code).toBe(0);
     expect(err).toContain("Opening browser:");
-    expect(out).toContain("Signed in as matt@rheos.app");
+    expect(out).toContain("Signed in as owner@example.com");
     expect(out).not.toContain("tokenGood123456");
     const stored = loadSessionHome(dir).sessions["https://api.test"];
     expect(stored.accessToken).toBe("tokenGood123456");
@@ -116,7 +116,7 @@ describe("log login / whoami / logout", () => {
     fakeBlaster();
     expect((await run(["login", "--token", "tokenGood123456", "--apiUrl", "https://api.test"])).code).toBe(0);
     const who = await run(["whoami", "--json"]);
-    expect(JSON.parse(who.out)).toMatchObject({ ok: true, username: "matt@rheos.app", masked: "toke…3456" });
+    expect(JSON.parse(who.out)).toMatchObject({ ok: true, username: "owner@example.com", masked: "toke…3456" });
     expect((await run(["logout"])).out).toContain("Signed out of https://api.test");
     expect((await run(["whoami"])).err).toContain("not signed in");
   });

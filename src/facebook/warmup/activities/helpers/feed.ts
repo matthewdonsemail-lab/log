@@ -1,7 +1,7 @@
 import type { PlatformActivity } from '../types'
 
-const RUN = 'run 20261020T102133_61594131334566 (Reading, AdsPower, Byteful)'
-const INSPECT = 'inspect 20261020T103913_61594131334566 (Reading, by hand, timed)'
+const RUN = 'run 20261020T102133_99900000000027 (Reading, AdsPower, Byteful)'
+const INSPECT = 'inspect 20261020T103913_99900000000027 (Reading, by hand, timed)'
 
 export const FEED: PlatformActivity = {
   platform: 'facebook',

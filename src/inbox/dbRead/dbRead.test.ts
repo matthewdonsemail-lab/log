@@ -45,10 +45,10 @@ describe('a read for one chat answers from the .db whenever the .db is current',
 describe('the .db gives back a chat oldest first, with who wrote each', () => {
   test('the newest n messages of one chat, the account\'s own marked as mine', () => {
     const now = new Date('2026-11-07T02:00:00Z')
-    storeRead('discord', 'reader', 'chat1', 'dm', { id: '101', at: '2026-11-07T01:00:00Z', from: 'deepman', fromMe: false, text: 'yo' }, now, 'live')
+    storeRead('discord', 'reader', 'chat1', 'dm', { id: '101', at: '2026-11-07T01:00:00Z', from: 'dex', fromMe: false, text: 'yo' }, now, 'live')
     storeRead('discord', 'reader', 'chat1', 'dm', { id: '102', at: '2026-11-07T01:01:00Z', from: 'me', fromMe: true, text: 'whats good' }, now, 'live')
-    storeRead('discord', 'reader', 'chat1', 'dm', { id: '103', at: '2026-11-07T01:02:00Z', from: 'deepman', fromMe: false, text: 'all good' }, now, 'live')
-    storeRead('discord', 'reader', 'chat2', 'dm', { id: '201', at: '2026-11-07T01:03:00Z', from: 'abel', fromMe: false, text: 'other chat' }, now, 'live')
+    storeRead('discord', 'reader', 'chat1', 'dm', { id: '103', at: '2026-11-07T01:02:00Z', from: 'dex', fromMe: false, text: 'all good' }, now, 'live')
+    storeRead('discord', 'reader', 'chat2', 'dm', { id: '201', at: '2026-11-07T01:03:00Z', from: 'abby', fromMe: false, text: 'other chat' }, now, 'live')
     expect(chatMessageCount('discord', 'reader', 'chat1')).toBe(3)
     const two = chatMessages('discord', 'reader', 'chat1', 2)
     expect(two.map((m) => m.id)).toEqual(['102', '103'])
@@ -62,14 +62,14 @@ describe('a chat is found by name from the kept list, and the platform only when
     let calls = 0
     const list = () => {
       calls++
-      return { ok: true as const, chats: [{ id: '1', name: 'deepman' }] }
+      return { ok: true as const, chats: [{ id: '1', name: 'dex' }] }
     }
     const match = (chats: { id: string; name: string }[], said: string) => {
       const chat = chats.find((c) => c.name === said)
       return chat ? { ok: true as const, chat } : { ok: false as const }
     }
-    expect(findInChatList('discord', 'lister', 'deepman', match, list)).toMatchObject({ from: 'platform', found: { ok: true } })
-    expect(findInChatList('discord', 'lister', 'deepman', match, list)).toMatchObject({ from: 'cache', found: { ok: true } })
+    expect(findInChatList('discord', 'lister', 'dex', match, list)).toMatchObject({ from: 'platform', found: { ok: true } })
+    expect(findInChatList('discord', 'lister', 'dex', match, list)).toMatchObject({ from: 'cache', found: { ok: true } })
     expect(calls).toBe(1)
     expect(cachedChatList('discord', 'lister')).toHaveLength(1)
     findInChatList('discord', 'lister', 'someone new', match, list)
@@ -80,7 +80,7 @@ describe('a chat is found by name from the kept list, and the platform only when
 describe('a Discord image is read with where it was saved', () => {
   test('a stored image keeps its saved path, and the .db answers it', () => {
     const now = new Date('2026-11-07T11:00:00Z')
-    storeRead('discord', 'imgAcct', 'imgChat', 'dm', { id: '9001', at: '2026-11-07T10:59:00Z', from: 'Kennedy', fromMe: false, text: '', attachments: [{ name: 'shot.png', type: 'image/png', path: '/tmp/shot.png' }] }, now, 'backfill')
+    storeRead('discord', 'imgAcct', 'imgChat', 'dm', { id: '9001', at: '2026-11-07T10:59:00Z', from: 'Kira', fromMe: false, text: '', attachments: [{ name: 'shot.png', type: 'image/png', path: '/tmp/shot.png' }] }, now, 'backfill')
     const [m] = chatMessages('discord', 'imgAcct', 'imgChat', 5)
     expect(m.id).toBe('9001')
     expect(m.attachments).toEqual([{ name: 'shot.png', type: 'image/png', path: '/tmp/shot.png' }])
@@ -89,9 +89,9 @@ describe('a Discord image is read with where it was saved', () => {
 
   test('a message stored before its image was saved gets the path added on the next read', () => {
     const now = new Date('2026-11-07T11:00:00Z')
-    storeRead('discord', 'imgAcct', 'imgChat2', 'dm', { at: '2026-11-07T10:58:00Z', from: 'Kennedy', fromMe: false, text: '' }, now, 'live')
+    storeRead('discord', 'imgAcct', 'imgChat2', 'dm', { at: '2026-11-07T10:58:00Z', from: 'Kira', fromMe: false, text: '' }, now, 'live')
     expect(mediaNotSaved(chatMessages('discord', 'imgAcct', 'imgChat2', 5))).toBe(true)
-    storeRead('discord', 'imgAcct', 'imgChat2', 'dm', { id: '9002', at: '2026-11-07T10:58:00Z', from: 'Kennedy', fromMe: false, text: '', attachments: [{ name: 'a.jpg', type: 'image/jpeg', path: '/tmp/a.jpg' }] }, now, 'backfill')
+    storeRead('discord', 'imgAcct', 'imgChat2', 'dm', { id: '9002', at: '2026-11-07T10:58:00Z', from: 'Kira', fromMe: false, text: '', attachments: [{ name: 'a.jpg', type: 'image/jpeg', path: '/tmp/a.jpg' }] }, now, 'backfill')
     const [m] = chatMessages('discord', 'imgAcct', 'imgChat2', 5)
     expect(m.id).toBe('9002')
     expect(m.attachments?.[0]?.path).toBe('/tmp/a.jpg')

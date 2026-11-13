@@ -30,7 +30,7 @@ describe("a dm can carry a meme (rule 119)", () => {
   test("a split dm stops the moment they write back in either inbox, and the rest is held", async () => {
     const saved = { ...twitterSendDeps };
     twitterSendDeps.now = () => "2026-11-03T19:00:00.000Z";
-    twitterSendDeps.incoming = (account, userId) => [{ platform: "twitter", account, conversationId: `${userId}:1974596626342686720`, with: "lior", text: "hold on", at: "2026-11-03T19:00:05.000Z", box: "xchat", seenAt: "2026-11-03T19:00:05.200Z" }];
+    twitterSendDeps.incoming = (account, userId) => [{ platform: "twitter", account, conversationId: `${userId}:1974596626342686720`, with: "lina", text: "hold on", at: "2026-11-03T19:00:05.000Z", box: "xchat", seenAt: "2026-11-03T19:00:05.200Z" }];
     try {
       const specs: TwitterEngineSpec[] = [];
       const engine = async (spec: TwitterEngineSpec) => {

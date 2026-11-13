@@ -772,7 +772,7 @@ AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When mat
 
 log flow run warmupCreateAccessCheck --account <a> 
 A dry run: lists the steps and opens nothing. What runs them on Facebook is `flowWarmupCreateAccessCheckLive`.
-Warm-up createAccessCheck: Listaro's runStage3, account-warmup.ts:181-209, recorded on 61594063207669 2026-10-22 (rule 35).
+Warm-up createAccessCheck: Listaro's runStage3, account-warmup.ts:181-209, recorded on 99900000000001 2026-10-22 (rule 35).
 Steps: gotomarketplace → dwell → gotomarketplaceCreateItem → dwell → gotomarketplace → scroll. Every step is recorded (snapshot, screenshot, HAR, rea).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
 AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
@@ -781,7 +781,7 @@ AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When mat
 
 log flow run warmupCreateAccessCheck --account <a>  --live
 Live on Facebook: runs every step in the account's browser. Call it only when matt asked for this live run, with confirmLive: true (rules 8, 10).
-Warm-up createAccessCheck: Listaro's runStage3, account-warmup.ts:181-209, recorded on 61594063207669 2026-10-22 (rule 35).
+Warm-up createAccessCheck: Listaro's runStage3, account-warmup.ts:181-209, recorded on 99900000000001 2026-10-22 (rule 35).
 Steps: gotomarketplace → dwell → gotomarketplaceCreateItem → dwell → gotomarketplace → scroll. Every step is recorded (snapshot, screenshot, HAR, rea).
 Runs for minutes in the account's browser: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
@@ -791,7 +791,7 @@ AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When mat
 
 log flow run warmupFeedBrowse --account <a> 
 A dry run: lists the steps and opens nothing. What runs them on Facebook is `flowWarmupFeedBrowseLive`.
-Warm-up feedBrowse: Listaro's runStage1, account-warmup.ts:92-130, recorded on 61594063207669 2026-10-22 (rule 35).
+Warm-up feedBrowse: Listaro's runStage1, account-warmup.ts:92-130, recorded on 99900000000001 2026-10-22 (rule 35).
 Steps: goto → dwell → scroll → gotomarketplace → dwell → scroll. Every step is recorded (snapshot, screenshot, HAR, rea).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
 AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
@@ -800,7 +800,7 @@ AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When mat
 
 log flow run warmupFeedBrowse --account <a>  --live
 Live on Facebook: runs every step in the account's browser. Call it only when matt asked for this live run, with confirmLive: true (rules 8, 10).
-Warm-up feedBrowse: Listaro's runStage1, account-warmup.ts:92-130, recorded on 61594063207669 2026-10-22 (rule 35).
+Warm-up feedBrowse: Listaro's runStage1, account-warmup.ts:92-130, recorded on 99900000000001 2026-10-22 (rule 35).
 Steps: goto → dwell → scroll → gotomarketplace → dwell → scroll. Every step is recorded (snapshot, screenshot, HAR, rea).
 Runs for minutes in the account's browser: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
@@ -810,7 +810,7 @@ AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When mat
 
 log flow run warmupMarketplaceBrowse --account <a> 
 A dry run: lists the steps and opens nothing. What runs them on Facebook is `flowWarmupMarketplaceBrowseLive`.
-Warm-up marketplaceBrowse: Listaro's runStage2, account-warmup.ts:135-174, recorded on 61594063207669 2026-10-22 (rule 35).
+Warm-up marketplaceBrowse: Listaro's runStage2, account-warmup.ts:135-174, recorded on 99900000000001 2026-10-22 (rule 35).
 Steps: gotomarketplace → dwell → scroll → openAny. Every step is recorded (snapshot, screenshot, HAR, rea).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
 AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
@@ -819,7 +819,7 @@ AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When mat
 
 log flow run warmupMarketplaceBrowse --account <a>  --live
 Live on Facebook: runs every step in the account's browser. Call it only when matt asked for this live run, with confirmLive: true (rules 8, 10).
-Warm-up marketplaceBrowse: Listaro's runStage2, account-warmup.ts:135-174, recorded on 61594063207669 2026-10-22 (rule 35).
+Warm-up marketplaceBrowse: Listaro's runStage2, account-warmup.ts:135-174, recorded on 99900000000001 2026-10-22 (rule 35).
 Steps: gotomarketplace → dwell → scroll → openAny. Every step is recorded (snapshot, screenshot, HAR, rea).
 Runs for minutes in the account's browser: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
@@ -829,7 +829,7 @@ AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When mat
 
 log flow run warmupMessagesVisit --account <a> 
 A dry run: lists the steps and opens nothing. What runs them on Facebook is `flowWarmupMessagesVisitLive`.
-Warm-up messagesVisit: Listaro's runStage4or5 (stage 5), account-warmup.ts:214-246, recorded on 61594063207669 2026-10-22 (rule 35).
+Warm-up messagesVisit: Listaro's runStage4or5 (stage 5), account-warmup.ts:214-246, recorded on 99900000000001 2026-10-22 (rule 35).
 Steps: gotomarketplace → scroll → gotomarketplaceYouSelling → dwell → gotomessages → dwell → scroll. Every step is recorded (snapshot, screenshot, HAR, rea).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
 AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
@@ -838,7 +838,7 @@ AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When mat
 
 log flow run warmupMessagesVisit --account <a>  --live
 Live on Facebook: runs every step in the account's browser. Call it only when matt asked for this live run, with confirmLive: true (rules 8, 10).
-Warm-up messagesVisit: Listaro's runStage4or5 (stage 5), account-warmup.ts:214-246, recorded on 61594063207669 2026-10-22 (rule 35).
+Warm-up messagesVisit: Listaro's runStage4or5 (stage 5), account-warmup.ts:214-246, recorded on 99900000000001 2026-10-22 (rule 35).
 Steps: gotomarketplace → scroll → gotomarketplaceYouSelling → dwell → gotomessages → dwell → scroll. Every step is recorded (snapshot, screenshot, HAR, rea).
 Runs for minutes in the account's browser: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
@@ -848,7 +848,7 @@ AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When mat
 
 log flow run warmupSellingVisit --account <a> 
 A dry run: lists the steps and opens nothing. What runs them on Facebook is `flowWarmupSellingVisitLive`.
-Warm-up sellingVisit: Listaro's runStage4or5 (stage 4), account-warmup.ts:214-246, recorded on 61594063207669 2026-10-22 (rule 35).
+Warm-up sellingVisit: Listaro's runStage4or5 (stage 4), account-warmup.ts:214-246, recorded on 99900000000001 2026-10-22 (rule 35).
 Steps: gotomarketplace → scroll → gotomarketplaceYouSelling → dwell. Every step is recorded (snapshot, screenshot, HAR, rea).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
 AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
@@ -857,7 +857,7 @@ AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When mat
 
 log flow run warmupSellingVisit --account <a>  --live
 Live on Facebook: runs every step in the account's browser. Call it only when matt asked for this live run, with confirmLive: true (rules 8, 10).
-Warm-up sellingVisit: Listaro's runStage4or5 (stage 4), account-warmup.ts:214-246, recorded on 61594063207669 2026-10-22 (rule 35).
+Warm-up sellingVisit: Listaro's runStage4or5 (stage 4), account-warmup.ts:214-246, recorded on 99900000000001 2026-10-22 (rule 35).
 Steps: gotomarketplace → scroll → gotomarketplaceYouSelling → dwell. Every step is recorded (snapshot, screenshot, HAR, rea).
 Runs for minutes in the account's browser: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).

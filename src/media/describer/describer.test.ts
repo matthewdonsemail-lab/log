@@ -68,8 +68,8 @@ describe("one local model describes every image, meme and video (rule 138)", () 
   });
 
   test("a message's media reaches its context, described or flagged as not described yet", () => {
-    const message = { platform: "discord", account: "a", conversationId: "D1", with: "abel", text: "look at this", at: "2026-11-04T01:00:00Z", box: "dm", seenAt: "2026-11-04T01:00:01Z" };
-    appendEvent({ platform: "discord", account: "a", conversationId: "D1", type: "message", with: "abel", text: message.text, sourceAt: message.at, receivedAt: message.seenAt, eventId: eventIdOf(message) });
+    const message = { platform: "discord", account: "a", conversationId: "D1", with: "abby", text: "look at this", at: "2026-11-04T01:00:00Z", box: "dm", seenAt: "2026-11-04T01:00:01Z" };
+    appendEvent({ platform: "discord", account: "a", conversationId: "D1", type: "message", with: "abby", text: message.text, sourceAt: message.at, receivedAt: message.seenAt, eventId: eventIdOf(message) });
     enqueueAttachments(message, [{ name: "clip.mp4", type: "video/mp4" }]);
     const [m] = chatContextOf("discord", "a", { conversationId: "D1" }).messages;
     expect(m.mediaLines).toEqual(["[video clip.mp4 not described yet: no local copy of the file yet]"]);

@@ -53,15 +53,15 @@ describe("inbox watch", () => {
   });
 
   test("an X Chat reply with encrypted text still surfaces, labelled", () => {
-    let threads = [thread("x1", "shwetasd19", "2026-10-26T03:00:00Z", true, "xchat", null)];
+    let threads = [thread("x1", "sample_user19", "2026-10-26T03:00:00Z", true, "xchat", null)];
     const reader: InboxReader = { platform: "twitter", accounts: () => ["acct"], read: () => threads };
     expect(pollReaders([reader])).toEqual([]);
-    threads = [thread("x1", "shwetasd19", "2026-10-26T04:12:00Z", false, "xchat", null)];
+    threads = [thread("x1", "sample_user19", "2026-10-26T04:12:00Z", false, "xchat", null)];
     const found = pollReaders([reader]);
-    expect(found.map((m) => m.with)).toEqual(["shwetasd19"]);
+    expect(found.map((m) => m.with)).toEqual(["sample_user19"]);
     const text = inboxContext(takePending());
     expect(text).toContain("(X Chat)");
-    expect(text).toContain("@shwetasd19");
+    expect(text).toContain("@sample_user19");
   });
 
   test("the first look learns what's there; the next says what arrived, once", () => {
@@ -81,9 +81,9 @@ describe("inbox watch", () => {
     expect(sub).toBe("s1_a9");
     expect(takePending(main)).toEqual([]);
     expect(takePending(sub)).toEqual([]);
-    addPending([{ platform: "twitter", account: "acct", conversationId: "c", with: "nefer", text: "what up G", at: "2026-11-02T18:57:46Z", box: "xchat", seenAt: "2026-11-02T18:57:48Z" }]);
-    expect(takePending(sub).map((m) => m.with)).toEqual(["nefer"]);
-    expect(takePending(main).map((m) => m.with)).toEqual(["nefer"]);
+    addPending([{ platform: "twitter", account: "acct", conversationId: "c", with: "handle_n1", text: "what up G", at: "2026-11-02T18:57:46Z", box: "xchat", seenAt: "2026-11-02T18:57:48Z" }]);
+    expect(takePending(sub).map((m) => m.with)).toEqual(["handle_n1"]);
+    expect(takePending(main).map((m) => m.with)).toEqual(["handle_n1"]);
     expect(takePending(main)).toEqual([]);
     expect(takePending(sub)).toEqual([]);
   });
@@ -99,13 +99,13 @@ describe("inbox watch", () => {
     expect(claimPoll(new Date(t0.getTime() + 60 * 60_000))).toBe(false);
   });
   test("a Discord message pushed by the gateway is told with the Discord steps, beside X's", () => {
-    addPending([{ platform: "discord", account: "sourcedandsoldtothehighestbidder", conversationId: "1316963626611118161", with: "VIBE BOT", text: "look beyond x", at: "2026-10-28T08:48:50Z", box: "reply", seenAt: "2026-10-28T08:48:51Z" }]);
+    addPending([{ platform: "discord", account: "myDiscordName", conversationId: "1316963626611118161", with: "VIBE BOT", text: "look beyond x", at: "2026-10-28T08:48:50Z", box: "reply", seenAt: "2026-10-28T08:48:51Z" }]);
     addPending([{ platform: "twitter", account: "matthewsoldit", conversationId: "1-2", with: "alice", text: "hey", at: "2026-10-28T08:49:00Z", box: "xchat", seenAt: "2026-10-28T08:49:01Z" }]);
     const text = inboxContext(takePending())!;
     expect(text).toContain(">>> NEW MESSAGE (1)");
     expect(text).toContain(">>> NEW DISCORD MESSAGE (1)");
-    expect(text).toContain("VIBE BOT on discord sourcedandsoldtothehighestbidder (replied to you in a server channel)");
-    expect(text).toContain("`discordSendLive` { account: \"sourcedandsoldtothehighestbidder\", channel: \"<channel>\"");
+    expect(text).toContain("VIBE BOT on discord myDiscordName (replied to you in a server channel)");
+    expect(text).toContain("`discordSendLive` { account: \"myDiscordName\", channel: \"<channel>\"");
   });
 
   test("a Slack message pushed by the workspace's websocket is told with the Slack steps", () => {

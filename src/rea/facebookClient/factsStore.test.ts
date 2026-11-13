@@ -83,19 +83,19 @@ describe('signed image links lose their signature before a sample is kept', () =
   test('a whole link, a shortened one with its length note, and one inside other text all lose their query', () => {
     const whole = 'https://scontent.fagc1-1.fna.fbcdn.net/v/t39.30808-6/863613843_n.jpg?stp=dst-jpg_tt6&_nc_ohc=e512qd9g3PkQ7kNvwEZwDsC&oh=00_AQMRkvSbcrKDCoKcd&oe=6A1B2C3D'
     const shortened = 'https://scontent.fagc1-1.fna.fbcdn.net/v/t39.30808-6/863613843_n.jpg?stp=dst-jpg_tt6&_nc_ohc=e512qd9g3PkQ&oh=00_AQMRkvSbcr… (441 chars)'
-    const kept = JSON.stringify(fitSample({ payload: { imageURI: shortened, uri: whole, note: `see ${whole} here`, profileID: '61593843527201' } }))
+    const kept = JSON.stringify(fitSample({ payload: { imageURI: shortened, uri: whole, note: `see ${whole} here`, profileID: '99900000000002' } }))
     expect(kept).not.toMatch(/_nc_ohc=|oh=00_|oe=/)
     expect(kept).toContain('"imageURI":"https://scontent.fagc1-1.fna.fbcdn.net/v/t39.30808-6/863613843_n.jpg (441 chars)"')
     expect(kept).toContain('"note":"see https://scontent.fagc1-1.fna.fbcdn.net/v/t39.30808-6/863613843_n.jpg here"')
-    expect(kept).toContain('"profileID":"61593843527201"')
+    expect(kept).toContain('"profileID":"99900000000002"')
   })
 
   test("Facebook's one-time action tokens are taken out by their key, the rest of what was sent stays", () => {
-    const kept = JSON.stringify(fitSample({ fb_api_req_friendly_name: 'useAccountStatusClearEnrollmentEntryPointActionMutation', fb_dtsg: 'NAft…', variables: { serialized_state: 'QVRRalpq…', ixt_clear_token: 'ATQHh9jA…', entityID: '61590766182623', count: null } }))
+    const kept = JSON.stringify(fitSample({ fb_api_req_friendly_name: 'useAccountStatusClearEnrollmentEntryPointActionMutation', fb_dtsg: 'NAft…', variables: { serialized_state: 'QVRRalpq…', ixt_clear_token: 'ATQHh9jA…', entityID: '99900000000028', count: null } }))
     expect(kept).not.toMatch(/QVRRalpq|ATQHh9jA|NAft/)
     expect(kept).toContain('"ixt_clear_token":"(taken out)"')
     expect(kept).toContain('"serialized_state":"(taken out)"')
-    expect(kept).toContain('"entityID":"61590766182623"')
+    expect(kept).toContain('"entityID":"99900000000028"')
     expect(kept).toContain('"count":null')
   })
 })

@@ -3,14 +3,14 @@ import { preflightOf, renderPreflight } from './index'
 import type { PreflightAccount, PreflightFacts } from './index'
 
 const EXETER: PreflightAccount = {
-  accountName: '61593843527201',
+  accountName: '99900000000002',
   homeCity: 'Exeter',
   homeCountry: 'US',
   activeHoursStart: null,
   activeHoursEnd: null,
   proxy: 'http://user:pass@proxy.example:8080',
   adsPowerProfileId: 'k1ib8m0k',
-  profilePhoto: 'C:/Users/0/.buzz/REPOS/log-cli/media/personas/exeterPartTimeEmployeeMale20/profilePicture.png'
+  profilePhoto: 'C:/Users/tester/.buzz/REPOS/log-cli/media/personas/exeterPartTimeEmployeeMale20/profilePicture.png'
 }
 
 const GOOD: PreflightFacts = {
@@ -55,7 +55,7 @@ describe('preflight says before any browser opens what would stop an account', (
   })
 
   test("the kernel checked is the one the profile's own user agent needs, not the newest", () => {
-    const scranton = preflightOf({ ...EXETER, accountName: '61593881475391', homeCity: 'Scranton', adsPowerProfileId: 'k1ib8m28' }, { ...GOOD, kernel: { reachable: true, version: '154', downloaded: false } }, NOON_EDT, 2500)
+    const scranton = preflightOf({ ...EXETER, accountName: '99900000000003', homeCity: 'Scranton', adsPowerProfileId: 'k1ib8m28' }, { ...GOOD, kernel: { reachable: true, version: '154', downloaded: false } }, NOON_EDT, 2500)
     expect(failed(scranton)).toEqual(['adsPowerKernelMissing'])
     expect(scranton.checks.find((c) => c.name === 'kernel')?.detail).toContain('SunBrowser 154, the kernel this profile')
     expect(failed(preflightOf(EXETER, { ...GOOD, kernel: { reachable: true, version: null, downloaded: false } }, NOON_EDT, 2500))).toEqual(['adsPowerKernelMissing'])

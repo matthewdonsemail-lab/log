@@ -29,8 +29,8 @@ describe('checkStep: did the step do what it should?', () => {
     const seen = (id: string): StepExchange => ({ offsetMs: 300, kind: 'api', name: 'FBUnifiedVideoSeenStateMutation', method: 'POST', host: 'www.facebook.com', path: '/api/graphql/', status: 200, ms: 74, sent: { variables: { input: { video_ids: ['1967507720600004'], actor_id: id } } }, answer: { data: { xfb_fb_shorts_seen_state_mutation: { viewer: { actor: { __typename: 'User', id } } } } }, errors: [], known: true })
     const next = 'https://www.facebook.com/reel/1049925804499764'
     expect(checkStep(step('swipe'), REEL_URL, { ok: true, url: REEL_URL })).toMatchObject({ ok: false, issue: `the URL didn't change (still ${REEL_URL})` })
-    expect(checkStep(step('swipe'), REEL_URL, { ok: true, url: next, exchanges: [seen('61594063207669')] }, { uid: '61594063207669' }).ok).toBe(true)
-    expect(checkStep(step('swipe'), REEL_URL, { ok: true, url: next, exchanges: [] }, { uid: '61594063207669' }).issue).toBe('Facebook never answered FBUnifiedVideoSeenStateMutation in this step (rule 73: its answer decides, not the screen)')
+    expect(checkStep(step('swipe'), REEL_URL, { ok: true, url: next, exchanges: [seen('99900000000001')] }, { uid: '99900000000001' }).ok).toBe(true)
+    expect(checkStep(step('swipe'), REEL_URL, { ok: true, url: next, exchanges: [] }, { uid: '99900000000001' }).issue).toBe('Facebook never answered FBUnifiedVideoSeenStateMutation in this step (rule 73: its answer decides, not the screen)')
   })
 
   test('the comments heading must show after opening and be gone after closing', () => {
@@ -81,8 +81,8 @@ describe("the other activity steps read Facebook's answers too (rule 73)", () =>
   const openFeed = FEED.steps.find((x) => x.id === 'openFeed')!
 
   test('the home feed passes only when MAWVerifyThreadCutover_ContactCapabilities2Query answers this account as the one signed in', () => {
-    expect(checkStep(openFeed, null, { ok: true, url: FEED_URL, exchanges: [composer('61594063207669')] }, { uid: '61594063207669' }).ok).toBe(true)
-    expect(checkStep(openFeed, null, { ok: true, url: FEED_URL, exchanges: [composer('61500000000001')] }, { uid: '61594063207669' }).issue).toBe("MAWVerifyThreadCutover_ContactCapabilities2Query answered data.user.id = \"61500000000001\", not the account's id (61594063207669)")
+    expect(checkStep(openFeed, null, { ok: true, url: FEED_URL, exchanges: [composer('99900000000001')] }, { uid: '99900000000001' }).ok).toBe(true)
+    expect(checkStep(openFeed, null, { ok: true, url: FEED_URL, exchanges: [composer('99900000000006')] }, { uid: '99900000000001' }).issue).toBe("MAWVerifyThreadCutover_ContactCapabilities2Query answered data.user.id = \"99900000000006\", not the account's id (99900000000001)")
   })
 
   test('the steps checked are the ones whose recordings show a call that answers them; dwells and the rest have none to read', () => {
