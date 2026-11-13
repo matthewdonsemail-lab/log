@@ -15,7 +15,7 @@ import { ConnectionList, type ConnectionItem } from './ConnectionList'
 import { ConnectionPlatformFilter } from './ConnectionPlatformFilter'
 import { PlatformSignInDialog } from './PlatformSignInDialog'
 import { PlatformConnectionTongue } from './PlatformConnectionTongue'
-import { BrowserCheckSeam, useBrowserCheck } from './browserCheckSeam'
+import { BrowserCheckDialog } from './BrowserCheckDialog'
 import { checkConnection, loadConnections, saveConnectionKeys, type LocalConnections } from './connectionsData'
 import { targetKey } from './consoleClient'
 import { useConsoleTarget } from './useConsoleTarget'
@@ -59,7 +59,10 @@ export function ConnectionsPage() {
   const queryKey = ['consoleConnections', targetKey(target)]
   const [statusTime, setStatusTime] = useState(Date.now)
   const [checkingId, setCheckingId] = useState<string | null>(null)
-  const { browserCheckAccountId, openBrowserCheck, closeBrowserCheck } = useBrowserCheck()
+  const [browserCheck, setBrowserCheck] = useState<{ accountId: string; autoSignIn: boolean } | null>(null)
+  const browserCheckAccountId = browserCheck?.accountId ?? null
+  const openBrowserCheck = (accountId: string, autoSignIn = false) => setBrowserCheck({ accountId, autoSignIn })
+  const closeBrowserCheck = () => setBrowserCheck(null)
   const [view, setView] = useState<View>(() => { try { return localStorage.getItem('logConsoleConnectionsView') === 'cards' ? 'cards' : 'table' } catch { return 'table' } })
   const [query, setQuery] = useState('')
   const [platformQuery, setPlatformQuery] = useState('')
@@ -175,8 +178,8 @@ export function ConnectionsPage() {
         </div>)}</div></div>
       })}
     </section>
-    {browserCheckAccount && target ? <BrowserCheckSeam key={browserCheckAccount.id} account={browserCheckAccount} target={target} onClose={() => { closeBrowserCheck(); void connections.refetch() }} onResolved={() => { closeBrowserCheck(); void connections.refetch() }} onConfigureProvider={() => { closeBrowserCheck(); setKeyDialog({ open: true, provider: EXTENSION_PROVIDERS.find((item) => item.key === 'adsPower')! }) }} /> : null}
-    {signInPlatform ? <PlatformSignInDialog key={signInPlatform.service} platform={signInPlatform} target={target} accounts={connected} onClose={() => setSignInPlatform(null)} onSignedIn={(answer) => { keep(answer.connections); setSignInPlatform(null); if (answer.next === 'browserCheck') openBrowserCheck(answer.accountId) }} /> : null}
+    {browserCheckAccount && target ? <BrowserCheckDialog key={browserCheckAccount.id} account={browserCheckAccount} target={target} autoSignIn={browserCheck?.autoSignIn === true} onClose={() => { closeBrowserCheck(); void connections.refetch() }} onResolved={() => { closeBrowserCheck(); void connections.refetch() }} onConfigureProvider={() => { closeBrowserCheck(); setKeyDialog({ open: true, provider: EXTENSION_PROVIDERS.find((item) => item.key === 'adsPower')! }) }} /> : null}
+    {signInPlatform ? <PlatformSignInDialog key={signInPlatform.service} platform={signInPlatform} target={target} accounts={connected} onClose={() => setSignInPlatform(null)} onSignedIn={(answer) => { keep(answer.connections); setSignInPlatform(null); if (answer.next === 'browserCheck') openBrowserCheck(answer.accountId, true) }} /> : null}
     <AddKeyDialog open={keyDialog.open} provider={keyDialog.provider} providers={EXTENSION_PROVIDERS} credentials={connections.data?.extensions ?? []} target={target} onSave={running && target ? async (provider, values) => { keep(await saveConnectionKeys(target, provider, values)) } : undefined} onClose={() => setKeyDialog({ open: false, provider: null })} />
   </ConsoleLayout>
 }
