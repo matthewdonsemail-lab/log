@@ -64,7 +64,7 @@ Answered:
         "__typename": "User",
         "has_confirmed_contactpoints": true,
         "pending_contactpoints": [],
-        "id": "<userId:1>"
+        "id": "<id:1>"
       }
     }
   },
@@ -112,7 +112,7 @@ Answered:
         "__typename": "User",
         "has_confirmed_contactpoints": true,
         "pending_contactpoints": [],
-        "id": "<userId:2>"
+        "id": "<id:2>"
       }
     }
   },
@@ -160,7 +160,7 @@ Answered:
         "__typename": "User",
         "has_confirmed_contactpoints": true,
         "pending_contactpoints": [],
-        "id": "<userId:3>"
+        "id": "<id:3>"
       }
     }
   },

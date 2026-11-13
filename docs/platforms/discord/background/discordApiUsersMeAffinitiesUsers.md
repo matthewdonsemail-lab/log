@@ -10,21 +10,22 @@
 | Path | `discord.com/api/users/@me/affinities/users` |
 | Sends | — |
 | Reads | `user_affinities` |
-| Called from | `runs/inspect/20261030T222341_<name:1>/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_<name:1>/script1036.js:1 parse`, `runs/inspect/20261030T222341_<name:1>/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_<name:1>/script1245.js:2 anonymous` |
-| rea | `ev_065e7ad37dcb5911d240f9de7d6e2882220c5a8d7c025d92b46a23de59cf297c` |
+| Called from | `runs/inspect/20261113T044840_<name:1>/script0.js:232 625075`, `runs/inspect/20261113T044840_<name:1>/script0.js:124 559868`, `runs/inspect/20261113T044840_<name:1>/script0.js:124 961943`, `runs/inspect/20261113T044840_<name:1>/script1294.js:1 634654` |
+| rea | `ev_a54d94b212fcefe83201c912fd152ab50012f27cdaccd88ce7b0b00dad03a1a4` |
 
-Seen 2 time(s) in 2 run(s).
+Seen 3 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 5: click e40 | 1 | 200 | 789 ms | 6560 ms | — |
 | inspect | step 2: snapshot | 1 | 200 | 740 ms | 48694 ms | — |
+| inspect | step 1: goto /login | 1 | 200 | 567 ms | 39408 ms | — |
 
-### What it sent and what came back (the newest 2 from our runs)
+### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261030T222341_<name:1>**, step 2: snapshot: 200, 740 ms
+**runs/inspect/20261113T044840_<name:1>**, step 1: goto /login: 200, 567 ms
 
 Sent:
 
@@ -42,6 +43,108 @@ Answered:
       "user_segment": "HFU_MAU",
       "other_user_segment": "HFU_MAU",
       "is_friend": true,
+      "dm_probability": 0.8655436162058096,
+      "dm_rank": 2,
+      "vc_probability": 0.8398527195215787,
+      "vc_rank": 1,
+      "server_message_probability": 0.005573460828873254,
+      "server_message_rank": 50,
+      "communication_probability": 0.5703232655187538,
+      "communication_rank": 1
+    },
+    {
+      "other_user_id": "<userId:2>",
+      "user_segment": "HFU_MAU",
+      "other_user_segment": "HFU_MAU",
+      "is_friend": true,
+      "dm_probability": 0.8657062030067925,
+      "dm_rank": 1,
+      "vc_probability": 0.8290585099016067,
+      "vc_rank": 2,
+      "server_message_probability": 0.005957314276087447,
+      "server_message_rank": 46,
+      "communication_probability": 0.5669073423948289,
+      "communication_rank": 2
+    },
+    {
+      "other_user_id": "<userId:3>",
+      "user_segment": "HFU_MAU",
+      "other_user_segment": "NON_HFU_MAU",
+      "is_friend": true,
+      "dm_probability": 0.8619711953621677,
+      "dm_rank": 5,
+      "vc_probability": 0.8204210209929506,
+      "vc_rank": 3,
+      "server_message_probability": 0.0027760240483838813,
+      "server_message_rank": 260,
+      "communication_probability": 0.5617227468011674,
+      "communication_rank": 3
+    },
+    {
+      "other_user_id": "<userId:4>",
+      "user_segment": "HFU_MAU",
+      "other_user_segment": "HFU_MAU",
+      "is_friend": true,
+      "dm_probability": 0.8637659262711366,
+      "dm_rank": 3,
+      "vc_probability": 0.7584085865919779,
+      "vc_rank": 4,
+      "server_message_probability": 0.007626435710595121,
+      "server_message_rank": 33,
+      "communication_probability": 0.5432669828579031,
+      "communication_rank": 4
+    },
+    {
+      "other_user_id": "<userId:5>",
+      "user_segment": "HFU_MAU",
+      "other_user_segment": "HFU_MAU",
+      "is_friend": true,
+      "dm_probability": 0.8306011586443557,
+      "dm_rank": 11,
+      "vc_probability": 0.204234279145807,
+      "vc_rank": 6,
+      "server_message_probability": 0.4019136467799021,
+      "server_message_rank": 4,
+      "communication_probability": 0.4789163615233549,
+      "communication_rank": 5
+    },
+    {
+      "other_user_id": "<userId:6>",
+      "user_segment": "HFU_MAU",
+      "other_user_segment": "HFU_MAU",
+      "is_friend": true,
+      "dm_probability": 0.863174255354716,
+      "dm_rank": 4,
+      "vc_probability": 0.21201091005548345,
+      "vc_rank": 5,
+      "server_message_probability": 0.014504964809545735,
+      "server_message_rank": 19,
+      "communication_probability": 0.36323004340658177,
+      "communication_rank": 6
+    },
+    "… 1717 more"
+  ]
+}
+```
+
+**runs/inspect/20261030T222341_<name:1>**, step 2: snapshot: 200, 740 ms
+
+Sent:
+
+```json
+null
+```
+
+Answered:
+
+```json
+{
+  "user_affinities": [
+    {
+      "other_user_id": "<userId:2>",
+      "user_segment": "HFU_MAU",
+      "other_user_segment": "HFU_MAU",
+      "is_friend": true,
       "dm_probability": 0.8643636102350072,
       "dm_rank": 2,
       "vc_probability": 0.8255596310980683,
@@ -52,7 +155,7 @@ Answered:
       "communication_rank": 1
     },
     {
-      "other_user_id": "<userId:2>",
+      "other_user_id": "<userId:1>",
       "user_segment": "HFU_MAU",
       "other_user_segment": "HFU_MAU",
       "is_friend": true,
@@ -66,7 +169,7 @@ Answered:
       "communication_rank": 2
     },
     {
-      "other_user_id": "<userId:3>",
+      "other_user_id": "<userId:4>",
       "user_segment": "HFU_MAU",
       "other_user_segment": "HFU_MAU",
       "is_friend": true,
@@ -80,7 +183,7 @@ Answered:
       "communication_rank": 3
     },
     {
-      "other_user_id": "<userId:4>",
+      "other_user_id": "<userId:6>",
       "user_segment": "HFU_MAU",
       "other_user_segment": "HFU_MAU",
       "is_friend": true,
@@ -94,7 +197,7 @@ Answered:
       "communication_rank": 4
     },
     {
-      "other_user_id": "<userId:5>",
+      "other_user_id": "<userId:7>",
       "user_segment": "HFU_MAU",
       "other_user_segment": "HFU_MAU",
       "is_friend": true,
@@ -108,7 +211,7 @@ Answered:
       "communication_rank": 5
     },
     {
-      "other_user_id": "<userId:6>",
+      "other_user_id": "<userId:8>",
       "user_segment": "HFU_MAU",
       "other_user_segment": "HFU_MAU",
       "is_friend": true,
@@ -140,7 +243,7 @@ Answered:
 {
   "user_affinities": [
     {
-      "other_user_id": "<userId:1>",
+      "other_user_id": "<userId:2>",
       "user_segment": "HFU_MAU",
       "other_user_segment": "HFU_MAU",
       "is_friend": true,
@@ -154,7 +257,7 @@ Answered:
       "communication_rank": 1
     },
     {
-      "other_user_id": "<userId:2>",
+      "other_user_id": "<userId:1>",
       "user_segment": "HFU_MAU",
       "other_user_segment": "HFU_MAU",
       "is_friend": true,
@@ -168,7 +271,7 @@ Answered:
       "communication_rank": 2
     },
     {
-      "other_user_id": "<userId:3>",
+      "other_user_id": "<userId:4>",
       "user_segment": "HFU_MAU",
       "other_user_segment": "HFU_MAU",
       "is_friend": true,
@@ -182,7 +285,7 @@ Answered:
       "communication_rank": 3
     },
     {
-      "other_user_id": "<userId:5>",
+      "other_user_id": "<userId:7>",
       "user_segment": "HFU_MAU",
       "other_user_segment": "HFU_MAU",
       "is_friend": true,
@@ -196,7 +299,7 @@ Answered:
       "communication_rank": 4
     },
     {
-      "other_user_id": "<userId:4>",
+      "other_user_id": "<userId:6>",
       "user_segment": "HFU_MAU",
       "other_user_segment": "HFU_MAU",
       "is_friend": true,
@@ -210,7 +313,7 @@ Answered:
       "communication_rank": 5
     },
     {
-      "other_user_id": "<userId:6>",
+      "other_user_id": "<userId:8>",
       "user_segment": "HFU_MAU",
       "other_user_segment": "HFU_MAU",
       "is_friend": true,

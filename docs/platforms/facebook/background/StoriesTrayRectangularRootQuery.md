@@ -97,7 +97,7 @@ Answered:
                   "uri": "<mediaUrl> (454 chars)"
                 },
                 "__isNode": "User",
-                "id": "<userId:1>",
+                "id": "<id:2>",
                 "is_viewer_friend": false,
                 "gender": "FEMALE",
                 "name": "<name:1>",
@@ -128,7 +128,7 @@ Answered:
           "has_next_page": false
         }
       },
-      "id": "<userId:1>",
+      "id": "<id:2>",
       "profilePicture": {
         "uri": "<mediaUrl> (452 chars)"
       }
@@ -136,7 +136,7 @@ Answered:
     "viewer": {
       "actor": {
         "__typename": "User",
-        "id": "<userId:1>"
+        "id": "<id:2>"
       }
     }
   },
@@ -217,7 +217,7 @@ Answered:
                   "uri": "<mediaUrl> (454 chars)"
                 },
                 "__isNode": "User",
-                "id": "<userId:1>",
+                "id": "<id:2>",
                 "is_viewer_friend": false,
                 "gender": "FEMALE",
                 "name": "<name:1>",
@@ -248,7 +248,7 @@ Answered:
           "has_next_page": false
         }
       },
-      "id": "<userId:1>",
+      "id": "<id:2>",
       "profilePicture": {
         "uri": "<mediaUrl> (452 chars)"
       }
@@ -256,7 +256,7 @@ Answered:
     "viewer": {
       "actor": {
         "__typename": "User",
-        "id": "<userId:1>"
+        "id": "<id:2>"
       }
     }
   },
@@ -325,7 +325,7 @@ Answered:
             "node": {
               "__typename": "DirectMessageThreadBucket",
               "__isStoryBucket": "DirectMessageThreadBucket",
-              "id": "<id:4>",
+              "id": "<id:3>",
               "unified_stories": {
                 "nodes": [],
                 "is_empty": true
@@ -337,7 +337,7 @@ Answered:
                   "uri": "<mediaUrl> (403 chars)"
                 },
                 "__isNode": "User",
-                "id": "<userId:2>",
+                "id": "<id:4>",
                 "is_viewer_friend": false,
                 "gender": "FEMALE",
                 "name": "<name:2>",
@@ -368,7 +368,7 @@ Answered:
           "has_next_page": false
         }
       },
-      "id": "<userId:2>",
+      "id": "<id:4>",
       "profilePicture": {
         "uri": "<mediaUrl> (401 chars)"
       }
@@ -376,7 +376,7 @@ Answered:
     "viewer": {
       "actor": {
         "__typename": "User",
-        "id": "<userId:2>"
+        "id": "<id:4>"
       }
     }
   },

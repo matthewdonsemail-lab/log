@@ -180,7 +180,7 @@ Answered:
           "is_business_page_active": false,
           "name": "<name:1>",
           "entity_card_subtitle": {
-            "text": "Town/city"
+            "text": "<messageText>"
           },
           "about": {
             "text": "",
@@ -467,19 +467,19 @@ Answered:
       "comet_hovercard_renderer": {
         "__typename": "CometHovercardProfilePlusUserRenderer",
         "user": {
-          "id": "<userId:2>",
+          "id": "<id:3>",
           "name": "<name:2>",
           "is_visibly_memorialized": false,
           "is_verified": false,
           "username_for_profile": null,
           "__isActor": "User",
           "__isEntity": "User",
-          "profile_url": "https://www.facebook.com/profile.php?id=<userId:2>",
+          "profile_url": "https://www.facebook.com/profile.php?id=<id:3>",
           "__typename": "User",
           "story_bucket": {
             "nodes": "(1 items)"
           },
-          "url": "https://www.facebook.com/profile.php?id=<userId:2>",
+          "url": "https://www.facebook.com/profile.php?id=<id:3>",
           "profile_picture": {
             "uri": "<mediaUrl> (434 chars)",
             "width": 100,
@@ -512,7 +512,7 @@ Answered:
           "__dr": "CometHovercardProfilePlusUserRenderer.react"
         }
       },
-      "id": "<userId:2>"
+      "id": "<id:3>"
     }
   },
   "extensions": {
@@ -643,7 +643,7 @@ Sent:
   "variables": {
     "actionBarRenderLocation": "WWW_COMET_HOVERCARD",
     "context": "GROUP",
-    "entityID": "<id:3>",
+    "entityID": "<id:2>",
     "groupID": "<groupId:1>",
     "scale": 1,
     "__relay_internal__pv__WorkCometIsEmployeeGKProviderrelayprovider": false
@@ -684,7 +684,7 @@ Answered:
               "… 2 more"
             ]
           },
-          "id": "<id:3>",
+          "id": "<id:4>",
           "privacy_info": {
             "icon_name": "globe-americas",
             "title": {
@@ -694,13 +694,13 @@ Answered:
               "aggregated_ranges": "(0 items)",
               "ranges": "(0 items)",
               "color_ranges": "(0 items)",
-              "text": "Public group"
+              "text": "<messageText>"
             }
           },
           "join_action_with_menu": {
             "__typename": "GroupJoinedGroupAction",
             "group": {
-              "id": "<id:3>",
+              "id": "<id:4>",
               "url": "https://www.facebook.com/groups/4191018610937243/",
               "group_type_name_for_content": "GROUP",
               "name": "<name:3>"
@@ -730,7 +730,7 @@ Answered:
           "__dr": "CometHovercardGroupRenderer.react"
         }
       },
-      "id": "<id:3>"
+      "id": "<id:4>"
     }
   },
   "extensions": {

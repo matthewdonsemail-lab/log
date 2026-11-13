@@ -116,7 +116,7 @@ Sent:
   "fb_api_req_friendly_name": "MAWVerifyThreadCutover_ContactCapabilities2Query",
   "server_timestamps": "true",
   "variables": {
-    "id": "<userId:1>"
+    "id": "<id:1>"
   },
   "doc_id": "9948369021930229"
 }
@@ -129,7 +129,7 @@ Answered:
   "data": {
     "user": {
       "message_capabilities2_str": "<id:1>",
-      "id": "<userId:1>"
+      "id": "<id:1>"
     }
   },
   "extensions": {
@@ -153,7 +153,7 @@ Sent:
   "fb_api_req_friendly_name": "MAWVerifyThreadCutover_ContactCapabilities2Query",
   "server_timestamps": "true",
   "variables": {
-    "id": "<userId:1>"
+    "id": "<id:1>"
   },
   "doc_id": "9948369021930229",
   "fb_api_analytics_tags": [
@@ -169,7 +169,7 @@ Answered:
   "data": {
     "user": {
       "message_capabilities2_str": "<id:1>",
-      "id": "<userId:1>"
+      "id": "<id:1>"
     }
   },
   "extensions": {
@@ -192,7 +192,7 @@ Sent:
   "fb_api_req_friendly_name": "MAWVerifyThreadCutover_ContactCapabilities2Query",
   "server_timestamps": "true",
   "variables": {
-    "id": "<userId:1>"
+    "id": "<id:1>"
   },
   "doc_id": "9948369021930229"
 }
@@ -205,7 +205,7 @@ Answered:
   "data": {
     "user": {
       "message_capabilities2_str": "<id:1>",
-      "id": "<userId:1>"
+      "id": "<id:1>"
     }
   },
   "extensions": {

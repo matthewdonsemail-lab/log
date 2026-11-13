@@ -121,7 +121,7 @@ Answered:
     "viewer": {
       "actor": {
         "__typename": "User",
-        "id": "<userId:1>",
+        "id": "<id:1>",
         "__isActor": "User",
         "name": "<name:1>"
       },
@@ -259,7 +259,7 @@ Answered:
     "viewer": {
       "actor": {
         "__typename": "User",
-        "id": "<userId:1>",
+        "id": "<id:1>",
         "__isActor": "User",
         "name": "<name:1>"
       },
@@ -401,7 +401,7 @@ Answered:
     "viewer": {
       "actor": {
         "__typename": "User",
-        "id": "<userId:3>",
+        "id": "<id:2>",
         "__isActor": "User",
         "name": "<name:2>"
       },
