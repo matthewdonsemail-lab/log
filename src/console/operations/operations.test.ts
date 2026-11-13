@@ -7,7 +7,7 @@ import { join } from "node:path";
 import { canonical, connectOnce, requestHash } from "../../runtime/bridge/index.ts";
 import type { Authority, Binding } from "../../runtime/bridge/index.ts";
 import { migrate } from "../../storage/schema/index.ts";
-import { consoleOperation } from "../../cli/runtime/index.ts";
+import { consoleOperation, isolationRefusal } from "../../cli/runtime/index.ts";
 import { CREDENTIAL_MASK } from "../../auth/credentials/index.ts";
 import { checkStateOf, createAccountChecker } from "../accountCheck/index.ts";
 import { connectionIdOf } from "../connections/index.ts";
@@ -207,5 +207,13 @@ describe("console operations over the bridge", () => {
     const rows = db.query("SELECT args, result, error FROM operations").all();
     expect(JSON.stringify(rows)).not.toContain(SECRET);
     expect(JSON.stringify(rows)).toContain("<redacted>");
+  });
+});
+
+describe("test runtimes", () => {
+  test("a runtime paired under its own LOG_RUNTIME_DIR must keep its own log.db", () => {
+    expect(isolationRefusal({ LOG_RUNTIME_DIR: "/tmp/runtime" })).toContain("LOG_DB");
+    expect(isolationRefusal({ LOG_RUNTIME_DIR: "/tmp/runtime", LOG_DB: "/tmp/runtime/log.db" })).toBeNull();
+    expect(isolationRefusal({})).toBeNull();
   });
 });

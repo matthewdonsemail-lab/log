@@ -1,7 +1,6 @@
 import { join } from "node:path";
 import { PACKAGE_ROOT } from "../../agentHooks/opencode/index.ts";
 import { DEFAULT_CONSOLE_PORT } from "../screens/index.ts";
-import { consoleApiAnswer } from "./helpers/api.ts";
 import { consoleBrowserAnswer } from "./helpers/browser.ts";
 import { consoleApiAnswer, consoleMutationAnswer } from "./helpers/api.ts";
 import { CONSOLE_MUTATIONS } from "../operations/index.ts";

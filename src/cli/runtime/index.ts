@@ -1,4 +1,4 @@
-import { consoleErrorCode, isConsoleOperation, redactConsoleArgs, runConsoleOperation } from "../../console/operations/index.ts";
+import { consoleErrorCode, isConsoleOperation, redactConsoleArgs, redactConsoleResult, runConsoleOperation } from "../../console/operations/index.ts";
 import type { ConsoleOperationDeps } from "../../console/operations/index.ts";
 import { finishPairing, keepConnected, readBinding, startPairing } from "../../runtime/bridge/index.ts";
 import type { ResultPayload, RunTool } from "../../runtime/bridge/index.ts";
@@ -59,7 +59,21 @@ export async function toolManifest(args: Record<string, unknown>): Promise<Resul
   const tools = toolsFromCommands(COMMANDS, { shell: false })
     .filter((tool) => names.has(tool.name))
     .map((tool) => ({ name: tool.name, title: tool.title, description: tool.description, inputSchema: tool.inputSchema, annotations: tool.annotations }));
-  return { state: "succeeded", result: { tools } };
+  if (args.ui !== true) return { state: "succeeded", result: { tools } };
+  const { appTools, withBrowserViewUi } = await import("../../mcp/apps/index.ts");
+  return { state: "succeeded", result: { tools: [...tools.map((tool) => withBrowserViewUi(tool as typeof tool & { _meta?: Record<string, unknown> })), ...appTools()] } };
+}
+
+export async function uiResources(tool: string, args: Record<string, unknown>): Promise<ResultPayload> {
+  const { BROWSER_VIEW_URI, browserViewResource, readBrowserViewResource } = await import("../../mcp/apps/index.ts");
+  if (tool === "uiResourcesList") return { state: "succeeded", result: { resources: [browserViewResource()] } };
+  if (args.uri !== BROWSER_VIEW_URI) return { state: "failed", error: { code: "resourceNotFound", message: "no such ui resource" } };
+  return { state: "succeeded", result: await readBrowserViewResource() };
+}
+
+export function isolationRefusal(env: Record<string, string | undefined>): string | null {
+  if (!env.LOG_RUNTIME_DIR || env.LOG_DB || env.LOG_INBOX_STATE) return null;
+  return "a runtime paired under LOG_RUNTIME_DIR keeps its own log.db: set LOG_DB (or LOG_INBOX_STATE) to its own folder too, so it never journals into the default log.db";
 }
 
 export async function consoleOperation(tool: string, args: Record<string, unknown>, callTool: ToolCaller, deps: Omit<ConsoleOperationDeps, "callTool"> = {}): Promise<ResultPayload> {
@@ -75,11 +89,12 @@ export function toolRunner(callTool: ToolCaller): RunTool {
   return async (tool, args) => {
     if (tool === "accountsList") return accountsList(args);
     if (tool === "toolManifest") return toolManifest(args);
+    if (tool === "uiResourcesList" || tool === "uiResourceRead") return uiResources(tool, args);
     if (isConsoleOperation(tool)) return consoleOperation(tool, args, callTool);
     const answer = await callTool(tool, args);
     const content = (answer.structuredContent ?? {}) as Record<string, unknown>;
     const { browsers: _browsers, next: _next, ...result } = content;
-    return answer.isError ? { state: "failed", result, error: { code: "toolFailed", message: String(content.stderr ?? "the tool failed").slice(0, 2000) } } : { state: "succeeded", result };
+    return answer.isError ? { state: "failed", result, error: { code: typeof content.error === "string" && /^[a-zA-Z]{1,60}$/.test(content.error) ? content.error : "toolFailed", message: String(content.stderr ?? content.message ?? "the tool failed").slice(0, 2000) } } : { state: "succeeded", result };
   };
 }
 
@@ -126,6 +141,8 @@ export const runtimeCommand: Command = {
       return { code: 0, stdout: json ? JSON.stringify(view) : binding ? `log runtime status: paired to workspace ${binding.workspaceId} at ${binding.origin} (generation ${binding.generation}, expires ${binding.expiresAt})` : "log runtime status: not paired (log runtime init, then log runtime pair)" };
     }
     if (!binding) return { code: 1, stderr: "log runtime connect: not paired yet (log runtime init --origin <url>, then log runtime pair --token <t>)" };
+    const isolation = isolationRefusal(process.env);
+    if (isolation) return { code: 1, stderr: `log runtime connect: ${isolation}` };
     const db = openDatabase(runtimeDeps.dbPath());
     const runTool = toolRunner(await runtimeDeps.callTool());
     const onLine = (line: string) => context.err?.(line);
@@ -135,6 +152,7 @@ export const runtimeCommand: Command = {
       runTool,
       isLive: (tool) => tool.endsWith("Live"),
       redact: redactConsoleArgs,
+      redactResult: redactConsoleResult,
       hello: () => ({ runtimeVersion: "log", schemaVersion: SCHEMA_VERSION, capabilities: { persistentStorage: true, browserAvailable: Boolean(process.env.ADSPOWER_API_KEY || process.env.ADSPOWER_HOST), driver: process.env.ADSPOWER_API_KEY || process.env.ADSPOWER_HOST ? "adsPower" : "none", protocolVersion: 1, checkedAt: new Date().toISOString(), status: "passed" } }),
       onLine,
     });
