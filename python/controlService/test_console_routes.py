@@ -29,7 +29,7 @@ class FakeLink(Link):
 
     async def ask(self, envelope: dict, operationId: str, seconds: float) -> dict | None:
         self.sent.append(envelope)
-        return self.reply
+        return self.reply(envelope) if callable(self.reply) else self.reply
 
 
 @dataclass

@@ -32,7 +32,19 @@ RUNTIME_ERRORS = {
     "cookiesIncomplete",
     "signInBusy",
     "usageRangeInvalid",
+    "browserMissing",
+    "browserViewerUnavailable",
+    "browserGenerationChanged",
+    "browserBusy",
+    "browserStateChanged",
+    "browserInputStopped",
+    "browserInputInvalid",
+    "browserInputFailed",
+    "browserCheckUnresolved",
+    "browserOperationRefused",
 }
+
+BROWSER_OPERATIONS = {"state": "browserState", "open": "browserOpen", "frame": "browserFrame", "input": "browserInput", "action": "browserAction", "saveState": "browserSaveState", "close": "browserClose"}
 
 PENDING_STATES = {"dispatched", "accepted", "running"}
 
@@ -57,6 +69,14 @@ class AccountSignIn(Strict):
     cookies: str | None = Field(default=None, max_length=65536)
     username: str | None = Field(default=None, max_length=320)
     password: str | None = Field(default=None, max_length=1024)
+
+
+class BrowserRequest(Strict):
+    accountId: str = Field(min_length=24, max_length=24, pattern=r"^[a-f0-9]{24}$")
+    generation: str | None = Field(default=None, max_length=64, pattern=r"^[a-f0-9]{1,64}$")
+    revision: str | None = Field(default=None, max_length=64, pattern=r"^[a-f0-9]{1,64}$")
+    action: str | None = Field(default=None, pattern=r"^(back|reload|verify|resolve|linkProfile)$")
+    event: dict | None = None
 
 
 def answer_of(view) -> dict | list:
@@ -112,5 +132,12 @@ def console_router(settings: Settings, engine: Engine, dispatcher: Dispatcher) -
     @router.post("/teams/{teamId}/console/signIn")
     async def sign_in(teamId: str, body: AccountSignIn, request: Request, response: Response):
         return await relay(request, response, teamId, "accountSignIn", body.model_dump(exclude_none=True), True)
+
+    @router.post("/teams/{teamId}/console/browser/{operation}")
+    async def browser(teamId: str, operation: str, body: BrowserRequest, request: Request, response: Response):
+        tool = BROWSER_OPERATIONS.get(operation)
+        if not tool:
+            raise ApiError("notFound")
+        return await relay(request, response, teamId, tool, body.model_dump(exclude_none=True), True)
 
     return router
