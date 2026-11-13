@@ -24,7 +24,7 @@ export type AccountStatus = (typeof ACCOUNT_STATUSES)[number];
 export const SESSION_STATES = ["loggedIn", "loggedOut", "restricted", "checkpoint", "unknown", "shadowSuspect", "accountWarning"] as const;
 export type SessionState = (typeof SESSION_STATES)[number];
 
-export const CHECK_STATES = ["running", "succeeded", "stopped", "unavailable", "unknown"] as const;
+export const CHECK_STATES = ["running", "succeeded", "signInNeeded", "stopped", "unavailable", "unknown"] as const;
 export type CheckState = (typeof CHECK_STATES)[number];
 
 export type ProxyProvider = "twoCaptcha" | "byteful" | "unknown";

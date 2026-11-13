@@ -1,3 +1,4 @@
+import { signInRouteOf } from "../../cli/launch/helpers/start.ts";
 import { PLATFORMS, PLATFORM_SITES } from "../../cli/runner/helpers/platforms.ts";
 import type { Platform } from "../../cli/runner/helpers/platforms.ts";
 import { SESSION_CHECK_PLATFORMS, SIGN_IN_CODES } from "./types.ts";
@@ -43,7 +44,7 @@ export function verdictOf(answer: SessionToolAnswer): { verdict: SessionVerdict;
 export function nextStepOf(account: Pick<SessionCheckAccount, "name" | "platform">, verdict: SessionVerdict): SessionNextStep | null {
   const site = PLATFORM_SITES[account.platform];
   if (verdict === "signInNeeded" || verdict === "browserCheck") {
-    if (!site.browser) {
+    if (signInRouteOf(account.platform).kind === "cookies") {
       return { says: `Save ${account.name}'s ${account.platform} cookies again (a masked prompt in a terminal, for the owner), then check again.`, tool: null, cli: `log ${account.platform} cookies save --account ${account.name}` };
     }
     const url = site.home;

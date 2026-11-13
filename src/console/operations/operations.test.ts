@@ -9,7 +9,7 @@ import type { Authority, Binding } from "../../runtime/bridge/index.ts";
 import { migrate } from "../../storage/schema/index.ts";
 import { consoleOperation, isolationRefusal } from "../../cli/runtime/index.ts";
 import { CREDENTIAL_MASK } from "../../auth/credentials/index.ts";
-import { checkStateOf, createAccountChecker } from "../accountCheck/index.ts";
+import { checkStateOf, checkStateOfVerdict, createAccountChecker } from "../accountCheck/index.ts";
 import { connectionIdOf } from "../connections/index.ts";
 import type { ConnectionsView } from "../connections/index.ts";
 import { parseCookies, signInDeps } from "../signIn/index.ts";
@@ -121,6 +121,8 @@ describe("console operations on the runtime", () => {
     expect(await first).toMatchObject({ state: "unknown", session: { account: "fakeBird", verdict: "unknown" } });
     expect(recorded).toEqual(["a:running", "a:unknown"]);
     expect(checkStateOf({ structuredContent: { job: { id: "j" } } })).toBe("unknown");
+    expect(checkStateOfVerdict("signInNeeded")).toBe("signInNeeded");
+    expect(checkStateOfVerdict("stopped")).toBe("stopped");
     checker.stop();
   });
 

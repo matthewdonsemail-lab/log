@@ -5,7 +5,8 @@ import type { CheckAccount, CheckRecorder, CheckResult, CheckToolCaller } from "
 
 export function checkStateOfVerdict(verdict: SessionVerdict): CheckResult["state"] {
   if (verdict === "signedIn") return "succeeded";
-  if (verdict === "signInNeeded" || verdict === "stopped") return "stopped";
+  if (verdict === "signInNeeded") return "signInNeeded";
+  if (verdict === "stopped") return "stopped";
   return "unknown";
 }
 

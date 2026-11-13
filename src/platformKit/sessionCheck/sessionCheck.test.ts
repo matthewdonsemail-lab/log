@@ -101,3 +101,14 @@ describe("checkSessions", () => {
     expect(text).toContain("discord fakeGuild: needs signing in (sessionDead, HTTP 401)");
   });
 });
+
+describe("sign-in route per platform", () => {
+  test("linkedin and slack sign in with cookies, like the console and the launcher say", () => {
+    expect(nextStepOf({ name: "fakeLink", platform: "linkedin" }, "signInNeeded")?.cli).toBe("log linkedin cookies save --account fakeLink");
+    expect(nextStepOf({ name: "fakeSlack", platform: "slack" }, "signInNeeded")?.tool).toBeNull();
+  });
+  test("reddit and instagram open the account's browser", () => {
+    expect(nextStepOf({ name: "fakeRed", platform: "reddit" }, "signInNeeded")?.tool?.name).toBe("inspectStart");
+    expect(nextStepOf({ name: "fakeGram", platform: "instagram" }, "signInNeeded")?.tool?.name).toBe("inspectStart");
+  });
+});

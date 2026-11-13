@@ -4,7 +4,7 @@ export type ConnectionPlatform = 'twitter' | 'facebook' | 'discord' | 'slack' | 
 const accountStatuses = ['active', 'warming', 'limited', 'paused', 'needsLogin', 'checkpoint', 'restricted', 'banned', 'dead', 'deactivated'] as const
 type AccountStatus = typeof accountStatuses[number]
 const sessionStates = ['loggedIn', 'loggedOut', 'restricted', 'checkpoint', 'unknown', 'shadowSuspect', 'accountWarning'] as const
-export type CheckState = 'running' | 'succeeded' | 'stopped' | 'unavailable' | 'unknown'
+export type CheckState = 'running' | 'succeeded' | 'signInNeeded' | 'stopped' | 'unavailable' | 'unknown'
 export type SignInKind = 'cookies' | 'connect' | 'browser'
 export type LaunchOutcome = { phase: string; retryAt: string | null; code: string }
 export type LocalConnection = { id: string; name: string; homeCountry: string | null; proxyProvider: 'twoCaptcha' | 'byteful' | 'unknown' | null; platform: ConnectionPlatform; status: AccountStatus | 'unknown'; state: typeof sessionStates[number]; checkedAt: string | null; signIn: SignInKind; lastCheck: { state: CheckState; checkedAt: string; launchOutcome?: LaunchOutcome } | null }
@@ -27,7 +27,7 @@ function record(value: unknown): Record<string, unknown> {
 function lastCheckOf(value: unknown): LocalConnection['lastCheck'] {
   if (!value) return null
   const check = record(value)
-  if (!['running', 'succeeded', 'stopped', 'unavailable', 'unknown'].includes(String(check.state)) || !date(check.checkedAt)) throw new Error('consoleResponseInvalid')
+  if (!['running', 'succeeded', 'signInNeeded', 'stopped', 'unavailable', 'unknown'].includes(String(check.state)) || !date(check.checkedAt)) throw new Error('consoleResponseInvalid')
   const last: NonNullable<LocalConnection['lastCheck']> = { state: check.state as CheckState, checkedAt: check.checkedAt as string }
   if (check.launchOutcome) {
     const outcome = record(check.launchOutcome)
