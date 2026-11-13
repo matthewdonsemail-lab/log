@@ -27,7 +27,7 @@ Seen 12 time(s) in 7 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261024T164523_61593843527201**, step 8: wait 5s: 200, 539 ms
+**runs/inspect/20261024T164523_<userId:1>**, step 8: wait 5s: 200, 539 ms
 
 Sent:
 
@@ -52,7 +52,7 @@ Answered:
   "data": {
     "init_conversational_support_attempt_for_ufac": {
       "is_cometai_chat_available": false,
-      "attempt_token": "(taken out)"
+      "attempt_token": "<token>"
     }
   },
   "extensions": {
@@ -65,7 +65,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261024T060921_61594063207669**, scroll: +515px in 13 wheel steps, 656 ms: 200, 496 ms
+**runs/inspect/20261024T060921_<userId:2>**, scroll: +515px in 13 wheel steps, 656 ms: 200, 496 ms
 
 Sent:
 
@@ -90,7 +90,7 @@ Answered:
   "data": {
     "init_conversational_support_attempt_for_ufac": {
       "is_cometai_chat_available": true,
-      "attempt_token": "(taken out)"
+      "attempt_token": "<token>"
     }
   },
   "extensions": {
@@ -103,7 +103,7 @@ Answered:
 }
 ```
 
-**runs/flow/20261025T063126_61594196161725**, step 1: goto /marketplace/: 200, 683 ms
+**runs/flow/20261025T063126_<userId:3>**, step 1: goto /marketplace/: 200, 683 ms
 
 Sent:
 
@@ -128,7 +128,7 @@ Answered:
   "data": {
     "init_conversational_support_attempt_for_ufac": {
       "is_cometai_chat_available": false,
-      "attempt_token": "(taken out)"
+      "attempt_token": "<token>"
     }
   },
   "extensions": {

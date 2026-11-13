@@ -7,6 +7,7 @@ export interface CommandIndexEntry {
 
 export const COMMAND_INDEX: CommandIndexEntry[] = [
   { name: "launch", platform: "any", module: "src/cli/launch/index.ts", exportName: "launchCommand" },
+  { name: "console", platform: "any", module: "src/cli/console/index.ts", exportName: "consoleCommand" },
   { name: "listings", platform: "facebook", module: "src/cli/listing/index.ts", exportName: "listingsCommand" },
   { name: "listing", platform: "facebook", module: "src/cli/listing/index.ts", exportName: "listingCommand" },
   { name: "accounts", platform: "facebook", module: "src/cli/account/index.ts", exportName: "accountsCommand" },

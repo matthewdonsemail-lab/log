@@ -73,7 +73,7 @@ def test_console_origin_can_start_a_same_site_proxied_sign_in(tmp_path: Path) ->
         response = app.post(
             "/api/v1/auth/email/start",
             headers={"Origin": "https://log.listeningkit.com"},
-            json={"email": "mandeep@example.com", "returnPath": "/console/start"},
+            json={"email": "mandy@example.com", "returnPath": "/console/start"},
         )
 
     assert response.status_code == 200

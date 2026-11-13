@@ -6,7 +6,7 @@ Made by `log new platform discord`. Discord is a platform of its own: every comm
 
 | Part | Where |
 | --- | --- |
-| The accounts | Twenty `socialAccounts` with platform `DISCORD` (added 2026-10-28 by `scripts/twenty/twentySetup.mjs`). First account: `sourcedandsoldtothehighestbidder`, AdsPower profile `k1ifqe1s` |
+| The accounts | Twenty `socialAccounts` with platform `DISCORD` (added 2026-10-28 by `scripts/twenty/twentySetup.mjs`). First account: `<name:1>`, AdsPower profile `k1ifqe1s` |
 | The session (find the account, its gate, its engine, the answer back to Twenty) | `src/discord/account/session`, on the shared `src/platformKit/session` |
 | The commands | `src/cli/discord/index.ts`: `log discord session check` (MCP `discordSessionCheck`) |
 | The engine | `python/discordApi/engine.py`, on the shared `python/platformKit/engine.py`; each account's governor is under `~/.logCli/discord/<account>` |
@@ -15,7 +15,7 @@ Made by `log new platform discord`. Discord is a platform of its own: every comm
 | The session | the account's discord.com localStorage `token`, saved to Twenty (`storageOrigins`) when its browser closes (`savePlatformSession`, for every platform but Facebook) and handed to the engine with the cookies (`sessionStorage` on the platform's shape). Never printed |
 | Proxy | none, like Reddit (matt, 2026-10-28): the gate reads this machine's own exit and the profile's timezone follows it |
 
-## What the inspect found (2026-10-28, `log inspect` on `sourcedandsoldtothehighestbidder`)
+## What the inspect found (2026-10-28, `log inspect` on `<name:1>`)
 
 Runs `~/.logCli/runs/inspect/20261028T062914_…` (sign-in, chats, paging) and `20261028T065202_…` (the gateway push).
 
@@ -27,7 +27,7 @@ Runs `~/.logCli/runs/inspect/20261028T062914_…` (sign-in, chats, paging) and `
 
 ### Finding a chat
 
-- Ctrl+K opens the Quick Switcher (`combobox "Quick Switcher"`). Typing a name searches what the client already holds: the only call it makes is `GET /api/v9/games/autocomplete?q=<text>`. People, DMs and channels come back as `option` rows (`Jilly, User, Jilly#0902`); Enter opens the selected one.
+- Ctrl+K opens the Quick Switcher (`combobox "Quick Switcher"`). Typing a name searches what the client already holds: the only call it makes is `GET /api/v9/games/autocomplete?q=<text>`. People, DMs and channels come back as `option` rows (`<name:3>, User, <name:2>`); Enter opens the selected one.
 
 ### Reading a chat's history
 
@@ -45,22 +45,22 @@ POST /api/v9/channels/<channel_id>/messages
 → 200 {"id": "...", "channel_id": "...", "author": {...}, "timestamp": "...", ...}
 ```
 
-The answer's `id` is the message. In a server channel a mention is `<@user_id>` in `content` and the user in `mentions` (VIBE BOT in vibe coders university #bot-help, `<@1458086860571017340>`).
+The answer's `id` is the message. In a server channel a mention is `<@user_id>` in `content` and the user in `mentions` (VIBE BOT in vibe coders university #bot-help, `<@<id:1>>`).
 
 ### How a reply comes in: the gateway pushes it
 
 Discord never polls. One WebSocket, `wss://gateway.discord.gg/?encoding=json&v=9&compress=zlib-stream`, carries everything the account sees, as JSON events compressed in one continuous zlib stream (one inflater per socket; a message ends with `00 00 ff ff`). Each event is `{"op", "t", "s", "d"}`: `t` names it, `s` is its sequence.
 
-One real round trip, DM with Jilly (channel `1555254123148873869`), 28 Oct:
+One real round trip, DM with <name:3> (channel `<id:2>`), 28 Oct:
 
 | UTC | | |
 |---|---|---|
 | 06:55:08.337 | HTTP | `POST …/messages` → 200, our message |
 | 08.774 (+0.44 s) | RECV | `MESSAGE_CREATE` our own message, echoed back |
-| 08.974 (+0.64 s) | RECV | `TYPING_START` Jilly (user `1540556850045521930`) |
-| 09.117 (+0.78 s) | RECV | `MESSAGE_REACTION_ADD` Jilly on our message |
+| 08.974 (+0.64 s) | RECV | `TYPING_START` <name:3> (user `<id:3>`) |
+| 09.117 (+0.78 s) | RECV | `MESSAGE_REACTION_ADD` <name:3> on our message |
 | 11.600 (+3.3 s) | RECV | `TYPING_START` |
-| **12.521 (+4.2 s)** | RECV | **`MESSAGE_CREATE` Jilly's reply** ("Through AgentConnect's Discord integration…") |
+| **12.521 (+4.2 s)** | RECV | **`MESSAGE_CREATE` <name:3>'s reply** ("Through AgentConnect's Discord integration…") |
 | 15.853 (+7.5 s) | RECV | `MESSAGE_ACK` the client marks it read |
 
 The client then fetches the sender's profile (`GET /api/v9/users/<id>/profile`) to draw it, and acks (`POST …/messages/<id>/ack`). Other events seen on the same socket: `MESSAGE_UPDATE`, `MESSAGE_DELETE`, `PRESENCE_UPDATE`, `PASSIVE_UPDATE_V2`, `CHANNEL_UPDATE`, `THREAD_CREATE`, `VOICE_STATE_UPDATE`, `SESSIONS_REPLACE`, and the heartbeat (`op 1` sent, `op 11` back).
@@ -77,7 +77,7 @@ So a Discord watch is the X Chat watch again (`docs/platforms/x/xchat/live.md`):
 | --- | --- | --- |
 | `log discord session check --account <a>` | `discordSessionCheck` | `GET /api/v9/users/@me`: is the saved token still signed in |
 | `log discord chats --account <a>` | `discordChats` | Every DM and group DM with its id, name and members (`/users/<me>/channels`; any answer but 200 stops it and says what Discord answered, rule 94) |
-| `log discord send --account <a> --channel "<as matt says it>" --text "…"` | `discordSend`, `discordSendLive` | One message; the chat is matched the way matt says it (`src/discord/chat/match`: "the log group", "jilly", "listaro"), refused with the candidates when two fit; a dry run unless `--live --approvedBy`. The copy is read for what AI chat interfaces leave in text first (rule 111): hidden characters, odd spaces or pasted Claude HTML refuse it with `aiArtifacts`, and the reading is logged and kept in `--json` |
+| `log discord send --account <a> --channel "<as matt says it>" --text "…"` | `discordSend`, `discordSendLive` | One message; the chat is matched the way matt says it (`src/discord/chat/match`: "the log group", "<name:4>", "the partners group"), refused with the candidates when two fit; a dry run unless `--live --approvedBy`. The copy is read for what AI chat interfaces leave in text first (rule 111): hidden characters, odd spaces or pasted Claude HTML refuse it with `aiArtifacts`, and the reading is logged and kept in `--json` |
 | `log discord read --account <a> --channel <id or name> [--after <id>]` | `discordRead` | A chat or channel's latest messages, oldest first: who, when, bot or not, what it replies to, text and embeds; `--after` keeps what came after a message (a bot's answer to ours) |
 | `log discord watch --account <a> [--channel …] [--seconds <s>] [--inbox]` | `discordWatch` | endcord's gateway (`wss://gateway.discord.gg`): every message printed the moment Discord pushes it, nothing polled. `--inbox` hands each DM, group message, mention of the account or reply to it (never a bot's "Thinking..." placeholder) to the inbox hook |
 | `log search index --platform discord` | `searchIndex` | Every DM and group's messages, up to 20,000 each (paged 100 at a time with `before`; a 429 or any other refusal from Discord stops the whole read at that conversation: the answer names it and what Discord answered, the conversations read before it are kept and indexed, nothing more is read or retried, and a 429 pauses the account, rule 94; a network drop only notes that conversation and goes on), kept in `~/.logCli/conversations/discord/<account>` and indexed with X's for `log search` (rule 89) |
@@ -94,5 +94,5 @@ Every call and event above was searched on GitHub (2026-10-28): `githubSearch.md
 
 1. A watch on the gateway: `log discord chat watch --account <a>` in the account's open browser (or a vendored client), each `MESSAGE_CREATE` to someone else handed to the inbox hook, as `log twitter chat watch --inbox` does.
 2. Read and send as commands, on the two calls above, each in the account's open browser (rule 35), sending only with `--live`.
-3. Done 2026-10-28: endcord is vendored and `ping` (`GET /api/v9/users/@me`) runs on it: `log discord session check` answered loggedIn as sourcedandsoldtothehighestbidder. Next on it: the gateway watch from `endcord/gateway.py`, then read and send from `endcord/discord.py`.
+3. Done 2026-10-28: endcord is vendored and `ping` (`GET /api/v9/users/@me`) runs on it: `log discord session check` answered loggedIn as <name:1>. Next on it: the gateway watch from `endcord/gateway.py`, then read and send from `endcord/discord.py`.
 4. A `discordLogin` page state, so the hook stops offering Facebook's auto sign-in on Discord's login page.

@@ -50,7 +50,7 @@ matt, 2026-11-08: the book (Kleppmann, *Designing Data-Intensive Applications*) 
 
 *Book:* store an id that means nothing to people and never changes, and keep the name in one place (ch. 2, "Many-to-One and Many-to-Many Relationships").
 
-*Today:* where a platform gives no id, the person is keyed by their handle (`@deepman`). One person can become two rows (`@deepman` and `12345`), and a renamed handle splits them for good. The account's own messages are keyed `self:<account>` or by a guessed id. The name is copied into `messages.senderLabel`, `events.withWho` and others. `people` and `identities` hold the same fact twice.
+*Today:* where a platform gives no id, the person is keyed by their handle (`@someone`). One person can become two rows (`@someone` and `12345`), and a renamed handle splits them for good. The account's own messages are keyed `self:<account>` or by a guessed id. The name is copied into `messages.senderLabel`, `events.withWho` and others. `people` and `identities` hold the same fact twice.
 
 *Change:*
 - `accounts (platform, account, userId)` holds each account's own real id, written when its session starts.

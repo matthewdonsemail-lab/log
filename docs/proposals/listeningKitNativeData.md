@@ -1,4 +1,4 @@
-> Implementation reading order: [handoff and acceptance criteria](listeningKitHandoff.md), then [schema v2](listeningKitSchema.md). Those define native V1 scope and supersede broader legacy inventories or earlier field names in this companion. Deferred listings/CRM and future AI-provider identity are outside V1.
+> Implementation reading order: handoff and acceptance criteria, then [schema v2](listeningKitSchema.md). Those define native V1 scope and supersede broader legacy inventories or earlier field names in this companion. Deferred listings/CRM and future AI-provider identity are outside V1.
 
 # Data boundary: hosted control service and workspace-local application database
 
@@ -12,7 +12,7 @@ The previous version of this proposal placed social records in central PostgreSQ
 
 ## AdsPower browser-host clarification
 
-AdsPower remains the default with provided and bring-your-own access; see [the accepted connection model](./listeningKitAdsPower.md). A provided browser on Matt's machine retains browser-managed state there and must be disclosed as a separate browser host. This does not satisfy the strict workspace-only profile arrangement. Hosted control PostgreSQL retains no platform cookies or AdsPower management keys. Log pairing uses separate short-lived authority.
+AdsPower remains the default with provided and bring-your-own access; see the accepted connection model. A provided browser on the operator's machine retains browser-managed state there and must be disclosed as a separate browser host. This does not satisfy the strict workspace-only profile arrangement. Hosted control PostgreSQL retains no platform cookies or AdsPower management keys. Log pairing uses separate short-lived authority.
 
 ## Exact storage boundary
 
@@ -111,7 +111,7 @@ Boat and own-cloud have the same data boundary. Persistence, retention and backu
 2. Inventory Twenty consumers, existing local tables and private files. Define runtime repository coverage without assuming the existing SQLite schema already stores everything.
 3. Add missing local repositories/migrations and remove Twenty calls from platform execution, scripts and Python paths used by the product.
 4. Route console and hosted MCP reads/writes to the selected runtime; scope streamed output and durable operation recovery.
-5. If carrying existing Twenty data forward, export only matt-selected records into an explicitly chosen workspace, preserving ids/relations. Protect credential migration and preserve source records. No automatic central import or dual writes.
+5. If carrying existing Twenty data forward, export only owner-selected records into an explicitly chosen workspace, preserving ids/relations. Protect credential migration and preserve source records. No automatic central import or dual writes.
 6. Document runtime persistence, recovery and an explicit VM-to-Boat transfer procedure. New onboarding requires no Twenty installation/key.
 
 Acceptance for later implementation: account/conversation/listing creation updates the workspace database; no private rows or payloads appear in the hosted database/logging/queues; two teams cannot cross-read runtime data; both runtime paths behave the same; offline and data-loss consequences are visible; lost acknowledgements cannot duplicate platform effects.

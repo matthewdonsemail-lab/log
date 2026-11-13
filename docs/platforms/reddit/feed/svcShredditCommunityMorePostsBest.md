@@ -10,7 +10,7 @@
 | Path | `/svc/shreddit/community-more-posts/best` |
 | Sends | — |
 | Reads | — |
-| Called from | `runs/inspect/20261025T124815_MaleficentTry8338/script1.js:9 anonymous` |
+| Called from | `runs/inspect/20261025T124815_<name:2>/script1.js:9 anonymous` |
 | rea | `ev_ad5d2b5ae31e67fba3eba384fefae7ac9b47736ce7461d465da411eed3fdeecd` |
 
 Seen 1 time(s) in 1 run(s).
@@ -23,7 +23,7 @@ Seen 1 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 3: goto /r/AskReddit/: 200, 1394 ms
+**runs/inspect/20261025T124815_<name:2>**, step 3: goto /r/AskReddit/: 200, 1394 ms
 
 Sent:
 
@@ -32,7 +32,7 @@ Sent:
   "query": {
     "after": "dDNfMXhlc25iNw==",
     "t": "DAY",
-    "name": "AskReddit",
+    "name": "<name:1>",
     "adDistance": "2",
     "ad_posts_served": "1",
     "navigationSessionId": "c2c141a1-cf7c-4200-885d-e34f732a3b7a",

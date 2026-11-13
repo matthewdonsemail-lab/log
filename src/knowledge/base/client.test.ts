@@ -80,7 +80,7 @@ const note = (key: string, title: string, body: string, kind: KbArticle['kind'] 
 
 describe('knowledge base', () => {
   test('secrets are scrubbed before anything is written', () => {
-    const text = 'password=hunter2hunter2 token: abcdefghijklmnop url redis://default:s3cretPass@node02:6380 jwt eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVmNHl0w5N_XgL0n3I9PlFUP0THsR8U key Sv30aZ9kQ2mN8xLpR4tY7uW1eB5cV6dF0gH3jK'
+    const text = 'password=hunter2hunter2 token: abcdefghijklmnop url redis://default:s3cretPass@kbhost:6380 jwt eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVmNHl0w5N_XgL0n3I9PlFUP0THsR8U key Sv30aZ9kQ2mN8xLpR4tY7uW1eB5cV6dF0gH3jK'
     const out = scrubSecrets(text)
     expect(out).not.toContain('hunter2')
     expect(out).not.toContain('s3cretPass')
@@ -112,16 +112,16 @@ describe('knowledge base', () => {
     mkdirSync(join(repo, 'docs', 'vendors'), { recursive: true })
     mkdirSync(join(repo, 'docs', 'infra'), { recursive: true })
     writeFileSync(join(repo, 'docs', 'vendors', 'order.md'), '# Order\n\nlogin details')
-    writeFileSync(join(repo, 'docs', 'infra', 'node02.md'), '# node02\n\nThe server.')
+    writeFileSync(join(repo, 'docs', 'infra', 'server.md'), '# Server\n\nThe server.')
     const memoryRoot = mkdtempSync(join(tmpdir(), 'kbMemory'))
-    mkdirSync(join(memoryRoot, 'C--Users-mande-projects-log-cli', 'memory'), { recursive: true })
-    writeFileSync(join(memoryRoot, 'C--Users-mande-projects-log-cli', 'memory', 'cloudflare.md'), '---\nname: cloudflare\ndescription: Where the token lives\nmetadata:\n  type: reference\n---\n\nThe file path.')
-    writeFileSync(join(memoryRoot, 'C--Users-mande-projects-log-cli', 'memory', 'MEMORY.md'), '- index')
+    mkdirSync(join(memoryRoot, 'C--Users-tester-projects-log-cli', 'memory'), { recursive: true })
+    writeFileSync(join(memoryRoot, 'C--Users-tester-projects-log-cli', 'memory', 'cloudflare.md'), '---\nname: cloudflare\ndescription: Where the token lives\nmetadata:\n  type: reference\n---\n\nThe file path.')
+    writeFileSync(join(memoryRoot, 'C--Users-tester-projects-log-cli', 'memory', 'MEMORY.md'), '- index')
     const all = collectAll({ repo, memoryRoot })
     const keys = all.map((a) => a.key)
     expect(keys).toContain('skill:inspect')
-    expect(keys).toContain('doc:docs/infra/node02.md')
-    expect(all.find((a) => a.key === 'doc:docs/infra/node02.md')?.kind).toBe('infra')
+    expect(keys).toContain('doc:docs/infra/server.md')
+    expect(all.find((a) => a.key === 'doc:docs/infra/server.md')?.kind).toBe('infra')
     expect(keys).toContain('memory:log-cli/cloudflare')
     expect(all.find((a) => a.key === 'memory:log-cli/cloudflare')?.tags).toContain('reference')
     expect(keys.some((k) => k.includes('vendors'))).toBe(false)
@@ -175,14 +175,15 @@ describe('knowledge base', () => {
   test('remember saves a scrubbed note in both stores', async () => {
     const store = memoryStore()
     const index = memoryIndex()
-    const saved = await rememberKnowledge({ text: 'node02 kb-redis password=abcdef123456 lives in the env', tags: ['infra'], now: new Date('2026-10-27T03:00:00Z') }, store, index, hashEmbedder())
-    expect(saved.key).toBe('note:20261027T030000Z-node02KbRedisPasswordRedactedLives')
+    const saved = await rememberKnowledge({ text: 'server kb-redis password=abcdef123456 lives in the env', tags: ['infra'], now: new Date('2026-10-27T03:00:00Z') }, store, index, hashEmbedder())
+    expect(saved.key).toBe('note:20261027T030000Z-serverKbRedisPasswordRedactedLives')
     expect(saved.body).not.toContain('abcdef123456')
     expect([...index.chunkMap.values()].some(({ chunk }) => chunk.key === saved.key)).toBe(true)
   })
 
   test('config comes from the env or the private files, and says what is missing', () => {
-    expect(kbConfig({ KB_TWENTY_API_KEY_FILE: '/nope', KB_REDIS_URL_FILE: '/nope' })).toEqual({ missing: 'KB_TWENTY_API_KEY (or the file ~/.config/listeningkit/twenty-listeningkit-api-key.txt)' })
+    expect(kbConfig({ KB_TWENTY_API_KEY: 'k', KB_REDIS_URL: 'redis://x' })).toEqual({ missing: 'KB_TWENTY_URL (the URL of your own Twenty server; there is no default host)' })
+    expect(kbConfig({ KB_TWENTY_URL: 'https://t', KB_TWENTY_API_KEY_FILE: '/nope', KB_REDIS_URL_FILE: '/nope' })).toEqual({ missing: 'KB_TWENTY_API_KEY (or the file ~/.config/listeningkit/twenty-listeningkit-api-key.txt)' })
     expect(kbConfig({ KB_TWENTY_API_KEY: 'k', KB_REDIS_URL: 'redis://x', KB_TWENTY_URL: 'https://t' })).toEqual({ twentyUrl: 'https://t', twentyKey: 'k', redisUrl: 'redis://x' })
   })
 

@@ -32,4 +32,4 @@ Nothing. The publish machine fills the form itself and leaves Meta AI off.
 
 ## What can go wrong
 
-Harmless. Its sighting means the create form's own code started, 6-14 s after we opened the page: if it is missing, the form never drew (the publish machine reloads once after 15 s, Listaro's path).
+Harmless. Its sighting means the create form's own code started, 6-14 s after we opened the page: if it is missing, the form never drew (the publish machine reloads once after 15 s).

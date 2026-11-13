@@ -36,7 +36,7 @@ Seen 15 time(s) in 7 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/host/20261026T180628_61594285317994**, scroll: -553px in 12 wheel steps, 499 ms: 200, 1398 ms
+**runs/host/20261026T180628_<userId:1>**, scroll: -553px in 12 wheel steps, 499 ms: 200, 1398 ms
 
 Sent:
 
@@ -46,7 +46,7 @@ Sent:
   "fb_api_req_friendly_name": "MarketplacePDPRightColumnAdsQuery",
   "server_timestamps": "true",
   "variables": {
-    "adsRelatedTo": "1818774979262678",
+    "adsRelatedTo": "<id:1>",
     "browseContext": "PDP_RELATED_ADS_FEED",
     "count": 1,
     "cursor": "",
@@ -152,7 +152,7 @@ Answered:
             },
             "… 5 more"
           ],
-          "video_id": "937263719207841",
+          "video_id": "<id:2>",
           "nextgendash": true
         }
       ],
@@ -209,7 +209,7 @@ Answered:
         "… 3 more"
       ],
       "data": {
-        "id": "937263719207841",
+        "id": "<id:2>",
         "instream_extra_config": {
           "instream_halo_delay_time_seconds": 23
         },
@@ -228,7 +228,7 @@ Answered:
               "(10 fields)",
               "… 5 more"
             ],
-            "video_id": "937263719207841",
+            "video_id": "<id:2>",
             "nextgendash": true
           }
         ],
@@ -239,7 +239,7 @@ Answered:
 }
 ```
 
-**runs/host/20261026T180628_61594285317994**, scroll: +617px in 15 wheel steps, 789 ms: 200, 985 ms
+**runs/host/20261026T180628_<userId:1>**, scroll: +617px in 15 wheel steps, 789 ms: 200, 985 ms
 
 Sent:
 
@@ -249,7 +249,7 @@ Sent:
   "fb_api_req_friendly_name": "MarketplacePDPRightColumnAdsQuery",
   "server_timestamps": "true",
   "variables": {
-    "adsRelatedTo": "2249546198922840",
+    "adsRelatedTo": "<id:3>",
     "browseContext": "PDP_RELATED_ADS_FEED",
     "count": 1,
     "cursor": "",
@@ -274,11 +274,11 @@ Answered:
               "story": {
                 "sp": {
                   "sponsored_label_redesign_eligible": true,
-                  "ad_id": "120247618366970759",
-                  "page_id": "378433955560372"
+                  "ad_id": "<id:4>",
+                  "page_id": "<id:5>"
                 },
                 "id": "UzpfSTM5MTMxMzg2NzY3MzE2NDpTY2FfSTM3ODQzMzk1NTU2MDM3MmNhMTQ0MTExNjgxMTM4MDk4MjphY2ExY2F7aWNhMDtzY2E5MWNhIkFJQEFRSlA4SDVXY2M2dnVlcGJYRUlCOERGeWUyc01ZZjdfa1I3X2JLdlhuMjZ2eHA0VlZaMXpSa0MtN1VjYzJ5TFBpSzcxUEhoM0YxakRtejEtV3ZZZ2s3OHdieCI7fQ==",
-                "tracking": "{\"adid\":\"120247618366970759\",\"qid\":\"-5910558962977832244\",\"mf_story_key\":\"7791895694081474905\",\"is_sponsored\":1,\"ei\":\"AI\\u0040AQJP8H5Wc6vuepbXEIB8DFye2sMYf7_kR7_bKvXn26vxp4VVZ1zRkC-7Uc2yLPiK71PHh3F1jDmz1-WvYgk78wbx\",\"top_level_post_id\":\"1441116811380982\",\"content_owner_id_new\":\"100064480308558\",\"call_to_action_type\":\"LEARN_MORE\",\"page_id\":\"378433955560372\",\"story_location\":9,\"story_attachment_styl… (1097 chars)",
+                "tracking": "{\"adid\":\"<id:4>\",\"qid\":\"-5910558962977832244\",\"mf_story_key\":\"<id:6>\",\"is_sponsored\":1,\"ei\":\"AI\\u0040AQJP8H5Wc6vuepbXEIB8DFye2sMYf7_kR7_bKvXn26vxp4VVZ1zRkC-7Uc2yLPiK71PHh3F1jDmz1-WvYgk78wbx\",\"top_level_post_id\":\"<id:7>\",\"content_owner_id_new\":\"<userId:2>\",\"call_to_action_type\":\"LEARN_MORE\",\"page_id\":\"<id:5>\",\"story_location\":9,\"story_attachment_styl… (1097 chars)",
                 "attachments": [
                   {
                     "url": "…",
@@ -287,7 +287,7 @@ Answered:
                     "cta_screen_renderer": "…",
                     "media": "…",
                     "subattachments": "…",
-                    "title_with_entities": "…",
+                    "title_with_entities": "<name:1>",
                     "all_subattachments": "…"
                   }
                 ],
@@ -306,7 +306,7 @@ Answered:
                 "actors": [
                   {
                     "__typename": "…",
-                    "name": "…",
+                    "name": "<name:1>",
                     "profile_picture": "…",
                     "id": "…"
                   }
@@ -320,7 +320,7 @@ Answered:
                 }
               },
               "ad_impression_client_token": "(taken out)",
-              "ad_id_string": "120247618366970759",
+              "ad_id_string": "<id:4>",
               "is_hidden": false,
               "story_attachment_style": "large_single_image_tile",
               "is_demo": false,
@@ -328,7 +328,7 @@ Answered:
                 "should_display_ad_info": true
               },
               "product_item": null,
-              "id": "120247618366970759:IN_MEMORY_MARKETPLACE_FEED_STORY_ENT:EntMarketplaceFeedAdStory:451829627"
+              "id": "<id:4>:IN_MEMORY_MARKETPLACE_FEED_STORY_ENT:EntMarketplaceFeedAdStory:451829627"
             }
           }
         ]

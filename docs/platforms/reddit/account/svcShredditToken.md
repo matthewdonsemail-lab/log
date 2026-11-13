@@ -10,7 +10,7 @@
 | Path | `/svc/shreddit/token` |
 | Sends | — |
 | Reads | `token`, `expires` |
-| Called from | `runs/inspect/20261025T124815_MaleficentTry8338/script0.js:50 Mm`, `runs/inspect/20261025T124815_MaleficentTry8338/script103.js:49 statement`, `runs/inspect/20261025T124815_MaleficentTry8338/script8.js:1 s`, `runs/inspect/20261025T124815_MaleficentTry8338/script0.js:44 Pl` |
+| Called from | `runs/inspect/20261025T124815_<name:2>/script0.js:50 Mm`, `runs/inspect/20261025T124815_<name:2>/script103.js:49 statement`, `runs/inspect/20261025T124815_<name:2>/script8.js:1 s`, `runs/inspect/20261025T124815_<name:2>/script0.js:44 Pl` |
 | rea | `ev_d0bcf3bd9ec798afc82f6cb18dc4d9ad1cbc3600baab45465a5707b648682dd1` |
 
 Seen 5 time(s) in 1 run(s).
@@ -20,14 +20,14 @@ Seen 5 time(s) in 1 run(s).
 | inspect | step 1: goto / | 1 | 200 | 2973 ms | 3954 ms | — |
 | inspect | step 3: goto /r/AskReddit/ | 1 | 200 | 735 ms | 6825 ms | — |
 | inspect | step 6: goto /r/AskReddit/comments/1x8sr8s/whats_a_high_paying_but_soul_crushing_career_th | 1 | 200 | 299 ms | 2061 ms | — |
-| inspect | step 10: goto /user/Maleficent-Try-8338/ | 1 | 200 | 310 ms | 3044 ms | — |
+| inspect | step 10: goto /user/<name:1>/ | 1 | 200 | 310 ms | 3044 ms | — |
 | inspect | step 12: goto /r/popular/ | 1 | 200 | 299 ms | 2380 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 1: goto /: 200, 2973 ms
+**runs/inspect/20261025T124815_<name:2>**, step 1: goto /: 200, 2973 ms
 
 Sent:
 
@@ -39,12 +39,12 @@ Answered:
 
 ```json
 {
-  "token": "(taken out)",
+  "token": "<token>",
   "expires": 1793017409000
 }
 ```
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 3: goto /r/AskReddit/: 200, 735 ms
+**runs/inspect/20261025T124815_<name:2>**, step 3: goto /r/AskReddit/: 200, 735 ms
 
 Sent:
 
@@ -56,12 +56,12 @@ Answered:
 
 ```json
 {
-  "token": "(taken out)",
+  "token": "<token>",
   "expires": 1793017409000
 }
 ```
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 6: goto /r/AskReddit/comments/1x8sr8s/whats_a_high_paying_but_soul_crushing_career_th: 200, 299 ms
+**runs/inspect/20261025T124815_<name:2>**, step 6: goto /r/AskReddit/comments/1x8sr8s/whats_a_high_paying_but_soul_crushing_career_th: 200, 299 ms
 
 Sent:
 
@@ -73,7 +73,7 @@ Answered:
 
 ```json
 {
-  "token": "(taken out)",
+  "token": "<token>",
   "expires": 1793017409000
 }
 ```

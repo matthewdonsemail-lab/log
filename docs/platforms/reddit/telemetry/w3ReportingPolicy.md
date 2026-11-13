@@ -10,7 +10,7 @@
 | Path | `w3-reporting.reddit.com/policy` |
 | Sends | — |
 | Reads | — |
-| Called from | `runs/inspect/20261025T124815_MaleficentTry8338/script0.js:50 Zh` |
+| Called from | `runs/inspect/20261025T124815_<name:1>/script0.js:50 Zh` |
 | rea | `ev_1ddeb397f20884912dd459f56cb60b625a63e5c7b684179cbbd83077dc74a11e` |
 
 Seen 1 time(s) in 1 run(s).
@@ -23,7 +23,7 @@ Seen 1 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 1: goto /: 0, 257 ms
+**runs/inspect/20261025T124815_<name:1>**, step 1: goto /: 0, 257 ms
 
 Sent:
 

@@ -30,7 +30,7 @@ Seen 8 time(s) in 5 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/host/20261026T180628_61594285317994**, step 24: scroll 3-5 x 400-700px: 200, 1734 ms
+**runs/host/20261026T180628_<userId:1>**, step 24: scroll 3-5 x 400-700px: 200, 1734 ms
 
 Sent:
 
@@ -41,8 +41,8 @@ Sent:
   "server_timestamps": "true",
   "variables": {
     "buyLocation": {
-      "latitude": 50.6759,
-      "longitude": -120.33898
+      "latitude": "<coordinate>",
+      "longitude": "<coordinate>"
     },
     "count": 5,
     "cursor": "{\"basic\":{\"item_index\":1,\"feed_slice_number\":1,\"ss_version\":4294967298},\"ads\":{\"items_since_last_ad\":0,\"items_retrieved\":2,\"ad_index\":1,\"ad_slot\":1,\"dynamic_gap_rule\":0,\"counted_organic_items\":0,\"average_organic_score\":0,\"is_dynamic_gap_rule_set\":false,\"first_organic_score\":0,\"is_dynamic_initial_gap_set\":false,\"iterated_organic_items\":1,\"top_organic_score\":0,\"feed_slice_number\":0,\"feed_retrieved_i… (1715 chars)",
@@ -80,7 +80,7 @@ Answered:
     "extensions": {
       "prefetch_uris_v2": [
         {
-          "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t39.84726-6/859392018_962932573103703_1200915558473180130_n.jpg (459 chars)",
+          "uri": "<mediaUrl> (459 chars)",
           "label": null,
           "width": null,
           "height": null,
@@ -107,11 +107,11 @@ Answered:
         "node": {
           "id": "6d3f8395-86e0-498a-9128-8a1c660ae2bd",
           "__typename": "MarketplaceFeedGeneralListingObject",
-          "story_key": "2186473426569639048",
+          "story_key": "<id:1>",
           "story_type": "GENERAL_LISTING",
-          "tracking": "{\"qid\":\"-5910560887176171870\",\"mf_story_key\":\"2186473426569639048\",\"top_level_post_id\":\"2186473426569639048\",\"commerce_rank_obj\":\"{\\\"target_id\\\":2186473426569639048,\\\"target_type\\\":6,\\\"primary_position\\\":1,\\\"ranking_signature\\\":6651350480402212947,\\\"ranking_region\\\":\\\"prn\\\",\\\"ranking_request_id\\\":9202150970575630851,\\\"commerce_channel\\\":501,\\\"value\\\":0.002012581564486,\\\"upsell_type\\\":129,\\\"candida… (779 chars)",
+          "tracking": "{\"qid\":\"-5910560887176171870\",\"mf_story_key\":\"<id:1>\",\"top_level_post_id\":\"<id:1>\",\"commerce_rank_obj\":\"{\\\"target_id\\\":<id:1>,\\\"target_type\\\":6,\\\"primary_position\\\":1,\\\"ranking_signature\\\":<id:2>,\\\"ranking_region\\\":\\\"prn\\\",\\\"ranking_request_id\\\":<id:3>,\\\"commerce_channel\\\":501,\\\"value\\\":0.002012581564486,\\\"upsell_type\\\":129,\\\"candida… (779 chars)",
           "__isMarketplaceFeedGeneralListingData": "MarketplaceFeedGeneralListingObject",
-          "entity_id": "1669379474624250",
+          "entity_id": "<id:4>",
           "data": "(4 fields)",
           "listing": "(4 fields)",
           "tile_video": null,
@@ -141,11 +141,11 @@ Answered:
         "node": {
           "id": "f3751482-c379-41c2-a950-ff0926a48cdf",
           "__typename": "MarketplaceFeedGeneralListingObject",
-          "story_key": "2186473426569639048",
+          "story_key": "<id:1>",
           "story_type": "GENERAL_LISTING",
-          "tracking": "{\"qid\":\"-5910560887176171870\",\"mf_story_key\":\"2186473426569639048\",\"top_level_post_id\":\"2186473426569639048\",\"commerce_rank_obj\":\"{\\\"target_id\\\":2186473426569639048,\\\"target_type\\\":6,\\\"primary_position\\\":1,\\\"ranking_signature\\\":6651350480402212947,\\\"ranking_region\\\":\\\"prn\\\",\\\"ranking_request_id\\\":9202150970575630851,\\\"commerce_channel\\\":501,\\\"value\\\":0.002012581564486,\\\"upsell_type\\\":129,\\\"candida… (779 chars)",
+          "tracking": "{\"qid\":\"-5910560887176171870\",\"mf_story_key\":\"<id:1>\",\"top_level_post_id\":\"<id:1>\",\"commerce_rank_obj\":\"{\\\"target_id\\\":<id:1>,\\\"target_type\\\":6,\\\"primary_position\\\":1,\\\"ranking_signature\\\":<id:2>,\\\"ranking_region\\\":\\\"prn\\\",\\\"ranking_request_id\\\":<id:3>,\\\"commerce_channel\\\":501,\\\"value\\\":0.002012581564486,\\\"upsell_type\\\":129,\\\"candida… (779 chars)",
           "__isMarketplaceFeedGeneralListingData": "MarketplaceFeedGeneralListingObject",
-          "entity_id": "1090606617016519",
+          "entity_id": "<id:5>",
           "data": "(4 fields)",
           "listing": "(4 fields)",
           "tile_video": null,
@@ -175,11 +175,11 @@ Answered:
         "node": {
           "id": "43f397d7-d71d-4e3a-b61c-3008558dcf50",
           "__typename": "MarketplaceFeedGeneralListingObject",
-          "story_key": "2186473426569639048",
+          "story_key": "<id:1>",
           "story_type": "GENERAL_LISTING",
-          "tracking": "{\"qid\":\"-5910560887176171870\",\"mf_story_key\":\"2186473426569639048\",\"top_level_post_id\":\"2186473426569639048\",\"commerce_rank_obj\":\"{\\\"target_id\\\":2186473426569639048,\\\"target_type\\\":6,\\\"primary_position\\\":1,\\\"ranking_signature\\\":6651350480402212947,\\\"ranking_region\\\":\\\"prn\\\",\\\"ranking_request_id\\\":9202150970575630851,\\\"commerce_channel\\\":501,\\\"value\\\":0.002012581564486,\\\"upsell_type\\\":129,\\\"candida… (779 chars)",
+          "tracking": "{\"qid\":\"-5910560887176171870\",\"mf_story_key\":\"<id:1>\",\"top_level_post_id\":\"<id:1>\",\"commerce_rank_obj\":\"{\\\"target_id\\\":<id:1>,\\\"target_type\\\":6,\\\"primary_position\\\":1,\\\"ranking_signature\\\":<id:2>,\\\"ranking_region\\\":\\\"prn\\\",\\\"ranking_request_id\\\":<id:3>,\\\"commerce_channel\\\":501,\\\"value\\\":0.002012581564486,\\\"upsell_type\\\":129,\\\"candida… (779 chars)",
           "__isMarketplaceFeedGeneralListingData": "MarketplaceFeedGeneralListingObject",
-          "entity_id": "1121904473548449",
+          "entity_id": "<id:6>",
           "data": "(4 fields)",
           "listing": "(4 fields)",
           "tile_video": null,
@@ -202,7 +202,7 @@ Answered:
 }
 ```
 
-**runs/host/20261026T180628_61594285317994**, scroll: +511px in 12 wheel steps, 465 ms: 200, 2254 ms
+**runs/host/20261026T180628_<userId:1>**, scroll: +511px in 12 wheel steps, 465 ms: 200, 2254 ms
 
 Sent:
 
@@ -213,8 +213,8 @@ Sent:
   "server_timestamps": "true",
   "variables": {
     "buyLocation": {
-      "latitude": 50.6759,
-      "longitude": -120.33898
+      "latitude": "<coordinate>",
+      "longitude": "<coordinate>"
     },
     "count": 5,
     "cursor": "{\"basic\":{\"item_index\":1,\"feed_slice_number\":1,\"ss_version\":4294967302},\"ads\":{\"items_since_last_ad\":0,\"items_retrieved\":2,\"ad_index\":1,\"ad_slot\":1,\"dynamic_gap_rule\":0,\"counted_organic_items\":0,\"average_organic_score\":0,\"is_dynamic_gap_rule_set\":false,\"first_organic_score\":0,\"is_dynamic_initial_gap_set\":false,\"iterated_organic_items\":1,\"top_organic_score\":0,\"feed_slice_number\":0,\"feed_retrieved_i… (1711 chars)",
@@ -252,7 +252,7 @@ Answered:
     "extensions": {
       "prefetch_uris_v2": [
         {
-          "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t39.84726-6/866718233_1857489581917838_4188528458858796706_n.jpg (460 chars)",
+          "uri": "<mediaUrl> (460 chars)",
           "label": null,
           "width": null,
           "height": null,
@@ -279,11 +279,11 @@ Answered:
         "node": {
           "id": "b74b0f64-6b96-471f-b421-b5c5eefe8d5d",
           "__typename": "MarketplaceFeedGeneralListingObject",
-          "story_key": "2999193310807558784",
+          "story_key": "<id:7>",
           "story_type": "GENERAL_LISTING",
-          "tracking": "{\"qid\":\"-5910551884815583289\",\"mf_story_key\":\"2999193310807558784\",\"top_level_post_id\":\"2999193310807558784\",\"commerce_rank_obj\":\"{\\\"target_id\\\":2999193310807558784,\\\"target_type\\\":6,\\\"primary_position\\\":1,\\\"ranking_signature\\\":6651350480402212947,\\\"ranking_region\\\":\\\"prn\\\",\\\"ranking_request_id\\\":6219487028433266974,\\\"commerce_channel\\\":501,\\\"value\\\":0.001799935552602,\\\"upsell_type\\\":129,\\\"candida… (780 chars)",
+          "tracking": "{\"qid\":\"-5910551884815583289\",\"mf_story_key\":\"<id:7>\",\"top_level_post_id\":\"<id:7>\",\"commerce_rank_obj\":\"{\\\"target_id\\\":<id:7>,\\\"target_type\\\":6,\\\"primary_position\\\":1,\\\"ranking_signature\\\":<id:2>,\\\"ranking_region\\\":\\\"prn\\\",\\\"ranking_request_id\\\":<id:8>,\\\"commerce_channel\\\":501,\\\"value\\\":0.001799935552602,\\\"upsell_type\\\":129,\\\"candida… (780 chars)",
           "__isMarketplaceFeedGeneralListingData": "MarketplaceFeedGeneralListingObject",
-          "entity_id": "1797820328092675",
+          "entity_id": "<id:9>",
           "data": "(4 fields)",
           "listing": "(4 fields)",
           "tile_video": null,
@@ -313,11 +313,11 @@ Answered:
         "node": {
           "id": "a2fad1b3-bbf9-4379-92be-616b3af44d79",
           "__typename": "MarketplaceFeedGeneralListingObject",
-          "story_key": "2999193310807558784",
+          "story_key": "<id:7>",
           "story_type": "GENERAL_LISTING",
-          "tracking": "{\"qid\":\"-5910551884815583289\",\"mf_story_key\":\"2999193310807558784\",\"top_level_post_id\":\"2999193310807558784\",\"commerce_rank_obj\":\"{\\\"target_id\\\":2999193310807558784,\\\"target_type\\\":6,\\\"primary_position\\\":1,\\\"ranking_signature\\\":6651350480402212947,\\\"ranking_region\\\":\\\"prn\\\",\\\"ranking_request_id\\\":6219487028433266974,\\\"commerce_channel\\\":501,\\\"value\\\":0.001799935552602,\\\"upsell_type\\\":129,\\\"candida… (780 chars)",
+          "tracking": "{\"qid\":\"-5910551884815583289\",\"mf_story_key\":\"<id:7>\",\"top_level_post_id\":\"<id:7>\",\"commerce_rank_obj\":\"{\\\"target_id\\\":<id:7>,\\\"target_type\\\":6,\\\"primary_position\\\":1,\\\"ranking_signature\\\":<id:2>,\\\"ranking_region\\\":\\\"prn\\\",\\\"ranking_request_id\\\":<id:8>,\\\"commerce_channel\\\":501,\\\"value\\\":0.001799935552602,\\\"upsell_type\\\":129,\\\"candida… (780 chars)",
           "__isMarketplaceFeedGeneralListingData": "MarketplaceFeedGeneralListingObject",
-          "entity_id": "911933708663857",
+          "entity_id": "<id:10>",
           "data": "(4 fields)",
           "listing": "(4 fields)",
           "tile_video": null,
@@ -345,15 +345,15 @@ Answered:
       ],
       "data": {
         "node": {
-          "id": "120251269041260546:IN_MEMORY_MARKETPLACE_FEED_STORY_ENT:EntMarketplaceFeedAdStory:2129662951",
+          "id": "<id:11>:IN_MEMORY_MARKETPLACE_FEED_STORY_ENT:EntMarketplaceFeedAdStory:2129662951",
           "__typename": "MarketplaceFeedAdStory",
-          "story_key": "7983408597372515677",
+          "story_key": "<id:12>",
           "story_type": "AD",
-          "tracking": "{\"qid\":\"-5910551884815583289\",\"mf_story_key\":\"7983408597372515677\",\"commerce_rank_obj\":\"{\\\"target_id\\\":120251269041260546,\\\"target_type\\\":4,\\\"primary_position\\\":0,\\\"ranking_signature\\\":0,\\\"commerce_channel\\\":501,\\\"value\\\":343.65136265755,\\\"is_prefetch\\\":false}\"}",
+          "tracking": "{\"qid\":\"-5910551884815583289\",\"mf_story_key\":\"<id:12>\",\"commerce_rank_obj\":\"{\\\"target_id\\\":<id:11>,\\\"target_type\\\":4,\\\"primary_position\\\":0,\\\"ranking_signature\\\":0,\\\"commerce_channel\\\":501,\\\"value\\\":343.65136265755,\\\"is_prefetch\\\":false}\"}",
           "story_attachment_style": "large_single_video_tile",
           "story": "(12 fields)",
           "ad_impression_client_token": "(taken out)",
-          "ad_id_string": "120251269041260546",
+          "ad_id_string": "<id:11>",
           "is_hidden": false,
           "is_demo": false,
           "transparency_ad_info": "(1 fields)",
@@ -375,7 +375,7 @@ Answered:
 }
 ```
 
-**runs/host/20261026T180628_61594285317994**, scroll: +517px in 13 wheel steps, 761 ms: 200, 1840 ms
+**runs/host/20261026T180628_<userId:1>**, scroll: +517px in 13 wheel steps, 761 ms: 200, 1840 ms
 
 Sent:
 
@@ -386,8 +386,8 @@ Sent:
   "server_timestamps": "true",
   "variables": {
     "buyLocation": {
-      "latitude": 50.6759,
-      "longitude": -120.33898
+      "latitude": "<coordinate>",
+      "longitude": "<coordinate>"
     },
     "count": 5,
     "cursor": "{\"basic\":{\"item_index\":1,\"feed_slice_number\":1,\"ss_version\":4294967304},\"ads\":{\"items_since_last_ad\":0,\"items_retrieved\":2,\"ad_index\":1,\"ad_slot\":1,\"dynamic_gap_rule\":0,\"counted_organic_items\":0,\"average_organic_score\":0,\"is_dynamic_gap_rule_set\":false,\"first_organic_score\":0,\"is_dynamic_initial_gap_set\":false,\"iterated_organic_items\":1,\"top_organic_score\":0,\"feed_slice_number\":0,\"feed_retrieved_i… (1706 chars)",
@@ -425,7 +425,7 @@ Answered:
     "extensions": {
       "prefetch_uris_v2": [
         {
-          "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t39.84726-6/866718233_1857489581917838_4188528458858796706_n.jpg (460 chars)",
+          "uri": "<mediaUrl> (460 chars)",
           "label": null,
           "width": null,
           "height": null,
@@ -452,11 +452,11 @@ Answered:
         "node": {
           "id": "6d3bd914-e4a9-4aec-b706-751fe2a895b2",
           "__typename": "MarketplaceFeedGeneralListingObject",
-          "story_key": "2999193310807558784",
+          "story_key": "<id:7>",
           "story_type": "GENERAL_LISTING",
-          "tracking": "{\"qid\":\"-5910548036553106436\",\"mf_story_key\":\"2999193310807558784\",\"top_level_post_id\":\"2999193310807558784\",\"commerce_rank_obj\":\"{\\\"target_id\\\":2999193310807558784,\\\"target_type\\\":6,\\\"primary_position\\\":1,\\\"ranking_signature\\\":6651350480402212947,\\\"ranking_region\\\":\\\"prn\\\",\\\"ranking_request_id\\\":6101712833838457909,\\\"commerce_channel\\\":501,\\\"value\\\":0.001799935552602,\\\"upsell_type\\\":129,\\\"candida… (780 chars)",
+          "tracking": "{\"qid\":\"-5910548036553106436\",\"mf_story_key\":\"<id:7>\",\"top_level_post_id\":\"<id:7>\",\"commerce_rank_obj\":\"{\\\"target_id\\\":<id:7>,\\\"target_type\\\":6,\\\"primary_position\\\":1,\\\"ranking_signature\\\":<id:2>,\\\"ranking_region\\\":\\\"prn\\\",\\\"ranking_request_id\\\":<id:13>,\\\"commerce_channel\\\":501,\\\"value\\\":0.001799935552602,\\\"upsell_type\\\":129,\\\"candida… (780 chars)",
           "__isMarketplaceFeedGeneralListingData": "MarketplaceFeedGeneralListingObject",
-          "entity_id": "1797820328092675",
+          "entity_id": "<id:9>",
           "data": "(4 fields)",
           "listing": "(4 fields)",
           "tile_video": null,
@@ -486,11 +486,11 @@ Answered:
         "node": {
           "id": "3769193b-70a0-4134-bb5b-19eb648cb7a6",
           "__typename": "MarketplaceFeedGeneralListingObject",
-          "story_key": "2999193310807558784",
+          "story_key": "<id:7>",
           "story_type": "GENERAL_LISTING",
-          "tracking": "{\"qid\":\"-5910548036553106436\",\"mf_story_key\":\"2999193310807558784\",\"top_level_post_id\":\"2999193310807558784\",\"commerce_rank_obj\":\"{\\\"target_id\\\":2999193310807558784,\\\"target_type\\\":6,\\\"primary_position\\\":1,\\\"ranking_signature\\\":6651350480402212947,\\\"ranking_region\\\":\\\"prn\\\",\\\"ranking_request_id\\\":6101712833838457909,\\\"commerce_channel\\\":501,\\\"value\\\":0.001799935552602,\\\"upsell_type\\\":129,\\\"candida… (780 chars)",
+          "tracking": "{\"qid\":\"-5910548036553106436\",\"mf_story_key\":\"<id:7>\",\"top_level_post_id\":\"<id:7>\",\"commerce_rank_obj\":\"{\\\"target_id\\\":<id:7>,\\\"target_type\\\":6,\\\"primary_position\\\":1,\\\"ranking_signature\\\":<id:2>,\\\"ranking_region\\\":\\\"prn\\\",\\\"ranking_request_id\\\":<id:13>,\\\"commerce_channel\\\":501,\\\"value\\\":0.001799935552602,\\\"upsell_type\\\":129,\\\"candida… (780 chars)",
           "__isMarketplaceFeedGeneralListingData": "MarketplaceFeedGeneralListingObject",
-          "entity_id": "911933708663857",
+          "entity_id": "<id:10>",
           "data": "(4 fields)",
           "listing": "(4 fields)",
           "tile_video": null,
@@ -518,15 +518,15 @@ Answered:
       ],
       "data": {
         "node": {
-          "id": "120251901794070294:IN_MEMORY_MARKETPLACE_FEED_STORY_ENT:EntMarketplaceFeedAdStory:2129662951",
+          "id": "<id:14>:IN_MEMORY_MARKETPLACE_FEED_STORY_ENT:EntMarketplaceFeedAdStory:2129662951",
           "__typename": "MarketplaceFeedAdStory",
-          "story_key": "5107569398747979115",
+          "story_key": "<id:15>",
           "story_type": "AD",
-          "tracking": "{\"qid\":\"-5910548036553106436\",\"mf_story_key\":\"5107569398747979115\",\"commerce_rank_obj\":\"{\\\"target_id\\\":120251901794070294,\\\"target_type\\\":4,\\\"primary_position\\\":0,\\\"ranking_signature\\\":0,\\\"commerce_channel\\\":501,\\\"value\\\":291.52154684067,\\\"is_prefetch\\\":false}\"}",
+          "tracking": "{\"qid\":\"-5910548036553106436\",\"mf_story_key\":\"<id:15>\",\"commerce_rank_obj\":\"{\\\"target_id\\\":<id:14>,\\\"target_type\\\":4,\\\"primary_position\\\":0,\\\"ranking_signature\\\":0,\\\"commerce_channel\\\":501,\\\"value\\\":291.52154684067,\\\"is_prefetch\\\":false}\"}",
           "story_attachment_style": "large_carousel_tile",
           "story": "(12 fields)",
           "ad_impression_client_token": "(taken out)",
-          "ad_id_string": "120251901794070294",
+          "ad_id_string": "<id:14>",
           "is_hidden": false,
           "is_demo": false,
           "transparency_ad_info": "(1 fields)",

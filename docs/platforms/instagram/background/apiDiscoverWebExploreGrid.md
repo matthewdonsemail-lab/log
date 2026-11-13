@@ -224,7 +224,7 @@ Answered:
       "description": "",
       "labels": [],
       "type": "explore_all",
-      "name": "For you",
+      "name": "<name:1>",
       "can_mute": false,
       "is_muted": false,
       "debug_info": ""

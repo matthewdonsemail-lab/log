@@ -1,4 +1,4 @@
-> Implementation reading order: [handoff and acceptance criteria](listeningKitHandoff.md), then [schema v2](listeningKitSchema.md). Those define native V1 scope and supersede broader legacy inventories or earlier field names in this companion. Deferred listings/CRM and future AI-provider identity are outside V1.
+> Implementation reading order: handoff and acceptance criteria, then [schema v2](listeningKitSchema.md). Those define native V1 scope and supersede broader legacy inventories or earlier field names in this companion. Deferred listings/CRM and future AI-provider identity are outside V1.
 
 # Workspace data model: DDIA applied to the existing .logCli runtime
 
@@ -7,7 +7,7 @@
 The native V1 follows [the corrected SQLite-first schema](listeningKitSchema.md). Existing `log.db` events, identities, chats/messages, media, jobs and queues are the foundation. Generated Twenty objects, agency prefixes and CRM/SMS fields do not define the new model. Old listing/campaign functionality is deferred. Broad legacy-domain inventories below are dependency history, not requirements to port those domains into V1. Only active account configuration/session adapters and missing hosted execution contracts belong in this cutover.
 
 
-11 November 2026. Companion to the authoritative [data boundary](https://github.com/matthewdonsemail-lab/log/pull/113#issuecomment-6774771382) and issue #112. These are implementation requirements and recommended V1 defaults, not implemented features.
+11 November 2026. Companion to the authoritative data boundary and issue #112. These are implementation requirements and recommended V1 defaults, not implemented features.
 
 ## Start with the existing runtime
 
@@ -64,7 +64,7 @@ The immediate implementation work is to finish native workspace repositories, pr
 
 ### Source anchors
 
-- [DDIA: simplicity and accidental complexity](../datamodel/Designing%20Data-Intensive%20Applications.md): chapter 1; the actual Markdown text is also locatable by `accidental complexity`.
+- DDIA: simplicity and accidental complexity: chapter 1; the actual Markdown text is also locatable by `accidental complexity`.
 - DDIA Part III, “Systems of record” / “Derived data systems” (local book lines 4356–4362); chapter 2 relationships; chapter 7 retry ambiguity (line 1769).
 - [Current SQLite path and transactional migrations](../../src/storage/schema/client.ts).
 - [Existing event record and identity migrations](../../src/storage/schema/helpers/migrations.ts).
@@ -74,7 +74,7 @@ The immediate implementation work is to finish native workspace repositories, pr
 
 ## Accepted AdsPower access options
 
-AdsPower remains the default browser. Support provided access through Matt's existing paid setup and users bringing their own AdsPower installation/key. Follow [the AdsPower specification](./listeningKitAdsPower.md) for the separate short-lived Log pairing token, private profile brokering and browser-location disclosure. An operator-hosted profile does not become workspace-local by keeping log.db in the user's VM. Strict workspace-only browser storage requires that browser in the selected private environment.
+AdsPower remains the default browser. Support provided access through the operator's existing paid setup and users bringing their own AdsPower installation/key. Follow the AdsPower specification for the separate short-lived Log pairing token, private profile brokering and browser-location disclosure. An operator-hosted profile does not become workspace-local by keeping log.db in the user's VM. Strict workspace-only browser storage requires that browser in the selected private environment.
 
 ## What an instance means
 
@@ -96,7 +96,7 @@ Completion: a fresh runtime initializes and persists all supported domain operat
 
 Define exact existing versus new env names, file locations, precedence and permissions. Separate central email/session/encryption/service secrets from workspace platform/provider credentials. Runtime bootstrap receives only pairing authority; the long-lived credential replaces it after redemption. Define expiry/rotation, revocation, re-pairing and how rotation survives restart without creating an inaccessible instance.
 
-All runtime paths, child processes and watchers must resolve the same instance home/state directory. No automatic loading of Matt's developer `.env`, unrelated home directory or global account secrets. The runtime's local encryption/recovery key must not be snapshotted into a reusable template. Document whether protection relies on a separate key, provider disk encryption or file permissions; do not claim encryption is implemented merely because a file is private.
+All runtime paths, child processes and watchers must resolve the same instance home/state directory. No automatic loading of the developer's own `.env`, unrelated home directory or global account secrets. The runtime's local encryption/recovery key must not be snapshotted into a reusable template. Document whether protection relies on a separate key, provider disk encryption or file permissions; do not claim encryption is implemented merely because a file is private.
 
 Completion: clean installations contain no prior customer's credentials; restart retains the same bound instance; revocation prevents new bridge use.
 
@@ -104,9 +104,9 @@ Completion: clean installations contain no prior customer's credentials; restart
 
 Write an explicit permission matrix for team administration, infrastructure spending/lifecycle, account sign-in, private reads, live social writes, exports and destructive data actions. Map it to the selected Treg membership roles. Enforce it in the hosted dispatcher and runtime authorization context, not just hidden UI buttons.
 
-Replace owner-specific assumptions such as “matt approves” with the authenticated authorized actor while preserving existing live-write confirmation. A generic caller-supplied `confirmLive: true` alone is not evidence of who approved the operation. Bind approval to the intended operation, actor, workspace and relevant arguments; a changed target/text invalidates it. Workspace credentials authenticate the runtime, not a human's permission to send.
+Replace owner-specific assumptions such as “the owner approves” with the authenticated authorized actor while preserving existing live-write confirmation. A generic caller-supplied `confirmLive: true` alone is not evidence of who approved the operation. Bind approval to the intended operation, actor, workspace and relevant arguments; a changed target/text invalidates it. Workspace credentials authenticate the runtime, not a human's permission to send.
 
-MCP guides/resources must become product/team appropriate: preserve shared behavioral constraints without shipping Matt's personal AGENTS file or private voice history as every customer's configuration.
+MCP guides/resources must become product/team appropriate: preserve shared behavioral constraints without shipping the developer's personal AGENTS file or private voice history as every customer's configuration.
 
 Completion: revoking membership removes access to the team's tools, data and streams; read permission does not grant sends, exports or compute provisioning.
 
@@ -176,9 +176,9 @@ The data boundary and auth choice are settled. These contracts make that decisio
 
 ## Application-wide cutover audit
 
-See [Application cutover from Twenty](listeningKitTwentyCutover.md) for the inspected dependency inventory, real sign-up/sign-in journey, private-data import boundary and ordered implementation acceptance requirements. The current website has no working hosted sign-in/dashboard routes, and local account mode does not remove other Twenty operations. This cutover is required implementation work, not completed migration.
+See Application cutover from Twenty for the inspected dependency inventory, real sign-up/sign-in journey, private-data import boundary and ordered implementation acceptance requirements. The current website has no working hosted sign-in/dashboard routes, and local account mode does not remove other Twenty operations. This cutover is required implementation work, not completed migration.
 
 
 ## Consolidated YAML schema
 
-The complete current/proposed table map, source-field mappings, API contracts and frontend routes are in [listeningKitSchema.yaml](listeningKitSchema.yaml), with a [reading and implementation guide](listeningKitSchema.md). This is proposed schema work; production migrations and route implementation remain separate.
+The complete current/proposed table map, source-field mappings, API contracts and frontend routes are in listeningKitSchema.yaml, with a [reading and implementation guide](listeningKitSchema.md). This is proposed schema work; production migrations and route implementation remain separate.

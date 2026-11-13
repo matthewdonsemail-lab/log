@@ -282,9 +282,9 @@ Facebook group listening is OpenMagpie's triage job: an account joins a group, O
 
 ## [Warm-up](./warmup.md)
 
-The warm-up makes an account look used before it sells: Listaro's five Facebook activities run as recorded flows (`log facebook warmup stages`), and the Reels activity (`log facebook warmup reel`) watches reels the way a real person with the account's persona would, each step checked against what it must achieve. Rules 36, 49 and 50, with the command forms of rules 60 and 63 and the code layout of rule 64.
+The warm-up makes an account look used before it sells: five Facebook activities run as recorded flows (`log facebook warmup stages`), and the Reels activity (`log facebook warmup reel`) watches reels the way a real person with the account's persona would, each step checked against what it must achieve. Rules 36, 49 and 50, with the command forms of rules 60 and 63 and the code layout of rule 64.
 
-- **REQ-WARMUP-01** The stages are Listaro's five activities, each a flow of its own
+- **REQ-WARMUP-01** The stages are the five warm-up activities, each a flow of its own
 - **REQ-WARMUP-02** Recording turns each activity into a flow, never from a broken recording
 - **REQ-WARMUP-03** Running needs every flow recorded, and runs them in turn in one browser
 - **REQ-WARMUP-04** A checkpoint, login wall or restriction stops the stages
@@ -499,7 +499,7 @@ Finding context in conversations is a search, never reading every thread. `log s
 
 ## [Knowledge base](./knowledgeBase.md)
 
-The knowledge base holds everything an agent should look up before it guesses: AGENTS.md's rules and sections, the skills, the docs, the Claude memory files, the known page states and the accounts. It lives in ListeningKit's Twenty on node02 and is searched through Redis on node02 by keyword and meaning at once. `log kb sync`, `log kb search`, `log kb remember` and `log kb show` (MCP `kbSync`, `kbSearch`, `kbRemember`, `kbShow`). Rule 93 (with rule 38 for the pages it leaves out).
+The knowledge base holds everything an agent should look up before it guesses: AGENTS.md's rules and sections, the skills, the docs, the Claude memory files, the known page states and the accounts. It lives in your own Twenty server and is searched through your own Redis by keyword and meaning at once. `log kb sync`, `log kb search`, `log kb remember` and `log kb show` (MCP `kbSync`, `kbSearch`, `kbRemember`, `kbShow`). Rule 93 (with rule 38 for the pages it leaves out).
 
 - **REQ-KB-01** The articles live in Twenty's knowledgeArticles
 - **REQ-KB-02** The logins are files outside the repo

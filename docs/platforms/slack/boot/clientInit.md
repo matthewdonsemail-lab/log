@@ -20,7 +20,7 @@ Seen 2 time(s) in 1 run(s).
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 4: goto /client | 1 | 200 | 554 ms | 3154 ms | — |
-| inspect | step 6: goto /client/T0C4VCD06MR/D0C8VAE7REU | 1 | 200 | 289 ms | 2221 ms | — |
+| inspect | step 6: goto /client/<teamId:1>/<channelId:1> | 1 | 200 | 289 ms | 2221 ms | — |
 
 ### What it sent and what came back (the newest 2 from our runs)
 
@@ -43,7 +43,7 @@ Sent:
     "_x_num_retries": "0"
   },
   "body": {
-    "------WebKitFormBoundaryh4FkPYN2LP2EWElr\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\nxoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\r\n------WebKitFormBoundaryh4FkPYN2LP2EWElr\r\nContent-Disposition: form-data; name=\"include_relevant_onboarding\"\r\n\r\ntrue\r\n------WebKitFormBoundaryh4FkPYN2LP2EWElr\r\nContent-Disposition: form-data; name=\"_x_reason\"\r\n\r\nfetch-client-init-data\r\n------WebKitFormBoundaryh4FkPYN2LP2EW… (610 chars)"
+    "------WebKitFormBoundaryh4FkPYN2LP2EWElr\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\n<slackToken>\r\n------WebKitFormBoundaryh4FkPYN2LP2EWElr\r\nContent-Disposition: form-data; name=\"include_relevant_onboarding\"\r\n\r\ntrue\r\n------WebKitFormBoundaryh4FkPYN2LP2EWElr\r\nContent-Disposition: form-data; name=\"_x_reason\"\r\n\r\nfetch-client-init-data\r\n------WebKitFormBoundaryh4FkPYN2LP2EW… (610 chars)"
   }
 }
 ```
@@ -57,7 +57,7 @@ Answered:
   "team": "(9 fields)",
   "workspaces": "(1 items)",
   "account_types": "(3 fields)",
-  "slack_route": "T0C4VCD06MR",
+  "slack_route": "<teamId:1>",
   "image_proxy_url": "https://slack-imgs.com/",
   "reload_info": "(0 fields)",
   "cache_version": "v21-nomad",
@@ -68,7 +68,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261103T065639_mattSlack**, step 6: goto /client/T0C4VCD06MR/D0C8VAE7REU: 200, 289 ms
+**runs/inspect/20261103T065639_mattSlack**, step 6: goto /client/<teamId:1>/<channelId:1>: 200, 289 ms
 
 Sent:
 
@@ -85,7 +85,7 @@ Sent:
     "_x_num_retries": "0"
   },
   "body": {
-    "------WebKitFormBoundaryCpRFiSshkwUpt7BK\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\nxoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\r\n------WebKitFormBoundaryCpRFiSshkwUpt7BK\r\nContent-Disposition: form-data; name=\"include_relevant_onboarding\"\r\n\r\ntrue\r\n------WebKitFormBoundaryCpRFiSshkwUpt7BK\r\nContent-Disposition: form-data; name=\"_x_reason\"\r\n\r\nfetch-client-init-data\r\n------WebKitFormBoundaryCpRFiSshkwUpt… (610 chars)"
+    "------WebKitFormBoundaryCpRFiSshkwUpt7BK\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\n<slackToken>\r\n------WebKitFormBoundaryCpRFiSshkwUpt7BK\r\nContent-Disposition: form-data; name=\"include_relevant_onboarding\"\r\n\r\ntrue\r\n------WebKitFormBoundaryCpRFiSshkwUpt7BK\r\nContent-Disposition: form-data; name=\"_x_reason\"\r\n\r\nfetch-client-init-data\r\n------WebKitFormBoundaryCpRFiSshkwUpt… (610 chars)"
   }
 }
 ```
@@ -99,7 +99,7 @@ Answered:
   "team": "(9 fields)",
   "workspaces": "(1 items)",
   "account_types": "(3 fields)",
-  "slack_route": "T0C4VCD06MR",
+  "slack_route": "<teamId:1>",
   "image_proxy_url": "https://slack-imgs.com/",
   "reload_info": "(0 fields)",
   "cache_version": "v21-nomad",
@@ -114,7 +114,7 @@ Answered:
 
 ## What it does
 
-Is the client's main boot call: it returns the signed-in user (`self.id`, `self.name`, `self.team_id`, `self.tz`, `self.real_name`, and 28 more fields). It fired 3.2 s into step 4 (`goto /client`, 554 ms) and 2.2 s into step 6 (`goto /client/T0C4VCD06MR/D0C8VAE7REU`, 289 ms), both 200.
+Is the client's main boot call: it returns the signed-in user (`self.id`, `self.name`, `self.team_id`, `self.tz`, `self.real_name`, and 28 more fields). It fired 3.2 s into step 4 (`goto /client`, 554 ms) and 2.2 s into step 6 (`goto /client/<teamId:1>/<channelId:1>`, 289 ms), both 200.
 
 ## What our machine does with it
 

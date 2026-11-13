@@ -36,12 +36,12 @@ log's publish session is the one to keep. The other two are sources for selector
 
 ## Avoidance: what's still open
 
-The status table is in `docs/identityLeaks/README.md`. These items were still open, and REA doesn't close them:
+The status table is in the private identity-leak study. These items were still open, and REA doesn't close them:
 
 | Item | Why it stays open |
 | --- | --- |
 | The canvas hash changes every launch | Firefox re-keys its noise per session. Turning that off makes every account share the machine's raw canvas. Not decided yet. |
-| WebGL pixels match the machine's GPU | Camoufox can change the reported GPU name, but not the pixels. `docs/deviceIsolation/` says a software renderer on a VM trades one tell for another. |
+| WebGL pixels match the machine's GPU | Camoufox can change the reported GPU name, but not the pixels. The private device-isolation study says a software renderer on a VM trades one tell for another. |
 | Camoufox detectability on 156.0.1-beta.39 | Upgraded but not re-measured on CreepJS. The package is paired with beta.36. |
 | A person at the keyboard during sign-in | Input method, phone country, personal email. A process question, not code. |
 | Listing text and currency | Not screened. A place name from the wrong country in the copy would show. |

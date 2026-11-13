@@ -113,7 +113,7 @@ Seen 151 time(s) in 42 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/warmup/20261023T080515_61594063207669**, step 1: goto /marketplace/: 200, 441 ms
+**runs/warmup/20261023T080515_<userId:1>**, step 1: goto /marketplace/: 200, 441 ms
 
 Sent:
 
@@ -133,7 +133,7 @@ Answered:
 {
   "data": {
     "xfb_backup": {
-      "id": "1127653843075648",
+      "id": "<id:1>",
       "backup_tenancy": "PRODUCTION",
       "is_user_opted_out": false,
       "has_otc_eligible_devices": false,
@@ -145,14 +145,14 @@ Answered:
           "device_created_on": "Chrome",
           "creation_time": 1792663635,
           "migration_status": "DOES_NOT_REQUIRE_MIGRATION",
-          "id": "1127653853075647"
+          "id": "<id:2>"
         }
       ],
       "devices": {
         "edges": [
           {
             "node": {
-              "id": "1127653846408981"
+              "id": "<id:3>"
             }
           }
         ]
@@ -160,7 +160,7 @@ Answered:
     },
     "xfb_eb_user_preferences": {
       "onboarding_decision": "BACKUP_CREATED",
-      "id": "1616100223633369"
+      "id": "<id:4>"
     }
   },
   "extensions": {
@@ -173,7 +173,7 @@ Answered:
 }
 ```
 
-**runs/warmup/20261023T080515_61594063207669**, step 3: goto /marketplace/you/selling: 200, 386 ms
+**runs/warmup/20261023T080515_<userId:1>**, step 3: goto /marketplace/you/selling: 200, 386 ms
 
 Sent:
 
@@ -197,7 +197,7 @@ Answered:
 {
   "data": {
     "xfb_backup": {
-      "id": "1127653843075648",
+      "id": "<id:1>",
       "backup_tenancy": "PRODUCTION",
       "is_user_opted_out": false,
       "has_otc_eligible_devices": false,
@@ -209,14 +209,14 @@ Answered:
           "device_created_on": "Chrome",
           "creation_time": 1792663635,
           "migration_status": "DOES_NOT_REQUIRE_MIGRATION",
-          "id": "1127653853075647"
+          "id": "<id:2>"
         }
       ],
       "devices": {
         "edges": [
           {
             "node": {
-              "id": "1127653846408981"
+              "id": "<id:3>"
             }
           }
         ]
@@ -224,7 +224,7 @@ Answered:
     },
     "xfb_eb_user_preferences": {
       "onboarding_decision": "BACKUP_CREATED",
-      "id": "1616100223633369"
+      "id": "<id:4>"
     }
   },
   "extensions": {
@@ -237,7 +237,7 @@ Answered:
 }
 ```
 
-**runs/warmup/20261023T080515_61594063207669**, step 5: goto /messages/: 200, 376 ms
+**runs/warmup/20261023T080515_<userId:1>**, step 5: goto /messages/: 200, 376 ms
 
 Sent:
 
@@ -257,7 +257,7 @@ Answered:
 {
   "data": {
     "xfb_backup": {
-      "id": "1127653843075648",
+      "id": "<id:1>",
       "backup_tenancy": "PRODUCTION",
       "is_user_opted_out": false,
       "has_otc_eligible_devices": false,
@@ -269,14 +269,14 @@ Answered:
           "device_created_on": "Chrome",
           "creation_time": 1792663635,
           "migration_status": "DOES_NOT_REQUIRE_MIGRATION",
-          "id": "1127653853075647"
+          "id": "<id:2>"
         }
       ],
       "devices": {
         "edges": [
           {
             "node": {
-              "id": "1127653846408981"
+              "id": "<id:3>"
             }
           }
         ]
@@ -284,7 +284,7 @@ Answered:
     },
     "xfb_eb_user_preferences": {
       "onboarding_decision": "BACKUP_CREATED",
-      "id": "1616100223633369"
+      "id": "<id:4>"
     }
   },
   "extensions": {

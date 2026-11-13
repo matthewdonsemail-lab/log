@@ -23,7 +23,7 @@ Seen 2 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261022T155857_61594063207669**, step 3: goto /marketplace/inbox: 200, 1275 ms
+**runs/inspect/20261022T155857_<userId:1>**, step 3: goto /marketplace/inbox: 200, 1275 ms
 
 Sent:
 
@@ -55,7 +55,7 @@ Answered:
         "can_onboard_to_shipped": {
           "has_access": false
         },
-        "id": "c2c_shipped_access_checker:61594063207669"
+        "id": "c2c_shipped_access_checker:<userId:1>"
       },
       "viewer": {
         "marketplace_nux_states": {
@@ -89,7 +89,7 @@ Answered:
         },
         "seller": {
           "__typename": "User",
-          "id": "61594063207669",
+          "id": "<userId:1>",
           "marketplace_should_display_verified_badge": false,
           "should_display_true_blue_badge_mp": false,
           "__isActor": "User",
@@ -104,7 +104,7 @@ Answered:
           "commerce_profile_picture_with_fallback_64": "(1 fields)",
           "commerce_profile_picture_with_fallback_60": "(1 fields)",
           "commerce_profile_picture_with_fallback_50": "(1 fields)",
-          "name": "Bethlehem Trash"
+          "name": "<name:1>"
         },
         "order_management": {
           "is_carrier_scan_based_tracking_enabled": false,
@@ -116,7 +116,7 @@ Answered:
         ],
         "c2c_shipped_access": {
           "can_create_shipped_listings": "(1 fields)",
-          "id": "c2c_shipped_access_checker:61594063207669",
+          "id": "c2c_shipped_access_checker:<userId:1>",
           "can_onboard_to_shipped": "(1 fields)"
         },
         "marketplace_shipping_eligible_listings": {
@@ -125,7 +125,7 @@ Answered:
         "actor": {
           "__typename": "User",
           "human_readable_type": "(1 fields)",
-          "id": "61594063207669"
+          "id": "<userId:1>"
         },
         "marketplace_settings": {
           "vacation_mode": null,

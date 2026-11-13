@@ -30,7 +30,7 @@ Checked by: code and SubQ
 
 ### REQ-MCP-04: Every tool names the rules it falls under
 
-Every tool's description ends with a line naming AGENTS.md (`log://agents`) and the rules it falls under: its command's own rules from `COMMAND_RULES` and the rules every tool falls under (30, 38, 39, 40, 41). `currentRuleIds` resolves retired references to the active ids documented in ruleHistory/index.md. Generated guides use active rule text and distinguish current legacy command behavior from the native hosted target; active rules 171/172/175 govern the data boundary.
+Every tool's description ends with a line naming AGENTS.md (`log://agents`) and the rules it falls under: its command's own rules from `COMMAND_RULES` and the rules every tool falls under (30, 38, 39, 40, 41). `currentRuleIds` resolves retired references to the active ids in the MCP generator's consolidated mapping. Generated guides use active rule text and distinguish current legacy command behavior from the native hosted target; active rules 171/172/175 govern the data boundary.
 
 Checked by: code and SubQ
 

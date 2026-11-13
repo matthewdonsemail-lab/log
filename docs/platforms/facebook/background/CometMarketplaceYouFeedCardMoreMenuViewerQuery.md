@@ -23,7 +23,7 @@ Seen 1 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261023T173652_61594063207669**, step 3: click e356: 200, 525 ms
+**runs/inspect/20261023T173652_<userId:1>**, step 3: click e356: 200, 525 ms
 
 Sent:
 
@@ -33,7 +33,7 @@ Sent:
   "fb_api_req_friendly_name": "CometMarketplaceYouFeedCardMoreMenuViewerQuery",
   "server_timestamps": "true",
   "variables": {
-    "listingId": "1425935622848350"
+    "listingId": "<id:1>"
   },
   "doc_id": "26659699326980679"
 }

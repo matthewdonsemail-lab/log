@@ -1,6 +1,6 @@
 {
   "name": "warmupMarketplaceBrowse",
-  "summary": "Warm-up marketplaceBrowse: Listaro's runStage2, account-warmup.ts:135-174, recorded on 61594063207669 2026-10-22 (rule 35).",
+  "summary": "Warm-up marketplaceBrowse: recorded on 99900000000001 2026-10-22 (rule 35).",
   "params": [],
   "steps": [
     {
@@ -113,8 +113,8 @@
     }
   ],
   "source": {
-    "runDir": "C:\\Users\\0\\.logCli\\runs\\warmup\\20261022T091121_61594063207669",
-    "account": "61594063207669",
+    "runDir": "C:\\Users\\tester\\.logCli\\runs\\warmup\\20261022T091121_99900000000001",
+    "account": "99900000000001",
     "builtAt": "2026-10-22T09:20:18.334Z"
   }
 }

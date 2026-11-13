@@ -4,11 +4,11 @@
 
 ## Foundation and scope
 
-[The YAML schema](listeningKitSchema.yaml) starts with the current workspace **`log.db`**. It preserves the existing 42 application tables, indexes and 17 migrations. These definitions came from applying the checked-in migrations to a disposable in-memory database, without opening private data. Source revision: `4004558bdafcace630686df994d91254130659ab`.
+The schema starts with the current workspace **`log.db`**. It preserves the existing 42 application tables, indexes and 17 migrations. These definitions came from applying the checked-in migrations to a disposable in-memory database, without opening private data. Source revision: `4004558bdafcace630686df994d91254130659ab`.
 
 This is a proposed implementation contract, not an executable migration or deployed backend. Its version is independent of SQLite's schema version. Allocate new migrations from the actual implementation HEAD.
 
-The previous draft copied too much from generated Twenty objects. That was the wrong modeling basis. The current specification removes the old field inventory and the proposed listing, campaign, CRM, message-workflow, group-content and duplicate governor/knowledge/artifact tables. Old listing features are deferred until Matt returns to them. Legacy exports can inform a separately scoped importer; they do not define native tables.
+The previous draft copied too much from generated Twenty objects. That was the wrong modeling basis. The current specification removes the old field inventory and the proposed listing, campaign, CRM, message-workflow, group-content and duplicate governor/knowledge/artifact tables. Old listing features are deferred until the owner returns to them. Legacy exports can inform a separately scoped importer; they do not define native tables.
 
 ## Data ownership
 
@@ -99,4 +99,4 @@ Old listing/campaign and CRM/SMS behavior does not block this native V1. Keep th
 
 Check YAML duplicate keys, declared fields/references/payload names, route uniqueness, exact current SQLite definition coverage, source paths and absence of legacy schema baggage. These are specification checks; no application tests, migrations of private data or deployments are performed here.
 
-Companions: [native data boundary](listeningKitNativeData.md), [instance contracts](listeningKitInstanceContracts.md), [cutover dependency audit](listeningKitTwentyCutover.md), [AdsPower](listeningKitAdsPower.md), [Treg control references](listeningKitTregArchitecture.md).
+Companions: [native data boundary](listeningKitNativeData.md), [instance contracts](listeningKitInstanceContracts.md), cutover dependency audit, AdsPower, Treg control references.

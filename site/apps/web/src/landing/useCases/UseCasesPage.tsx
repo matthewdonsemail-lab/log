@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { SiteHeader } from '../SiteHeader'
 import { AnimatePresence, motion, useInView } from 'motion/react'
 import { TextMorph } from 'torph/react'
 import { Building2, Rocket, User, Users } from 'lucide-react'
@@ -12,7 +13,6 @@ import Dither from '@/components/Dither'
 import { AreaChart } from '@/components/dither-kit/area-chart'
 import { Area } from '@/components/dither-kit/area'
 import { useChart } from '@/components/dither-kit/chart-context'
-import { Header } from '../Header'
 import { SiteFooter } from '../SiteFooter'
 import { ClayClouds } from '../ClayClouds'
 import { DitherFade } from './DitherFade'
@@ -22,11 +22,13 @@ import { PLATFORM_SESSIONS } from './platformSessions'
 import { Control, Dashed } from '../Control'
 import { PLATFORMS, type Platform } from '../PlatformSuite'
 import { LogWith, PlatformMoney } from './PlatformMoney'
-import { HandArrow, LOG_REPO_URL, RepoLink, ReviewMarquee, parseRepoUrl } from '../RepoLink'
+import { HandArrow, LOG_REPO_URL, RepoLink, ReviewMarquee } from '../RepoLink'
 import { GG_REVIEWS } from '../ggReviews'
 import '../RepoModal.css'
 import { USE_CASES, type ShowcaseId, type UseCase } from './useCaseCatalog'
-import { PLATFORM_PAGES, pageForPlatform, type Moment, type PageId, type PlatformPage, type Play } from './platformPages'
+import { PLATFORM_PAGES, type Moment, type PageId, type PlatformPage, type Play } from './platformPages'
+import { SITE_PAGES, SITE_PLATFORMS, pageById, pageForAnyPlatform } from './sitePages'
+import { HarnessSetupSection } from './HarnessSetupSection'
 import { QUICK_ANSWERS } from './quickAnswers'
 import { AgencyIntro } from '../AgencyIntro'
 import { Byline } from '../HomeAnswers'
@@ -35,13 +37,14 @@ import { StoryFaq } from '../story/StorySections'
 const LIP = 'shadow-[0_0_0_1px_#C9E3FF,0_3px_0_#B5D6FF]'
 const STICKER = 'sticker-word inline-block px-[0.08em] text-[1.18em] leading-none'
 const HAND = { fontFamily: "'Schoolbell', 'Cabin Sketch', cursive" }
-const LOG_REPO = parseRepoUrl(LOG_REPO_URL)!
 const SETUP_HREF = LOG_REPO_URL
 const INSTALL = 'curl -fsSL https://log.listeningkit.com/install.sh | sh'
 
 type Tab = { id: ShowcaseId | 'reddit' | 'linkedin'; label: string; icon: IconDefinition }
 
-const platformOf = (id: string) => PLATFORMS.find((platform) => platform.id === id)!
+const platformOf = (id: string) => SITE_PLATFORMS.find((platform) => platform.id === id)!
+
+const viaOf = (platform: Platform | null) => (platform && pageForAnyPlatform(platform.id)?.harness ? 'from' : 'on')
 
 const TABS: Tab[] = [
   ...(['x', 'facebook', 'discord', 'slack', 'instagram'] as const).map((id) => ({ id, label: platformOf(id).label, icon: platformOf(id).icon })),
@@ -123,7 +126,7 @@ const iconOfMoment = (moment: Moment, platform: Platform) =>
 
 const graphEvents = (platform: Platform | null, moments: Moment[]): GraphEvent[] => {
   if (!platform)
-    return PLATFORMS.map((item) => ({ id: item.id, icon: item.icon, label: `log on ${item.label}`, tool: '', href: pageForPlatform(item.id)?.path ?? item.docsHref }))
+    return PLATFORMS.map((item) => ({ id: item.id, icon: item.icon, label: `log on ${item.label}`, tool: '', href: pageForAnyPlatform(item.id)?.path ?? item.docsHref }))
   return moments.map((moment, index) => ({ id: `${moment.tool}${index}`, icon: iconOfMoment(moment, platform), label: moment.label, tool: moment.tool, href: SETUP_HREF }))
 }
 
@@ -321,7 +324,11 @@ const REDDIT_LINES: HeroLine[] = [
   { before: 'Grow your own subreddit on', after: '' },
 ]
 
-const jobLines = (platform: Platform) => (platform.id === 'reddit' ? REDDIT_LINES : JOB_LINES)
+const jobLines = (platform: Platform) => {
+  const setup = pageForAnyPlatform(platform.id)?.harness
+  if (setup) return setup.lines.map((before) => ({ before, after: '' }))
+  return platform.id === 'reddit' ? REDDIT_LINES : JOB_LINES
+}
 
 const HERO_VERBS = ['prospect', 'engage', 'book', 'convert', 'sell']
 
@@ -366,9 +373,9 @@ function Hero({ platform }: { platform: Platform | null }) {
     observer.observe(frame)
     return () => observer.disconnect()
   }, [])
-  const lede = HERO_LEDES[platform ? platform.id : 'all'] ?? HERO_LEDES.all
   const howPlatform = platform ?? platformOf('x')
-  const howPage = pageForPlatform(howPlatform.id) ?? PLATFORM_PAGES[0]
+  const howPage = pageForAnyPlatform(howPlatform.id) ?? PLATFORM_PAGES[0]
+  const lede = HERO_LEDES[platform ? platform.id : 'all'] ?? (platform ? howPage.harness?.lede : undefined) ?? HERO_LEDES.all
   return (
     <section ref={sectionRef} aria-label="Hero" className="relative isolate w-full overflow-hidden text-left">
       <div
@@ -402,7 +409,7 @@ function Hero({ platform }: { platform: Platform | null }) {
               </span>
             </span>
             <span className="block text-white/65">
-              to buyers desperate for your product on {platform ? platform.label : 'every platform'}
+              to buyers desperate for your product {viaOf(platform)} {platform ? platform.label : 'every platform'}
             </span>
           </h1>
           <div className="flex flex-col items-start gap-6 md:pb-2">
@@ -451,8 +458,8 @@ function Hero({ platform }: { platform: Platform | null }) {
           done={howPage.play.how.done}
           title={howPage.play.name}
           steps={howPage.play.how.steps.map((moment) => ({ icon: iconOfMoment(moment, howPlatform), label: moment.label, tool: moment.tool }))}
-          platformLabel={howPlatform.label}
-          platformIcon={howPlatform.icon}
+          platformLabel={howPage.harness ? 'your accounts' : howPlatform.label}
+          platformIcon={howPage.harness ? faComments : howPlatform.icon}
           rows={howPage.play.how.rows}
         />
         <div className="lk-repo relative mt-20 text-[#0D2A4C] md:mt-32" style={{ '--lk-brand-deep': '#c8d5e6' } as CSSProperties}>
@@ -594,7 +601,7 @@ export function PlayChat({ page, offset }: { page: PlatformPage; offset: number 
 }
 
 export function MoreUseCases({ current }: { current: PlatformPage | null }) {
-  const others = PLATFORM_PAGES.filter((item) => item.id !== current?.id)
+  const others = SITE_PAGES.filter((item) => item.id !== current?.id)
   return (
     <section aria-label="Other use cases" className="relative w-full bg-white px-4 pb-24 pt-20 text-center text-[#0D2A4C] md:px-6 md:pb-32">
       <h2 className="text-title mx-auto max-w-4xl">
@@ -689,7 +696,7 @@ function JobGraph({ platform, moments }: { platform: Platform | null; moments: M
       </div>
       <HeroGraph
         events={graphEvents(platform, moments)}
-        end={platform ? `One job on ${platform.label}, ${moments.length} tools` : `${PLATFORMS.length} platforms, one agent`}
+        end={platform ? `One job ${viaOf(platform)} ${platform.label}, ${moments.length} tools` : `${PLATFORMS.length} platforms, one agent`}
       />
     </section>
   )
@@ -713,7 +720,7 @@ function useTyped(text: string, speed = 45, hold = 2200) {
   return text.slice(0, count)
 }
 
-function AskDemo({ ask, icon }: { ask: string; icon: IconDefinition }) {
+export function AskDemo({ ask, icon }: { ask: string; icon: IconDefinition }) {
   const typed = useTyped(ask)
   return (
     <div className="flex w-full flex-col items-center gap-3">
@@ -731,7 +738,7 @@ function AskDemo({ ask, icon }: { ask: string; icon: IconDefinition }) {
   )
 }
 
-function HubDemo({ calls, icon }: { calls: string[]; icon: IconDefinition }) {
+export function HubDemo({ calls, icon }: { calls: string[]; icon: IconDefinition }) {
   const lit = useCycle(calls.length, 900)
   const spots = calls.map((call, index) => {
     const angle = (index / calls.length) * Math.PI * 2 - Math.PI / 2
@@ -774,7 +781,7 @@ function HubDemo({ calls, icon }: { calls: string[]; icon: IconDefinition }) {
   )
 }
 
-function OutDemo({ rows }: { rows: { label: string; tag: string }[] }) {
+export function OutDemo({ rows }: { rows: { label: string; tag: string }[] }) {
   const step = useCycle(rows.length + 2, 1100)
   return (
     <div className="flex w-full flex-col gap-2">
@@ -800,6 +807,7 @@ function OutDemo({ rows }: { rows: { label: string; tag: string }[] }) {
 
 export function ThreeSteps({ play, platform, icon }: { play: Play; platform: Platform; icon: IconDefinition }) {
   const platformLabel = platform.label
+  const via = viaOf(platform)
   const steps = [
     { ...play.steps[0], demo: <AskDemo ask={play.ask} icon={icon} /> },
     { ...play.steps[1], demo: <HubDemo calls={play.calls} icon={icon} /> },
@@ -809,7 +817,7 @@ export function ThreeSteps({ play, platform, icon }: { play: Play; platform: Pla
     <section id="play" className="w-full scroll-mt-24 bg-white px-4 pb-20 pt-4 md:px-6">
       <div className="mx-auto mb-12 flex max-w-4xl flex-col items-center gap-4 text-center">
         <h2 className="text-title text-[#0D2A4C]">
-          Here’s a free play you can run on your {platformLabel} to earn some{' '}
+          Here’s a free play you can run {via === 'from' ? 'from' : 'on your'} {platformLabel} to earn some{' '}
           <span className="sticker-word inline-block px-[0.08em] text-[1.18em] leading-none">$$$</span>
         </h2>
         <p className="text-lede font-semibold text-[#0D2A4C]/85">
@@ -1003,6 +1011,43 @@ function Showcase({ page }: { page: PlatformPage | null }) {
   )
 }
 
+function MorePlays({ page, platform }: { page: PlatformPage; platform: Platform }) {
+  const plays = page.harness?.plays ?? []
+  if (!plays.length) return null
+  return (
+    <section aria-label={`More plays from ${platform.label}`} className="w-full bg-white px-4 pb-20 md:px-6">
+      <h2 className="text-title mx-auto max-w-4xl text-center text-[#0D2A4C]">
+        More plays to run from <span className={STICKER}>{platform.label}</span>
+      </h2>
+      <ul className="mx-auto mt-12 grid w-full max-w-6xl list-none grid-cols-1 gap-6 p-0 md:grid-cols-2">
+        {plays.map((play, index) => (
+          <li key={play.name} className="flex flex-col gap-3 rounded-2xl bg-white p-5 shadow-[0_4px_0_#1A5FC8,0_12px_24px_-12px_rgba(13,42,76,0.35)] ring-1 ring-[#0D2A4C]/8">
+            <span className="text-[20px] font-black leading-tight tracking-[-0.02em] text-[#0D2A4C]">{play.name}</span>
+            <PlayChat page={{ ...page, play }} offset={index + 1} />
+            <ol className="flex list-none flex-col gap-2 p-0">
+              {play.steps.map((step, stepIndex) => (
+                <li key={step.title} className="flex gap-2.5 text-[14px] text-[#0D2A4C]/75">
+                  <span className="grid size-6 shrink-0 place-items-center rounded-full bg-[#EAF3FF] font-mono text-[11px] font-bold text-[#2A8CFF]">{stepIndex + 1}</span>
+                  <span>
+                    <span className="font-bold text-[#0D2A4C]">{step.title}.</span> {step.body}
+                  </span>
+                </li>
+              ))}
+            </ol>
+            <p className="flex flex-wrap gap-1.5">
+              {play.calls.map((call) => (
+                <span key={call} className="rounded-md bg-[#F3F6FA] px-2 py-0.5 font-mono text-[12px] font-bold text-[#0D2A4C]/70">
+                  {call}
+                </span>
+              ))}
+            </p>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
 const PLAYS_LIMIT = 6
 
 function Plays({ plays, title }: { plays: UseCase[]; title: string }) {
@@ -1129,8 +1174,9 @@ export function PromptCta({ title, ask, isCommand, install = INSTALL }: { title:
 
 
 export function UseCasesPage({ platform: pageId }: { platform?: PageId }) {
-  const page = pageId ? PLATFORM_PAGES.find((item) => item.id === pageId)! : null
+  const page = pageId ? pageById(pageId)! : null
   const platform = page ? platformOf(page.platformId) : null
+  const harness = page?.harness
   const cases = casesFor(page)
   const prompt = page ? page.prompt : 'go on docs/useCases/slack/dmReply.md for <someone>'
   const isCommand = prompt.startsWith('log ')
@@ -1143,36 +1189,57 @@ export function UseCasesPage({ platform: pageId }: { platform?: PageId }) {
   }, [platform])
   return (
     <div className="flex min-h-screen flex-col bg-white" style={{ fontFamily: "'Satoshi', 'Inter', system-ui, sans-serif" }}>
-      <Header
-        tone="light"
-        homeHref="/"
-        logoLabel="ListeningKit"
-        githubRepo={`${LOG_REPO.owner}/${LOG_REPO.repo}`}
-        className="z-[70]"
-        accountItems={[{ href: SETUP_HREF, label: 'Set up log', variant: 'cta' }]}
-      />
+      <SiteHeader cta={{ href: SETUP_HREF, label: 'Set up log' }} />
       <Hero platform={platform} />
-      <PlatformScroll platformId={page ? page.platformId : 'slack'} ctaHref={SETUP_HREF} />
+      {harness ? <HarnessSetupSection setup={harness} /> : <PlatformScroll platformId={page ? page.platformId : 'slack'} ctaHref={SETUP_HREF} />}
       {platform && page ? (
         <Control
           title={
-            <>
-              The best tool for
-              <br className="hidden sm:block" />{' '}
-              <span className="sticker-word inline-block px-[0.08em] text-[1.18em] leading-none">{platform.label} marketing.</span>
-            </>
+            harness ? (
+              <>
+                Your marketing, run
+                <br className="hidden sm:block" />{' '}
+                <span className="sticker-word inline-block px-[0.08em] text-[1.18em] leading-none">from {platform.label}.</span>
+              </>
+            ) : (
+              <>
+                The best tool for
+                <br className="hidden sm:block" />{' '}
+                <span className="sticker-word inline-block px-[0.08em] text-[1.18em] leading-none">{platform.label} marketing.</span>
+              </>
+            )
           }
           lede={platform.body.split(/(\*\*[^*]+\*\*)/g).map((part, index) =>
             part.startsWith('**') ? <Dashed key={index}>{part.slice(2, -2)}</Dashed> : <span key={index}>{part}</span>,
           )}
-          session={PLATFORM_SESSIONS[page.platformId]}
-          platformLabel={platform.label}
+          session={harness ? harness.session : PLATFORM_SESSIONS[page.platformId]}
+          platformLabel={harness ? undefined : platform.label}
+          harness={harness}
         />
       ) : (
         <Control />
       )}
       <ThreeSteps play={(page ?? PLATFORM_PAGES.find((item) => item.id === 'twitter')!).play} platform={platform ?? platformOf('x')} icon={platform ? platform.icon : faXTwitter} />
-      <PlatformMoney platformId={page ? page.platformId : 'x'} platformLabel={(platform ?? platformOf('x')).label} ctaHref={SETUP_HREF} />
+      {page && platform ? <MorePlays page={page} platform={platform} /> : null}
+      <PlatformMoney
+        platformId={harness ? harness.wall : page ? page.platformId : 'x'}
+        platformLabel={(platform ?? platformOf('x')).label}
+        ctaHref={SETUP_HREF}
+        title={
+          harness ? (
+            <>
+              There&apos;s literally <span className={STICKER}>so much money</span> sitting in <span className={STICKER}>your DMs</span>
+            </>
+          ) : undefined
+        }
+        subline={
+          harness ? (
+            <>
+              Connect log to {harness.name} and just <span className={STICKER}>get after it</span>
+            </>
+          ) : undefined
+        }
+      />
       <CtaBand>
         <LogWith />
         <JobGraph platform={platform} moments={page ? page.moments : []} />

@@ -26,7 +26,7 @@ Seen 5 time(s) in 5 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/host/20261026T180628_61594285317994**, step 5: goto /me: 200, 219 ms
+**runs/host/20261026T180628_<userId:1>**, step 5: goto /me: 200, 219 ms
 
 Sent:
 
@@ -38,11 +38,11 @@ Sent:
   "server_timestamps": "true",
   "variables": {
     "input": {
-      "profile_id": "61594285317994",
+      "profile_id": "<userId:1>",
       "prompt_event": "impression",
       "prompt_type": "PERSONAL_PROFILE_DIRECTORY_PROFILE_MEGAPHONE_PROMPT",
-      "qp_id": "1256202615885785",
-      "actor_id": "61594285317994",
+      "qp_id": "<id:1>",
+      "actor_id": "<userId:1>",
       "client_mutation_id": "1"
     }
   },

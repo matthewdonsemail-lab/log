@@ -9,7 +9,7 @@ const har = {
       {
         startedDateTime: '2026-10-28T06:44:23.000Z',
         time: 3140,
-        request: { method: 'POST', url: 'https://discord.com/api/v9/channels/1555254123148873869/messages', headers: [{ name: 'sec-fetch-dest', value: 'empty' }], postData: { text: '{"content":"yo jilly"}' } },
+        request: { method: 'POST', url: 'https://discord.com/api/v9/channels/1555254123148873869/messages', headers: [{ name: 'sec-fetch-dest', value: 'empty' }], postData: { text: '{"content":"yo jinny"}' } },
         response: { status: 200, content: { mimeType: 'application/json', text: '{"id":"1564892578162147328"}' } },
       },
       {
@@ -18,7 +18,7 @@ const har = {
         request: { method: 'GET', url: 'wss://gateway.discord.gg/?encoding=json&v=9&compress=zlib-stream', headers: [] },
         response: { status: 101, content: { mimeType: 'x-websocket' } },
         _webSocketMessages: [
-          { type: 'receive', time: at('2026-10-28T06:45:10.000Z'), opcode: 2, data: JSON.stringify({ op: 0, t: 'MESSAGE_CREATE', s: 42, d: { id: '1564892766478008361', content: 'deepseek-v4.1-flash', author: { username: 'Jilly' } } }) },
+          { type: 'receive', time: at('2026-10-28T06:45:10.000Z'), opcode: 2, data: JSON.stringify({ op: 0, t: 'MESSAGE_CREATE', s: 42, d: { id: '1564892766478008361', content: 'deepseek-v4.1-flash', author: { username: 'Jinny' } } }) },
           { type: 'send', time: at('2026-10-28T06:44:30.000Z'), opcode: 1, data: JSON.stringify({ op: 1, d: 41 }) },
           { type: 'receive', time: at('2026-10-28T06:44:31.000Z'), opcode: 2, data: 'AAAA', _encoding: 'base64' },
         ],

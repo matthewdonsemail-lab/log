@@ -40,7 +40,7 @@ Sent:
     "_x_num_retries": "0"
   },
   "body": {
-    "------WebKitFormBoundary7CeHsXHg0E6AeAEi\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\nxoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\r\n------WebKitFormBoundary7CeHsXHg0E6AeAEi\r\nContent-Disposition: form-data; name=\"_x_app_name\"\r\n\r\nclient\r\n------WebKitFormBoundary7CeHsXHg0E6AeAEi\r\nContent-Disposition: form-data; name=\"_x_sonic\"\r\n\r\ntrue\r\n------WebKitFormBoundary7CeHsXHg0E6AeAEi--\r\n"
+    "------WebKitFormBoundary7CeHsXHg0E6AeAEi\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\n<slackToken>\r\n------WebKitFormBoundary7CeHsXHg0E6AeAEi\r\nContent-Disposition: form-data; name=\"_x_app_name\"\r\n\r\nclient\r\n------WebKitFormBoundary7CeHsXHg0E6AeAEi\r\nContent-Disposition: form-data; name=\"_x_sonic\"\r\n\r\ntrue\r\n------WebKitFormBoundary7CeHsXHg0E6AeAEi--\r\n"
   }
 }
 ```
@@ -53,7 +53,7 @@ Answered:
   "primary_websocket_url": "wss://wss-primary.slack.com/",
   "fallback_websocket_url": "wss://wss-backup.slack.com/",
   "ttl_seconds": 604800,
-  "routing_context": "T0C4VCD06MR-4"
+  "routing_context": "<teamId:1>-4"
 }
 ```
 
@@ -61,7 +61,7 @@ Answered:
 
 ## What it does
 
-Asks where to open the realtime socket: it answered `primary_websocket_url: wss://wss-primary.slack.com/`, `fallback_websocket_url: wss://wss-backup.slack.com/`, `ttl_seconds: 604800` and `routing_context: T0C4VCD06MR-4`. Fired 7.1 s into step 4 (`goto /client`), 556 ms, 200.
+Asks where to open the realtime socket: it answered `primary_websocket_url: wss://wss-primary.slack.com/`, `fallback_websocket_url: wss://wss-backup.slack.com/`, `ttl_seconds: 604800` and `routing_context: <teamId:1>-4`. Fired 7.1 s into step 4 (`goto /client`), 556 ms, 200.
 
 ## What our machine does with it
 

@@ -33,7 +33,7 @@ Seen 16 time(s) in 11 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/host/20261026T180628_61594285317994**, step 12: goto /marketplace/create/item: 200, 176 ms
+**runs/host/20261026T180628_<userId:1>**, step 12: goto /marketplace/create/item: 200, 176 ms
 
 Sent:
 
@@ -68,7 +68,7 @@ Answered:
 }
 ```
 
-**runs/host/20261026T180628_61594285317994**, step 28: goto /marketplace/create/item: 200, 171 ms
+**runs/host/20261026T180628_<userId:1>**, step 28: goto /marketplace/create/item: 200, 171 ms
 
 Sent:
 

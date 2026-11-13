@@ -1,6 +1,6 @@
 ---
 name: log-discord-server-reply
-description: "Replying in a Discord server channel. A log play (docs/useCases/discord/serverReply.md): Answer someone in a channel of a Discord server: a mention of the account, a reply to its message, or a question in a channel matt is part of, like \"paulchrisluke #general\". A server channel is not a group chat. It is a room inside someone else's server, with members who never joined a conversation with matt, an owner and its own rules, so it is read, answered and sent differently from a DM or a group DM. DMs and group DMs are [channelReply](channelReply.md)."
+description: "Replying in a Discord server channel. A log play (docs/useCases/discord/serverReply.md): Answer someone in a channel of a Discord server: a mention of the account, a reply to its message, or a question in a channel matt is part of, like \"pennyserver #general\". A server channel is not a group chat. It is a room inside someone else's server, with members who never joined a conversation with matt, an owner and its own rules, so it is read, answered and sent differently from a DM or a group DM. DMs and group DMs are [channelReply](channelReply.md)."
 when_to_use: "Use when matt asks for this, in words like: \"reply to <someone> in <server>\", \"answer him in the general\", \"message the guy in <server> #<channel> who mentioned me\", \"reply in the <server> server\", \"find what <someone> said in <server> and answer it\""
 metadata:
   summary: "Replying in a Discord server channel"
@@ -12,7 +12,7 @@ This is the log play `discord/serverReply`. Before anything else, call the log M
 
 Draft every message from that person's own thread and matt's real replies (`voice` with no text, `search`), never from memory, and never send two that read alike (`sameAsSent`).
 
-Answer someone in a channel of a Discord server: a mention of the account, a reply to its message, or a question in a channel matt is part of, like "paulchrisluke #general". A server channel is not a group chat. It is a room inside someone else's server, with members who never joined a conversation with matt, an owner and its own rules, so it is read, answered and sent differently from a DM or a group DM. DMs and group DMs are [channelReply](../log-discord-channel-reply/SKILL.md).
+Answer someone in a channel of a Discord server: a mention of the account, a reply to its message, or a question in a channel matt is part of, like "pennyserver #general". A server channel is not a group chat. It is a room inside someone else's server, with members who never joined a conversation with matt, an owner and its own rules, so it is read, answered and sent differently from a DM or a group DM. DMs and group DMs are [channelReply](../log-discord-channel-reply/SKILL.md).
 
 How the owner asks for it: "reply to <someone> in <server>", "answer him in the general", "message the guy in <server> #<channel> who mentioned me", "reply in the <server> server", "find what <someone> said in <server> and answer it"
 
@@ -25,7 +25,7 @@ Say: **"go on docs/useCases/discord/serverReply.md for <server> #<channel>"**. T
 | | Server channel | Group DM | DM |
 | --- | --- | --- | --- |
 | What it is | A channel inside a server: a room with an owner, mods, rules and members who aren't in a conversation with matt | A private chat of a few people matt is in, with no server and no owner but its members | matt and one person |
-| How it is named | `"<server> #<channel>"`, like `"paulchrisluke #general"` | its name, or the members' names when it has none | the person |
+| How it is named | `"<server> #<channel>"`, like `"pennyserver #general"` | its name, or the members' names when it has none | the person |
 | In `discordChats` | `kind: "channel"`, with `server` and `serverId` | `kind: "group"` | `kind: "dm"` |
 | What the watcher keeps | only mentions of the account and replies to it; the rest of the channel is never stored | every message | every message |
 | Where a read comes from | always from Discord, never log.db, since log.db holds only those mentions and replies | log.db when the account is caught up and the chat backfilled | the same as a group DM |
@@ -47,10 +47,10 @@ Say: **"go on docs/useCases/discord/serverReply.md for <server> #<channel>"**. T
 
 ## What to know
 
-- **It is someone else's room.** The server has an owner and rules. Answer what was asked and stay in the channel's topic. A pitch or a sales line in someone's server is not a reply: paulchrisluke, the owner of the paulchrisluke server, told matt on 9 Nov 2026 not to use his Discord for selling services.
-- **Tag the one person.** Everyone in the channel reads every message, so the answer starts with `<@their fromId>` (from the read in step 3), the way matt tags people there ("have you ever made generative ui before <@379607746510848000>", paulchrisluke #general, 11 Nov 2026). The AI artifact check passes a mention. Never talk to the whole room as if it were a DM.
+- **It is someone else's room.** The server has an owner and rules. Answer what was asked and stay in the channel's topic. A pitch or a sales line in someone's server is not a reply: a server owner once asked matt not to use their Discord for selling services.
+- **Tag the one person.** Everyone in the channel reads every message, so the answer starts with `<@their fromId>` (from the read in step 3), the way matt tags people there ("have you ever made generative ui before <@their fromId>"). The AI artifact check passes a mention. Never talk to the whole room as if it were a DM.
 - **The read is always live.** log.db keeps only the mentions and replies from a server channel, so `discordRead` reads the channel from Discord every time and says so. Up to 1000 messages, 100 a page. A 429 stops the read and pauses the account (rule 94).
-- **Finding an old conversation in a server.** Log's own `search` doesn't hold a server's history, only the mentions and replies the watcher kept. Use `discordSearch` on the server: [serverSearch](../log-discord-server-search/SKILL.md). Reading a channel back to look for something is the slow way: Paul's widgets advice took a 400-message read of "paulchrisluke #general" on 12 Nov 2026.
+- **Finding an old conversation in a server.** Log's own `search` doesn't hold a server's history, only the mentions and replies the watcher kept. Use `discordSearch` on the server: [serverSearch](../log-discord-server-search/SKILL.md). Reading a channel back to look for something is the slow way: one piece of advice took a 400-message read of "pennyserver #general" on 12 Nov 2026.
 - **When matt is already there, leave it to him.** If his own message comes after theirs, he is answering: send nothing and release the claim with `inboxRelease` { platform: "discord", account, chat: "<channel id>" }. A send releases the claim by itself.
 - **A send waits for the account.** A send to a server channel needs the account caught up; while it is behind, Discord isn't contacted and the answer is `accountBehind`. Wait for the catch-up, never go around it (rules 94, 105).
 - **The voice gate can't find a server channel by name.** Gate with `to` and `context` only, never `with`.

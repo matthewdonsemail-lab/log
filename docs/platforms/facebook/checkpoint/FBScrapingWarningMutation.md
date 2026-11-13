@@ -26,7 +26,7 @@ Seen 4 time(s) in 4 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261111T081957_61593610473511**, step 8: click e53: 200, 941 ms
+**runs/inspect/20261111T081957_<userId:1>**, step 8: click e53: 200, 941 ms
 
 Sent:
 
@@ -46,7 +46,7 @@ Answered:
 null
 ```
 
-**runs/host/20261024T222706_61593981307720**, step 28: clickRole button "…": 200, 1113 ms
+**runs/host/20261024T222706_<userId:2>**, step 28: clickRole button "…": 200, 1113 ms
 
 Sent:
 
@@ -66,7 +66,7 @@ Answered:
 null
 ```
 
-**runs/host/20261024T211541_61593939852820**, step 3: clickRole button "…": 200, 2114 ms
+**runs/host/20261024T211541_<userId:3>**, step 3: clickRole button "…": 200, 2114 ms
 
 Sent:
 
@@ -94,7 +94,7 @@ Clears Facebook's scraping warning on the account (`fb_scraping_warning_clear`).
 
 ## What our machine does with it
 
-The connect machine's `automatedBehaviour` page kind dismisses the warning (Listaro's path, rule 23), which sends this. The machine reads the page, not this response; the next page read decides where it goes.
+The connect machine's `automatedBehaviour` page kind dismisses the warning (rule 23), which sends this. The machine reads the page, not this response; the next page read decides where it goes.
 
 ## What can go wrong
 

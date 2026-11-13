@@ -1,12 +1,12 @@
 import type { PlatformActivity } from '../types'
 
-const RUN = 'run 20261020T102133_61594131334566 (Reading, AdsPower, Byteful)'
-const INSPECT = 'inspect 20261020T103913_61594131334566 (Reading, by hand, timed)'
+const RUN = 'run 20261020T102133_99900000000027 (Reading, AdsPower, Byteful)'
+const INSPECT = 'inspect 20261020T103913_99900000000027 (Reading, by hand, timed)'
 
 export const FEED: PlatformActivity = {
   platform: 'facebook',
   activity: 'feed',
-  summary: 'The Facebook home feed read as a person does: open it, read down it, like a couple of posts, then a short look at Marketplace (Listaro stage 1).',
+  summary: 'The Facebook home feed read as a person does: open it, read down it, like a couple of posts, then a short look at Marketplace (stage 1).',
   steps: [
     {
       id: 'openFeed',
@@ -25,8 +25,8 @@ export const FEED: PlatformActivity = {
       optional: true,
       recorded: `${INSPECT} step 27: heading "Remember password" with button "OK", button "Not now" and button "Close", over the feed`
     },
-    { id: 'settle', action: 'dwell', args: ['3-5'], why: "the feed loads; a person looks at the top before reading down (Listaro: 3-5 s)" },
-    { id: 'readFeed', action: 'scroll', args: ['4-7', '300-600'], why: 'read down the feed: 4-7 wheel scrolls of 300-600 px (Listaro stage 1)', expect: { answers: [{ call: 'CometNewsFeedPaginationQuery', ifSent: true, says: [{ answer: 'first.data.viewer.news_feed', present: true }] }] }, recorded: `${RUN} step 03: +378, +386, +411, +501 px, 86 requests, 3 posts on screen; CometNewsFeedPaginationQuery answered more of the feed (its doc)` },
+    { id: 'settle', action: 'dwell', args: ['3-5'], why: "the feed loads; a person looks at the top before reading down (3-5 s)" },
+    { id: 'readFeed', action: 'scroll', args: ['4-7', '300-600'], why: 'read down the feed: 4-7 wheel scrolls of 300-600 px (stage 1)', expect: { answers: [{ call: 'CometNewsFeedPaginationQuery', ifSent: true, says: [{ answer: 'first.data.viewer.news_feed', present: true }] }] }, recorded: `${RUN} step 03: +378, +386, +411, +501 px, 86 requests, 3 posts on screen; CometNewsFeedPaginationQuery answered more of the feed (its doc)` },
     {
       id: 'nextPost',
       action: 'nextPost',
@@ -76,17 +76,17 @@ export const FEED: PlatformActivity = {
       id: 'openMarketplace',
       action: 'goto',
       args: ['https://www.facebook.com/marketplace/'],
-      why: 'then a short look at Marketplace (Listaro stage 1)',
+      why: 'then a short look at Marketplace (stage 1)',
       expect: { urlMatches: '/marketplace/', answers: [{ call: 'page /marketplace/', says: [{ answer: 'fields.buy_location.display_name', present: true }, { answer: 'fields.buy_location.display_name', home: 'city', code: 'marketplaceLocationWrong' }] }] },
       recorded: `${RUN} step 04: /marketplace/, 248 requests, 19 s; the page's own answer says buy_location ("Bethlehem, Pennsylvania" on 20261022T113536)`
     },
-    { id: 'lookMarketplace', action: 'dwell', args: ['3-5'], why: 'Marketplace loads; a look at it (Listaro: 3-5 s)' },
-    { id: 'scrollMarketplace', action: 'scroll', args: ['1', '400-800'], why: 'one scroll down Marketplace (Listaro: 400-800 px)', recorded: `${RUN} step 06: +783 px` },
+    { id: 'lookMarketplace', action: 'dwell', args: ['3-5'], why: 'Marketplace loads; a look at it (3-5 s)' },
+    { id: 'scrollMarketplace', action: 'scroll', args: ['1', '400-800'], why: 'one scroll down Marketplace (400-800 px)', recorded: `${RUN} step 06: +783 px` },
     {
       id: 'openListings',
       action: 'openAny',
       args: ['/marketplace/item/', '1-3'],
-      why: 'open 1-3 listings, read each and come back (Listaro stage 2: 2-4)',
+      why: 'open 1-3 listings, read each and come back (stage 2: 2-4)',
       expect: { answers: [{ call: 'MarketplacePDPContainerQuery', says: [{ answer: 'data.viewer.marketplace_product_details_page', present: true }] }] },
       clicks: true
     }

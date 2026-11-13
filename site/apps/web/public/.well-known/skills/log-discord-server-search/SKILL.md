@@ -1,6 +1,6 @@
 ---
 name: log-discord-server-search
-description: "Finding a conversation in a Discord server. A log play (docs/useCases/discord/serverSearch.md): Find what someone said in a server, or a conversation matt had there, with Discord's own search across every channel, forum post and thread at once, then read around it. This is how \"the conversation I had with Paul about OpenAI widgets in the paulchrisluke server\" is found in one search instead of reading a channel back hundreds of messages. This page reads and sends nothing."
+description: "Finding a conversation in a Discord server. A log play (docs/useCases/discord/serverSearch.md): Find what someone said in a server, or a conversation matt had there, with Discord's own search across every channel, forum post and thread at once, then read around it. This is how \"the conversation I had with <someone> about <a topic> in the <server> server\" is found in one search instead of reading a channel back hundreds of messages. This page reads and sends nothing."
 when_to_use: "Use when matt asks for this, in words like: \"find the conversation I had with <someone> in <server> about <thing>\", \"what did <someone> say in <server> about <thing>\", \"search <server> for <words>\", \"read through the <server> server and find <thing>\""
 metadata:
   summary: "Finding a conversation in a Discord server"
@@ -12,7 +12,7 @@ This is the log play `discord/serverSearch`. Before anything else, call the log 
 
 Draft every message from that person's own thread and matt's real replies (`voice` with no text, `search`), never from memory, and never send two that read alike (`sameAsSent`).
 
-Find what someone said in a server, or a conversation matt had there, with Discord's own search across every channel, forum post and thread at once, then read around it. This is how "the conversation I had with Paul about OpenAI widgets in the paulchrisluke server" is found in one search instead of reading a channel back hundreds of messages. This page reads and sends nothing.
+Find what someone said in a server, or a conversation matt had there, with Discord's own search across every channel, forum post and thread at once, then read around it. This is how "the conversation I had with <someone> about <a topic> in the <server> server" is found in one search instead of reading a channel back hundreds of messages. This page reads and sends nothing.
 
 How the owner asks for it: "find the conversation I had with <someone> in <server> about <thing>", "what did <someone> say in <server> about <thing>", "search <server> for <words>", "read through the <server> server and find <thing>"
 

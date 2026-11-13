@@ -57,6 +57,8 @@ export const runsAndRea = {
       { kind: 'string', file: 'src/rea/facebookClient/helpers/domainOf.ts', includes: 'reels' },
       { kind: 'string', file: 'src/rea/facebookClient/helpers/domainOf.ts', includes: 'login' },
       { kind: 'string', file: captureCli, includes: '../../../docs/platforms/facebook' },
+      { kind: 'uses', file: facebook, name: 'redactDoc' },
+      { kind: 'symbol', file: 'src/privacy/redact/index.ts', name: 'redactDoc' },
     ],
     'REQ-RUNS-06': [
       { kind: 'symbol', file: facebook, name: 'indexRunModules' },

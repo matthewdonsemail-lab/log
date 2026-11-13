@@ -23,7 +23,7 @@ Seen 1 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/host/20261024T222706_61593981307720**, step 15: click e45: 200, 652 ms
+**runs/host/20261024T222706_<userId:1>**, step 15: click e45: 200, 652 ms
 
 Sent:
 
@@ -55,7 +55,7 @@ Answered:
     "xfb_two_factor_authenticity_wizard_trigger_nonce": {
       "two_step_idr_wizard_input": {
         "security_token": "(taken out)",
-        "external_flow_id": "2174560913439173"
+        "external_flow_id": "<id:1>"
       }
     }
   },

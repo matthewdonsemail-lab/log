@@ -30,7 +30,7 @@ Seen 14 time(s) in 8 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/warmup/20261023T074930_61594063207669**, expected MAWVerifyThreadCutover_ContactCapabilities2Query: sent: 200, 729 ms
+**runs/warmup/20261023T074930_<userId:1>**, expected MAWVerifyThreadCutover_ContactCapabilities2Query: sent: 200, 729 ms
 
 Sent:
 
@@ -59,7 +59,7 @@ Sent:
     "isBizWeb": false,
     "isLinksInPostEnabled": false,
     "privacySelectorRenderLocation": "COMET_COMPOSER",
-    "profileID": "61594063207669",
+    "profileID": "<userId:1>",
     "scale": 1,
     "serviceNames": [
       "CROSS_POSTING_SETTING"
@@ -83,14 +83,14 @@ Answered:
       "actor": {
         "__typename": "User",
         "__isProfile": "User",
-        "id": "61594063207669",
+        "id": "<userId:1>",
         "has_professional_features_for_watch": false,
-        "name": "Bethlehem Trash",
+        "name": "<name:1>",
         "profile_picture": {
-          "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg (454 chars)"
+          "uri": "<mediaUrl> (454 chars)"
         },
-        "url": "https://www.facebook.com/profile.php?id=61594063207669",
-        "short_name": "Bethlehem",
+        "url": "https://www.facebook.com/profile.php?id=<userId:1>",
+        "short_name": "<name:2>",
         "viewer": {
           "is_additional_profile_plus": false,
           "is_primary_profile_plus": false,
@@ -130,13 +130,13 @@ Answered:
       },
       "has_outstanding_conflicts_for_privacy_merge": true,
       "privacy_merge_metadata": {
-        "id": "122126854887468773",
+        "id": "<id:1>",
         "has_seen_privacy_merge_disclaimer": false,
         "has_resolved_conflicting_privacy_settings": false
       },
       "privacy_conflict_ui_to_display": "DEFAULT_RESOLUTION_TOAST",
       "privacy_merge_conflict_resolution_suggested_selected_option": {
-        "name": "Friends",
+        "name": "<name:3>",
         "privacy_row_input": {
           "allow": "(0 items)",
           "base_state": "FRIENDS",
@@ -144,7 +144,7 @@ Answered:
           "privacy_targeting": null,
           "tag_expansion_state": "UNSPECIFIED"
         },
-        "post_param": "291667064279714",
+        "post_param": "<id:2>",
         "id": "edddefcfe1b499ec9b1a11e02944e2b0"
       },
       "format_merge_milestone_for_user": "M1"
@@ -268,7 +268,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261111T081957_61593610473511**, step 10: press Escape: 200, 1068 ms
+**runs/inspect/20261111T081957_<userId:2>**, step 10: press Escape: 200, 1068 ms
 
 Sent:
 
@@ -297,7 +297,7 @@ Sent:
     "isBizWeb": false,
     "isLinksInPostEnabled": false,
     "privacySelectorRenderLocation": "COMET_COMPOSER",
-    "profileID": "61593610473511",
+    "profileID": "<userId:2>",
     "scale": 1,
     "serviceNames": [
       "CROSS_POSTING_SETTING"
@@ -321,14 +321,14 @@ Answered:
       "actor": {
         "__typename": "User",
         "__isProfile": "User",
-        "id": "61593610473511",
+        "id": "<userId:2>",
         "has_professional_features_for_watch": false,
-        "name": "Halima Nxkdnb",
+        "name": "<name:4>",
         "profile_picture": {
-          "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t1.30497-1/453178253_471506465671661_2781666950760530985_n.png (403 chars)"
+          "uri": "<mediaUrl> (403 chars)"
         },
-        "url": "https://www.facebook.com/profile.php?id=61593610473511",
-        "short_name": "Halima",
+        "url": "https://www.facebook.com/profile.php?id=<userId:2>",
+        "short_name": "<name:5>",
         "viewer": {
           "is_additional_profile_plus": false,
           "is_primary_profile_plus": false,
@@ -371,7 +371,7 @@ Answered:
       "privacy_merge_metadata": null,
       "privacy_conflict_ui_to_display": "DEFAULT_RESOLUTION_TOAST",
       "privacy_merge_conflict_resolution_suggested_selected_option": {
-        "name": "Friends",
+        "name": "<name:3>",
         "privacy_row_input": {
           "allow": "(0 items)",
           "base_state": "FRIENDS",
@@ -379,7 +379,7 @@ Answered:
           "privacy_targeting": null,
           "tag_expansion_state": "UNSPECIFIED"
         },
-        "post_param": "291667064279714",
+        "post_param": "<id:2>",
         "id": "08985f9e673bed42b78e7b9130202447"
       },
       "format_merge_milestone_for_user": "M1"

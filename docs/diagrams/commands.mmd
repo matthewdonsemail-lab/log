@@ -7,6 +7,7 @@ flowchart TB
   terminal["terminal only"]
   subgraph g_any["Any platform"]
     c_launch["launch"]
+    c_console["console"]
     c_adsPower["adsPower"]
     c_localAccount["localAccount"]
     c_inspect["inspect"]
@@ -131,6 +132,8 @@ flowchart TB
   end
   cli --> c_launch
   c_launch -.- terminal
+  cli --> c_console
+  mcp --> c_console
   cli --> c_listings
   mcp --> c_listings
   cli --> c_listing

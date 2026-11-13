@@ -10,7 +10,7 @@
 | Path | `/svc/shreddit/user-drawer-button-logged-in` |
 | Sends | — |
 | Reads | — |
-| Called from | `runs/inspect/20261025T124815_MaleficentTry8338/script1.js:9 anonymous` |
+| Called from | `runs/inspect/20261025T124815_<name:2>/script1.js:9 anonymous` |
 | rea | `ev_4fd054c78047e8b7fbb4b5c4a6f91280f44d90e4a4a2215e78067135123077cc` |
 
 Seen 7 time(s) in 1 run(s).
@@ -21,7 +21,7 @@ Seen 7 time(s) in 1 run(s).
 | inspect | step 3: goto /r/AskReddit/ | 1 | 200 | 691 ms | 4541 ms | — |
 | inspect | step 5: goto /search/ | 1 | 200 | 343 ms | 1196 ms | — |
 | inspect | step 6: goto /r/AskReddit/comments/1x8sr8s/whats_a_high_paying_but_soul_crushing_career_th | 1 | 200 | 848 ms | 985 ms | — |
-| inspect | step 10: goto /user/Maleficent-Try-8338/ | 1 | 200 | 359 ms | 1181 ms | — |
+| inspect | step 10: goto /user/<name:1>/ | 1 | 200 | 359 ms | 1181 ms | — |
 | inspect | step 11: goto /notifications | 1 | 200 | 341 ms | 1555 ms | — |
 | inspect | step 12: goto /r/popular/ | 1 | 200 | 402 ms | 759 ms | — |
 
@@ -29,7 +29,7 @@ Seen 7 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 1: goto /: 200, 1057 ms
+**runs/inspect/20261025T124815_<name:2>**, step 1: goto /: 200, 1057 ms
 
 Sent:
 
@@ -43,7 +43,7 @@ Answered:
 "<span class=\"inline-flex items-center justify-center w-xl h-xl relative \" rpl avatar flip>\n    \n    <span rpl class=\"inline-block rounded-full  relative [&>:first-child]:h-full [&>:first-child]:w-full [&>:first-child]:mb-0 [&>:first-child]:rounded-[inherit] h-full w-full\n    [&>:first-child]:overflow-hidden [&>:first-child]:max-h-full\">\n    <img src=\"https://www.redditstatic.com/avatars/defaults/v… (867 chars)"
 ```
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 3: goto /r/AskReddit/: 200, 691 ms
+**runs/inspect/20261025T124815_<name:2>**, step 3: goto /r/AskReddit/: 200, 691 ms
 
 Sent:
 
@@ -57,7 +57,7 @@ Answered:
 "<span class=\"inline-flex items-center justify-center w-xl h-xl relative \" rpl avatar flip>\n    \n    <span rpl class=\"inline-block rounded-full  relative [&>:first-child]:h-full [&>:first-child]:w-full [&>:first-child]:mb-0 [&>:first-child]:rounded-[inherit] h-full w-full\n    [&>:first-child]:overflow-hidden [&>:first-child]:max-h-full\">\n    <img src=\"https://www.redditstatic.com/avatars/defaults/v… (867 chars)"
 ```
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 5: goto /search/: 200, 343 ms
+**runs/inspect/20261025T124815_<name:2>**, step 5: goto /search/: 200, 343 ms
 
 Sent:
 

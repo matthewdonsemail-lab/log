@@ -10,7 +10,7 @@
 | Path | `discord.com/api/users/@me/collectibles-marketing` |
 | Sends | — |
 | Reads | `marketings.0`, `marketings.2` |
-| Called from | `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1036.js:1 parse`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1245.js:2 anonymous` |
+| Called from | `runs/inspect/20261030T222341_<name:1>/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_<name:1>/script1036.js:1 parse`, `runs/inspect/20261030T222341_<name:1>/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_<name:1>/script1245.js:2 anonymous` |
 | rea | `ev_065e7ad37dcb5911d240f9de7d6e2882220c5a8d7c025d92b46a23de59cf297c` |
 
 Seen 6 time(s) in 4 run(s).
@@ -28,7 +28,7 @@ Seen 6 time(s) in 4 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder**, step 2: snapshot: 200, 394 ms
+**runs/inspect/20261030T222341_<name:1>**, step 2: snapshot: 200, 394 ms
 
 Sent:
 
@@ -50,7 +50,7 @@ Answered:
       "type": 4,
       "version": 102,
       "title": "Día de Muertos",
-      "body": "Ofrendas, calaveras, and more to celebrate the ones who came before. Now in the Shop.",
+      "body": "<messageText>",
       "asset": "https://cdn.discordapp.com/media/v1/collectibles-shop/454ee5f4704cd6145ef6e9705e52cec037407cd90227d5489855942d778cda2a",
       "dismissible_content": 422,
       "ref_target_background": null
@@ -58,8 +58,8 @@ Answered:
     "2": {
       "type": 2,
       "version": 102,
-      "title": "Give your profile a fresh look",
-      "body": "Check out the latest Avatar Decorations, Nameplates, Profile Effects, and Profile Frames in the Shop.",
+      "title": "<messageText>",
+      "body": "<messageText>",
       "asset": "https://cdn.discordapp.com/media/v1/collectibles-shop/793148d58f5126ac9bfd6d13fcd2549470d9223173823ee5005968ddb89f25c8",
       "popout_asset": "https://cdn.discordapp.com/media/v1/collectibles-shop/02d7874003e7113ede42b2956f9ebb92f41055a9a3b37c823d56330fb97413ef",
       "revert_text_color": true
@@ -68,7 +68,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder**, step 1: goto /login: 200, 328 ms
+**runs/inspect/20261028T074137_<name:1>**, step 1: goto /login: 200, 328 ms
 
 Sent:
 
@@ -89,8 +89,8 @@ Answered:
     "0": {
       "type": 4,
       "version": 101,
-      "title": "The Pumpkin King has arrived!",
-      "body": "Tim Burton's The Nightmare Before Christmas is here. Get ready for tricks and treats! ©Disney",
+      "title": "<messageText>",
+      "body": "<messageText>",
       "asset": "https://cdn.discordapp.com/media/v1/collectibles-shop/8d21487bb494ffa1def861801b71b2cbb995236910a1da6d69fc167a2227193e",
       "dismissible_content": 422,
       "ref_target_background": {
@@ -120,8 +120,8 @@ Answered:
     "2": {
       "type": 2,
       "version": 101,
-      "title": "Give your profile a fresh look",
-      "body": "Check out the latest Avatar Decorations, Nameplates, Profile Effects, and Profile Frames in the Shop.",
+      "title": "<messageText>",
+      "body": "<messageText>",
       "asset": "https://cdn.discordapp.com/media/v1/collectibles-shop/793148d58f5126ac9bfd6d13fcd2549470d9223173823ee5005968ddb89f25c8",
       "popout_asset": "https://cdn.discordapp.com/media/v1/collectibles-shop/02d7874003e7113ede42b2956f9ebb92f41055a9a3b37c823d56330fb97413ef",
       "revert_text_color": true
@@ -130,7 +130,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261028T065202_sourcedandsoldtothehighestbidder**, step 1: goto /channels/@me/<id>: 200, 334 ms
+**runs/inspect/20261028T065202_<name:1>**, step 1: goto /channels/@me/<id>: 200, 334 ms
 
 Sent:
 
@@ -151,8 +151,8 @@ Answered:
     "0": {
       "type": 4,
       "version": 101,
-      "title": "The Pumpkin King has arrived!",
-      "body": "Tim Burton's The Nightmare Before Christmas is here. Get ready for tricks and treats! ©Disney",
+      "title": "<messageText>",
+      "body": "<messageText>",
       "asset": "https://cdn.discordapp.com/media/v1/collectibles-shop/8d21487bb494ffa1def861801b71b2cbb995236910a1da6d69fc167a2227193e",
       "dismissible_content": 422,
       "ref_target_background": {
@@ -182,8 +182,8 @@ Answered:
     "2": {
       "type": 2,
       "version": 101,
-      "title": "Give your profile a fresh look",
-      "body": "Check out the latest Avatar Decorations, Nameplates, Profile Effects, and Profile Frames in the Shop.",
+      "title": "<messageText>",
+      "body": "<messageText>",
       "asset": "https://cdn.discordapp.com/media/v1/collectibles-shop/793148d58f5126ac9bfd6d13fcd2549470d9223173823ee5005968ddb89f25c8",
       "popout_asset": "https://cdn.discordapp.com/media/v1/collectibles-shop/02d7874003e7113ede42b2956f9ebb92f41055a9a3b37c823d56330fb97413ef",
       "revert_text_color": true

@@ -82,7 +82,7 @@ describe('AssemblyAI client', () => {
 
 describe('the conversation store', () => {
   const root = () => join(dir, 'transcripts')
-  const conversation = (text: string): Conversation => ({ platform: 'twitter', account: 'matt', conversationId: '1:2', box: 'xchat', with: ['nefer'], messages: [{ id: '10', at: null, from: 'nefer', fromMe: false, text }] })
+  const conversation = (text: string): Conversation => ({ platform: 'twitter', account: 'matt', conversationId: '1:2', box: 'xchat', with: ['handle_n1'], messages: [{ id: '10', at: null, from: 'handle_n1', fromMe: false, text }] })
 
   test('a voice note marker becomes what was said, and the saved-path marker goes', () => {
     expect(withTranscripts('(audio: v.m4a) (audio saved: C:\\x\\v.m4a)', () => transcript('h', 'call me "tomorrow"'))).toBe(`(voice note: "call me 'tomorrow'")`)

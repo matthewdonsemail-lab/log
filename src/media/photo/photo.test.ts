@@ -36,7 +36,7 @@ describe('photo helpers', () => {
     expect(decodeDataUrl('data:image/png,notbase64')).toBeNull()
   })
 
-  test('variationParams stays inside Listaro ranges', () => {
+  test('variationParams stays inside the tested ranges', () => {
     const rng = seeded(7)
     for (let i = 0; i < 50; i++) {
       const p = variationParams(rng)

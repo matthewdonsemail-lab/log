@@ -44,7 +44,7 @@ Answered:
   "__ar": 1,
   "rid": "AZZp8jZxh0mBF7xWvkU9iR_",
   "payload": null,
-  "lid": "7704020382008127603"
+  "lid": "<id:1>"
 }
 ```
 
@@ -66,7 +66,7 @@ Answered:
   "__ar": 1,
   "rid": "AcScNTtzGNxYQLjFnYFI5if",
   "payload": null,
-  "lid": "7704006797227472939"
+  "lid": "<id:2>"
 }
 ```
 
@@ -88,7 +88,7 @@ Answered:
   "__ar": 1,
   "rid": "A53xPGN4JZq8dDBDTr03yRD",
   "payload": null,
-  "lid": "7704006912815245066"
+  "lid": "<id:3>"
 }
 ```
 

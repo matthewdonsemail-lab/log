@@ -31,7 +31,7 @@ const anchors: RequirementAnchors = {
     { kind: 'value', file: LIFECYCLE, name: 'WARMUP_ACTIVITIES', equals: FLOWS.map(([activity]) => activity) },
     { kind: 'symbol', file: SCRIPTS, name: 'ACTIVITY_SCRIPTS' },
     ...FLOWS.map(([activity, flow]) => ({ kind: 'value' as const, file: SCRIPTS, name: 'ACTIVITY_SCRIPTS', path: [activity, 'flow'], equals: flow })),
-    { kind: 'string', file: SCRIPTS, includes: 'account-warmup.ts' },
+    { kind: 'string', file: SCRIPTS, includes: 'stage 1' },
   ],
   'REQ-WARMUP-02': [
     { kind: 'symbol', file: STAGES, name: 'record' },

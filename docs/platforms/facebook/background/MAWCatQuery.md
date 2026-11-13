@@ -24,7 +24,7 @@ Seen 2 time(s) in 2 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261024T164523_61593843527201**, step 8: wait 5s: 200, 418 ms
+**runs/inspect/20261024T164523_<userId:1>**, step 8: wait 5s: 200, 418 ms
 
 Sent:
 
@@ -53,7 +53,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261024T060921_61594063207669**, scroll: +515px in 13 wheel steps, 656 ms: 200, 365 ms
+**runs/inspect/20261024T060921_<userId:2>**, scroll: +515px in 13 wheel steps, 656 ms: 200, 365 ms
 
 Sent:
 
@@ -94,4 +94,4 @@ No machine waits for it or reads it: it is background traffic and never confirms
 
 ## What can go wrong
 
-On 2026-10-24 (61594063207669, inspect 20261024T060921) it answered HTTP 200 with `error 1357053` "Please review your account" ("Your account is currently restricted from performing this action") and `redirectTo: /checkpoint/...`. That is a checkpoint: the account's next page load goes to `/checkpoint`, which the page states `checkpointStart` / `checkpoint` take from there. Nothing is retried; the run reads the checkpoint page next.
+On 2026-10-24 (<userId:2>, inspect 20261024T060921) it answered HTTP 200 with `error 1357053` "Please review your account" ("Your account is currently restricted from performing this action") and `redirectTo: /checkpoint/...`. That is a checkpoint: the account's next page load goes to `/checkpoint`, which the page states `checkpointStart` / `checkpoint` take from there. Nothing is retried; the run reads the checkpoint page next.

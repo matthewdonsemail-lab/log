@@ -10,7 +10,7 @@ export function safeAccount(a: FacebookAccount): Record<string, unknown> {
 }
 
 export function renderAccountsTable(accounts: FacebookAccount[]): string {
-  if (accounts.length === 0) return "No FACEBOOK socialAccounts in Twenty yet. docs/vendors/README.md says how to add one.";
+  if (accounts.length === 0) return "No FACEBOOK socialAccounts in Twenty yet. Add one with log launch.";
   return renderTable(
     ["Account", "Status", "Home", "Proxy", "Exit", "Cookies", "May run"],
     accounts.map((a) => {

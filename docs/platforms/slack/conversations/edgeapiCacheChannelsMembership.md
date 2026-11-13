@@ -34,7 +34,7 @@ Sent:
     "fp": "6f",
     "_x_num_retries": "0"
   },
-  "body": "{\"token\":\"xoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\",\"channel\":\"C0C4L7RSTGX\",\"users\":[\"U0C4L7RF7HD\"],\"as_admin\":false}"
+  "body": "{\"token\":\"<slackToken>\",\"channel\":\"<channelId:1>\",\"users\":[\"<userId:1>\"],\"as_admin\":false}"
 }
 ```
 
@@ -42,9 +42,9 @@ Answered:
 
 ```json
 {
-  "channel": "C0C4L7RSTGX",
+  "channel": "<channelId:1>",
   "members": [
-    "U0C4L7RF7HD"
+    "<userId:1>"
   ],
   "ok": true
 }

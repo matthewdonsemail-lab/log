@@ -37,7 +37,7 @@ Sent:
     "_x_gantry": "true",
     "_x_desktop_ia": "4",
     "_x_csid": "qDE7gQoj5kY",
-    "slack_route": "T0C4VCD06MR",
+    "slack_route": "<teamId:1>",
     "_x_version_ts": "1793684253",
     "_x_foreground": "true",
     "_x_frontend_build_type": "current",
@@ -45,7 +45,7 @@ Sent:
     "_x_num_retries": "0"
   },
   "body": {
-    "------WebKitFormBoundarysrJCASwVBTHQMGoI\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\nxoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\r\n------WebKitFormBoundarysrJCASwVBTHQMGoI\r\nContent-Disposition: form-data; name=\"file_id\"\r\n\r\nF0CDBB09HT5\r\n------WebKitFormBoundarysrJCASwVBTHQMGoI\r\nContent-Disposition: form-data; name=\"_x_reason\"\r\n\r\nfile-download-allowed-store.ConditionalFetchManager.fetch\r\n------WebKitFor… (732 chars)"
+    "------WebKitFormBoundarysrJCASwVBTHQMGoI\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\n<slackToken>\r\n------WebKitFormBoundarysrJCASwVBTHQMGoI\r\nContent-Disposition: form-data; name=\"file_id\"\r\n\r\n<fileId:1>\r\n------WebKitFormBoundarysrJCASwVBTHQMGoI\r\nContent-Disposition: form-data; name=\"_x_reason\"\r\n\r\nfile-download-allowed-store.ConditionalFetchManager.fetch\r\n------WebKitFor… (732 chars)"
   }
 }
 ```
@@ -70,7 +70,7 @@ Sent:
     "_x_gantry": "true",
     "_x_desktop_ia": "4",
     "_x_csid": "Omg2iVUkYDE",
-    "slack_route": "T0C4VCD06MR",
+    "slack_route": "<teamId:1>",
     "_x_version_ts": "1793684253",
     "_x_foreground": "true",
     "_x_frontend_build_type": "current",
@@ -78,7 +78,7 @@ Sent:
     "_x_num_retries": "0"
   },
   "body": {
-    "------WebKitFormBoundaryFMxXWFxA3yAyd2Hd\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\nxoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\r\n------WebKitFormBoundaryFMxXWFxA3yAyd2Hd\r\nContent-Disposition: form-data; name=\"file_id\"\r\n\r\nF0817A32Y1E\r\n------WebKitFormBoundaryFMxXWFxA3yAyd2Hd\r\nContent-Disposition: form-data; name=\"_x_reason\"\r\n\r\nfile-download-allowed-store.ConditionalFetchManager.fetch\r\n------WebKitFor… (732 chars)"
+    "------WebKitFormBoundaryFMxXWFxA3yAyd2Hd\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\n<slackToken>\r\n------WebKitFormBoundaryFMxXWFxA3yAyd2Hd\r\nContent-Disposition: form-data; name=\"file_id\"\r\n\r\n<fileId:2>\r\n------WebKitFormBoundaryFMxXWFxA3yAyd2Hd\r\nContent-Disposition: form-data; name=\"_x_reason\"\r\n\r\nfile-download-allowed-store.ConditionalFetchManager.fetch\r\n------WebKitFor… (732 chars)"
   }
 }
 ```

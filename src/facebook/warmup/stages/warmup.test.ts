@@ -23,7 +23,7 @@ function run(outcomes: Partial<Record<WarmupActivity, ActivityOutcome>> = {}, ac
 }
 
 describe('the warm-up machine (rule 35)', () => {
-  test("runs Listaro's five activities in its stage order, one after another", async () => {
+  test("runs the five warm-up activities in stage order, one after another", async () => {
     const { actor, ran } = run()
     const output = await toPromise(actor)
     expect(ran).toEqual(['feedBrowse', 'marketplaceBrowse', 'createAccessCheck', 'sellingVisit', 'messagesVisit'])
@@ -66,7 +66,7 @@ describe('the warm-up machine (rule 35)', () => {
 })
 
 describe('the recording scripts', () => {
-  test("follow Listaro's stages, and only the likes act on Facebook (rule 8)", () => {
+  test("follow the stages, and only the likes act on Facebook (rule 8)", () => {
     expect(SCRIPTS_IN_ORDER.map((s) => s.flow)).toEqual(['warmupFeedBrowse', 'warmupMarketplaceBrowse', 'warmupCreateAccessCheck', 'warmupSellingVisit', 'warmupMessagesVisit'])
     const live = SCRIPTS_IN_ORDER.flatMap((s) => s.steps.filter((x) => x.live).map((x) => `${s.activity}:${x.action} ${x.args.join(' ')}`))
     expect(live).toEqual(['feedBrowse:clickAny button ^Like$ 2-3'])

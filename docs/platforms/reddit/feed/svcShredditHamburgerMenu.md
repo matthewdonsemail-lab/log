@@ -10,7 +10,7 @@
 | Path | `/svc/shreddit/hamburger-menu` |
 | Sends | — |
 | Reads | — |
-| Called from | `runs/inspect/20261025T124815_MaleficentTry8338/script1.js:840 anonymous` |
+| Called from | `runs/inspect/20261025T124815_<name:1>/script1.js:840 anonymous` |
 | rea | `ev_f3e179f6ef54fb9b22663e4e58be10f0f0c4b81d293c565998a743f4094771b7` |
 
 Seen 1 time(s) in 1 run(s).
@@ -23,7 +23,7 @@ Seen 1 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 11: goto /notifications: 200, 306 ms
+**runs/inspect/20261025T124815_<name:1>**, step 11: goto /notifications: 200, 306 ms
 
 Sent:
 

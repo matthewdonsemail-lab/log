@@ -42,3 +42,15 @@ What log-cli is built to do, one page each, by platform. Each page gives the ide
 - **Pacing:** each account has its own governor, local hours and limits.
 
 A new use case gets its own page here, under its platform: `docs/useCases/<platform>/<useCase>.md`. The log MCP serves each page as `getGuide({ useCase: "<platform>/<useCase>" })`, names it on every tool the page names, and the pre-commit review asks SubQ whether a session left a page stale or work uncovered ([MCP server](../specs/mcpServer.md)). Pages describe the method, never the owner's own accounts, people, prices, links or files: examples use placeholders like `<account>`, `<role link>` and `@someone`.
+
+### Private blocks
+
+Wrap anything that must not reach the website or the installable skills in a private block:
+
+```markdown
+<!-- private -->
+The owner's own words or an anecdote that only makes sense to the team.
+<!-- /private -->
+```
+
+`bun run skills:build` (`scripts/docs/syncSiteSkills.mjs`) drops every private block before it writes `site/apps/web/public/.well-known/skills/` and `.claude/skills/`, and the site docs sync drops them from the docs site. A marker left open fails the build. The skill sync then runs the privacy scan (`src/privacy/scan`) on what it writes and fails on a hit (in pre-commit, `--staged` scans only the skills whose source page is staged; pre-push scans them all). The source page is still in this public repo, so a private block is for context that is fine to be public but not useful on the site: real people's names, handles, DMs and money never go in a tracked file at all, private block or not. Use an anonymised example instead (rule 178). `bun run check:privacy` catches secrets, private hosts, emails, phones and the terms in your private denylist (`~/.logCli/privacy/denylist.txt`, or `LOG_PRIVACY_DENYLIST`).

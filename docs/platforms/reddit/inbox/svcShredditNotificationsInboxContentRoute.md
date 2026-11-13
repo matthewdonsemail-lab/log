@@ -10,7 +10,7 @@
 | Path | `/svc/shreddit/notifications-inbox-content/route` |
 | Sends | — |
 | Reads | — |
-| Called from | `runs/inspect/20261025T124815_MaleficentTry8338/script103.js:49 statement` |
+| Called from | `runs/inspect/20261025T124815_<name:1>/script103.js:49 statement` |
 | rea | `ev_871cf656c9e276b908e8b24ffabbf94776e9772226560746ce79ee8d90edb2da` |
 
 Seen 2 time(s) in 1 run(s).
@@ -23,7 +23,7 @@ Seen 2 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 11: goto /notifications: 200, 382 ms
+**runs/inspect/20261025T124815_<name:1>**, step 11: goto /notifications: 200, 382 ms
 
 Sent:
 

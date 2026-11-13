@@ -25,7 +25,7 @@ Seen 3 time(s) in 2 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261023T045453_61594063207669**, step 7: goto /: 200, 1073 ms
+**runs/inspect/20261023T045453_<userId:2>**, step 7: goto /: 200, 1073 ms
 
 Sent:
 
@@ -39,7 +39,7 @@ Sent:
     "privacySelectorRenderLocation": "COMET_STREAM",
     "renderLocation": "timeline",
     "scale": 1,
-    "userID": "61556829712306",
+    "userID": "<userId:1>",
     "__relay_internal__pv__GHLShouldChangeSponsoredDataFieldNamerelayprovider": true,
     "__relay_internal__pv__WorkCometIsEmployeeGKProviderrelayprovider": false,
     "__relay_internal__pv__GroupsCometGroupChatLazyLoadLastMessageSnippetrelayprovider": false,
@@ -63,11 +63,11 @@ Answered:
       "highlight_units_section": null,
       "delegate_page": null,
       "profile_info_review_unit": null,
-      "id": "61556829712306",
+      "id": "<userId:1>",
       "profile_contextual_unit": null,
-      "message_box_id": "61556829712306",
+      "message_box_id": "<userId:1>",
       "is_secure_thread": false,
-      "message_capabilities2_str": "252061941156610305",
+      "message_capabilities2_str": "<id:1>",
       "is_od_cutover_eligible": false,
       "profile_intelligence_layer_card": null,
       "profile_safety_info_renderer": null,
@@ -90,7 +90,7 @@ Answered:
                 "text": "Photos"
               },
               "subtitle": null,
-              "url": "https://www.facebook.com/profile.php?id=61556829712306&sk=photos",
+              "url": "https://www.facebook.com/profile.php?id=<userId:1>&sk=photos",
               "id": "cHJvZmlsZV90aWxlX3NlY3Rpb246NjE1NTY4Mjk3MTIzMDY6cGhvdG9zOnByb2ZpbGVfdGltZWxpbmU6Mzo3",
               "__typename": "ProfileTileSection"
             },
@@ -111,7 +111,7 @@ Answered:
         "aggregated_ranges": [],
         "ranges": [],
         "color_ranges": [],
-        "text": "See more about Tadele"
+        "text": "<messageText>"
       },
       "aux_banner": null,
       "posts_tab_mentions_contextual_message": null,

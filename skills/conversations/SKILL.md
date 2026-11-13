@@ -7,7 +7,7 @@ description: Store and manage buyers' Marketplace conversations in Twenty (rule 
 
 A buyer who writes about a listing is an `agencyConversation` on that
 listing and account. Each message is an `agencyMessage` in it. The shape,
-and where each field came from (Listaro, blaster), is in
+and where each field came from, is in
 `docs/conversations.md`.
 
 ## Hard boundaries

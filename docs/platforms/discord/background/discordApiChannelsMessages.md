@@ -10,7 +10,7 @@
 | Path | `discord.com/api/channels/messages` |
 | Sends | `mobile_network_type`, `content`, `nonce`, `tts`, `flags` |
 | Reads | `type`, `content`, `mentions`, `mention_roles`, `attachments`, `embeds`, `timestamp`, `edited_timestamp`, `flags`, `components`, `id`, `channel_id` and 19 more |
-| Called from | `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1036.js:1 parse`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1245.js:2 anonymous` |
+| Called from | `runs/inspect/20261030T222341_<name:2>/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_<name:2>/script1036.js:1 parse`, `runs/inspect/20261030T222341_<name:2>/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_<name:2>/script1245.js:2 anonymous` |
 | rea | `ev_065e7ad37dcb5911d240f9de7d6e2882220c5a8d7c025d92b46a23de59cf297c` |
 
 Seen 12 time(s) in 2 run(s).
@@ -33,7 +33,7 @@ Seen 12 time(s) in 2 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261028T065202_sourcedandsoldtothehighestbidder**, step 1: goto /channels/@me/<id>: 200, 387 ms
+**runs/inspect/20261028T065202_<name:2>**, step 1: goto /channels/@me/<id>: 200, 387 ms
 
 Sent:
 
@@ -52,7 +52,7 @@ Answered:
 [
   {
     "type": 0,
-    "content": "deepseek-v4.1-flash (via opencode-go, hack-lite).",
+    "content": "<messageText>",
     "mentions": [],
     "mention_roles": [],
     "attachments": [],
@@ -61,11 +61,11 @@ Answered:
     "edited_timestamp": null,
     "flags": 0,
     "components": [],
-    "id": "1564892766478008361",
-    "channel_id": "1555254123148873869",
+    "id": "<id:1>",
+    "channel_id": "<channelId:1>",
     "author": {
-      "id": "1540556850045521930",
-      "username": "Jilly",
+      "id": "<id:2>",
+      "username": "<name:1>",
       "avatar": "fb80bbc029b4e9d1df8999fddb550687",
       "discriminator": "0902",
       "public_flags": 0,
@@ -87,7 +87,7 @@ Answered:
   },
   {
     "type": 0,
-    "content": "yo jilly quick one what model are you running on right now",
+    "content": "<messageText>",
     "mentions": [],
     "mention_roles": [],
     "attachments": [],
@@ -96,11 +96,11 @@ Answered:
     "edited_timestamp": null,
     "flags": 0,
     "components": [],
-    "id": "1564892584277581849",
-    "channel_id": "1555254123148873869",
+    "id": "<id:3>",
+    "channel_id": "<channelId:1>",
     "author": {
-      "id": "1434443116663930960",
-      "username": "sourcedandsoldtothehighestbidder",
+      "id": "<id:4>",
+      "username": "<name:2>",
       "avatar": "82e338d2355f93220637a3ec394ca3c4",
       "discriminator": "0",
       "public_flags": 0,
@@ -122,7 +122,7 @@ Answered:
       {
         "emoji": {
           "id": null,
-          "name": "👀"
+          "name": "<name:3>"
         },
         "count": 1,
         "count_details": {
@@ -139,7 +139,7 @@ Answered:
   },
   {
     "type": 0,
-    "content": "- **ACP is stdio-only.** There is no ACP port to tunnel — my live `opencode acp` process has its stdin/stdout owned by the AgentConnect supervisor. What's exposed is opencode's **HTTP API** (`:4096`), which is what `opencode attach` speaks. If your client needs literal ACP over the wire, I need to add a WebSocket↔stdio bridge (`wss://…/acp`) and your client must support a WS transport — say the wo… (918 chars)",
+    "content": "<messageText>",
     "mentions": [],
     "mention_roles": [],
     "attachments": [],
@@ -148,11 +148,11 @@ Answered:
     "edited_timestamp": null,
     "flags": 0,
     "components": [],
-    "id": "1555331207112171704",
-    "channel_id": "1555254123148873869",
+    "id": "<id:5>",
+    "channel_id": "<channelId:1>",
     "author": {
-      "id": "1540556850045521930",
-      "username": "Jilly",
+      "id": "<id:2>",
+      "username": "<name:1>",
       "avatar": "fb80bbc029b4e9d1df8999fddb550687",
       "discriminator": "0902",
       "public_flags": 0,
@@ -174,7 +174,7 @@ Answered:
   },
   {
     "type": 0,
-    "content": "Done — live and verified end-to-end.\n\n## Access\n\n| | |\n|---|---|\n| URL | `https://entered-journalist-intent-societies.trycloudflare.com` |\n| user | `jilly` |\n| pass | `1TVCwIEzS1jQuobYivlnaPoE` |\n\n```bash\nopencode attach https://entered-journalist-intent-societies.trycloudflare.com -u jilly -p 1TVCwIEzS1jQuobYivlnaPoE\n```\n\nVerified through the public URL: no auth → `401`, with auth → `200` (`/glob… (1324 chars)",
+    "content": "<messageText>",
     "mentions": [],
     "mention_roles": [],
     "attachments": [],
@@ -183,11 +183,11 @@ Answered:
     "edited_timestamp": null,
     "flags": 0,
     "components": [],
-    "id": "1555331205162082366",
-    "channel_id": "1555254123148873869",
+    "id": "<id:6>",
+    "channel_id": "<channelId:1>",
     "author": {
-      "id": "1540556850045521930",
-      "username": "Jilly",
+      "id": "<id:2>",
+      "username": "<name:1>",
       "avatar": "fb80bbc029b4e9d1df8999fddb550687",
       "discriminator": "0902",
       "public_flags": 0,
@@ -218,11 +218,11 @@ Answered:
     "edited_timestamp": "2026-10-01T21:30:50.489000+00:00",
     "flags": 0,
     "components": [],
-    "id": "1555331155610304674",
-    "channel_id": "1555254123148873869",
+    "id": "<id:7>",
+    "channel_id": "<channelId:1>",
     "author": {
-      "id": "1540556850045521930",
-      "username": "Jilly",
+      "id": "<id:2>",
+      "username": "<name:1>",
       "avatar": "fb80bbc029b4e9d1df8999fddb550687",
       "discriminator": "0902",
       "public_flags": 0,
@@ -244,7 +244,7 @@ Answered:
   },
   {
     "type": 0,
-    "content": "💬 Allow this write to shared agent memory from a private session?\nwriteMemory → acp-tunnel.md\nContent: \"--- description: Jilly's remote-access tunnel to the live opencode server (cloudflared quick tunnel + nginx basic auth) — how it's built, where the files are, how to restart type: project name: acp-t…\"\n✅ allow_session",
+    "content": "<messageText>",
     "mentions": [],
     "mention_roles": [],
     "attachments": [],
@@ -253,11 +253,11 @@ Answered:
     "edited_timestamp": "2026-10-01T21:30:43.149000+00:00",
     "flags": 0,
     "components": [],
-    "id": "1555331104053927979",
-    "channel_id": "1555254123148873869",
+    "id": "<id:8>",
+    "channel_id": "<channelId:1>",
     "author": {
-      "id": "1540556850045521930",
-      "username": "Jilly",
+      "id": "<id:2>",
+      "username": "<name:1>",
       "avatar": "fb80bbc029b4e9d1df8999fddb550687",
       "discriminator": "0902",
       "public_flags": 0,
@@ -281,15 +281,15 @@ Answered:
 ]
 ```
 
-**runs/inspect/20261028T065202_sourcedandsoldtothehighestbidder**, step 4: press Enter: 200, 398 ms
+**runs/inspect/20261028T065202_<name:2>**, step 4: press Enter: 200, 398 ms
 
 Sent:
 
 ```json
 {
   "mobile_network_type": "unknown",
-  "content": "nice one jilly and how do you get told when someone messages you here",
-  "nonce": "1564895276756369408",
+  "content": "<messageText>",
+  "nonce": "<id:9>",
   "tts": false,
   "flags": 0
 }
@@ -300,7 +300,7 @@ Answered:
 ```json
 {
   "type": 0,
-  "content": "nice one jilly and how do you get told when someone messages you here",
+  "content": "<messageText>",
   "mentions": [],
   "mention_roles": [],
   "attachments": [],
@@ -309,11 +309,11 @@ Answered:
   "edited_timestamp": null,
   "flags": 0,
   "components": [],
-  "id": "1564895272704802847",
-  "channel_id": "1555254123148873869",
+  "id": "<id:10>",
+  "channel_id": "<channelId:1>",
   "author": {
-    "id": "1434443116663930960",
-    "username": "sourcedandsoldtothehighestbidder",
+    "id": "<id:4>",
+    "username": "<name:2>",
     "avatar": "82e338d2355f93220637a3ec394ca3c4",
     "discriminator": "0",
     "public_flags": 0,
@@ -341,11 +341,11 @@ Answered:
   "pinned": false,
   "mention_everyone": false,
   "tts": false,
-  "nonce": "1564895276756369408"
+  "nonce": "<id:9>"
 }
 ```
 
-**runs/inspect/20261028T062914_sourcedandsoldtothehighestbidder**, step 8: click e221: 200, 510 ms
+**runs/inspect/20261028T062914_<name:2>**, step 8: click e221: 200, 510 ms
 
 Sent:
 
@@ -364,7 +364,7 @@ Answered:
 [
   {
     "type": 0,
-    "content": "rule no.1 lock in\nrule no.2 lock in\nrule no.3 put the fries in the bag\nrule no.4 do a madness\nrule no.5 do a quadruple madness\nrule no.6 lock in",
+    "content": "<messageText>",
     "mentions": [],
     "mention_roles": [],
     "attachments": [],
@@ -373,11 +373,11 @@ Answered:
     "edited_timestamp": null,
     "flags": 0,
     "components": [],
-    "id": "1529157379189641358",
-    "channel_id": "1484861482578477096",
+    "id": "<id:11>",
+    "channel_id": "<channelId:2>",
     "author": {
-      "id": "1434443116663930960",
-      "username": "sourcedandsoldtothehighestbidder",
+      "id": "<id:4>",
+      "username": "<name:2>",
       "avatar": "82e338d2355f93220637a3ec394ca3c4",
       "discriminator": "0",
       "public_flags": 0,
@@ -399,7 +399,7 @@ Answered:
       {
         "emoji": {
           "id": null,
-          "name": "🤘"
+          "name": "<name:4>"
         },
         "count": 2,
         "count_details": {
@@ -414,8 +414,8 @@ Answered:
       },
       {
         "emoji": {
-          "id": "1419298517364637890",
-          "name": "bpd"
+          "id": "<id:12>",
+          "name": "<name:5>"
         },
         "count": 1,
         "count_details": {

@@ -55,7 +55,7 @@ Answered:
   "__ar": 1,
   "rid": "AhzVH6gBp03M67VQRDHXuY3",
   "payload": null,
-  "lid": "7704020494487878755"
+  "lid": "<id:1>"
 }
 ```
 
@@ -80,7 +80,7 @@ Answered:
   "__ar": 1,
   "rid": "AVHNigzxBexyRQJVtnEiHoC",
   "payload": null,
-  "lid": "7704020622278303489"
+  "lid": "<id:2>"
 }
 ```
 
@@ -95,7 +95,7 @@ Sent:
     "ph": "C3"
   },
   "body": {
-    "------WebKitFormBoundaryhx5lADbY1fBdIwIw\r\nContent-Disposition: form-data; name": "\"ts\"\r\n\r\n1793728825702\r\n------WebKitFormBoundaryhx5lADbY1fBdIwIw\r\nContent-Disposition: form-data; name=\"q\"\r\n\r\n[{\"app_id\":\"936619743392459\",\"posts\":[[\"falco:ig_web_page_view\",{\"e\":\"{\\\"module\\\":\\\"CAAIGLoginHomepage\\\",\\\"nav_chain\\\":\\\"CAAIGLoginHomepageRoot:CAAIGLoginHomepage:1:via_cold_start\\\",\\\"referrer\\\":\\\"\\\",\\\"url\\\":\\\"https://www.instagram.com/\\\",\\\"web_analytics_session_id\\\":\\\"c78ouj:c3tx3c:zgmoiu\\… (699 chars)"
+    "------WebKitFormBoundaryhx5lADbY1fBdIwIw\r\nContent-Disposition: form-data; name": "\"ts\"\r\n\r\n1793728825702\r\n------WebKitFormBoundaryhx5lADbY1fBdIwIw\r\nContent-Disposition: form-data; name=\"q\"\r\n\r\n[{\"app_id\":\"<id:3>\",\"posts\":[[\"falco:ig_web_page_view\",{\"e\":\"{\\\"module\\\":\\\"CAAIGLoginHomepage\\\",\\\"nav_chain\\\":\\\"CAAIGLoginHomepageRoot:CAAIGLoginHomepage:1:via_cold_start\\\",\\\"referrer\\\":\\\"\\\",\\\"url\\\":\\\"https://www.instagram.com/\\\",\\\"web_analytics_session_id\\\":\\\"c78ouj:c3tx3c:zgmoiu\\… (699 chars)"
   }
 }
 ```
@@ -107,7 +107,7 @@ Answered:
   "__ar": 1,
   "rid": "A-c31ZV38ap15654PxyR7Uz",
   "payload": null,
-  "lid": "7704006642877187368"
+  "lid": "<id:4>"
 }
 ```
 

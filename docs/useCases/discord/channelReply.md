@@ -1,6 +1,6 @@
 # Answering someone in a Discord DM or group DM
 
-Answer what someone said to the account in a Discord DM or group DM, with words: a question about what matt is building, a reply to something he posted. A group DM is a private chat of a few people with no server; a channel inside a server ("paulchrisluke #general") is a different place, read and answered differently, and is [serverReply](serverReply.md). The chat is read first, the answer is written from what was said there and what matt has told you, gated like every send, and sent through the account's one session. No meme and no voice note (those are [memeReply](memeReply.md) and [voiceNote](../inbox/voiceNote.md)).
+Answer what someone said to the account in a Discord DM or group DM, with words: a question about what matt is building, a reply to something he posted. A group DM is a private chat of a few people with no server; a channel inside a server ("pennyserver #general") is a different place, read and answered differently, and is [serverReply](serverReply.md). The chat is read first, the answer is written from what was said there and what matt has told you, gated like every send, and sent through the account's one session. No meme and no voice note (those are [memeReply](memeReply.md) and [voiceNote](../inbox/voiceNote.md)).
 
 How the owner asks for it: "reply to <someone> on discord", "reply to <someone> in <group>", "explain what I'm trying to do to <someone> in <group>", "answer the group"
 

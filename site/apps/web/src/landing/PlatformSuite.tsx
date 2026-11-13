@@ -8,6 +8,7 @@ import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import { BrandMark, type BrandMarkId } from './BrandMark'
 import { PLATFORM_DEMOS } from './PlatformDemos'
 import { pageForPlatform } from './useCases/platformPages'
+import { HARNESS_PLATFORMS, pageForHarness } from './useCases/harnessPages'
 import { TILT_QUERY, useMediaQuery } from './useMediaQuery'
 
 export type Platform = {
@@ -123,6 +124,8 @@ export const PLATFORMS: Platform[] = [
     ],
   },
 ]
+
+const SUITE: Platform[] = [...PLATFORMS, ...HARNESS_PLATFORMS]
 
 const STICKER = 'sticker-word inline-block px-[0.08em] text-[1.18em] leading-none'
 const LIP = 'shadow-[0_0_0_1px_#C9E3FF,0_3px_0_#B5D6FF]'
@@ -263,7 +266,7 @@ function PlatformCard({
 }) {
   const tilt = useMediaQuery(TILT_QUERY)
   const Demo = PLATFORM_DEMOS[platform.id]
-  const page = pageForPlatform(platform.id)
+  const page = pageForPlatform(platform.id) ?? pageForHarness(platform.id)
   return (
     <div
       className="w-full rounded-[30px] p-1.5 [background:var(--ring-y)] md:[background:var(--ring-x)]"
@@ -340,7 +343,7 @@ export function PlatformSuite() {
   const dragStart = useRef<{ x: number; y: number; id: number; horizontal: boolean | null } | null>(null)
   const dragRef = useRef(0)
   const wheelLock = useRef(0)
-  const count = PLATFORMS.length
+  const count = SUITE.length
   const go = (next: number) => setActive(Math.min(count - 1, Math.max(0, next)))
 
   const onPointerDown = (event: ReactPointerEvent) => {
@@ -417,7 +420,7 @@ export function PlatformSuite() {
         </div>
 
         <div role="tablist" aria-label="Platforms" className="flex flex-wrap justify-center gap-2">
-          {PLATFORMS.map((item, index) => (
+          {SUITE.map((item, index) => (
             <button
               key={item.id}
               type="button"
@@ -453,7 +456,7 @@ export function PlatformSuite() {
               transform: `translateX(calc(${-active} * (100% + ${SLIDE_GAP_REM}rem) + ${drag}px))`,
             }}
           >
-            {PLATFORMS.map((item, index) => (
+            {SUITE.map((item, index) => (
               <div
                 key={item.id}
                 id={`platform-slide-${item.id}`}
@@ -468,7 +471,7 @@ export function PlatformSuite() {
           </div>
         </div>
         <div className="mt-2 flex items-center justify-center gap-2" role="group" aria-label="Choose a platform">
-          {PLATFORMS.map((item, index) => (
+          {SUITE.map((item, index) => (
             <button
               key={item.id}
               type="button"

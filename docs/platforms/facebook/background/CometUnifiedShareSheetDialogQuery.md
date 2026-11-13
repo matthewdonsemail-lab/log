@@ -24,7 +24,7 @@ Seen 2 time(s) in 2 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261024T060921_61594063207669**, scroll: +515px in 13 wheel steps, 656 ms: 200, 575 ms
+**runs/inspect/20261024T060921_<userId:1>**, scroll: +515px in 13 wheel steps, 656 ms: 200, 575 ms
 
 Sent:
 
@@ -62,18 +62,18 @@ Answered:
   "data": {
     "link_preview": {
       "story": null,
-      "share_scrape_data": "{\"share_type\":6,\"share_params\":[3549906855288164]}"
+      "share_scrape_data": "{\"share_type\":6,\"share_params\":[<id:1>]}"
     },
     "viewer": {
       "actor": {
         "__typename": "User",
         "__isProfile": "User",
-        "name": "Bethlehem Trash",
-        "id": "61594063207669",
+        "name": "<name:1>",
+        "id": "<userId:1>",
         "profile_picture": {
-          "uri": "https://scontent-xxc1-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg (454 chars)"
+          "uri": "<mediaUrl> (454 chars)"
         },
-        "url": "https://www.facebook.com/profile.php?id=61594063207669"
+        "url": "https://www.facebook.com/profile.php?id=<userId:1>"
       }
     },
     "privacy_selector": {
@@ -122,7 +122,7 @@ Answered:
         },
         {
           "__typename": "WhatsAppExternalShareMenuItem",
-          "external_share_api_url": "https://wa.me/?text=https%3A%2F%2Fwww.facebook.com%2Fgroups%2Fjunkremovalwinners%2F",
+          "external_share_api_url": "https://wa.me/?text=<messageText>",
           "__module_operation_UnifiedShareSheetSharingOptionsItems_linkPreviewRoot_default_firstbatch": "(1 fields)",
           "__module_component_UnifiedShareSheetSharingOptionsItems_linkPreviewRoot_default_firstbatch": "(1 fields)"
         },

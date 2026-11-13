@@ -8,7 +8,7 @@ skill in the same commit.
 | Skill | Use it to |
 | --- | --- |
 | [`logCli`](skills/logCli/SKILL.md) | Run the CLI: seed data, live Camoufox checks, the XState monitor |
-| [`commitLog`](skills/commitLog/SKILL.md) | Write the `log.md` entry every commit needs, from the AST summary the hook generates |
+| [`commitLog`](skills/commitLog/SKILL.md) | Write the private day-log entry (`~/.logCli/devlog/`) every commit needs, from the AST summary the hook generates |
 | [`captureRule`](skills/captureRule/SKILL.md) | Turn a rule from matt into a hard line in `AGENTS.md`, plus its check |
 | [`discordServers`](skills/discordServers/SKILL.md) | Know what a Discord server holds (channels, forums, posts, threads) and read each live with its own tool |
 | [`reaCapture`](skills/reaCapture/SKILL.md) | Capture live publish runs as a raw HAR, read them with `rea`, and score client design changes with SubQ |
@@ -23,6 +23,7 @@ skill in the same commit.
 | [`runs`](skills/runs/SKILL.md) | List the recorded runs and prune the ones rea settled and the request docs hold, keeping findings and domains; the storage hook (rule 66) |
 | [`callTiming`](skills/callTiming/SKILL.md) | Find where a call's time goes from its stored timings: `timing` for p50, p95 and p99 per tool and stage, `timing` { call } for one call's waterfall, then measure again after a fix (rule 165) |
 | [`governor`](skills/governor/SKILL.md) | Read every platform account's governor count and put one back to 0 when matt says so, checked and recorded in log.db's ledger: `governorShow`, `governorReset` (rule 168) |
+| [`console`](skills/console/SKILL.md) | Read this machine's local console (Start, Connections, Usage, Events, AI clients, Settings) in the terminal, as JSON per screen, or as the web console on loopback with no sign-in: `log console`, `consoleStart` … `consoleSettings`, `log console --web` |
 | [`tregExtension`](skills/tregExtension/SKILL.md) | Find a treg endpoint by the job, read its price and params, and call it with the key held server-side; priced ones only when matt approves the spend (rule 166) |
 | [`warmup`](skills/warmup/SKILL.md) | Record the five warm-up activities headed, turn them into flows, run them in one open browser with an activity feed (rule 36) |
 | [`humanMouse`](skills/humanMouse/SKILL.md) | Make the cursor move like matt's hand (rule 32): record his mouse, fit `humanMouse.py`, measure ours with the same analyser |
@@ -45,7 +46,7 @@ skill in the same commit.
 
 These three files stay in step:
 
-- **`log.md`** says what happened, commit by commit, starting from an AST of the code.
+- **The day log** (private, `~/.logCli/devlog/`, never in the repo) says what happened, commit by commit, starting from an AST of the code.
 - **`AGENTS.md`** holds the hard rules matt has set.
 - **`skills/`** holds the routines that follow those rules.
 | [`instagram`](skills/instagram/SKILL.md) | Work an Instagram account through the direct-API engine and its one session host, never the browser: read the thread, draft in matt's voice, gate it, send text or a meme as a photo, the realtime watch pushes every DM |

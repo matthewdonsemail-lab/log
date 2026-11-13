@@ -24,7 +24,7 @@ Seen 2 time(s) in 2 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261022T110738_61594063207669**, step 4: click e191: 200, 840 ms
+**runs/inspect/20261022T110738_<userId:1>**, step 4: click e191: 200, 840 ms
 
 Sent:
 
@@ -46,31 +46,31 @@ Answered:
     "viewer": {
       "marketplace_settings": {
         "selected_partner_ids": [
-          "1629659441068862",
-          "1240470891063721"
+          "<id:1>",
+          "<id:2>"
         ],
         "should_hide_organic_listings": false,
         "should_show_partner_selector": false,
         "is_partner_auto_opt_in_enabled": true,
         "viewed_partner_ids": [
-          "1629659441068862",
-          "1240470891063721"
+          "<id:1>",
+          "<id:2>"
         ],
         "id": "TWFya2V0cGxhY2VTZXR0aW5nczo2MTU5NDA2MzIwNzY2OQ=="
       },
       "marketplace_partnership_catalog_settings": [
         {
-          "display_name": "buycycle-es",
-          "partnership_settings_id": "1240470891063721",
+          "display_name": "<name:1>",
+          "partnership_settings_id": "<id:2>",
           "catalog_status": "LIVE",
-          "partner_logo_url": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/316533383_505688224948226_1676972430895592491_n.jpg (433 chars)",
+          "partner_logo_url": "<mediaUrl> (433 chars)",
           "is_downstream_enabled": true
         },
         {
-          "display_name": "Catawiki",
-          "partnership_settings_id": "1629659441068862",
+          "display_name": "<name:2>",
+          "partnership_settings_id": "<id:1>",
           "catalog_status": "LIVE",
-          "partner_logo_url": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/492831975_122130561776785943_7058135208485371260_n.jpg (436 chars)",
+          "partner_logo_url": "<mediaUrl> (436 chars)",
           "is_downstream_enabled": true
         }
       ]
@@ -86,7 +86,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261022T105341_61594063207669**, step 13: setLocation 18015: 200, 423 ms
+**runs/inspect/20261022T105341_<userId:1>**, step 13: setLocation 18015: 200, 423 ms
 
 Sent:
 
@@ -116,17 +116,17 @@ Answered:
       },
       "marketplace_partnership_catalog_settings": [
         {
-          "display_name": "buycycle-es",
-          "partnership_settings_id": "1240470891063721",
+          "display_name": "<name:1>",
+          "partnership_settings_id": "<id:2>",
           "catalog_status": "LIVE",
-          "partner_logo_url": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/316533383_505688224948226_1676972430895592491_n.jpg (431 chars)",
+          "partner_logo_url": "<mediaUrl> (431 chars)",
           "is_downstream_enabled": true
         },
         {
-          "display_name": "Catawiki",
-          "partnership_settings_id": "1629659441068862",
+          "display_name": "<name:2>",
+          "partnership_settings_id": "<id:1>",
           "catalog_status": "LIVE",
-          "partner_logo_url": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/492831975_122130561776785943_7058135208485371260_n.jpg (436 chars)",
+          "partner_logo_url": "<mediaUrl> (436 chars)",
           "is_downstream_enabled": true
         }
       ]

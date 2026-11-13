@@ -24,7 +24,7 @@ When the owner asks for one of these, follow its page step by step.
 | `getGuide({ useCase: "inbox/reaLooksmaxxing" })` | /rea-looksmaxxing: moneymaxx like a creator | "/rea-looksmaxxing how clavicular gets paid", "moneymaxx like <creator>", "how does <creator> get paid" |
 | `getGuide({ useCase: "inbox/reactions" })` | Reacting to a message | "react to that", "heart his message", "put a 😂 on what she said", "send a reaction to <person>" |
 | `getGuide({ useCase: "inbox/voiceNote" })` | Sending a voice note | "send <person> a voice note saying …", "voice note him that …", "send a vn to the group saying …" |
-| `getGuide({ useCase: "twitter/collabMaxxing" })` | Collab maxxing: turn open conversations into collabs | "position a collab first then be like just a few quid so i can make a video about it", "start network maxxing and collab maxxing and trying to see what hes doing get him to reveal it all", "follow up on deepman and the other people, small commitment from deals, not just new people but already open convos", "respond with the collabmaxxing", "selling the outcome", "let him name it", "check in with lior whats good there he is keen but isnt liquid", "just be nice to them there the poor people", "ask ben if i could become a contributor", "look on my twitter for missed opportunities". |
+| `getGuide({ useCase: "twitter/collabMaxxing" })` | Collab maxxing: turn open conversations into collabs | "position a collab first then be like just a few quid so i can make a video about it", "start network maxxing and collab maxxing and trying to see what hes doing get him to reveal it all", "follow up on <someone> and the other people, small commitment from deals, not just new people but already open convos", "respond with the collabmaxxing", "selling the outcome", "let him name it", "check in with <someone> whats good there he is keen but isnt liquid", "just be nice to them there the poor people", "ask <someone> if i could become a contributor", "look on my twitter for missed opportunities". |
 
 ## The tools in this guide
 
@@ -59,7 +59,7 @@ A Discord server is not a group DM. A group DM is a private chat of a few people
 
 | Thing | What it is | How it is named | Listed by | Read by |
 | --- | --- | --- | --- | --- |
-| Server | The whole space: an owner, mods, rules, members | its name, `"paulchrisluke"` | `discordServers` | `discordChannels`, `discordSearch` |
+| Server | The whole space: an owner, mods, rules, members | its name, `"pennyserver"` | `discordServers` | `discordChannels`, `discordSearch` |
 | Category | A heading that groups channels; holds no messages | its name, shown above its channels | `discordChannels` | nothing to read |
 | Text channel | A room of messages in time order | `"<server> #<channel>"` | `discordChannels` (`text`) | `discordRead` |
 | Announcement channel | A text channel only some can post in, others follow it | `"<server> #<channel>"` | `discordChannels` (`announcement`) | `discordRead` |
@@ -76,7 +76,7 @@ A Discord server is not a group DM. A group DM is a private chat of a few people
 - **Know what's there:** `discordServers`, then `discordChannels` { server } shows every channel by category and kind in one request.
 - **Find a conversation:** `discordSearch` { server, query } searches every channel, post and thread at once with Discord's own search, and names where each hit is. Add `channel` to keep one channel and `from` to keep one person. Never read a channel back hundreds of messages to look for something search can find.
 - **Work a forum:** `discordPosts` { channel: "<server> #<forum>" } lists its posts newest activity first, with each one's title, author, tags, replies and opening message, so most posts are judged without opening them. Read the ones worth it with `discordRead` { channel: "<server> #<forum> > <post title>" }.
-- **Skim a busy channel:** `discordRead` with `noMedia` reads text only. Without it, every image is saved and every voice note transcribed first, which took most of a minute for 400 messages of "paulchrisluke #general".
+- **Skim a busy channel:** `discordRead` with `noMedia` reads text only. Without it, every image is saved and every voice note transcribed first, which took most of a minute for 400 messages of "pennyserver #general".
 - **Never run a script over saved output.** Every answer above is plain text made for reading. When it isn't enough, the tool is missing a flag: add it to the tool, don't filter a dump.
 
 ### Hard boundaries

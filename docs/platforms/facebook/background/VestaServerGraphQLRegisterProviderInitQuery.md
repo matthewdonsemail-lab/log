@@ -23,7 +23,7 @@ Seen 3 time(s) in 3 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261022T100521_61594063207669**, step 6: pin: 200, 1540 ms
+**runs/inspect/20261022T100521_<userId:1>**, step 6: pin: 200, 1540 ms
 
 Sent:
 

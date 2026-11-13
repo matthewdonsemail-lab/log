@@ -70,13 +70,13 @@ Seen 62 time(s) in 20 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/host/20261026T180628_61594285317994**, step 11: clickRole button "…": 200, 172 ms
+**runs/host/20261026T180628_<userId:1>**, step 11: clickRole button "…": 200, 172 ms
 
 Sent:
 
 ```json
 {
-  "client_previous_actor_id": "61594285317994",
+  "client_previous_actor_id": "<userId:1>",
   "route_url": "/me",
   "routing_namespace": "fb_comet"
 }
@@ -92,7 +92,7 @@ Answered:
       "result": {
         "type": "route_definition",
         "exports": {
-          "actorID": "61594285317994",
+          "actorID": "<userId:1>",
           "rootView": {
             "allResources": [
               "(1 fields)",
@@ -103,9 +103,9 @@ Answered:
               "__jsr": "ProfileCometTimelineListViewRoot.react"
             },
             "props": {
-              "viewerID": "61594285317994",
+              "viewerID": "<userId:1>",
               "userVanity": "",
-              "userID": "61594285317994",
+              "userID": "<userId:1>",
               "eligibleForProfilePlusEntityMenu": false,
               "trackingCode": null
             },
@@ -148,9 +148,9 @@ Answered:
               "__jsr": "ProfileCometTimelineListViewRoot.react"
             },
             "props": {
-              "viewerID": "61594285317994",
+              "viewerID": "<userId:1>",
               "userVanity": "",
-              "userID": "61594285317994",
+              "userID": "<userId:1>",
               "eligibleForProfilePlusEntityMenu": false,
               "trackingCode": null
             },
@@ -162,8 +162,8 @@ Answered:
             "modal",
             "modal_param"
           ],
-          "productAttributionId": "190055527696468",
-          "canonicalUrl": "/profile.php?id=61594285317994"
+          "productAttributionId": "<id:1>",
+          "canonicalUrl": "/profile.php?id=<userId:1>"
         },
         "route_match_infos": [
           {
@@ -357,13 +357,13 @@ Answered:
 }
 ```
 
-**runs/host/20261026T180628_61594285317994**, setLocation: 'Kamloops, British Columbia' is suggestion 1 of 9: 200, 202 ms
+**runs/host/20261026T180628_<userId:1>**, setLocation: 'Kamloops, British Columbia' is suggestion 1 of 9: 200, 202 ms
 
 Sent:
 
 ```json
 {
-  "client_previous_actor_id": "61594285317994",
+  "client_previous_actor_id": "<userId:1>",
   "route_url": "/marketplace/114995818516099",
   "routing_namespace": "fb_comet"
 }
@@ -379,7 +379,7 @@ Answered:
       "result": {
         "type": "route_definition",
         "exports": {
-          "actorID": "61594285317994",
+          "actorID": "<userId:1>",
           "rootView": {
             "allResources": [
               "(1 fields)",
@@ -428,7 +428,7 @@ Answered:
           },
           "tabKey": "marketplace",
           "concurrentSafe": true,
-          "productAttributionId": "1606854132932955",
+          "productAttributionId": "<id:2>",
           "canonicalUrl": null
         },
         "route_match_infos": [
@@ -487,7 +487,7 @@ Answered:
               "referral_story_type": null,
               "merchantId": null,
               "ref": null,
-              "location_id": "114995818516099",
+              "location_id": "<id:3>",
               "hoisted_items": null,
               "for_sale_item_id": null,
               "seller_profile": null,
@@ -645,13 +645,13 @@ Answered:
 }
 ```
 
-**runs/host/20261026T180628_61594285317994**, scroll: -553px in 12 wheel steps, 499 ms: 200, 212 ms
+**runs/host/20261026T180628_<userId:1>**, scroll: -553px in 12 wheel steps, 499 ms: 200, 212 ms
 
 Sent:
 
 ```json
 {
-  "client_previous_actor_id": "61594285317994",
+  "client_previous_actor_id": "<userId:1>",
   "route_url": "/marketplace/item/1818774979262678/?ref=browse_tab&referral_code=marketplace_top_picks&referral_story_type=top_picks&__tn__=!%3AD",
   "routing_namespace": "fb_comet"
 }
@@ -667,7 +667,7 @@ Answered:
       "result": {
         "type": "route_definition",
         "exports": {
-          "actorID": "61594285317994",
+          "actorID": "<userId:1>",
           "rootView": {
             "allResources": [
               "(1 fields)",
@@ -688,7 +688,7 @@ Answered:
           },
           "tracePolicy": "comet.marketplace.item",
           "meta": {
-            "title": "Marketplace – Beautiful Ring with heart pattern on side",
+            "title": "<messageText>",
             "accessory": null,
             "favicon": null
           },
@@ -737,7 +737,7 @@ Answered:
             "hoisted_story_ids",
             "hoisted_story_optimistic_data"
           ],
-          "productAttributionId": "1606854132932955",
+          "productAttributionId": "<id:2>",
           "canonicalUrl": null
         },
         "route_match_infos": [
@@ -797,7 +797,7 @@ Answered:
               "merchantId": null,
               "ref": "browse_tab",
               "ad_id": null,
-              "listing_id": "1818774979262678",
+              "listing_id": "<id:4>",
               "hoisted": false,
               "ref_id": null,
               "view_public_for": null,
@@ -872,7 +872,7 @@ Answered:
               "view_public_for": "(5 fields)",
               "tracking": "(5 fields)",
               "dynamicUrlInfo": "(5 fields)",
-              "token": "(taken out)",
+              "token": "<token>",
               "is_background": "(5 fields)",
               "hoisted_story_ids": "(5 fields)",
               "hoisted_story_optimistic_data": "(5 fields)",

@@ -10,7 +10,7 @@
 | Path | `discord.com/api/guilds/integrations` |
 | Sends | — |
 | Reads | — |
-| Called from | `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1036.js:1 parse`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1245.js:2 anonymous` |
+| Called from | `runs/inspect/20261030T222341_<name:7>/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_<name:7>/script1036.js:1 parse`, `runs/inspect/20261030T222341_<name:7>/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_<name:7>/script1245.js:2 anonymous` |
 | rea | `ev_065e7ad37dcb5911d240f9de7d6e2882220c5a8d7c025d92b46a23de59cf297c` |
 
 Seen 1 time(s) in 1 run(s).
@@ -23,7 +23,7 @@ Seen 1 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261028T062914_sourcedandsoldtothehighestbidder**, step 8: click e221: 200, 449 ms
+**runs/inspect/20261028T062914_<name:7>**, step 8: click e221: 200, 449 ms
 
 Sent:
 
@@ -43,60 +43,60 @@ Answered:
 [
   {
     "type": "discord",
-    "name": "StickyBot",
+    "name": "<name:1>",
     "account": "(2 fields)",
     "enabled": true,
-    "id": "1484870820173053952",
+    "id": "<id:1>",
     "application": "(13 fields)",
     "scopes": "(2 items)",
     "user": "(15 fields)"
   },
   {
     "type": "discord",
-    "name": "Wick",
+    "name": "<name:2>",
     "account": "(2 fields)",
     "enabled": true,
-    "id": "1484870673498378434",
+    "id": "<id:2>",
     "application": "(14 fields)",
     "scopes": "(2 items)",
     "user": "(15 fields)"
   },
   {
     "type": "discord",
-    "name": "Xenon",
+    "name": "<name:3>",
     "account": "(2 fields)",
     "enabled": true,
-    "id": "1443267935757013134",
+    "id": "<id:3>",
     "application": "(15 fields)",
     "scopes": "(2 items)",
     "user": "(15 fields)"
   },
   {
     "type": "discord",
-    "name": "InferenceSaver CRM Bot",
+    "name": "<name:4>",
     "account": "(2 fields)",
     "enabled": true,
-    "id": "1532452148074512594",
+    "id": "<id:4>",
     "application": "(13 fields)",
     "scopes": "(2 items)",
     "user": "(15 fields)"
   },
   {
     "type": "discord",
-    "name": "Ticket Tool",
+    "name": "<name:5>",
     "account": "(2 fields)",
     "enabled": true,
-    "id": "1484870611749699604",
+    "id": "<id:5>",
     "application": "(15 fields)",
     "scopes": "(2 items)",
     "user": "(15 fields)"
   },
   {
     "type": "discord",
-    "name": "YAGPDB.xyz",
+    "name": "<name:6>",
     "account": "(2 fields)",
     "enabled": true,
-    "id": "1444096397065326622",
+    "id": "<id:6>",
     "application": "(13 fields)",
     "scopes": "(2 items)",
     "user": "(15 fields)"

@@ -38,7 +38,7 @@ Seen 19 time(s) in 17 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261025T064655_61593981307720**, step 3: goto /marketplace/inbox: 200, 411 ms
+**runs/inspect/20261025T064655_<userId:1>**, step 3: goto /marketplace/inbox: 200, 411 ms
 
 Sent:
 
@@ -60,12 +60,12 @@ Answered:
     "viewer": {
       "actor": {
         "__typename": "User",
-        "id": "61593981307720",
+        "id": "<userId:1>",
         "if_viewer_has_professional_dashboard": false
       },
       "account_user": {
         "should_use_page_rename": false,
-        "id": "61593981307720"
+        "id": "<userId:1>"
       },
       "can_create_page": true,
       "can_create_nonprofit_fundraiser": false,
@@ -88,7 +88,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261023T045453_61594063207669**, step 6: wait 6s: 200, 739 ms
+**runs/inspect/20261023T045453_<userId:2>**, step 6: wait 6s: 200, 739 ms
 
 Sent:
 
@@ -110,12 +110,12 @@ Answered:
     "viewer": {
       "actor": {
         "__typename": "User",
-        "id": "61594063207669",
+        "id": "<userId:2>",
         "if_viewer_has_professional_dashboard": false
       },
       "account_user": {
         "should_use_page_rename": false,
-        "id": "61594063207669"
+        "id": "<userId:2>"
       },
       "can_create_page": true,
       "can_create_nonprofit_fundraiser": false,
@@ -138,7 +138,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261022T130601_61594063207669**, step 4: goto /marketplace/inbox: 200, 1467 ms
+**runs/inspect/20261022T130601_<userId:2>**, step 4: goto /marketplace/inbox: 200, 1467 ms
 
 Sent:
 
@@ -160,12 +160,12 @@ Answered:
     "viewer": {
       "actor": {
         "__typename": "User",
-        "id": "61594063207669",
+        "id": "<userId:2>",
         "if_viewer_has_professional_dashboard": false
       },
       "account_user": {
         "should_use_page_rename": false,
-        "id": "61594063207669"
+        "id": "<userId:2>"
       },
       "can_create_page": true,
       "can_create_nonprofit_fundraiser": false,

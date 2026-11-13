@@ -4,13 +4,13 @@ title: "Warm-up"
 
 # Warm-up
 
-The warm-up makes an account look used before it sells: Listaro's five Facebook activities run as recorded flows (`log facebook warmup stages`), and the Reels activity (`log facebook warmup reel`) watches reels the way a real person with the account's persona would, each step checked against what it must achieve. Rules 36, 49 and 50, with the command forms of rules 60 and 63 and the code layout of rule 64.
+The warm-up makes an account look used before it sells: five Facebook activities run as recorded flows (`log facebook warmup stages`), and the Reels activity (`log facebook warmup reel`) watches reels the way a real person with the account's persona would, each step checked against what it must achieve. Rules 36, 49 and 50, with the command forms of rules 60 and 63 and the code layout of rule 64.
 
 ## Stages
 
-### REQ-WARMUP-01: The stages are Listaro's five activities, each a flow of its own
+### REQ-WARMUP-01: The stages are the five warm-up activities, each a flow of its own
 
-The stages are feedBrowse, marketplaceBrowse, createAccessCheck, sellingVisit and messagesVisit, in that order, each scripted from Listaro's `account-warmup.ts` and each turned into its own flow (`warmupFeedBrowse` and so on).
+The stages are feedBrowse, marketplaceBrowse, createAccessCheck, sellingVisit and messagesVisit, in that order, each scripted and turned into its own flow (`warmupFeedBrowse` and so on).
 
 Checked by: code (anchors)
 

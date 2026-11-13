@@ -25,7 +25,7 @@ Seen 4 time(s) in 4 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/host/20261026T180628_61594285317994**, step 40: goto /messages/: 200, 344 ms
+**runs/host/20261026T180628_<userId:1>**, step 40: goto /messages/: 200, 344 ms
 
 Sent:
 

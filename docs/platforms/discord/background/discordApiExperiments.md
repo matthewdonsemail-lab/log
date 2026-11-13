@@ -10,7 +10,7 @@
 | Path | `discord.com/api/experiments` |
 | Sends | — |
 | Reads | `fingerprint`, `assignments`, `guild_experiments`, `installation` |
-| Called from | `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1036.js:1 parse`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1245.js:2 anonymous` |
+| Called from | `runs/inspect/20261030T222341_<name:1>/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_<name:1>/script1036.js:1 parse`, `runs/inspect/20261030T222341_<name:1>/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_<name:1>/script1245.js:2 anonymous` |
 | rea | `ev_065e7ad37dcb5911d240f9de7d6e2882220c5a8d7c025d92b46a23de59cf297c` |
 
 Seen 3 time(s) in 2 run(s).
@@ -25,7 +25,7 @@ Seen 3 time(s) in 2 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder**, step 1: goto /channels/@me: 200, 638 ms
+**runs/inspect/20261030T222341_<name:1>**, step 1: goto /channels/@me: 200, 638 ms
 
 Sent:
 
@@ -42,7 +42,7 @@ Answered:
 
 ```json
 {
-  "fingerprint": "1565853849627926560.dco835Ty1_TYX6mqvP-8r7GWvrY",
+  "fingerprint": "<id:1>.dco835Ty1_TYX6mqvP-8r7GWvrY",
   "assignments": [
     [
       3013881204,
@@ -172,12 +172,12 @@ Answered:
         {
           "b": 1,
           "k": [
-            "651595875897835540",
-            "435572461912719360",
-            "1042197875423203391",
-            "1042198489783865384",
-            "1042199171073060864",
-            "1042202474200698990",
+            "<id:2>",
+            "<id:3>",
+            "<id:4>",
+            "<id:5>",
+            "<id:6>",
+            "<id:7>",
             "… 5 more"
           ]
         }
@@ -247,12 +247,12 @@ Answered:
         {
           "b": 1,
           "k": [
-            "1034492236483792958",
-            "982376986070626344",
-            "1022242080233357352",
-            "1052692953279246487",
-            "763838479293349899",
-            "1044721355821678662",
+            "<id:8>",
+            "<id:9>",
+            "<id:10>",
+            "<id:11>",
+            "<id:12>",
+            "<id:13>",
             "… 10 more"
           ]
         }
@@ -333,12 +333,12 @@ Answered:
         {
           "b": 1,
           "k": [
-            "1103064168459927674",
-            "227251386738409483",
-            "313840371274874880",
-            "1104138316418400286",
-            "295820647660257283",
-            "1029604342589833286",
+            "<id:14>",
+            "<id:15>",
+            "<id:16>",
+            "<id:17>",
+            "<id:18>",
+            "<id:19>",
             "… 7 more"
           ]
         }
@@ -525,7 +525,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261028T062914_sourcedandsoldtothehighestbidder**, step 1: goto /login: 200, 442 ms
+**runs/inspect/20261028T062914_<name:1>**, step 1: goto /login: 200, 442 ms
 
 Sent:
 
@@ -542,7 +542,7 @@ Answered:
 
 ```json
 {
-  "fingerprint": "1564888812923125871.6urp9O3th_Bkg6I0FhqGP9kyuHI",
+  "fingerprint": "<id:20>.6urp9O3th_Bkg6I0FhqGP9kyuHI",
   "assignments": [
     [
       3013881204,
@@ -572,7 +572,7 @@ Answered:
       "… 5 more"
     ]
   ],
-  "installation": "1564888812923125872.knZrP8ykCZaCU4j81XJcAju0Qgk",
+  "installation": "<id:21>.knZrP8ykCZaCU4j81XJcAju0Qgk",
   "guild_experiments": [
     [
       944104242,
@@ -673,12 +673,12 @@ Answered:
         {
           "b": 1,
           "k": [
-            "651595875897835540",
-            "435572461912719360",
-            "1042197875423203391",
-            "1042198489783865384",
-            "1042199171073060864",
-            "1042202474200698990",
+            "<id:2>",
+            "<id:3>",
+            "<id:4>",
+            "<id:5>",
+            "<id:6>",
+            "<id:7>",
             "… 5 more"
           ]
         }
@@ -748,12 +748,12 @@ Answered:
         {
           "b": 1,
           "k": [
-            "1034492236483792958",
-            "982376986070626344",
-            "1022242080233357352",
-            "1052692953279246487",
-            "763838479293349899",
-            "1044721355821678662",
+            "<id:8>",
+            "<id:9>",
+            "<id:10>",
+            "<id:11>",
+            "<id:12>",
+            "<id:13>",
             "… 10 more"
           ]
         }
@@ -834,12 +834,12 @@ Answered:
         {
           "b": 1,
           "k": [
-            "1103064168459927674",
-            "227251386738409483",
-            "313840371274874880",
-            "1104138316418400286",
-            "295820647660257283",
-            "1029604342589833286",
+            "<id:14>",
+            "<id:15>",
+            "<id:16>",
+            "<id:17>",
+            "<id:18>",
+            "<id:19>",
             "… 7 more"
           ]
         }
@@ -1026,7 +1026,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261028T062914_sourcedandsoldtothehighestbidder**, step 3: goto /login: 200, 325 ms
+**runs/inspect/20261028T062914_<name:1>**, step 3: goto /login: 200, 325 ms
 
 Sent:
 
@@ -1172,12 +1172,12 @@ Answered:
         {
           "b": 1,
           "k": [
-            "651595875897835540",
-            "435572461912719360",
-            "1042197875423203391",
-            "1042198489783865384",
-            "1042199171073060864",
-            "1042202474200698990",
+            "<id:2>",
+            "<id:3>",
+            "<id:4>",
+            "<id:5>",
+            "<id:6>",
+            "<id:7>",
             "… 5 more"
           ]
         }
@@ -1247,12 +1247,12 @@ Answered:
         {
           "b": 1,
           "k": [
-            "1034492236483792958",
-            "982376986070626344",
-            "1022242080233357352",
-            "1052692953279246487",
-            "763838479293349899",
-            "1044721355821678662",
+            "<id:8>",
+            "<id:9>",
+            "<id:10>",
+            "<id:11>",
+            "<id:12>",
+            "<id:13>",
             "… 10 more"
           ]
         }
@@ -1333,12 +1333,12 @@ Answered:
         {
           "b": 1,
           "k": [
-            "1103064168459927674",
-            "227251386738409483",
-            "313840371274874880",
-            "1104138316418400286",
-            "295820647660257283",
-            "1029604342589833286",
+            "<id:14>",
+            "<id:15>",
+            "<id:16>",
+            "<id:17>",
+            "<id:18>",
+            "<id:19>",
             "… 7 more"
           ]
         }

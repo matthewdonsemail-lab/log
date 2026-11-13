@@ -20,7 +20,7 @@ Seen 2 time(s) in 1 run(s).
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 4: goto /client | 1 | 200 | 556 ms | 3157 ms | — |
-| inspect | step 6: goto /client/T0C4VCD06MR/D0C8VAE7REU | 1 | 200 | 341 ms | 2222 ms | — |
+| inspect | step 6: goto /client/<teamId:1>/<channelId:1> | 1 | 200 | 341 ms | 2222 ms | — |
 
 ### What it sent and what came back (the newest 2 from our runs)
 
@@ -43,7 +43,7 @@ Sent:
     "_x_num_retries": "0"
   },
   "body": {
-    "------WebKitFormBoundaryA4lRALid1vvTbbAJ\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\nxoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\r\n------WebKitFormBoundaryA4lRALid1vvTbbAJ\r\nContent-Disposition: form-data; name=\"web_client_version\"\r\n\r\n1793684253\r\n------WebKitFormBoundaryA4lRALid1vvTbbAJ\r\nContent-Disposition: form-data; name=\"_x_app_name\"\r\n\r\nclient\r\n------WebKitFormBoundaryA4lRALid1vvTbbAJ\r\nContent-Disp… (489 chars)"
+    "------WebKitFormBoundaryA4lRALid1vvTbbAJ\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\n<slackToken>\r\n------WebKitFormBoundaryA4lRALid1vvTbbAJ\r\nContent-Disposition: form-data; name=\"web_client_version\"\r\n\r\n1793684253\r\n------WebKitFormBoundaryA4lRALid1vvTbbAJ\r\nContent-Disposition: form-data; name=\"_x_app_name\"\r\n\r\nclient\r\n------WebKitFormBoundaryA4lRALid1vvTbbAJ\r\nContent-Disp… (489 chars)"
   }
 }
 ```
@@ -58,7 +58,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261103T065639_mattSlack**, step 6: goto /client/T0C4VCD06MR/D0C8VAE7REU: 200, 341 ms
+**runs/inspect/20261103T065639_mattSlack**, step 6: goto /client/<teamId:1>/<channelId:1>: 200, 341 ms
 
 Sent:
 
@@ -75,7 +75,7 @@ Sent:
     "_x_num_retries": "0"
   },
   "body": {
-    "------WebKitFormBoundarywoL1HkX4msIzF62m\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\nxoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\r\n------WebKitFormBoundarywoL1HkX4msIzF62m\r\nContent-Disposition: form-data; name=\"web_client_version\"\r\n\r\n1793684253\r\n------WebKitFormBoundarywoL1HkX4msIzF62m\r\nContent-Disposition: form-data; name=\"_x_app_name\"\r\n\r\nclient\r\n------WebKitFormBoundarywoL1HkX4msIzF62m\r\nContent-Disp… (489 chars)"
+    "------WebKitFormBoundarywoL1HkX4msIzF62m\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\n<slackToken>\r\n------WebKitFormBoundarywoL1HkX4msIzF62m\r\nContent-Disposition: form-data; name=\"web_client_version\"\r\n\r\n1793684253\r\n------WebKitFormBoundarywoL1HkX4msIzF62m\r\nContent-Disposition: form-data; name=\"_x_app_name\"\r\n\r\nclient\r\n------WebKitFormBoundarywoL1HkX4msIzF62m\r\nContent-Disp… (489 chars)"
   }
 }
 ```

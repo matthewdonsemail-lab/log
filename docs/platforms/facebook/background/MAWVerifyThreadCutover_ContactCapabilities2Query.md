@@ -106,7 +106,7 @@ Seen 144 time(s) in 40 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/warmup/20261023T080515_61594063207669**, step 1: goto /marketplace/: 200, 366 ms
+**runs/warmup/20261023T080515_<userId:1>**, step 1: goto /marketplace/: 200, 366 ms
 
 Sent:
 
@@ -116,7 +116,7 @@ Sent:
   "fb_api_req_friendly_name": "MAWVerifyThreadCutover_ContactCapabilities2Query",
   "server_timestamps": "true",
   "variables": {
-    "id": "61594063207669"
+    "id": "<userId:1>"
   },
   "doc_id": "9948369021930229"
 }
@@ -128,8 +128,8 @@ Answered:
 {
   "data": {
     "user": {
-      "message_capabilities2_str": "252060841644982528",
-      "id": "61594063207669"
+      "message_capabilities2_str": "<id:1>",
+      "id": "<userId:1>"
     }
   },
   "extensions": {
@@ -142,7 +142,7 @@ Answered:
 }
 ```
 
-**runs/warmup/20261023T080515_61594063207669**, step 3: goto /marketplace/you/selling: 200, 395 ms
+**runs/warmup/20261023T080515_<userId:1>**, step 3: goto /marketplace/you/selling: 200, 395 ms
 
 Sent:
 
@@ -153,7 +153,7 @@ Sent:
   "fb_api_req_friendly_name": "MAWVerifyThreadCutover_ContactCapabilities2Query",
   "server_timestamps": "true",
   "variables": {
-    "id": "61594063207669"
+    "id": "<userId:1>"
   },
   "doc_id": "9948369021930229",
   "fb_api_analytics_tags": [
@@ -168,8 +168,8 @@ Answered:
 {
   "data": {
     "user": {
-      "message_capabilities2_str": "252060841644982528",
-      "id": "61594063207669"
+      "message_capabilities2_str": "<id:1>",
+      "id": "<userId:1>"
     }
   },
   "extensions": {
@@ -182,7 +182,7 @@ Answered:
 }
 ```
 
-**runs/warmup/20261023T080515_61594063207669**, step 5: goto /messages/: 200, 492 ms
+**runs/warmup/20261023T080515_<userId:1>**, step 5: goto /messages/: 200, 492 ms
 
 Sent:
 
@@ -192,7 +192,7 @@ Sent:
   "fb_api_req_friendly_name": "MAWVerifyThreadCutover_ContactCapabilities2Query",
   "server_timestamps": "true",
   "variables": {
-    "id": "61594063207669"
+    "id": "<userId:1>"
   },
   "doc_id": "9948369021930229"
 }
@@ -204,8 +204,8 @@ Answered:
 {
   "data": {
     "user": {
-      "message_capabilities2_str": "252060841644982528",
-      "id": "61594063207669"
+      "message_capabilities2_str": "<id:1>",
+      "id": "<userId:1>"
     }
   },
   "extensions": {

@@ -23,7 +23,7 @@ Seen 6 time(s) in 3 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261022T100521_61594063207669**, pin: typed the account's Messenger PIN: 200, 457 ms
+**runs/inspect/20261022T100521_<userId:1>**, pin: typed the account's Messenger PIN: 200, 457 ms
 
 Sent:
 
@@ -47,7 +47,7 @@ Answered:
 {
   "data": {
     "xfb_backup": {
-      "id": "1127653843075648",
+      "id": "<id:1>",
       "backup_tenancy": "PRODUCTION",
       "is_user_opted_out": false,
       "has_otc_eligible_devices": false,
@@ -59,14 +59,14 @@ Answered:
           "device_created_on": "Chrome",
           "creation_time": 1792663635,
           "migration_status": "DOES_NOT_REQUIRE_MIGRATION",
-          "id": "1127653853075647"
+          "id": "<id:2>"
         }
       ],
       "devices": {
         "edges": [
           {
             "node": {
-              "id": "1127653846408981"
+              "id": "<id:3>"
             }
           }
         ]

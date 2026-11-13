@@ -61,7 +61,7 @@ Seen 59 time(s) in 23 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/host/20261026T164654_61594285317994**, step 7: signIn: 200, 162 ms
+**runs/host/20261026T164654_<userId:1>**, step 7: signIn: 200, 162 ms
 
 Sent:
 
@@ -92,11 +92,11 @@ Answered:
   "payload": {
     "keys": []
   },
-  "lid": "7701019420335494123"
+  "lid": "<id:1>"
 }
 ```
 
-**runs/host/20261026T164654_61594285317994**, signIn failed: RuntimeError: the element kept moving under the cursor: the point is on DIV: 200, 168 ms
+**runs/host/20261026T164654_<userId:1>**, signIn failed: RuntimeError: the element kept moving under the cursor: the point is on DIV: 200, 168 ms
 
 Sent:
 
@@ -127,11 +127,11 @@ Answered:
   "payload": {
     "keys": []
   },
-  "lid": "7701019680696822971"
+  "lid": "<id:2>"
 }
 ```
 
-**runs/host/20261026T164654_61594285317994**, step 21: goto /marketplace/status: 200, 163 ms
+**runs/host/20261026T164654_<userId:1>**, step 21: goto /marketplace/status: 200, 163 ms
 
 Sent:
 
@@ -171,7 +171,7 @@ Answered:
   "payload": {
     "keys": []
   },
-  "lid": "7701020339141554825"
+  "lid": "<id:3>"
 }
 ```
 

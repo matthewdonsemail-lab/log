@@ -41,7 +41,7 @@ Sent:
     "_x_gantry": "true",
     "_x_desktop_ia": "4",
     "_x_csid": "b3O92r22OFk",
-    "slack_route": "T0C4VCD06MR",
+    "slack_route": "<teamId:1>",
     "_x_version_ts": "1793684253",
     "_x_foreground": "true",
     "_x_frontend_build_type": "current",
@@ -49,7 +49,7 @@ Sent:
     "_x_num_retries": "0"
   },
   "body": {
-    "------WebKitFormBoundaryAFYPAffRqVheHs2c\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\nxoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\r\n------WebKitFormBoundaryAFYPAffRqVheHs2c\r\nContent-Disposition: form-data; name=\"channel\"\r\n\r\nD0C8VAE7REU\r\n------WebKitFormBoundaryAFYPAffRqVheHs2c\r\nContent-Disposition: form-data; name=\"ts\"\r\n\r\n1793689336.xxxxx2\r\n------WebKitFormBoundaryAFYPAffRqVheHs2c\r\nContent-Disposition:… (1862 chars)"
+    "------WebKitFormBoundaryAFYPAffRqVheHs2c\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\n<slackToken>\r\n------WebKitFormBoundaryAFYPAffRqVheHs2c\r\nContent-Disposition: form-data; name=\"channel\"\r\n\r\n<channelId:1>\r\n------WebKitFormBoundaryAFYPAffRqVheHs2c\r\nContent-Disposition: form-data; name=\"ts\"\r\n\r\n1793689336.xxxxx2\r\n------WebKitFormBoundaryAFYPAffRqVheHs2c\r\nContent-Disposition:… (1862 chars)"
   }
 }
 ```
@@ -59,15 +59,15 @@ Answered:
 ```json
 {
   "ok": true,
-  "channel": "D0C8VAE7REU",
+  "channel": "<channelId:1>",
   "ts": "1793689336.797009",
   "message": {
-    "user": "U0C4L7RF7HD",
+    "user": "<userId:1>",
     "type": "message",
     "ts": "1793689336.797009",
     "client_msg_id": "3047a24f-ec00-4c82-bbbf-95a167eed0c8",
-    "text": "affiliate marketing lad, i send out links for stuff and it pays out friday",
-    "team": "T0C4VCD06MR",
+    "text": "<messageText>",
+    "team": "<teamId:1>",
     "blocks": [
       {
         "type": "rich_text",
@@ -78,7 +78,7 @@ Answered:
             "elements": [
               {
                 "type": "text",
-                "text": "affiliate marketing lad, i send out links for stuff and it pays out friday"
+                "text": "<messageText>"
               }
             ]
           }
@@ -100,7 +100,7 @@ Sent:
     "_x_gantry": "true",
     "_x_desktop_ia": "4",
     "_x_csid": "b3O92r22OFk",
-    "slack_route": "T0C4VCD06MR",
+    "slack_route": "<teamId:1>",
     "_x_version_ts": "1793684253",
     "_x_foreground": "true",
     "_x_frontend_build_type": "current",
@@ -108,7 +108,7 @@ Sent:
     "_x_num_retries": "0"
   },
   "body": {
-    "------WebKitFormBoundary2aHFFTeGg2XxtBgh\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\nxoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\r\n------WebKitFormBoundary2aHFFTeGg2XxtBgh\r\nContent-Disposition: form-data; name=\"channel\"\r\n\r\nD0C8VAE7REU\r\n------WebKitFormBoundary2aHFFTeGg2XxtBgh\r\nContent-Disposition: form-data; name=\"ts\"\r\n\r\n1793689380.xxxxx3\r\n------WebKitFormBoundary2aHFFTeGg2XxtBgh\r\nContent-Disposition:… (1819 chars)"
+    "------WebKitFormBoundary2aHFFTeGg2XxtBgh\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\n<slackToken>\r\n------WebKitFormBoundary2aHFFTeGg2XxtBgh\r\nContent-Disposition: form-data; name=\"channel\"\r\n\r\n<channelId:1>\r\n------WebKitFormBoundary2aHFFTeGg2XxtBgh\r\nContent-Disposition: form-data; name=\"ts\"\r\n\r\n1793689380.xxxxx3\r\n------WebKitFormBoundary2aHFFTeGg2XxtBgh\r\nContent-Disposition:… (1819 chars)"
   }
 }
 ```
@@ -118,15 +118,15 @@ Answered:
 ```json
 {
   "ok": true,
-  "channel": "D0C8VAE7REU",
+  "channel": "<channelId:1>",
   "ts": "1793689380.462369",
   "message": {
-    "user": "U0C4L7RF7HD",
+    "user": "<userId:1>",
     "type": "message",
     "ts": "1793689380.462369",
     "client_msg_id": "c4851e4a-8d88-40f8-a569-79a5f9a0a65a",
-    "text": "just need it for food till then",
-    "team": "T0C4VCD06MR",
+    "text": "<messageText>",
+    "team": "<teamId:1>",
     "blocks": [
       {
         "type": "rich_text",
@@ -137,7 +137,7 @@ Answered:
             "elements": [
               {
                 "type": "text",
-                "text": "just need it for food till then"
+                "text": "<messageText>"
               }
             ]
           }
@@ -159,7 +159,7 @@ Sent:
     "_x_gantry": "true",
     "_x_desktop_ia": "4",
     "_x_csid": "Omg2iVUkYDE",
-    "slack_route": "T0C4VCD06MR",
+    "slack_route": "<teamId:1>",
     "_x_version_ts": "1793684253",
     "_x_foreground": "true",
     "_x_frontend_build_type": "current",
@@ -167,7 +167,7 @@ Sent:
     "_x_num_retries": "0"
   },
   "body": {
-    "------WebKitFormBoundary0UzdLCHlC98280tS\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\nxoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\r\n------WebKitFormBoundary0UzdLCHlC98280tS\r\nContent-Disposition: form-data; name=\"channel\"\r\n\r\nD0C8VAE7REU\r\n------WebKitFormBoundary0UzdLCHlC98280tS\r\nContent-Disposition: form-data; name=\"ts\"\r\n\r\n1793689660.xxxxx4\r\n------WebKitFormBoundary0UzdLCHlC98280tS\r\nContent-Disposition:… (1837 chars)"
+    "------WebKitFormBoundary0UzdLCHlC98280tS\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\n<slackToken>\r\n------WebKitFormBoundary0UzdLCHlC98280tS\r\nContent-Disposition: form-data; name=\"channel\"\r\n\r\n<channelId:1>\r\n------WebKitFormBoundary0UzdLCHlC98280tS\r\nContent-Disposition: form-data; name=\"ts\"\r\n\r\n1793689660.xxxxx4\r\n------WebKitFormBoundary0UzdLCHlC98280tS\r\nContent-Disposition:… (1837 chars)"
   }
 }
 ```
@@ -177,15 +177,15 @@ Answered:
 ```json
 {
   "ok": true,
-  "channel": "D0C8VAE7REU",
+  "channel": "<channelId:1>",
   "ts": "1793689660.133079",
   "message": {
-    "user": "U0C4L7RF7HD",
+    "user": "<userId:1>",
     "type": "message",
     "ts": "1793689660.133079",
     "client_msg_id": "5a9a5b08-0820-47ea-98fd-5c9a653cb0fc",
-    "text": "nah they went into inferencesaver, the ai gateway",
-    "team": "T0C4VCD06MR",
+    "text": "<messageText>",
+    "team": "<teamId:1>",
     "blocks": [
       {
         "type": "rich_text",
@@ -196,7 +196,7 @@ Answered:
             "elements": [
               {
                 "type": "text",
-                "text": "nah they went into inferencesaver, the ai gateway"
+                "text": "<messageText>"
               }
             ]
           }
@@ -211,7 +211,7 @@ Answered:
 
 ## What it does
 
-Posts one message into a conversation: the web client sent it four times (steps 12, 14, 19 and 22, each press Enter, 362 to 390 ms, 26 to 95 ms after the key press) to DM D0C8VAE7REU, and Slack answered 200 with `ok: true`, the `channel`, the new `ts` (for example `1793689336.797009`) and the `message` with its `text`, `client_msg_id`, `team` and `blocks`.
+Posts one message into a conversation: the web client sent it four times (steps 12, 14, 19 and 22, each press Enter, 362 to 390 ms, 26 to 95 ms after the key press) to DM <channelId:1>, and Slack answered 200 with `ok: true`, the `channel`, the new `ts` (for example `1793689336.797009`) and the `message` with its `text`, `client_msg_id`, `team` and `blocks`.
 
 ## What our machine does with it
 

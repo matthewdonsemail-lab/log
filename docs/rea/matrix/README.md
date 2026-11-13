@@ -19,7 +19,7 @@ criterion on both passes.
 
 Mean score 3.59 of 4. The next options were scripts only (3.34), HAR only
 (3.25), and doing nothing (2.66). Forking REA for Juggler (1.88), switching
-to Chrome (1.82), exposing CDP on Camoufox (1.63) and copying Listaro's
+to Chrome (1.82), exposing CDP on Camoufox (1.63) and copying an AdsPower poster's
 AdsPower attach (1.58) lost.
 
 The close calls, still won by `harAndScripts`:
@@ -40,7 +40,7 @@ is written. That is not done yet. Nothing in this run records a HAR.
 | --- | --- |
 | REA page tools are Chrome CDP, not Firefox | 0.984 |
 | HAR inspection never fetches URLs | 0.983 |
-| Listaro's poster is AdsPower CDP, not Camoufox | 0.982 |
+| An AdsPower poster is AdsPower CDP, not Camoufox | 0.982 |
 | `NativeResponseAdapter` does not call Facebook | 0.982 |
 | Canvas hash and shared GPU pixels are still open | 0.978 |
 | No public Juggler or Camoufox provider in REA | 0.970 |

@@ -10,7 +10,7 @@
 | Path | `/svc/shreddit/deferred-experiences` |
 | Sends | `experienceNames`, `clientContext`, `xpromoClientContext`, `groupNames`, `includePostInfo`, `includeProfileInfo`, `includeSubredditInfo`, `experimentContext`, `includeTaxonomyClassifiers`, `subredditName`, `postId`, `profileName` |
 | Reads | — |
-| Called from | `runs/inspect/20261025T124815_MaleficentTry8338/script0.js:101 loadBatch` |
+| Called from | `runs/inspect/20261025T124815_<name:2>/script0.js:101 loadBatch` |
 | rea | `ev_603dd49d172731420c2cafdefbaaebef224a86e2d6d576cd5f1df20f3469e219` |
 
 Seen 8 time(s) in 1 run(s).
@@ -21,7 +21,7 @@ Seen 8 time(s) in 1 run(s).
 | inspect | step 3: goto /r/AskReddit/ | 1 | 200 | 349 ms | 7944 ms | — |
 | inspect | step 5: goto /search/ | 1 | 200 | 342 ms | 4256 ms | — |
 | inspect | step 6: goto /r/AskReddit/comments/1x8sr8s/whats_a_high_paying_but_soul_crushing_career_th | 2 | 200 | 366–370 ms | 2120–4006 ms | — |
-| inspect | step 10: goto /user/Maleficent-Try-8338/ | 1 | 200 | 350 ms | 4236 ms | — |
+| inspect | step 10: goto /user/<name:1>/ | 1 | 200 | 350 ms | 4236 ms | — |
 | inspect | step 11: goto /notifications | 1 | 200 | 386 ms | 4592 ms | — |
 | inspect | step 12: goto /r/popular/ | 1 | 200 | 330 ms | 3961 ms | — |
 
@@ -29,7 +29,7 @@ Seen 8 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 1: goto /: 200, 1173 ms
+**runs/inspect/20261025T124815_<name:2>**, step 1: goto /: 200, 1173 ms
 
 Sent:
 
@@ -95,7 +95,7 @@ Answered:
 null
 ```
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 3: goto /r/AskReddit/: 200, 349 ms
+**runs/inspect/20261025T124815_<name:2>**, step 3: goto /r/AskReddit/: 200, 349 ms
 
 Sent:
 
@@ -163,7 +163,7 @@ Answered:
 null
 ```
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 5: goto /search/: 200, 342 ms
+**runs/inspect/20261025T124815_<name:2>**, step 5: goto /search/: 200, 342 ms
 
 Sent:
 

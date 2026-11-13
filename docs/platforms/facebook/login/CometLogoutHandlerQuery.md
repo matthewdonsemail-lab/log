@@ -30,7 +30,7 @@ Seen 10 time(s) in 10 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261111T081957_61593610473511**, code: typed the current authenticator code; submitting with Enter: 200, 967 ms
+**runs/inspect/20261111T081957_<userId:1>**, code: typed the current authenticator code; submitting with Enter: 200, 967 ms
 
 Sent:
 
@@ -59,12 +59,12 @@ Answered:
       "… 99 more"
     ],
     "viewer": {
-      "logout_hash": "Afm2c1asB9Uh_vX3Gdc",
+      "logout_hash": "<token>",
       "actor": {
         "__typename": "User",
         "has_confirmed_contactpoints": true,
         "pending_contactpoints": [],
-        "id": "61593610473511"
+        "id": "<userId:1>"
       }
     }
   },
@@ -78,7 +78,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261024T164523_61593843527201**, step 8: wait 5s: 200, 643 ms
+**runs/inspect/20261024T164523_<userId:2>**, step 8: wait 5s: 200, 643 ms
 
 Sent:
 
@@ -107,12 +107,12 @@ Answered:
       "… 98 more"
     ],
     "viewer": {
-      "logout_hash": "AfkmQBzbvkh9kfgylII",
+      "logout_hash": "<token>",
       "actor": {
         "__typename": "User",
         "has_confirmed_contactpoints": true,
         "pending_contactpoints": [],
-        "id": "61593843527201"
+        "id": "<userId:2>"
       }
     }
   },
@@ -126,7 +126,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261024T060921_61594063207669**, scroll: +515px in 13 wheel steps, 656 ms: 200, 379 ms
+**runs/inspect/20261024T060921_<userId:3>**, scroll: +515px in 13 wheel steps, 656 ms: 200, 379 ms
 
 Sent:
 
@@ -155,12 +155,12 @@ Answered:
       "… 98 more"
     ],
     "viewer": {
-      "logout_hash": "Afn16gW7g4R9xF8oV5Y",
+      "logout_hash": "<token>",
       "actor": {
         "__typename": "User",
         "has_confirmed_contactpoints": true,
         "pending_contactpoints": [],
-        "id": "61594063207669"
+        "id": "<userId:3>"
       }
     }
   },

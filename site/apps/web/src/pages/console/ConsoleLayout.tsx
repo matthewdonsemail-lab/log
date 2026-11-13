@@ -9,6 +9,7 @@ import { faArrowRightFromBracket, faBolt, faChartColumn, faCoins, faGear, faGift
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core'
 import './console.css'
 import { toast } from '@listeningkit/ui'
+import { localConsole } from '@/lib/consoleMode'
 
 export type WorkspaceState = 'notConnected' | 'awaitingConnection' | 'connecting' | 'ready' | 'reconnecting' | 'offline' | 'failed' | 'stateMissing'
 
@@ -170,6 +171,15 @@ export function AccountMenu() {
   )
 }
 
+export function LocalChip() {
+  return (
+    <span className="inline-flex items-center gap-2 whitespace-nowrap rounded-md bg-[#2A8CFF] px-2.5 py-1.5 text-xs font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_1px_2px_rgba(13,42,76,0.25)] sm:text-sm" title="Local console: no sign-in, no team">
+      <span aria-hidden="true" className="size-1.5 rounded-full bg-white" />
+      This machine
+    </span>
+  )
+}
+
 export function PageHero({ title, lede, children }: { title: string; lede: string; children?: ReactNode }) {
   return (
     <header className="mb-7">
@@ -205,10 +215,12 @@ export function ConsoleLayout({ title, subtitle, children }: { title: string; su
     return () => root.classList.remove('lk-console-scroll')
   }, [])
 
-  if (session.isLoading) return <div className="relative z-10 grid min-h-screen place-items-center text-sm text-slate-500">Loading…</div>
-  if (session.isError) return <div className="relative z-10 grid min-h-screen place-items-center px-6 text-center text-sm text-slate-600">Could not reach ListeningKit. Check your connection and refresh.</div>
-  if (!session.data) return <Navigate to={`/sign-in?returnPath=${encodeURIComponent(pathname + search)}`} replace />
-  if (!team) return <Navigate to="/teams" replace />
+  if (!localConsole) {
+    if (session.isLoading) return <div className="relative z-10 grid min-h-screen place-items-center text-sm text-slate-500">Loading…</div>
+    if (session.isError) return <div className="relative z-10 grid min-h-screen place-items-center px-6 text-center text-sm text-slate-600">Could not reach ListeningKit. Check your connection and refresh.</div>
+    if (!session.data) return <Navigate to={`/sign-in?returnPath=${encodeURIComponent(pathname + search)}`} replace />
+    if (!team) return <Navigate to="/teams" replace />
+  }
 
   return (
     <div className="relative min-h-screen font-sans text-slate-900">
@@ -219,7 +231,7 @@ export function ConsoleLayout({ title, subtitle, children }: { title: string; su
               <Link to="/" className="ml-1 flex shrink-0 items-center gap-2.5 font-bold tracking-tight" aria-label="ListeningKit home">
                 <img src="/logo.svg" alt="" className="size-8 rounded-[9px]" />
               </Link>
-              <TeamSwitch />
+              {localConsole ? <LocalChip /> : <TeamSwitch />}
             </div>
             <nav
               aria-label="Console"
@@ -243,9 +255,11 @@ export function ConsoleLayout({ title, subtitle, children }: { title: string; su
               ))}
             </nav>
             <div className="relative z-30 ml-auto flex w-fit shrink-0 items-center justify-end gap-1 rounded-md border border-white/80 bg-white/85 p-1 shadow-[0_2px_14px_rgba(13,42,76,0.10),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-xl transition-transform duration-200 hover:scale-[1.02] motion-reduce:transform-none sm:gap-2 md:ml-0 md:justify-self-end">
-              <ReferralLink />
-              <BalanceChip />
-              <AccountMenu />
+              {localConsole ? <span className="px-2 py-1.5 text-xs font-semibold text-slate-600">Local console</span> : <>
+                <ReferralLink />
+                <BalanceChip />
+                <AccountMenu />
+              </>}
             </div>
           </div>
           <nav

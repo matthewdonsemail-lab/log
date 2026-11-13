@@ -23254,7 +23254,7 @@ export type FacebookAccountMigrationStatusEnum = 'METADATA_ONLY' | 'ENCRYPTED_AC
 export type FacebookAccountConnectionStateEnum = 'CONNECTED' | 'NEEDS_ATTENTION' | 'NOT_CONFIGURED'
 
 
-/** Canonical inventory of ListeningKit Facebook accounts migrated from node01. Twenty stores understandable operational metadata only; access remains encrypted on node02, and no account is authorized to run until its next action is completed. */
+/** Canonical inventory of Facebook accounts migrated from an earlier CRM. Twenty stores understandable operational metadata only; access remains encrypted in a separate vault, and no account is authorized to run until its next action is completed. */
 export interface FacebookAccount {
     /** ID */
     id: Scalars['UUID']
@@ -23298,17 +23298,17 @@ export interface FacebookAccount {
     statusChangedAt?: Scalars['DateTime']
     /** Whether the source record contained login material. No secret value is stored in Twenty. */
     legacyCredentialPresent?: Scalars['Boolean']
-    /** Whether legacy access was sealed into the protected AES-256-GCM vault on node02. */
+    /** Whether legacy access was sealed into the protected AES-256-GCM vault. */
     credentialsMigrated?: Scalars['Boolean']
     /** Last update timestamp supplied by the legacy source record. */
     sourceUpdatedAt?: Scalars['DateTime']
-    /** When this safe metadata snapshot was last synchronized to node02. */
+    /** When this safe metadata snapshot was last synchronized. */
     migratedAt?: Scalars['DateTime']
     /** Whether only metadata moved or encrypted access also completed. */
     migrationStatus?: FacebookAccountMigrationStatusEnum
     /** Original system retained as a read-only migration source. */
     sourceSystem?: Scalars['String']
-    /** Stable identifier from the read-only node01 CRM, used only for idempotent migration. */
+    /** Stable identifier from the earlier read-only CRM, used only for idempotent migration. */
     sourceAccountId?: Scalars['String']
     /** High-level readiness only. Connected means encrypted access exists, not that automation is running. */
     connectionState?: FacebookAccountConnectionStateEnum
@@ -23326,7 +23326,7 @@ export interface FacebookAccount {
 }
 
 
-/** Canonical inventory of ListeningKit Facebook accounts migrated from node01. Twenty stores understandable operational metadata only; access remains encrypted on node02, and no account is authorized to run until its next action is completed. */
+/** Canonical inventory of Facebook accounts migrated from an earlier CRM. Twenty stores understandable operational metadata only; access remains encrypted in a separate vault, and no account is authorized to run until its next action is completed. */
 export interface FacebookAccountEdge {
     node: FacebookAccount
     cursor: Scalars['Cursor']
@@ -23334,7 +23334,7 @@ export interface FacebookAccountEdge {
 }
 
 
-/** Canonical inventory of ListeningKit Facebook accounts migrated from node01. Twenty stores understandable operational metadata only; access remains encrypted on node02, and no account is authorized to run until its next action is completed. */
+/** Canonical inventory of Facebook accounts migrated from an earlier CRM. Twenty stores understandable operational metadata only; access remains encrypted in a separate vault, and no account is authorized to run until its next action is completed. */
 export interface FacebookAccountConnection {
     /** Total number of records in the connection */
     totalCount?: Scalars['Int']
@@ -23668,7 +23668,7 @@ export interface FacebookAccountConnection {
 }
 
 
-/** Canonical inventory of ListeningKit Facebook accounts migrated from node01. Twenty stores understandable operational metadata only; access remains encrypted on node02, and no account is authorized to run until its next action is completed. */
+/** Canonical inventory of Facebook accounts migrated from an earlier CRM. Twenty stores understandable operational metadata only; access remains encrypted in a separate vault, and no account is authorized to run until its next action is completed. */
 export interface FacebookAccountGroupByConnection {
     /** Total number of records in the connection */
     totalCount?: Scalars['Int']
@@ -25009,7 +25009,7 @@ export type AgencyMessageAiStatusEnum = 'DRAFT' | 'APPROVED' | 'SENT' | 'DISMISS
 export type AgencyMessageChannelEnum = 'SMS' | 'FACEBOOK_MARKETPLACE'
 
 
-/** log-cli: who wrote an outbound message (Listaro): a person, a VA, AI, or the system */
+/** log-cli: who wrote an outbound message: a person, a VA, AI, or the system */
 export type AgencyMessageSentByEnum = 'PERSON' | 'VA' | 'AI' | 'SYSTEM'
 
 
@@ -25047,7 +25047,7 @@ export interface AgencyMessage {
     channel?: AgencyMessageChannelEnum
     /** log-cli: the Facebook message id, when the page gives it */
     facebookMessageId?: Scalars['String']
-    /** log-cli: who wrote an outbound message (Listaro): a person, a VA, AI, or the system */
+    /** log-cli: who wrote an outbound message: a person, a VA, AI, or the system */
     sentBy?: AgencyMessageSentByEnum
     direction?: Scalars['String']
     /** Telnyx error code when the text failed, e.g. 40010 */
@@ -38564,7 +38564,7 @@ export interface SocialAccount {
     browserDriver?: Scalars['String']
     /** log-cli: the profile picture `log profile setup` uploads (a URL or a local path). Real-looking, not a logo (rule 28) */
     profilePhoto?: Scalars['String']
-    /** log-cli: who sold the account, as named in docs/vendors (e.g. NPPR Team Shop) */
+    /** log-cli: who sold the account, as named in the private vendor order files */
     vendor?: Scalars['String']
     /** log-cli: used to pick the least recently used replacement */
     lastPostedAt?: Scalars['DateTime']
@@ -40444,7 +40444,7 @@ export interface AgencyGroupGroupByConnection {
 }
 
 
-/** log-cli: where the buyer is (Listaro): NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
+/** log-cli: where the buyer is: NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
 export type AgencyConversationLeadStatusEnum = 'NEW' | 'CONTACTED' | 'QUALIFIED' | 'BOOKED' | 'LOST' | 'SPAM'
 
 
@@ -40503,7 +40503,7 @@ export interface AgencyConversation {
     /** log-cli: the listing title the thread header shows (Buyer · Title) */
     listingTitle?: Scalars['String']
     createdByMemberId?: Scalars['String']
-    /** log-cli: where the buyer is (Listaro): NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
+    /** log-cli: where the buyer is: NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
     leadStatus?: AgencyConversationLeadStatusEnum
     pairKey?: Scalars['String']
     latestMessageId?: Scalars['String']
@@ -96056,7 +96056,7 @@ syncedAt?: (GroupByDateGranularityInput | null),
 failureReason?: (Scalars['Boolean'] | null)}
 
 
-/** Canonical inventory of ListeningKit Facebook accounts migrated from node01. Twenty stores understandable operational metadata only; access remains encrypted on node02, and no account is authorized to run until its next action is completed. */
+/** Canonical inventory of Facebook accounts migrated from an earlier CRM. Twenty stores understandable operational metadata only; access remains encrypted in a separate vault, and no account is authorized to run until its next action is completed. */
 export interface FacebookAccountGenqlSelection{
     /** ID */
     id?: boolean | number
@@ -96100,17 +96100,17 @@ export interface FacebookAccountGenqlSelection{
     statusChangedAt?: boolean | number
     /** Whether the source record contained login material. No secret value is stored in Twenty. */
     legacyCredentialPresent?: boolean | number
-    /** Whether legacy access was sealed into the protected AES-256-GCM vault on node02. */
+    /** Whether legacy access was sealed into the protected AES-256-GCM vault. */
     credentialsMigrated?: boolean | number
     /** Last update timestamp supplied by the legacy source record. */
     sourceUpdatedAt?: boolean | number
-    /** When this safe metadata snapshot was last synchronized to node02. */
+    /** When this safe metadata snapshot was last synchronized. */
     migratedAt?: boolean | number
     /** Whether only metadata moved or encrypted access also completed. */
     migrationStatus?: boolean | number
     /** Original system retained as a read-only migration source. */
     sourceSystem?: boolean | number
-    /** Stable identifier from the read-only node01 CRM, used only for idempotent migration. */
+    /** Stable identifier from the earlier read-only CRM, used only for idempotent migration. */
     sourceAccountId?: boolean | number
     /** High-level readiness only. Connected means encrypted access exists, not that automation is running. */
     connectionState?: boolean | number
@@ -96129,7 +96129,7 @@ export interface FacebookAccountGenqlSelection{
 }
 
 
-/** Canonical inventory of ListeningKit Facebook accounts migrated from node01. Twenty stores understandable operational metadata only; access remains encrypted on node02, and no account is authorized to run until its next action is completed. */
+/** Canonical inventory of Facebook accounts migrated from an earlier CRM. Twenty stores understandable operational metadata only; access remains encrypted in a separate vault, and no account is authorized to run until its next action is completed. */
 export interface FacebookAccountEdgeGenqlSelection{
     node?: FacebookAccountGenqlSelection
     cursor?: boolean | number
@@ -96138,7 +96138,7 @@ export interface FacebookAccountEdgeGenqlSelection{
 }
 
 
-/** Canonical inventory of ListeningKit Facebook accounts migrated from node01. Twenty stores understandable operational metadata only; access remains encrypted on node02, and no account is authorized to run until its next action is completed. */
+/** Canonical inventory of Facebook accounts migrated from an earlier CRM. Twenty stores understandable operational metadata only; access remains encrypted in a separate vault, and no account is authorized to run until its next action is completed. */
 export interface FacebookAccountConnectionGenqlSelection{
     /** Total number of records in the connection */
     totalCount?: boolean | number
@@ -96473,7 +96473,7 @@ export interface FacebookAccountConnectionGenqlSelection{
 }
 
 
-/** Canonical inventory of ListeningKit Facebook accounts migrated from node01. Twenty stores understandable operational metadata only; access remains encrypted on node02, and no account is authorized to run until its next action is completed. */
+/** Canonical inventory of Facebook accounts migrated from an earlier CRM. Twenty stores understandable operational metadata only; access remains encrypted in a separate vault, and no account is authorized to run until its next action is completed. */
 export interface FacebookAccountGroupByConnectionGenqlSelection{
     /** Total number of records in the connection */
     totalCount?: boolean | number
@@ -96825,7 +96825,7 @@ export interface FacebookAccountWhereUniqueInput {
 id?: (Scalars['ID'] | null)}
 
 
-/** Canonical inventory of ListeningKit Facebook accounts migrated from node01. Twenty stores understandable operational metadata only; access remains encrypted on node02, and no account is authorized to run until its next action is completed. */
+/** Canonical inventory of Facebook accounts migrated from an earlier CRM. Twenty stores understandable operational metadata only; access remains encrypted in a separate vault, and no account is authorized to run until its next action is completed. */
 export interface FacebookAccountCreateInput {
 /** ID */
 id?: (Scalars['ID'] | null),
@@ -96869,23 +96869,23 @@ lastPostedAt?: (Scalars['DateTime'] | null),
 statusChangedAt?: (Scalars['DateTime'] | null),
 /** Whether the source record contained login material. No secret value is stored in Twenty. */
 legacyCredentialPresent?: (Scalars['Boolean'] | null),
-/** Whether legacy access was sealed into the protected AES-256-GCM vault on node02. */
+/** Whether legacy access was sealed into the protected AES-256-GCM vault. */
 credentialsMigrated?: (Scalars['Boolean'] | null),
 /** Last update timestamp supplied by the legacy source record. */
 sourceUpdatedAt?: (Scalars['DateTime'] | null),
-/** When this safe metadata snapshot was last synchronized to node02. */
+/** When this safe metadata snapshot was last synchronized. */
 migratedAt?: (Scalars['DateTime'] | null),
 /** Whether only metadata moved or encrypted access also completed. */
 migrationStatus?: (FacebookAccountMigrationStatusEnum | null),
 /** Original system retained as a read-only migration source. */
 sourceSystem?: (Scalars['String'] | null),
-/** Stable identifier from the read-only node01 CRM, used only for idempotent migration. */
+/** Stable identifier from the earlier read-only CRM, used only for idempotent migration. */
 sourceAccountId?: (Scalars['String'] | null),
 /** High-level readiness only. Connected means encrypted access exists, not that automation is running. */
 connectionState?: (FacebookAccountConnectionStateEnum | null)}
 
 
-/** Canonical inventory of ListeningKit Facebook accounts migrated from node01. Twenty stores understandable operational metadata only; access remains encrypted on node02, and no account is authorized to run until its next action is completed. */
+/** Canonical inventory of Facebook accounts migrated from an earlier CRM. Twenty stores understandable operational metadata only; access remains encrypted in a separate vault, and no account is authorized to run until its next action is completed. */
 export interface FacebookAccountUpdateInput {
 /** ID */
 id?: (Scalars['ID'] | null),
@@ -96929,23 +96929,23 @@ lastPostedAt?: (Scalars['DateTime'] | null),
 statusChangedAt?: (Scalars['DateTime'] | null),
 /** Whether the source record contained login material. No secret value is stored in Twenty. */
 legacyCredentialPresent?: (Scalars['Boolean'] | null),
-/** Whether legacy access was sealed into the protected AES-256-GCM vault on node02. */
+/** Whether legacy access was sealed into the protected AES-256-GCM vault. */
 credentialsMigrated?: (Scalars['Boolean'] | null),
 /** Last update timestamp supplied by the legacy source record. */
 sourceUpdatedAt?: (Scalars['DateTime'] | null),
-/** When this safe metadata snapshot was last synchronized to node02. */
+/** When this safe metadata snapshot was last synchronized. */
 migratedAt?: (Scalars['DateTime'] | null),
 /** Whether only metadata moved or encrypted access also completed. */
 migrationStatus?: (FacebookAccountMigrationStatusEnum | null),
 /** Original system retained as a read-only migration source. */
 sourceSystem?: (Scalars['String'] | null),
-/** Stable identifier from the read-only node01 CRM, used only for idempotent migration. */
+/** Stable identifier from the earlier read-only CRM, used only for idempotent migration. */
 sourceAccountId?: (Scalars['String'] | null),
 /** High-level readiness only. Connected means encrypted access exists, not that automation is running. */
 connectionState?: (FacebookAccountConnectionStateEnum | null)}
 
 
-/** Canonical inventory of ListeningKit Facebook accounts migrated from node01. Twenty stores understandable operational metadata only; access remains encrypted on node02, and no account is authorized to run until its next action is completed. */
+/** Canonical inventory of Facebook accounts migrated from an earlier CRM. Twenty stores understandable operational metadata only; access remains encrypted in a separate vault, and no account is authorized to run until its next action is completed. */
 export interface FacebookAccountFilterInput {
 /** ID */
 id?: (UUIDFilter | null),
@@ -96989,17 +96989,17 @@ lastPostedAt?: (DateTimeFilter | null),
 statusChangedAt?: (DateTimeFilter | null),
 /** Whether the source record contained login material. No secret value is stored in Twenty. */
 legacyCredentialPresent?: (BooleanFilter | null),
-/** Whether legacy access was sealed into the protected AES-256-GCM vault on node02. */
+/** Whether legacy access was sealed into the protected AES-256-GCM vault. */
 credentialsMigrated?: (BooleanFilter | null),
 /** Last update timestamp supplied by the legacy source record. */
 sourceUpdatedAt?: (DateTimeFilter | null),
-/** When this safe metadata snapshot was last synchronized to node02. */
+/** When this safe metadata snapshot was last synchronized. */
 migratedAt?: (DateTimeFilter | null),
 /** Whether only metadata moved or encrypted access also completed. */
 migrationStatus?: (FacebookAccountMigrationStatusEnumFilter | null),
 /** Original system retained as a read-only migration source. */
 sourceSystem?: (StringFilter | null),
-/** Stable identifier from the read-only node01 CRM, used only for idempotent migration. */
+/** Stable identifier from the earlier read-only CRM, used only for idempotent migration. */
 sourceAccountId?: (StringFilter | null),
 /** High-level readiness only. Connected means encrypted access exists, not that automation is running. */
 connectionState?: (FacebookAccountConnectionStateEnumFilter | null),and?: ((FacebookAccountFilterInput | null)[] | null),or?: ((FacebookAccountFilterInput | null)[] | null),not?: (FacebookAccountFilterInput | null)}
@@ -97009,7 +97009,7 @@ export interface FacebookAccountMigrationStatusEnumFilter {eq?: (FacebookAccount
 export interface FacebookAccountConnectionStateEnumFilter {eq?: (FacebookAccountConnectionStateEnum | null),neq?: (FacebookAccountConnectionStateEnum | null),in?: ((FacebookAccountConnectionStateEnum | null)[] | null),containsAny?: ((FacebookAccountConnectionStateEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (FacebookAccountConnectionStateEnum | null),gte?: (FacebookAccountConnectionStateEnum | null),lt?: (FacebookAccountConnectionStateEnum | null),lte?: (FacebookAccountConnectionStateEnum | null)}
 
 
-/** Canonical inventory of ListeningKit Facebook accounts migrated from node01. Twenty stores understandable operational metadata only; access remains encrypted on node02, and no account is authorized to run until its next action is completed. */
+/** Canonical inventory of Facebook accounts migrated from an earlier CRM. Twenty stores understandable operational metadata only; access remains encrypted in a separate vault, and no account is authorized to run until its next action is completed. */
 export interface FacebookAccountOrderByInput {
 /** ID */
 id?: (OrderByDirection | null),
@@ -97053,23 +97053,23 @@ lastPostedAt?: (OrderByDirection | null),
 statusChangedAt?: (OrderByDirection | null),
 /** Whether the source record contained login material. No secret value is stored in Twenty. */
 legacyCredentialPresent?: (OrderByDirection | null),
-/** Whether legacy access was sealed into the protected AES-256-GCM vault on node02. */
+/** Whether legacy access was sealed into the protected AES-256-GCM vault. */
 credentialsMigrated?: (OrderByDirection | null),
 /** Last update timestamp supplied by the legacy source record. */
 sourceUpdatedAt?: (OrderByDirection | null),
-/** When this safe metadata snapshot was last synchronized to node02. */
+/** When this safe metadata snapshot was last synchronized. */
 migratedAt?: (OrderByDirection | null),
 /** Whether only metadata moved or encrypted access also completed. */
 migrationStatus?: (OrderByDirection | null),
 /** Original system retained as a read-only migration source. */
 sourceSystem?: (OrderByDirection | null),
-/** Stable identifier from the read-only node01 CRM, used only for idempotent migration. */
+/** Stable identifier from the earlier read-only CRM, used only for idempotent migration. */
 sourceAccountId?: (OrderByDirection | null),
 /** High-level readiness only. Connected means encrypted access exists, not that automation is running. */
 connectionState?: (OrderByDirection | null)}
 
 
-/** Canonical inventory of ListeningKit Facebook accounts migrated from node01. Twenty stores understandable operational metadata only; access remains encrypted on node02, and no account is authorized to run until its next action is completed. */
+/** Canonical inventory of Facebook accounts migrated from an earlier CRM. Twenty stores understandable operational metadata only; access remains encrypted in a separate vault, and no account is authorized to run until its next action is completed. */
 export interface FacebookAccountOrderByWithGroupByInput {
 /** Order by aggregate values */
 aggregate?: (FacebookAccountOrderByWithGroupByAggregateInput | null),
@@ -97115,17 +97115,17 @@ lastPostedAt?: (OrderByDateGranularityInput | null),
 statusChangedAt?: (OrderByDateGranularityInput | null),
 /** Whether the source record contained login material. No secret value is stored in Twenty. */
 legacyCredentialPresent?: (OrderByDirection | null),
-/** Whether legacy access was sealed into the protected AES-256-GCM vault on node02. */
+/** Whether legacy access was sealed into the protected AES-256-GCM vault. */
 credentialsMigrated?: (OrderByDirection | null),
 /** Last update timestamp supplied by the legacy source record. */
 sourceUpdatedAt?: (OrderByDateGranularityInput | null),
-/** When this safe metadata snapshot was last synchronized to node02. */
+/** When this safe metadata snapshot was last synchronized. */
 migratedAt?: (OrderByDateGranularityInput | null),
 /** Whether only metadata moved or encrypted access also completed. */
 migrationStatus?: (OrderByDirection | null),
 /** Original system retained as a read-only migration source. */
 sourceSystem?: (OrderByDirection | null),
-/** Stable identifier from the read-only node01 CRM, used only for idempotent migration. */
+/** Stable identifier from the earlier read-only CRM, used only for idempotent migration. */
 sourceAccountId?: (OrderByDirection | null),
 /** High-level readiness only. Connected means encrypted access exists, not that automation is running. */
 connectionState?: (OrderByDirection | null)}
@@ -97461,7 +97461,7 @@ percentageEmptyConnectionState?: (OrderByDirection | null),
 percentageNotEmptyConnectionState?: (OrderByDirection | null)}
 
 
-/** Canonical inventory of ListeningKit Facebook accounts migrated from node01. Twenty stores understandable operational metadata only; access remains encrypted on node02, and no account is authorized to run until its next action is completed. */
+/** Canonical inventory of Facebook accounts migrated from an earlier CRM. Twenty stores understandable operational metadata only; access remains encrypted in a separate vault, and no account is authorized to run until its next action is completed. */
 export interface FacebookAccountGroupByInput {
 /** Creation date */
 createdAt?: (GroupByDateGranularityInput | null),
@@ -97497,17 +97497,17 @@ lastPostedAt?: (GroupByDateGranularityInput | null),
 statusChangedAt?: (GroupByDateGranularityInput | null),
 /** Whether the source record contained login material. No secret value is stored in Twenty. */
 legacyCredentialPresent?: (Scalars['Boolean'] | null),
-/** Whether legacy access was sealed into the protected AES-256-GCM vault on node02. */
+/** Whether legacy access was sealed into the protected AES-256-GCM vault. */
 credentialsMigrated?: (Scalars['Boolean'] | null),
 /** Last update timestamp supplied by the legacy source record. */
 sourceUpdatedAt?: (GroupByDateGranularityInput | null),
-/** When this safe metadata snapshot was last synchronized to node02. */
+/** When this safe metadata snapshot was last synchronized. */
 migratedAt?: (GroupByDateGranularityInput | null),
 /** Whether only metadata moved or encrypted access also completed. */
 migrationStatus?: (Scalars['Boolean'] | null),
 /** Original system retained as a read-only migration source. */
 sourceSystem?: (Scalars['Boolean'] | null),
-/** Stable identifier from the read-only node01 CRM, used only for idempotent migration. */
+/** Stable identifier from the earlier read-only CRM, used only for idempotent migration. */
 sourceAccountId?: (Scalars['Boolean'] | null),
 /** High-level readiness only. Connected means encrypted access exists, not that automation is running. */
 connectionState?: (Scalars['Boolean'] | null)}
@@ -99495,7 +99495,7 @@ export interface AgencyMessageGenqlSelection{
     channel?: boolean | number
     /** log-cli: the Facebook message id, when the page gives it */
     facebookMessageId?: boolean | number
-    /** log-cli: who wrote an outbound message (Listaro): a person, a VA, AI, or the system */
+    /** log-cli: who wrote an outbound message: a person, a VA, AI, or the system */
     sentBy?: boolean | number
     direction?: boolean | number
     /** Telnyx error code when the text failed, e.g. 40010 */
@@ -100192,7 +100192,7 @@ aiStatus?: (AgencyMessageAiStatusEnum | null),telnyxMessageId?: (Scalars['String
 channel?: (AgencyMessageChannelEnum | null),
 /** log-cli: the Facebook message id, when the page gives it */
 facebookMessageId?: (Scalars['String'] | null),
-/** log-cli: who wrote an outbound message (Listaro): a person, a VA, AI, or the system */
+/** log-cli: who wrote an outbound message: a person, a VA, AI, or the system */
 sentBy?: (AgencyMessageSentByEnum | null),direction?: (Scalars['String'] | null),
 /** Telnyx error code when the text failed, e.g. 40010 */
 errorCode?: (Scalars['String'] | null),
@@ -100242,7 +100242,7 @@ aiStatus?: (AgencyMessageAiStatusEnum | null),telnyxMessageId?: (Scalars['String
 channel?: (AgencyMessageChannelEnum | null),
 /** log-cli: the Facebook message id, when the page gives it */
 facebookMessageId?: (Scalars['String'] | null),
-/** log-cli: who wrote an outbound message (Listaro): a person, a VA, AI, or the system */
+/** log-cli: who wrote an outbound message: a person, a VA, AI, or the system */
 sentBy?: (AgencyMessageSentByEnum | null),direction?: (Scalars['String'] | null),
 /** Telnyx error code when the text failed, e.g. 40010 */
 errorCode?: (Scalars['String'] | null),
@@ -100292,7 +100292,7 @@ aiStatus?: (AgencyMessageAiStatusEnumFilter | null),telnyxMessageId?: (StringFil
 channel?: (AgencyMessageChannelEnumFilter | null),
 /** log-cli: the Facebook message id, when the page gives it */
 facebookMessageId?: (StringFilter | null),
-/** log-cli: who wrote an outbound message (Listaro): a person, a VA, AI, or the system */
+/** log-cli: who wrote an outbound message: a person, a VA, AI, or the system */
 sentBy?: (AgencyMessageSentByEnumFilter | null),direction?: (StringFilter | null),
 /** Telnyx error code when the text failed, e.g. 40010 */
 errorCode?: (StringFilter | null),
@@ -100348,7 +100348,7 @@ aiStatus?: (OrderByDirection | null),telnyxMessageId?: (OrderByDirection | null)
 channel?: (OrderByDirection | null),
 /** log-cli: the Facebook message id, when the page gives it */
 facebookMessageId?: (OrderByDirection | null),
-/** log-cli: who wrote an outbound message (Listaro): a person, a VA, AI, or the system */
+/** log-cli: who wrote an outbound message: a person, a VA, AI, or the system */
 sentBy?: (OrderByDirection | null),direction?: (OrderByDirection | null),
 /** Telnyx error code when the text failed, e.g. 40010 */
 errorCode?: (OrderByDirection | null),
@@ -100400,7 +100400,7 @@ aiStatus?: (OrderByDirection | null),telnyxMessageId?: (OrderByDirection | null)
 channel?: (OrderByDirection | null),
 /** log-cli: the Facebook message id, when the page gives it */
 facebookMessageId?: (OrderByDirection | null),
-/** log-cli: who wrote an outbound message (Listaro): a person, a VA, AI, or the system */
+/** log-cli: who wrote an outbound message: a person, a VA, AI, or the system */
 sentBy?: (OrderByDirection | null),direction?: (OrderByDirection | null),
 /** Telnyx error code when the text failed, e.g. 40010 */
 errorCode?: (OrderByDirection | null),
@@ -100742,7 +100742,7 @@ aiStatus?: (Scalars['Boolean'] | null),telnyxMessageId?: (Scalars['Boolean'] | n
 channel?: (Scalars['Boolean'] | null),
 /** log-cli: the Facebook message id, when the page gives it */
 facebookMessageId?: (Scalars['Boolean'] | null),
-/** log-cli: who wrote an outbound message (Listaro): a person, a VA, AI, or the system */
+/** log-cli: who wrote an outbound message: a person, a VA, AI, or the system */
 sentBy?: (Scalars['Boolean'] | null),direction?: (Scalars['Boolean'] | null),
 /** Telnyx error code when the text failed, e.g. 40010 */
 errorCode?: (Scalars['Boolean'] | null),
@@ -124930,7 +124930,7 @@ export interface SocialAccountGenqlSelection{
     browserDriver?: boolean | number
     /** log-cli: the profile picture `log profile setup` uploads (a URL or a local path). Real-looking, not a logo (rule 28) */
     profilePhoto?: boolean | number
-    /** log-cli: who sold the account, as named in docs/vendors (e.g. NPPR Team Shop) */
+    /** log-cli: who sold the account, as named in the private vendor order files */
     vendor?: boolean | number
     /** log-cli: used to pick the least recently used replacement */
     lastPostedAt?: boolean | number
@@ -126371,7 +126371,7 @@ coverPhoto?: (Scalars['String'] | null),emailPassword?: (Scalars['String'] | nul
 browserDriver?: (Scalars['String'] | null),
 /** log-cli: the profile picture `log profile setup` uploads (a URL or a local path). Real-looking, not a logo (rule 28) */
 profilePhoto?: (Scalars['String'] | null),
-/** log-cli: who sold the account, as named in docs/vendors (e.g. NPPR Team Shop) */
+/** log-cli: who sold the account, as named in the private vendor order files */
 vendor?: (Scalars['String'] | null),
 /** log-cli: used to pick the least recently used replacement */
 lastPostedAt?: (Scalars['DateTime'] | null),
@@ -126471,7 +126471,7 @@ coverPhoto?: (Scalars['String'] | null),emailPassword?: (Scalars['String'] | nul
 browserDriver?: (Scalars['String'] | null),
 /** log-cli: the profile picture `log profile setup` uploads (a URL or a local path). Real-looking, not a logo (rule 28) */
 profilePhoto?: (Scalars['String'] | null),
-/** log-cli: who sold the account, as named in docs/vendors (e.g. NPPR Team Shop) */
+/** log-cli: who sold the account, as named in the private vendor order files */
 vendor?: (Scalars['String'] | null),
 /** log-cli: used to pick the least recently used replacement */
 lastPostedAt?: (Scalars['DateTime'] | null),
@@ -126571,7 +126571,7 @@ coverPhoto?: (StringFilter | null),emailPassword?: (StringFilter | null),email?:
 browserDriver?: (StringFilter | null),
 /** log-cli: the profile picture `log profile setup` uploads (a URL or a local path). Real-looking, not a logo (rule 28) */
 profilePhoto?: (StringFilter | null),
-/** log-cli: who sold the account, as named in docs/vendors (e.g. NPPR Team Shop) */
+/** log-cli: who sold the account, as named in the private vendor order files */
 vendor?: (StringFilter | null),
 /** log-cli: used to pick the least recently used replacement */
 lastPostedAt?: (DateTimeFilter | null),
@@ -126675,7 +126675,7 @@ coverPhoto?: (OrderByDirection | null),emailPassword?: (OrderByDirection | null)
 browserDriver?: (OrderByDirection | null),
 /** log-cli: the profile picture `log profile setup` uploads (a URL or a local path). Real-looking, not a logo (rule 28) */
 profilePhoto?: (OrderByDirection | null),
-/** log-cli: who sold the account, as named in docs/vendors (e.g. NPPR Team Shop) */
+/** log-cli: who sold the account, as named in the private vendor order files */
 vendor?: (OrderByDirection | null),
 /** log-cli: used to pick the least recently used replacement */
 lastPostedAt?: (OrderByDirection | null),
@@ -126777,7 +126777,7 @@ coverPhoto?: (OrderByDirection | null),emailPassword?: (OrderByDirection | null)
 browserDriver?: (OrderByDirection | null),
 /** log-cli: the profile picture `log profile setup` uploads (a URL or a local path). Real-looking, not a logo (rule 28) */
 profilePhoto?: (OrderByDirection | null),
-/** log-cli: who sold the account, as named in docs/vendors (e.g. NPPR Team Shop) */
+/** log-cli: who sold the account, as named in the private vendor order files */
 vendor?: (OrderByDirection | null),
 /** log-cli: used to pick the least recently used replacement */
 lastPostedAt?: (OrderByDateGranularityInput | null),
@@ -127507,7 +127507,7 @@ coverPhoto?: (Scalars['Boolean'] | null),emailPassword?: (Scalars['Boolean'] | n
 browserDriver?: (Scalars['Boolean'] | null),
 /** log-cli: the profile picture `log profile setup` uploads (a URL or a local path). Real-looking, not a logo (rule 28) */
 profilePhoto?: (Scalars['Boolean'] | null),
-/** log-cli: who sold the account, as named in docs/vendors (e.g. NPPR Team Shop) */
+/** log-cli: who sold the account, as named in the private vendor order files */
 vendor?: (Scalars['Boolean'] | null),
 /** log-cli: used to pick the least recently used replacement */
 lastPostedAt?: (GroupByDateGranularityInput | null),
@@ -128643,7 +128643,7 @@ export interface AgencyConversationGenqlSelection{
     /** log-cli: the listing title the thread header shows (Buyer · Title) */
     listingTitle?: boolean | number
     createdByMemberId?: boolean | number
-    /** log-cli: where the buyer is (Listaro): NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
+    /** log-cli: where the buyer is: NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
     leadStatus?: boolean | number
     pairKey?: boolean | number
     latestMessageId?: boolean | number
@@ -129602,7 +129602,7 @@ facebookThreadId?: (Scalars['String'] | null),
 buyerFacebookId?: (Scalars['String'] | null),
 /** log-cli: the listing title the thread header shows (Buyer · Title) */
 listingTitle?: (Scalars['String'] | null),createdByMemberId?: (Scalars['String'] | null),
-/** log-cli: where the buyer is (Listaro): NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
+/** log-cli: where the buyer is: NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
 leadStatus?: (AgencyConversationLeadStatusEnum | null),pairKey?: (Scalars['String'] | null),latestMessageId?: (Scalars['String'] | null),latestMessageAt?: (Scalars['DateTime'] | null),latestPreview?: (Scalars['String'] | null),
 /** log-cli: buyer messages not yet read */
 unreadCount?: (Scalars['Float'] | null),
@@ -129664,7 +129664,7 @@ facebookThreadId?: (Scalars['String'] | null),
 buyerFacebookId?: (Scalars['String'] | null),
 /** log-cli: the listing title the thread header shows (Buyer · Title) */
 listingTitle?: (Scalars['String'] | null),createdByMemberId?: (Scalars['String'] | null),
-/** log-cli: where the buyer is (Listaro): NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
+/** log-cli: where the buyer is: NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
 leadStatus?: (AgencyConversationLeadStatusEnum | null),pairKey?: (Scalars['String'] | null),latestMessageId?: (Scalars['String'] | null),latestMessageAt?: (Scalars['DateTime'] | null),latestPreview?: (Scalars['String'] | null),
 /** log-cli: buyer messages not yet read */
 unreadCount?: (Scalars['Float'] | null),
@@ -129730,7 +129730,7 @@ facebookThreadId?: (StringFilter | null),
 buyerFacebookId?: (StringFilter | null),
 /** log-cli: the listing title the thread header shows (Buyer · Title) */
 listingTitle?: (StringFilter | null),createdByMemberId?: (StringFilter | null),
-/** log-cli: where the buyer is (Listaro): NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
+/** log-cli: where the buyer is: NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
 leadStatus?: (AgencyConversationLeadStatusEnumFilter | null),pairKey?: (StringFilter | null),latestMessageId?: (StringFilter | null),latestMessageAt?: (DateTimeFilter | null),latestPreview?: (StringFilter | null),
 /** log-cli: buyer messages not yet read */
 unreadCount?: (FloatFilter | null),
@@ -129802,7 +129802,7 @@ facebookThreadId?: (OrderByDirection | null),
 buyerFacebookId?: (OrderByDirection | null),
 /** log-cli: the listing title the thread header shows (Buyer · Title) */
 listingTitle?: (OrderByDirection | null),createdByMemberId?: (OrderByDirection | null),
-/** log-cli: where the buyer is (Listaro): NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
+/** log-cli: where the buyer is: NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
 leadStatus?: (OrderByDirection | null),pairKey?: (OrderByDirection | null),latestMessageId?: (OrderByDirection | null),latestMessageAt?: (OrderByDirection | null),latestPreview?: (OrderByDirection | null),
 /** log-cli: buyer messages not yet read */
 unreadCount?: (OrderByDirection | null),
@@ -129872,7 +129872,7 @@ facebookThreadId?: (OrderByDirection | null),
 buyerFacebookId?: (OrderByDirection | null),
 /** log-cli: the listing title the thread header shows (Buyer · Title) */
 listingTitle?: (OrderByDirection | null),createdByMemberId?: (OrderByDirection | null),
-/** log-cli: where the buyer is (Listaro): NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
+/** log-cli: where the buyer is: NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
 leadStatus?: (OrderByDirection | null),pairKey?: (OrderByDirection | null),latestMessageId?: (OrderByDirection | null),latestMessageAt?: (OrderByDateGranularityInput | null),latestPreview?: (OrderByDirection | null),
 /** log-cli: buyer messages not yet read */
 unreadCount?: (OrderByDirection | null),
@@ -130362,7 +130362,7 @@ facebookThreadId?: (Scalars['Boolean'] | null),
 buyerFacebookId?: (Scalars['Boolean'] | null),
 /** log-cli: the listing title the thread header shows (Buyer · Title) */
 listingTitle?: (Scalars['Boolean'] | null),createdByMemberId?: (Scalars['Boolean'] | null),
-/** log-cli: where the buyer is (Listaro): NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
+/** log-cli: where the buyer is: NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
 leadStatus?: (Scalars['Boolean'] | null),pairKey?: (Scalars['Boolean'] | null),latestMessageId?: (Scalars['Boolean'] | null),latestMessageAt?: (GroupByDateGranularityInput | null),latestPreview?: (Scalars['Boolean'] | null),
 /** log-cli: buyer messages not yet read */
 unreadCount?: (Scalars['Boolean'] | null),

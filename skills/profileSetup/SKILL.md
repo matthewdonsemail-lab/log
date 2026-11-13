@@ -5,10 +5,8 @@ description: Give a Facebook account its profile picture and cover photo with `l
 
 # profileSetup
 
-Listaro's warm-up guide sets a real-looking profile photo and a cover photo on
-days 1-2 of a new account
-(`Listaro_backup/content/blog/how-to-post-without-getting-banned.md`). This
-does that for one account, both photos in one run (matt's choice).
+A new account gets a real-looking profile photo and a cover photo on days 1-2
+of its warm-up. This does that for one account, both photos in one run (matt's choice).
 
 ## Hard boundaries
 

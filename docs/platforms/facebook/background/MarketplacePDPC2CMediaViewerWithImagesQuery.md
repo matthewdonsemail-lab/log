@@ -36,7 +36,7 @@ Seen 15 time(s) in 7 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/host/20261026T180628_61594285317994**, scroll: -553px in 12 wheel steps, 499 ms: 200, 203 ms
+**runs/host/20261026T180628_<userId:1>**, scroll: -553px in 12 wheel steps, 499 ms: 200, 203 ms
 
 Sent:
 
@@ -46,7 +46,7 @@ Sent:
   "fb_api_req_friendly_name": "MarketplacePDPC2CMediaViewerWithImagesQuery",
   "server_timestamps": "true",
   "variables": {
-    "targetId": "1818774979262678"
+    "targetId": "<id:1>"
   },
   "doc_id": "10059604367394414"
 }
@@ -65,78 +65,78 @@ Answered:
           "listing_photos": [
             {
               "__typename": "CatalogMarketplaceEnhancementTransformedImage",
-              "accessibility_caption": "No photo description available.",
+              "accessibility_caption": "<messageText>",
               "image": {
                 "height": 960,
                 "width": 720,
-                "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.84726-6/855448898_1421077280172348_2873785854566912774_n.jpg (445 chars)"
+                "uri": "<mediaUrl> (445 chars)"
               },
-              "id": "1421077270172349"
+              "id": "<id:2>"
             },
             {
               "__typename": "ProductImage",
-              "accessibility_caption": "No photo description available.",
+              "accessibility_caption": "<messageText>",
               "image": {
                 "height": 960,
                 "width": 720,
-                "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t45.5328-4/857046196_29377760378485960_3157780051967267521_n.jpg (445 chars)"
+                "uri": "<mediaUrl> (445 chars)"
               },
-              "id": "29377760315152633"
+              "id": "<id:3>"
             },
             {
               "__typename": "ProductImage",
-              "accessibility_caption": "No photo description available.",
+              "accessibility_caption": "<messageText>",
               "image": {
                 "height": 960,
                 "width": 720,
-                "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t45.5328-4/851274169_1129910819474335_5860864701841281720_n.jpg (444 chars)"
+                "uri": "<mediaUrl> (444 chars)"
               },
-              "id": "1129910812807669"
+              "id": "<id:4>"
             },
             {
               "__typename": "ProductImage",
-              "accessibility_caption": "No photo description available.",
+              "accessibility_caption": "<messageText>",
               "image": {
                 "height": 960,
                 "width": 720,
-                "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t45.5328-4/856807717_1148625574267539_2258126879260274518_n.jpg (444 chars)"
+                "uri": "<mediaUrl> (444 chars)"
               },
-              "id": "1148625567600873"
+              "id": "<id:5>"
             }
           ],
           "pre_recorded_videos": [],
           "is_hidden": false,
-          "id": "1818774979262678"
+          "id": "<id:1>"
         },
-        "id": "66:1818774979262678:IN_MEMORY_MARKETPLACE_PRODUCT_DETAILS_PAGE:MarketplaceC2CProductDetailsPage"
+        "id": "66:<id:1>:IN_MEMORY_MARKETPLACE_PRODUCT_DETAILS_PAGE:MarketplaceC2CProductDetailsPage"
       }
     }
   },
   "extensions": {
     "prefetch_uris_v2": [
       {
-        "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.84726-6/855448898_1421077280172348_2873785854566912774_n.jpg (445 chars)",
+        "uri": "<mediaUrl> (445 chars)",
         "label": null,
         "width": null,
         "height": null,
         "surface": null
       },
       {
-        "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t45.5328-4/851274169_1129910819474335_5860864701841281720_n.jpg (444 chars)",
+        "uri": "<mediaUrl> (444 chars)",
         "label": null,
         "width": null,
         "height": null,
         "surface": null
       },
       {
-        "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t45.5328-4/856807717_1148625574267539_2258126879260274518_n.jpg (444 chars)",
+        "uri": "<mediaUrl> (444 chars)",
         "label": null,
         "width": null,
         "height": null,
         "surface": null
       },
       {
-        "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t45.5328-4/857046196_29377760378485960_3157780051967267521_n.jpg (445 chars)",
+        "uri": "<mediaUrl> (445 chars)",
         "label": null,
         "width": null,
         "height": null,
@@ -152,7 +152,7 @@ Answered:
 }
 ```
 
-**runs/host/20261026T180628_61594285317994**, scroll: +617px in 15 wheel steps, 789 ms: 200, 206 ms
+**runs/host/20261026T180628_<userId:1>**, scroll: +617px in 15 wheel steps, 789 ms: 200, 206 ms
 
 Sent:
 
@@ -162,7 +162,7 @@ Sent:
   "fb_api_req_friendly_name": "MarketplacePDPC2CMediaViewerWithImagesQuery",
   "server_timestamps": "true",
   "variables": {
-    "targetId": "2249546198922840"
+    "targetId": "<id:6>"
   },
   "doc_id": "10059604367394414"
 }
@@ -181,27 +181,27 @@ Answered:
           "listing_photos": [
             {
               "__typename": "CatalogMarketplaceEnhancementTransformedImage",
-              "accessibility_caption": "No photo description available.",
+              "accessibility_caption": "<messageText>",
               "image": {
                 "height": 960,
                 "width": 720,
-                "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t39.84726-6/859392018_962932573103703_1200915558473180130_n.jpg (444 chars)"
+                "uri": "<mediaUrl> (444 chars)"
               },
-              "id": "962932556437038"
+              "id": "<id:7>"
             }
           ],
           "pre_recorded_videos": [],
           "is_hidden": false,
-          "id": "2249546198922840"
+          "id": "<id:6>"
         },
-        "id": "66:2249546198922840:IN_MEMORY_MARKETPLACE_PRODUCT_DETAILS_PAGE:MarketplaceC2CProductDetailsPage"
+        "id": "66:<id:6>:IN_MEMORY_MARKETPLACE_PRODUCT_DETAILS_PAGE:MarketplaceC2CProductDetailsPage"
       }
     }
   },
   "extensions": {
     "prefetch_uris_v2": [
       {
-        "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t39.84726-6/859392018_962932573103703_1200915558473180130_n.jpg (444 chars)",
+        "uri": "<mediaUrl> (444 chars)",
         "label": null,
         "width": null,
         "height": null,

@@ -62,7 +62,7 @@ Seen 164 time(s) in 14 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/warmup/20261023T074930_61594063207669**, step 17: dwell 2-4s: 200, 377 ms
+**runs/warmup/20261023T074930_<userId:1>**, step 17: dwell 2-4s: 200, 377 ms
 
 Sent:
 
@@ -74,7 +74,7 @@ Sent:
     "ctarget": "https://www.facebook.com"
   },
   "body": {
-    "------WebKitFormBoundarytLYumdcAb59VtD07\r\nContent-Disposition: form-data; name": "\"ts\"\r\n\r\n1792742541282\r\n------WebKitFormBoundarytLYumdcAb59VtD07\r\nContent-Disposition: form-data; name=\"q\"\r\n\r\n[{\"app_id\":\"2220391788200892\",\"posts\":\"zgS4W1sicWV4Iix7ImwiOiJKe1wicWVpZFwiOlwiNjE1OTQwNjMyMDc2NjlcIixcInUFGQULAHQFCwRmYgUNIGdrc1wiOltdLAE/eFwiOm51bGx9In0sMTc5Mjc0MjQ4MTI1NSwwLDg1XSz cQCmcQAELjT cwD cwD cwD cwCycwA4X2FjdGluZ19hY2NvdW50ptkBJC40LDAsMTAwXV0=\",\"user\":\"61594063207669\",\"webSessio… (556 chars)"
+    "------WebKitFormBoundarytLYumdcAb59VtD07\r\nContent-Disposition: form-data; name": "\"ts\"\r\n\r\n1792742541282\r\n------WebKitFormBoundarytLYumdcAb59VtD07\r\nContent-Disposition: form-data; name=\"q\"\r\n\r\n[{\"app_id\":\"<id:1>\",\"posts\":\"zgS4W1sicWV4Iix7ImwiOiJKe1wicWVpZFwiOlwiNjE1OTQwNjMyMDc2NjlcIixcInUFGQULAHQFCwRmYgUNIGdrc1wiOltdLAE/eFwiOm51bGx9In0sMTc5Mjc0MjQ4MTI1NSwwLDg1XSz cQCmcQAELjT cwD cwD cwD cwCycwA4X2FjdGluZ19hY2NvdW50ptkBJC40LDAsMTAwXV0=\",\"user\":\"<userId:1>\",\"webSessio… (556 chars)"
   }
 }
 ```
@@ -86,11 +86,11 @@ Answered:
   "__ar": 1,
   "rid": "A-enHRPtqdcp945eGeLpZG8",
   "payload": null,
-  "lid": "7699770584893673991"
+  "lid": "<id:2>"
 }
 ```
 
-**runs/inspect/20261111T081957_61593610473511**, step 1: goto /: 200, 763 ms
+**runs/inspect/20261111T081957_<userId:2>**, step 1: goto /: 200, 763 ms
 
 Sent:
 
@@ -100,7 +100,7 @@ Sent:
     "ph": "C3"
   },
   "body": {
-    "------WebKitFormBoundaryvsGfqxCzNyFVtVCD\r\nContent-Disposition: form-data; name": "\"ts\"\r\n\r\n1794385229324\r\n------WebKitFormBoundaryvsGfqxCzNyFVtVCD\r\nContent-Disposition: form-data; name=\"q\"\r\n\r\n[{\"app_id\":\"2220391788200892\",\"posts\":[[\"falco:bd_pdc_signals\",{\"e\":\"{\\\"asid\\\":\\\"8cd6f825-fc6d-4c75-b723-3a56a222c650\\\",\\\"ct\\\":1794385227,\\\"sjd\\\":\\\"L SYLA34745Vh0ij0QnqFgix0UMAg1hMLF q rNWFvWwh9xgmlhTZ2gVMgjdI9fAxDub7fXk9iREWSk5SLB0F1U1twI8CqvOY08OG0ZvSGk7itkQkNI3lwg7BoBZOpRWUK6SFyoDV2fUFcy… (851 chars)"
+    "------WebKitFormBoundaryvsGfqxCzNyFVtVCD\r\nContent-Disposition: form-data; name": "\"ts\"\r\n\r\n1794385229324\r\n------WebKitFormBoundaryvsGfqxCzNyFVtVCD\r\nContent-Disposition: form-data; name=\"q\"\r\n\r\n[{\"app_id\":\"<id:1>\",\"posts\":[[\"falco:bd_pdc_signals\",{\"e\":\"{\\\"asid\\\":\\\"8cd6f825-fc6d-4c75-b723-3a56a222c650\\\",\\\"ct\\\":1794385227,\\\"sjd\\\":\\\"L SYLA34745Vh0ij0QnqFgix0UMAg1hMLF q rNWFvWwh9xgmlhTZ2gVMgjdI9fAxDub7fXk9iREWSk5SLB0F1U1twI8CqvOY08OG0ZvSGk7itkQkNI3lwg7BoBZOpRWUK6SFyoDV2fUFcy… (851 chars)"
   }
 }
 ```
@@ -112,11 +112,11 @@ Answered:
   "__ar": 1,
   "rid": "AOB8emiI69vnb9_h63piKCq",
   "payload": null,
-  "lid": "7706825875642828341"
+  "lid": "<id:3>"
 }
 ```
 
-**runs/inspect/20261111T081957_61593610473511**, Inspect session open. Send steps with: log inspect do <action>.: 200, 329 ms
+**runs/inspect/20261111T081957_<userId:2>**, Inspect session open. Send steps with: log inspect do <action>.: 200, 329 ms
 
 Sent:
 
@@ -127,7 +127,7 @@ Sent:
     "qpl_active_flow_ids": "175125627,516759801"
   },
   "body": {
-    "------WebKitFormBoundaryhNGkCv0ZQW1sxlHs\r\nContent-Disposition: form-data; name": "\"ts\"\r\n\r\n1794385259346\r\n------WebKitFormBoundaryhNGkCv0ZQW1sxlHs\r\nContent-Disposition: form-data; name=\"q\"\r\n\r\n[{\"app_id\":\"2220391788200892\",\"posts\":[[\"falco:bd_pdc_signals\",{\"e\":\"{\\\"asid\\\":\\\"8cd6f825-fc6d-4c75-b723-3a56a222c650\\\",\\\"ct\\\":1794385227,\\\"sjd\\\":\\\"L SYLA34745Vh0ij0QnqFhFnWKml3UeIfzDRR1dlaQyVtGFA9wJNCjUSnNGLYDHGg6eiR7Bt0CFbygtiyGNe4l6YnUxLMtNZ4Dg5knLZRkPy54JIBPqmPmi n16W7G4vv2Z 3iTBPBobosE… (851 chars)"
+    "------WebKitFormBoundaryhNGkCv0ZQW1sxlHs\r\nContent-Disposition: form-data; name": "\"ts\"\r\n\r\n1794385259346\r\n------WebKitFormBoundaryhNGkCv0ZQW1sxlHs\r\nContent-Disposition: form-data; name=\"q\"\r\n\r\n[{\"app_id\":\"<id:1>\",\"posts\":[[\"falco:bd_pdc_signals\",{\"e\":\"{\\\"asid\\\":\\\"8cd6f825-fc6d-4c75-b723-3a56a222c650\\\",\\\"ct\\\":1794385227,\\\"sjd\\\":\\\"L SYLA34745Vh0ij0QnqFhFnWKml3UeIfzDRR1dlaQyVtGFA9wJNCjUSnNGLYDHGg6eiR7Bt0CFbygtiyGNe4l6YnUxLMtNZ4Dg5knLZRkPy54JIBPqmPmi n16W7G4vv2Z 3iTBPBobosE… (851 chars)"
   }
 }
 ```
@@ -139,7 +139,7 @@ Answered:
   "__ar": 1,
   "rid": "ABI88fY3M3zR8BeTG-utGKp",
   "payload": null,
-  "lid": "7706826004805605434"
+  "lid": "<id:4>"
 }
 ```
 

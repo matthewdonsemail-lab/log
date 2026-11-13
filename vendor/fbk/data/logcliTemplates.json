@@ -117,7 +117,7 @@
   "FBScreenTimeLogger_syncMutation": {
     "variables": {
       "input": {
-        "actor_id": "61594063207669",
+        "actor_id": "99900000000001",
         "client_mutation_id": "1",
         "device_time_iso": "2026-10-23T07:54:52.628Z",
         "fb_web_fb_intervals_payload": {
@@ -169,7 +169,7 @@
   },
   "MAWVerifyThreadCutover_ContactCapabilities2Query": {
     "variables": {
-      "id": "61594063207669"
+      "id": "99900000000001"
     }
   },
   "MWQuickPromotionThreadlistBannerQuery": {
@@ -208,7 +208,7 @@
   "VestaServerGraphQLRegisterProviderBeginRegisterMutation": {
     "variables": {
       "input": {
-        "actor_id": "61594063207669",
+        "actor_id": "99900000000001",
         "client_mutation_id": "3",
         "base64url_encoded_opaque_r1": "QkjYWmUWoa5qGSCRi6HXrDMvlTduP2GgAhHD4BS60V4",
         "fbid": "sp5MI2FeHD/hrI1wOQXbKg==",
@@ -222,7 +222,7 @@
   "VestaServerGraphQLRegisterProviderFinishRegisterMutation": {
     "variables": {
       "input": {
-        "actor_id": "61594063207669",
+        "actor_id": "99900000000001",
         "client_mutation_id": "4",
         "base64url_encoded_enc_reg_payload": "gGkcxqXv5kAnGleduETjXTDXFyyBh1s53ozcV-4jukjCBcPGWp-wieVepLTDRYXTcQmBH4--oB6lB3ziZ3oPytwoQj5No8yd4Tio3j9gcuFTI3B3LW3EfHx5Q4kQFWELtXc8G_fbEDUITVM3TIGPGQ21_fiRs5_rYbrkOoYHsdQDpkkMFNRwqjKLXthCMjRci0W9TQB6PZ-xW410MpyD9NxcbQIzr1AkoGx8lkylRYKf2JhCYaF4-kxURVAc7mCAvfcN3NwrSebdJuXb4wZdT4GUqkH5Jdkmwl4d29KrZMUzABf3b3IUYuaoX3zb4zCB5RqidNa-3jy7IUN4C_l9eTkmAQrRBBXzTr7MxZNh_WR7XmAxvlMpFODYUAosTtYi6xoFnNCY54d2qFF-… (512 chars)",
         "fbid": "sp5MI2FeHD/hrI1wOQXbKg==",
@@ -283,7 +283,7 @@
       "input": {
         "force_dismiss": true,
         "nux_type": "marketplace_boosted_listing_www_post_publish_nux",
-        "actor_id": "61594063207669",
+        "actor_id": "99900000000001",
         "client_mutation_id": "1"
       }
     }
@@ -299,7 +299,7 @@
       "input": {
         "browse_radius": 65,
         "use_suggested_radius": false,
-        "actor_id": "61594063207669",
+        "actor_id": "99900000000001",
         "client_mutation_id": "2"
       }
     }
@@ -343,7 +343,7 @@
   "MarketplaceCometPartnerListingDialogContentMutation": {
     "variables": {
       "input": {
-        "actor_id": "61594063207669",
+        "actor_id": "99900000000001",
         "client_mutation_id": "1",
         "selected_partner_ids": [
           "1240470891063721",
@@ -373,7 +373,7 @@
           "NEIGHBORHOOD",
           "POSTAL_CODE"
         ],
-        "query": "Maracena, Spain",
+        "query": "Springfield, US",
         "search_type": "PLACE_TYPEAHEAD",
         "viewer_coordinates": {
           "latitude": 37.193232725035,
@@ -438,7 +438,7 @@
       "input": {
         "latitude": 40.6262,
         "longitude": -75.3757,
-        "actor_id": "61594063207669",
+        "actor_id": "99900000000001",
         "client_mutation_id": "1"
       }
     }
@@ -464,7 +464,7 @@
   "useCometMarketplaceListingCreateMutation": {
     "variables": {
       "input": {
-        "actor_id": "61594063207669",
+        "actor_id": "99900000000001",
         "client_mutation_id": "6",
         "attribution_id_v2": "CometMarketplaceComposerRoot.react,comet.marketplace.composer,unexpected,1792667868932,525104,1606854132932955,,;CometMarketplaceComposerRoot.react,comet.marketplace.composer,via_cold_start,1792667592330,780780,1606854132932955,,",
         "audience": {
@@ -554,7 +554,7 @@
     "variables": {
       "input": {
         "inbox_viewer_role": "BUYER",
-        "actor_id": "61594063207669",
+        "actor_id": "99900000000001",
         "client_mutation_id": "1"
       }
     }
@@ -672,7 +672,7 @@
         "query_id": "Cg8BdAZq2uoVDwNlbnYPDE1BSU5fU1VSRkFDRQ8CZnQKAQ8CcXQPBWZpcnN0DwJxZgoCAA8ISVNfQ09NRVQCAQ8VSU5DTFVERV9XQV9QMkJfTk9USUZTAQ8DZWZ0DgE=",
         "source": "unknown",
         "update_type": "MARK_ALL_SEEN",
-        "actor_id": "61594063207669",
+        "actor_id": "99900000000001",
         "client_mutation_id": "1"
       },
       "environment": "MAIN_SURFACE"
@@ -692,7 +692,7 @@
       "input": {
         "listing_id": "1749699906261391",
         "start_time": 1792742061173,
-        "actor_id": "61594063207669",
+        "actor_id": "99900000000001",
         "client_mutation_id": "3"
       }
     }
@@ -702,7 +702,7 @@
       "input": {
         "has_seen": true,
         "product_item_id": "1749699906261391",
-        "actor_id": "61594063207669",
+        "actor_id": "99900000000001",
         "client_mutation_id": "2"
       }
     }
@@ -728,7 +728,7 @@
       "isBizWeb": false,
       "isLinksInPostEnabled": false,
       "privacySelectorRenderLocation": "COMET_COMPOSER",
-      "profileID": "61594063207669",
+      "profileID": "99900000000001",
       "scale": 1,
       "serviceNames": [
         "CROSS_POSTING_SETTING"
@@ -815,7 +815,7 @@
       "renderLocation": "timeline",
       "runWithContinuationKey": true,
       "scale": 1,
-      "userID": "61556829712306",
+      "userID": "99900000000030",
       "__relay_internal__pv__GHLShouldChangeAdIdFieldNamerelayprovider": true,
       "__relay_internal__pv__GHLShouldChangeSponsoredDataFieldNamerelayprovider": true,
       "__relay_internal__pv__CometFeedStory_enable_reactor_facepilerelayprovider": false,
@@ -851,7 +851,7 @@
       "privacySelectorRenderLocation": "COMET_STREAM",
       "renderLocation": "timeline",
       "scale": 1,
-      "userID": "61556829712306",
+      "userID": "99900000000030",
       "__relay_internal__pv__GHLShouldChangeSponsoredDataFieldNamerelayprovider": true,
       "__relay_internal__pv__WorkCometIsEmployeeGKProviderrelayprovider": false,
       "__relay_internal__pv__GroupsCometGroupChatLazyLoadLastMessageSnippetrelayprovider": false,
@@ -954,7 +954,7 @@
           "AZihIoUx0lY6kt-0ST0sCSSoGccaBFOsDLmHSkY3pflbhbwmj9jrlfcFCMOfOFfK5WpPjaTswdbTjmcApIJivCEzw10f7kQlQ0EBl9a4OSik5M3v9s2iZiYWn7JTF8HYn3VXNI-QE8GoiStheM-0p-7dCPsYuFsHV4Avvkr4IaTGTG2-kwMjb-qdSJ_fyodYM4WUj1lEgGycxnGD6rp8m-vQBt7YGQ77ZIZfq7T7oVDhKH5YYsDfStIjWzsJIrY9YjxmSF_sFZbiOW3n6b4_3HHfVGJyjP79FLe0HkAxe_cAcgWFwz0T9gCkBBXYHqK0c8GHJN_3pqGPUDNIMHmd3c81qMOo6JkPm2wlU0F-f6qSdThSkKt3Uu3GeMvRiHe2MJrbPlRd2qlYuKGF… (2060 chars)"
         ],
         "session_id": "4350d157-00b5-4b70-8d45-db5dbb1ef5be",
-        "actor_id": "61594063207669",
+        "actor_id": "99900000000001",
         "client_mutation_id": "1"
       },
       "scale": 1,
@@ -971,7 +971,7 @@
           "frx_menu_item_loaded": null,
           "product_attribution": "CometMarketplacePermalinkRoot.react,comet.marketplace.item,unexpected,1792742061111,904453,1606854132932955,,;CometMarketplaceHomeRoot.react,comet.marketplace.home,via_cold_start,1792742007074,832974,1606854132932955,494,1749699906261391"
         },
-        "actor_id": "61594063207669",
+        "actor_id": "99900000000001",
         "client_mutation_id": "1"
       }
     }
@@ -1094,7 +1094,7 @@
         "video_ids": [
           "1967507720600004"
         ],
-        "actor_id": "61594063207669",
+        "actor_id": "99900000000001",
         "client_mutation_id": "1"
       }
     }
@@ -1124,7 +1124,7 @@
         "is_short_survey_holdout": true,
         "referral_surface": null,
         "surface_new": "MARKETPLACE_PAGE_SELLING",
-        "actor_id": "61594063207669",
+        "actor_id": "99900000000001",
         "client_mutation_id": "1"
       }
     }
@@ -1139,7 +1139,7 @@
         "referral_surface": "UNKNOWN",
         "response": "NO",
         "surface_new": "MARKETPLACE_PAGE_SELLING",
-        "actor_id": "61594063207669",
+        "actor_id": "99900000000001",
         "client_mutation_id": "2"
       }
     }
@@ -1147,7 +1147,7 @@
   "useCometMarketplaceForSaleItemDeleteMutation": {
     "variables": {
       "input": {
-        "actor_id": "61594063207669",
+        "actor_id": "99900000000001",
         "client_mutation_id": "1",
         "batch_delete_variants": true,
         "for_sale_item_id": "1425935622848350",
@@ -1202,7 +1202,7 @@
   "useCometAISupportConversationLoggerMutation": {
     "variables": {
       "input": {
-        "actor_id": "61594063207669",
+        "actor_id": "99900000000001",
         "client_mutation_id": "1",
         "additional_data": [
           {
@@ -1227,7 +1227,7 @@
     "variables": {
       "designSystem": "FDS",
       "input": {
-        "actor_id": "61594063207669",
+        "actor_id": "99900000000001",
         "client_mutation_id": "2",
         "action": "PROCEED",
         "caller": null,
@@ -1296,7 +1296,7 @@
   "useGroupsCometVisitMutation": {
     "variables": {
       "input": {
-        "actor_id": "61594063207669",
+        "actor_id": "99900000000001",
         "client_mutation_id": "1",
         "badge_entry_point": "GROUPS_TAB_MAIN",
         "bookmark_folder_id": "FAVORITES",
@@ -1317,7 +1317,7 @@
         "importance"
       ],
       "userIDs": [
-        "61559438276167"
+        "99900000000031"
       ]
     }
   },
@@ -1333,7 +1333,7 @@
         "caption": "",
         "existing_photo_id": "122123515989461450",
         "expiration_time": null,
-        "profile_id": "61593843527201",
+        "profile_id": "99900000000002",
         "profile_pic_method": "EXISTING",
         "profile_pic_source": "TIMELINE",
         "scaled_crop_rect": {
@@ -1343,7 +1343,7 @@
           "y": 0.12667
         },
         "skip_cropping": true,
-        "actor_id": "61593843527201",
+        "actor_id": "99900000000002",
         "client_mutation_id": "1"
       },
       "isPage": false,
@@ -1374,7 +1374,7 @@
       "taggedInOnly": null,
       "trackingCode": null,
       "useDefaultActor": false,
-      "id": "61593843527201",
+      "id": "99900000000002",
       "__relay_internal__pv__GHLShouldChangeAdIdFieldNamerelayprovider": true,
       "__relay_internal__pv__GHLShouldChangeSponsoredDataFieldNamerelayprovider": true,
       "__relay_internal__pv__CometFeedStory_enable_reactor_facepilerelayprovider": false,
@@ -1407,11 +1407,11 @@
   "ProfilePromptQuickPromotionMutation": {
     "variables": {
       "input": {
-        "profile_id": "61593843527201",
+        "profile_id": "99900000000002",
         "prompt_event": "impression",
         "prompt_type": "PERSONAL_PROFILE_DIRECTORY_PROFILE_MEGAPHONE_PROMPT",
         "qp_id": "1256202615885785",
-        "actor_id": "61593843527201",
+        "actor_id": "99900000000002",
         "client_mutation_id": "1"
       }
     }

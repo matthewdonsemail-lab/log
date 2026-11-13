@@ -24,7 +24,7 @@ Seen 4 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261024T060921_61594063207669**, step 3: goto /groups/junkremovalwinners/members: 200, 719 ms
+**runs/inspect/20261024T060921_<userId:1>**, step 3: goto /groups/junkremovalwinners/members: 200, 719 ms
 
 Sent:
 
@@ -36,7 +36,7 @@ Sent:
   "server_timestamps": "true",
   "variables": {
     "scale": 1,
-    "userSignalID": "810150165507170"
+    "userSignalID": "<id:1>"
   },
   "doc_id": "38450961167851576",
   "fb_api_analytics_tags": [
@@ -52,9 +52,9 @@ Answered:
   "data": {
     "node": {
       "__typename": "UserSignal",
-      "signal_type_id": "1593744847475603",
+      "signal_type_id": "<id:2>",
       "detail_description": {
-        "text": "Kirk manages the membership, moderators, settings and posts for Junk Removal Winners ™ - How to Start, Get Leads & Grow Your Business. Only group members can see this badge."
+        "text": "<messageText>"
       },
       "detail_title": {
         "text": "Admin"
@@ -66,17 +66,17 @@ Answered:
             "__typename": "User",
             "__isProfile": "User",
             "profile_picture": {
-              "uri": "https://scontent-xxc1-1.xx.fbcdn.net/v/t39.30808-1/557393206_122261982086208222_4212414984653403591_n.jpg (456 chars)"
+              "uri": "<mediaUrl> (456 chars)"
             },
-            "id": "61556246673364"
+            "id": "<userId:2>"
           },
           {
             "__typename": "User",
             "__isProfile": "User",
             "profile_picture": {
-              "uri": "https://scontent-xxc1-1.xx.fbcdn.net/v/t39.30808-1/275291205_352680496755308_7768636917374553629_n.jpg (435 chars)"
+              "uri": "<mediaUrl> (435 chars)"
             },
-            "id": "100060400817918"
+            "id": "<userId:3>"
           }
         ]
       },
@@ -93,7 +93,7 @@ Answered:
       "extra_mutation_actions": [],
       "disclaimer_text": null,
       "hide_facepile": false,
-      "id": "810150165507170"
+      "id": "<id:1>"
     }
   },
   "extensions": {
@@ -106,7 +106,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261024T060921_61594063207669**, step 23: scroll 3-5 x 300-600px: 200, 606 ms
+**runs/inspect/20261024T060921_<userId:1>**, step 23: scroll 3-5 x 300-600px: 200, 606 ms
 
 Sent:
 
@@ -118,7 +118,7 @@ Sent:
   "server_timestamps": "true",
   "variables": {
     "scale": 1,
-    "userSignalID": "9949263188500045"
+    "userSignalID": "<id:3>"
   },
   "doc_id": "38450961167851576",
   "fb_api_analytics_tags": [
@@ -134,9 +134,9 @@ Answered:
   "data": {
     "node": {
       "__typename": "UserSignal",
-      "signal_type_id": "131647715479949",
+      "signal_type_id": "<id:4>",
       "detail_description": {
-        "text": "This member consistently shares content the group values."
+        "text": "<messageText>"
       },
       "detail_title": {
         "text": "Top Voice"
@@ -150,7 +150,7 @@ Answered:
             "__typename": "User",
             "__isProfile": "User",
             "profile_picture": {
-              "uri": "https://scontent-xxc1-1.xx.fbcdn.net/v/t1.6435-1/52500204_10157344101568706_4615676803254583296_n.jpg (449 chars)"
+              "uri": "<mediaUrl> (449 chars)"
             },
             "id": "544903705"
           },
@@ -158,23 +158,23 @@ Answered:
             "__typename": "User",
             "__isProfile": "User",
             "profile_picture": {
-              "uri": "https://scontent-xxc1-1.xx.fbcdn.net/v/t39.30808-1/531864621_1310657057433109_37231903509643755_n.jpg (434 chars)"
+              "uri": "<mediaUrl> (434 chars)"
             },
-            "id": "100054664802437"
+            "id": "<userId:4>"
           },
           {
             "__typename": "User",
             "__isProfile": "User",
             "profile_picture": {
-              "uri": "https://scontent-xxc1-1.xx.fbcdn.net/v/t39.30808-1/428638353_7149560185097274_3254830166740772333_n.jpg (438 chars)"
+              "uri": "<mediaUrl> (438 chars)"
             },
-            "id": "100001300891867"
+            "id": "<userId:5>"
           },
           {
             "__typename": "User",
             "__isProfile": "User",
             "profile_picture": {
-              "uri": "https://scontent-xxc1-1.xx.fbcdn.net/v/t39.30808-1/523356016_10104337613829396_4617979928259180259_n.jpg (439 chars)"
+              "uri": "<mediaUrl> (439 chars)"
             },
             "id": "48506414"
           },
@@ -182,17 +182,17 @@ Answered:
             "__typename": "User",
             "__isProfile": "User",
             "profile_picture": {
-              "uri": "https://scontent-xxc1-1.xx.fbcdn.net/v/t39.30808-1/481656975_9329628263764666_1630204477745536416_n.jpg (438 chars)"
+              "uri": "<mediaUrl> (438 chars)"
             },
-            "id": "100001527562418"
+            "id": "<userId:6>"
           },
           {
             "__typename": "User",
             "__isProfile": "User",
             "profile_picture": {
-              "uri": "https://scontent-xxc1-1.xx.fbcdn.net/v/t39.30808-1/398650704_24006829518932313_3620468633468746750_n.jpg (439 chars)"
+              "uri": "<mediaUrl> (439 chars)"
             },
-            "id": "100000957997360"
+            "id": "<userId:7>"
           },
           "… 3 more"
         ]
@@ -210,7 +210,7 @@ Answered:
       "extra_mutation_actions": [],
       "disclaimer_text": null,
       "hide_facepile": false,
-      "id": "9949263188500045"
+      "id": "<id:3>"
     }
   },
   "extensions": {

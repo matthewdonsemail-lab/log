@@ -298,7 +298,7 @@ Seen 969 time(s) in 45 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/warmup/20261023T080515_61594063207669**, scroll: +314px in 8 wheel steps, 422 ms: 200, 595 ms
+**runs/warmup/20261023T080515_<userId:1>**, scroll: +314px in 8 wheel steps, 422 ms: 200, 595 ms
 
 Sent:
 
@@ -318,11 +318,11 @@ Answered:
   "__ar": 1,
   "rid": "AE0EtWPif8Qi0qnG9W8FRRe",
   "payload": null,
-  "lid": "7699771538125504221"
+  "lid": "<id:1>"
 }
 ```
 
-**runs/warmup/20261023T080515_61594063207669**, step 3: goto /marketplace/you/selling: 200, 826 ms
+**runs/warmup/20261023T080515_<userId:1>**, step 3: goto /marketplace/you/selling: 200, 826 ms
 
 Sent:
 
@@ -342,11 +342,11 @@ Answered:
   "__ar": 1,
   "rid": "Aa_ULgZohJ9NhH3xEsi4cIc",
   "payload": null,
-  "lid": "7699771636854660104"
+  "lid": "<id:2>"
 }
 ```
 
-**runs/warmup/20261023T080515_61594063207669**, step 5: goto /messages/: 200, 371 ms
+**runs/warmup/20261023T080515_<userId:1>**, step 5: goto /messages/: 200, 371 ms
 
 Sent:
 

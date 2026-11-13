@@ -25,7 +25,7 @@ Seen 3 time(s) in 3 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261022T110738_61594063207669**, step 25: click e1241: 200, 5731 ms
+**runs/inspect/20261022T110738_<userId:1>**, step 25: click e1241: 200, 5731 ms
 
 Sent:
 
@@ -37,19 +37,19 @@ Sent:
   "server_timestamps": "true",
   "variables": {
     "input": {
-      "actor_id": "61594063207669",
+      "actor_id": "<userId:1>",
       "client_mutation_id": "6",
-      "attribution_id_v2": "CometMarketplaceComposerRoot.react,comet.marketplace.composer,unexpected,1792667868932,525104,1606854132932955,,;CometMarketplaceComposerRoot.react,comet.marketplace.composer,via_cold_start,1792667592330,780780,1606854132932955,,",
+      "attribution_id_v2": "CometMarketplaceComposerRoot.react,comet.marketplace.composer,unexpected,1792667868932,525104,<id:1>,,;CometMarketplaceComposerRoot.react,comet.marketplace.composer,via_cold_start,1792667592330,780780,<id:1>,,",
       "audience": {
         "marketplace": {
-          "marketplace_id": "1663689853903557"
+          "marketplace_id": "<id:2>"
         }
       },
       "data": {
         "client_application": null,
         "common": {
           "attribute_data_json": "{\"condition\":\"new\"}",
-          "category_id": "895487550471874",
+          "category_id": "<id:3>",
           "commerce_shipping_carrier": null,
           "commerce_shipping_carriers": [],
           "comparable_price": "null",
@@ -58,7 +58,7 @@ Sent:
             "IN_PERSON"
           ],
           "description": {
-            "text": "Junk removal and full cleanouts in Bethlehem and nearby.\n\nHouses, apartments, garages, basements, sheds, storage units, hoarder cleanouts.\n\nWe load it, haul it and sweep up. Furniture, appliances, bags, debris.\n\nFrom $99 for small loads. Message a photo of the job for a quote."
+            "text": "<messageText>"
           },
           "draft_type": null,
           "hidden_from_friends_visibility": "VISIBLE_TO_EVERYONE",
@@ -69,9 +69,9 @@ Sent:
             "currency": "USD",
             "price": "99"
           },
-          "latitude": 40.6262,
+          "latitude": "<coordinate>",
           "listing_email_id": null,
-          "longitude": -75.3757,
+          "longitude": "<coordinate>",
           "min_acceptable_checkout_offer_price": "null",
           "personalization_info": null,
           "product_hashtag_names": [],
@@ -92,14 +92,14 @@ Sent:
           "source_type": "marketplace_unknown",
           "suggested_hashtag_names": [],
           "surface": "composer",
-          "title": "Junk Removal & Cleanouts: Houses, Garages, Basements",
+          "title": "<messageText>",
           "variants": [],
           "video_ids": [],
           "xpost_target_ids": [],
           "comments_disabled": false,
           "photo_ids": [
-            "122127505023468773",
-            "122127505173468773"
+            "<id:4>",
+            "<id:5>"
           ]
         }
       },
@@ -121,14 +121,14 @@ Answered:
     "marketplace_listing_create": {
       "listing": {
         "__typename": "GroupCommerceProductItem",
-        "id": "1425935622848350",
+        "id": "<id:6>",
         "story": {
           "url": "https://www.facebook.com/marketplace/item/1425935622848350/",
           "id": "UzpfSTYxNTk0MDYzMjA3NjY5OlZLOjE0MjU5MzU2MjI4NDgzNTA="
         },
         "story_id": "UzpfSTYxNTk0MDYzMjA3NjY5OlZLOjE0MjU5MzU2MjI4NDgzNTA=",
         "product_item": {
-          "id": "28800458926283039"
+          "id": "<id:7>"
         }
       },
       "boosted_component": null
@@ -144,7 +144,7 @@ Answered:
 }
 ```
 
-**runs/flow/20261024T233053_61593981307720**, step 15: clickRole button "…": 200, 8038 ms
+**runs/flow/20261024T233053_<userId:2>**, step 15: clickRole button "…": 200, 8038 ms
 
 Sent:
 
@@ -156,19 +156,19 @@ Sent:
   "server_timestamps": "true",
   "variables": {
     "input": {
-      "actor_id": "61593981307720",
+      "actor_id": "<userId:2>",
       "client_mutation_id": "6",
-      "attribution_id_v2": "CometMarketplaceComposerRoot.react,comet.marketplace.composer,unexpected,1792884897226,915172,1606854132932955,,;CometMarketplaceComposerRoot.react,comet.marketplace.composer,via_cold_start,1792884729036,574366,1606854132932955,,",
+      "attribution_id_v2": "CometMarketplaceComposerRoot.react,comet.marketplace.composer,unexpected,1792884897226,915172,<id:1>,,;CometMarketplaceComposerRoot.react,comet.marketplace.composer,via_cold_start,1792884729036,574366,<id:1>,,",
       "audience": {
         "marketplace": {
-          "marketplace_id": "1663689853903557"
+          "marketplace_id": "<id:2>"
         }
       },
       "data": {
         "client_application": null,
         "common": {
           "attribute_data_json": "{\"condition\":\"new\"}",
-          "category_id": "895487550471874",
+          "category_id": "<id:3>",
           "commerce_shipping_carrier": null,
           "commerce_shipping_carriers": [],
           "comparable_price": "null",
@@ -177,7 +177,7 @@ Sent:
             "IN_PERSON"
           ],
           "description": {
-            "text": "Side yard piled up? Garage or basement full of stuff you can't shift?\nSend us a photo of the pile and we'll reply with a price. No visit needed.\n\nWhat we take:\n• Furniture, mattresses and appliances\n• Boxes, bags and everyday clutter\n• Yard, garage, basement and shed cleanouts\n• Old grills, chairs, wood and debris\n\nPrices:\n• Small load (a few items): $99\n\nHow it works:\n1. Send a photo here\n2. Get … (451 chars)"
+            "text": "<messageText>"
           },
           "draft_type": null,
           "hidden_from_friends_visibility": "VISIBLE_TO_EVERYONE",
@@ -188,9 +188,9 @@ Sent:
             "currency": "USD",
             "price": "99"
           },
-          "latitude": 41.135271677718,
+          "latitude": "<coordinate>",
           "listing_email_id": null,
-          "longitude": -75.904449427213,
+          "longitude": "<coordinate>",
           "min_acceptable_checkout_offer_price": "null",
           "personalization_info": null,
           "product_hashtag_names": [],
@@ -211,14 +211,14 @@ Sent:
           "source_type": "marketplace_unknown",
           "suggested_hashtag_names": [],
           "surface": "composer",
-          "title": "Junk Removal Mountain Top – Free Quote From a Photo",
+          "title": "<messageText>",
           "variants": [],
           "video_ids": [],
           "xpost_target_ids": [],
           "comments_disabled": false,
           "photo_ids": [
-            "122128648029466043",
-            "122128648125466043"
+            "<id:8>",
+            "<id:9>"
           ]
         }
       },
@@ -240,14 +240,14 @@ Answered:
     "marketplace_listing_create": {
       "listing": {
         "__typename": "GroupCommerceProductItem",
-        "id": "28779899605000522",
+        "id": "<id:10>",
         "story": {
           "url": "https://www.facebook.com/marketplace/item/28779899605000522/",
           "id": "UzpfSTYxNTkzOTgxMzA3NzIwOlZLOjI4Nzc5ODk5NjA1MDAwNTIy"
         },
         "story_id": "UzpfSTYxNTkzOTgxMzA3NzIwOlZLOjI4Nzc5ODk5NjA1MDAwNTIy",
         "product_item": {
-          "id": "28840294075623042"
+          "id": "<id:11>"
         }
       },
       "boosted_component": null
@@ -271,7 +271,7 @@ The Publish click itself: creates the Marketplace listing and returns `marketpla
 
 ## What our machine does with it
 
-The publish session listens for its answer and keeps the id (`created_listing_id`), so the id never depends on the Selling page having drawn the new card. Reading's first listing, 4095105027293522, 2026-10-19 13:25:58. The listing can still be held for review afterwards: the Selling page's `integrity_status_indicator` says so, and the run writes UNDER_REVIEW.
+The publish session listens for its answer and keeps the id (`created_listing_id`), so the id never depends on the Selling page having drawn the new card. Reading's first listing, <id:12>, 2026-10-19 13:25:58. The listing can still be held for review afterwards: the Selling page's `integrity_status_indicator` says so, and the run writes UNDER_REVIEW.
 
 ## What can go wrong
 

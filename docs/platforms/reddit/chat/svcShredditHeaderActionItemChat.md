@@ -10,7 +10,7 @@
 | Path | `/svc/shreddit/header-action-item-chat` |
 | Sends | — |
 | Reads | — |
-| Called from | `runs/inspect/20261025T124815_MaleficentTry8338/script1.js:9 anonymous`, `runs/inspect/20261025T124815_MaleficentTry8338/script113.js:9 anonymous` |
+| Called from | `runs/inspect/20261025T124815_<name:2>/script1.js:9 anonymous`, `runs/inspect/20261025T124815_<name:2>/script113.js:9 anonymous` |
 | rea | `ev_f833e825dca67461f8aa08c2c541968a4e6a855f8c65037fa6bc3c368d9e5e68` |
 
 Seen 7 time(s) in 1 run(s).
@@ -21,7 +21,7 @@ Seen 7 time(s) in 1 run(s).
 | inspect | step 3: goto /r/AskReddit/ | 1 | 200 | 626 ms | 4600 ms | — |
 | inspect | step 5: goto /search/ | 1 | 200 | 370 ms | 1254 ms | — |
 | inspect | step 6: goto /r/AskReddit/comments/1x8sr8s/whats_a_high_paying_but_soul_crushing_career_th | 1 | 200 | 422 ms | 1018 ms | — |
-| inspect | step 10: goto /user/Maleficent-Try-8338/ | 1 | 200 | 634 ms | 1233 ms | — |
+| inspect | step 10: goto /user/<name:1>/ | 1 | 200 | 634 ms | 1233 ms | — |
 | inspect | step 11: goto /notifications | 1 | 200 | 324 ms | 1576 ms | — |
 | inspect | step 12: goto /r/popular/ | 1 | 200 | 369 ms | 786 ms | — |
 
@@ -29,7 +29,7 @@ Seen 7 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 1: goto /: 200, 989 ms
+**runs/inspect/20261025T124815_<name:2>**, step 1: goto /: 200, 989 ms
 
 Sent:
 
@@ -43,7 +43,7 @@ Answered:
 "<faceplate-loader name=\"HeaderActionItemChat_dgF3lm\" src=\"concat:-STulhAtU4,29NC_PbRqG,4wkaaZVhfb,alxsS3x_LD,Ao1SgzdS5N,B149KXnvS8,B4azaGpu-D,B7KvmUeRnV,BdfpXRmjN5,BEAvJs_C8b,BGZ-nd1DBK,BOXawDZC1L,BpOJq76-SY,BpXCv1GcGG,BQsgkJ4lDx,BUacXktYAc,BvOWmaNPEJ,BVRnlBAoql,BZHTPhFhv1,CbjxY8gDr4,CBwOyNjLvJ,COK-wVBdxx,Cp7VcC-uun,Cqu_rhtgcl,CwGbZ5ZxpN,CxdYqUVbFS,CY0XGT8ur2,CylLPexIpe,D9C_VFQ_c2,DCOj0oSMGE,DCsN1… (2952 chars)"
 ```
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 3: goto /r/AskReddit/: 200, 626 ms
+**runs/inspect/20261025T124815_<name:2>**, step 3: goto /r/AskReddit/: 200, 626 ms
 
 Sent:
 
@@ -57,7 +57,7 @@ Answered:
 "<faceplate-loader name=\"HeaderActionItemChat_dgF3lm\" src=\"concat:-STulhAtU4,29NC_PbRqG,4wkaaZVhfb,alxsS3x_LD,Ao1SgzdS5N,B149KXnvS8,B4azaGpu-D,B7KvmUeRnV,BdfpXRmjN5,BEAvJs_C8b,BGZ-nd1DBK,BOXawDZC1L,BpOJq76-SY,BpXCv1GcGG,BQsgkJ4lDx,BUacXktYAc,BvOWmaNPEJ,BVRnlBAoql,BZHTPhFhv1,CbjxY8gDr4,CBwOyNjLvJ,COK-wVBdxx,Cp7VcC-uun,Cqu_rhtgcl,CwGbZ5ZxpN,CxdYqUVbFS,CY0XGT8ur2,CylLPexIpe,D9C_VFQ_c2,DCOj0oSMGE,DCsN1… (2974 chars)"
 ```
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 5: goto /search/: 200, 370 ms
+**runs/inspect/20261025T124815_<name:2>**, step 5: goto /search/: 200, 370 ms
 
 Sent:
 

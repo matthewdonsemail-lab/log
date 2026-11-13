@@ -18,8 +18,8 @@ describe('Byteful', () => {
     expect(bytefulCredentials({ BYTEFUL_PUBLIC_KEY: 'a', BYTEFUL_PRIVATE_KEY: 'b' })).toEqual({ publicKey: 'a', privateKey: 'b' })
     expect(bytefulCredentials({ BYTEFUL_PUBLIC_KEY: 'a' })).toEqual({ missing: 'BYTEFUL_PRIVATE_KEY' })
     const seen: { url?: string; headers?: Record<string, string> }[] = []
-    const summary = await getResidentialSummary(creds, fakeFetch({ data: { proxy_user_ids: ['125248_x'], residential_bytes: 1e9, residential_bytes_used: 2e8, residential_bytes_left: 8e8 } }, seen))
-    expect(summary).toEqual({ proxyUserIds: ['125248_x'], bytes: 1e9, bytesUsed: 2e8, bytesLeft: 8e8 })
+    const summary = await getResidentialSummary(creds, fakeFetch({ data: { proxy_user_ids: ['100001_x'], residential_bytes: 1e9, residential_bytes_used: 2e8, residential_bytes_left: 8e8 } }, seen))
+    expect(summary).toEqual({ proxyUserIds: ['100001_x'], bytes: 1e9, bytesUsed: 2e8, bytesLeft: 8e8 })
     expect(seen[0].headers).toMatchObject({ 'X-API-Public-Key': 'pub', 'X-API-Private-Key': 'priv' })
     expect(seen[0].url).not.toContain('priv')
   })
@@ -42,7 +42,7 @@ describe('Byteful', () => {
 
   test('a residential proxy is one sticky URL from the list endpoint, pinned to the city, 24 hours', async () => {
     const seen: { url?: string }[] = []
-    const url = await residentialProxyUrl(creds, { proxyUserId: '125248_x', country: 'US', cityId: 385209, ttl: '24h', protocol: 'http' }, fakeFetch({ data: ['http://125248_x_c_us_city_us_pa_bethlehem_s_ABC_ttl_24h:pw@residential.byteful.com:8000'] }, seen))
+    const url = await residentialProxyUrl(creds, { proxyUserId: '100001_x', country: 'US', cityId: 385209, ttl: '24h', protocol: 'http' }, fakeFetch({ data: ['http://100001_x_c_us_city_us_pa_bethlehem_s_ABC_ttl_24h:pw@residential.byteful.com:8000'] }, seen))
     expect(url).toContain('@residential.byteful.com:8000')
     const asked = new URL(seen[0].url!)
     expect(asked.pathname).toBe('/1.0/public/user/residential/list')
@@ -62,11 +62,11 @@ describe('Byteful', () => {
 describe('the proxy provider, from the account proxy URL in Twenty', () => {
   test("each provider's host; a static IP has none and isn't metered", () => {
     expect(vendorOfProxy('http://u-zone-custom:pw@na.proxy.2captcha.com:2334')).toEqual({ vendor: 'twoCaptcha', billing: 'traffic' })
-    expect(vendorOfProxy('http://125248_x_c_us_s_A:pw@residential.byteful.com:8000')).toEqual({ vendor: 'byteful', billing: 'traffic' })
+    expect(vendorOfProxy('http://100001_x_c_us_s_A:pw@residential.byteful.com:8000')).toEqual({ vendor: 'byteful', billing: 'traffic' })
     expect(vendorOfProxy('http://u:pw@203.0.113.7:8080')).toBeNull()
     expect(vendorOfProxy(null)).toBeNull()
     expect(meterForProxy('http://u:pw@203.0.113.7:8080')).toBeNull()
-    expect(meterForProxy('http://125248_x:pw@residential.byteful.com:8000')).not.toBeNull()
+    expect(meterForProxy('http://100001_x:pw@residential.byteful.com:8000')).not.toBeNull()
   })
 
   test('--vendor reads either spelling', () => {

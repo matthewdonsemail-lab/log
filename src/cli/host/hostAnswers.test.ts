@@ -8,7 +8,7 @@ import type { CommandContext } from "../runner/types.ts";
 import { hostActors } from "./helpers/index.ts";
 import type { HostBrowser } from "./helpers/index.ts";
 
-const BETHLEHEM = { accountName: "61594063207669", homeCity: "Bethlehem", homeCountry: "US" } as never;
+const BETHLEHEM = { accountName: "99900000000001", homeCity: "Bethlehem", homeCountry: "US" } as never;
 
 function createPage(canPost: boolean): StepExchange {
   return {
@@ -34,7 +34,7 @@ function hostWith(canPost: boolean) {
       return { ok: true, url, title: "Facebook", folder };
     },
   } as unknown as CommandContext;
-  const browser: HostBrowser = { run: null, session: { current: { account: "61594063207669" } } as never };
+  const browser: HostBrowser = { run: null, session: { current: { account: "99900000000001" } } as never };
   return { actors: hostActors(context, BETHLEHEM, browser, { bypassHours: true, log: () => {} }), sent };
 }
 
@@ -65,7 +65,7 @@ describe("the host's warm-up decides each step on Facebook's answer (rule 73)", 
         return { ok: true, url: action === "goto" ? args[0] : "https://www.facebook.com/marketplace/status", title: "Marketplace", text: "Marketplace status", folder };
       },
     } as unknown as CommandContext;
-    const browser: HostBrowser = { run: null, session: { current: { account: "61594063207669" } } as never };
+    const browser: HostBrowser = { run: null, session: { current: { account: "99900000000001" } } as never };
     return hostActors(context, BETHLEHEM, browser, { bypassHours: true, log: () => {} });
   }
 

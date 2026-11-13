@@ -34,7 +34,7 @@ Sent:
     "fp": "6f",
     "_x_num_retries": "0"
   },
-  "body": "{\"token\":\"xoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\",\"channel\":\"C0C4L7RSTGX\",\"as_admin\":false}"
+  "body": "{\"token\":\"<slackToken>\",\"channel\":\"<channelId:1>\",\"as_admin\":false}"
 }
 ```
 
@@ -42,7 +42,7 @@ Answered:
 
 ```json
 {
-  "channel": "C0C4L7RSTGX",
+  "channel": "<channelId:1>",
   "counts": {
     "everyone": 1,
     "people": 1,
@@ -51,7 +51,7 @@ Answered:
     "bots": 0,
     "apps": 0,
     "by_team": {
-      "T0C4VCD06MR": 1
+      "<teamId:1>": 1
     }
   },
   "ok": true
@@ -62,7 +62,7 @@ Answered:
 
 ## What it does
 
-Asks the cache service how many people a channel has (`channel: C0C4L7RSTGX`): it answered `counts.everyone: 1`, `people: 1`, `members: 1`, `guests: 0`, `bots: 0`, `by_team` for `T0C4VCD06MR`. Fired once, 8.1 s into step 4 (`goto /client`), 498 ms, 200.
+Asks the cache service how many people a channel has (`channel: <channelId:1>`): it answered `counts.everyone: 1`, `people: 1`, `members: 1`, `guests: 0`, `bots: 0`, `by_team` for `<teamId:1>`. Fired once, 8.1 s into step 4 (`goto /client`), 498 ms, 200.
 
 ## What our machine does with it
 

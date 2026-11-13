@@ -59,7 +59,7 @@ Seen 38 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261024T060921_61594063207669**, scroll: +385px in 9 wheel steps, 344 ms: 200, 832 ms
+**runs/inspect/20261024T060921_<userId:1>**, scroll: +385px in 9 wheel steps, 344 ms: 200, 832 ms
 
 Sent:
 
@@ -72,10 +72,10 @@ Sent:
   "variables": {
     "count": 10,
     "cursor": "AQHT8B1dRzleCIFUPFP21wBYh4FFlGUzBQBBGjZqCRUXhynD36mogS_w0zd0hvc5A2Wd5bqq7i7A150go3RSvVxqnw",
-    "groupID": "3549906855288164",
+    "groupID": "<groupId:1>",
     "recruitingGroupFilterNonCompliant": false,
     "scale": 1,
-    "id": "3549906855288164"
+    "id": "<id:1>"
   },
   "doc_id": "28370356755953476",
   "fb_api_analytics_tags": [
@@ -91,7 +91,7 @@ Answered:
   "data": {
     "node": {
       "__typename": "Group",
-      "id": "3549906855288164",
+      "id": "<id:1>",
       "new_members": {
         "edges": [
           {
@@ -179,7 +179,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261024T060921_61594063207669**, scroll: +381px in 9 wheel steps, 312 ms: 200, 663 ms
+**runs/inspect/20261024T060921_<userId:1>**, scroll: +381px in 9 wheel steps, 312 ms: 200, 663 ms
 
 Sent:
 
@@ -192,10 +192,10 @@ Sent:
   "variables": {
     "count": 10,
     "cursor": "AQHT75uQyBlhpcam0pG0AzK7qrMoELSvwtauo2MryWqlJd38kmmcvjx46pCxp7WEBJrxWkbd8t8pRE7LOIMCuibD-w",
-    "groupID": "3549906855288164",
+    "groupID": "<groupId:1>",
     "recruitingGroupFilterNonCompliant": false,
     "scale": 1,
-    "id": "3549906855288164"
+    "id": "<id:1>"
   },
   "doc_id": "28370356755953476",
   "fb_api_analytics_tags": [
@@ -211,7 +211,7 @@ Answered:
   "data": {
     "node": {
       "__typename": "Group",
-      "id": "3549906855288164",
+      "id": "<id:1>",
       "new_members": {
         "edges": [
           {
@@ -299,7 +299,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261024T060921_61594063207669**, step 6: scroll 3-5 x 300-600px: 200, 576 ms
+**runs/inspect/20261024T060921_<userId:1>**, step 6: scroll 3-5 x 300-600px: 200, 576 ms
 
 Sent:
 
@@ -312,10 +312,10 @@ Sent:
   "variables": {
     "count": 10,
     "cursor": "AQHTENtLJm078h7kgWIEr091XlmTtPx2NTOg0Kgxap0brxQNT24iwI_mpedfa-ckek_h-P9cGYpXUipp80RE-iY1Yg",
-    "groupID": "3549906855288164",
+    "groupID": "<groupId:1>",
     "recruitingGroupFilterNonCompliant": false,
     "scale": 1,
-    "id": "3549906855288164"
+    "id": "<id:1>"
   },
   "doc_id": "28370356755953476",
   "fb_api_analytics_tags": [
@@ -331,7 +331,7 @@ Answered:
   "data": {
     "node": {
       "__typename": "Group",
-      "id": "3549906855288164",
+      "id": "<id:1>",
       "new_members": {
         "edges": [
           {
@@ -423,7 +423,7 @@ Answered:
 
 ## What it does
 
-The People tab's "New to the group" list loading its next page (`GroupsCometMembersPageNewMembersSection_group.graphql`, `/groups/<g>/members`). The page's HTML carries the first 10 new members (`data.group.new_members`); each time the list's end scrolls into view, this query asks for the next `count: 10` after the `cursor` (the last `page_info.end_cursor`), by `groupID`. Its answer is `data.node.new_members`: `edges[]`, each with `join_status_text.text` ("Joined on Wednesday") and a `node` of `__typename: "User"` carrying `id`, `name`, `url`, `bio_text.text`, `profile_plus_category_display_name` and `follower_count`, then `page_info` (`end_cursor`, `has_next_page`). In run 20261024T060921 (account 61594063207669, "Junk Removal Winners") a plain scroll (3-5 wheel moves) fired it 1 to 3 times, 2 on average: 34 answers over 18 scrolls, 340 members, no duplicates, each 200 in 500-850 ms.
+The People tab's "New to the group" list loading its next page (`GroupsCometMembersPageNewMembersSection_group.graphql`, `/groups/<g>/members`). The page's HTML carries the first 10 new members (`data.group.new_members`); each time the list's end scrolls into view, this query asks for the next `count: 10` after the `cursor` (the last `page_info.end_cursor`), by `groupID`. Its answer is `data.node.new_members`: `edges[]`, each with `join_status_text.text` ("Joined on Wednesday") and a `node` of `__typename: "User"` carrying `id`, `name`, `url`, `bio_text.text`, `profile_plus_category_display_name` and `follower_count`, then `page_info` (`end_cursor`, `has_next_page`). In run 20261024T060921 (account <userId:1>, "Junk Removal Winners") a plain scroll (3-5 wheel moves) fired it 1 to 3 times, 2 on average: 34 answers over 18 scrolls, 340 members, no duplicates, each 200 in 500-850 ms.
 
 ## What our machine does with it
 

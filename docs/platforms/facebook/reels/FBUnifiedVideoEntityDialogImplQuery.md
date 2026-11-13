@@ -36,7 +36,7 @@ Seen 15 time(s) in 4 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261023T080801_61594063207669**, step 8: goto /reel/<id>: 200, 1072 ms
+**runs/inspect/20261023T080801_<userId:1>**, step 8: goto /reel/<id>: 200, 1072 ms
 
 Sent:
 
@@ -48,7 +48,7 @@ Sent:
   "variables": {
     "scale": 1,
     "useDefaultActor": false,
-    "entityId": "28907750262178382",
+    "entityId": "<id:1>",
     "__relay_internal__pv__FBUnifiedVideoEntityProfileAudioGridFirstPageSizerelayprovider": 4,
     "__relay_internal__pv__FBUnifiedVideoEntityProfileHeaderAudio_comet_reels_audio_dialog_saverelayprovider": true,
     "__relay_internal__pv__FBUnifiedVideoMediaContentContainer_comet_video_document_picture_in_picture_gkrelayprovider": false,
@@ -113,7 +113,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261023T080801_61594063207669**, step 20: dwell 2s: 200, 1046 ms
+**runs/inspect/20261023T080801_<userId:1>**, step 20: dwell 2s: 200, 1046 ms
 
 Sent:
 
@@ -125,7 +125,7 @@ Sent:
   "variables": {
     "scale": 1,
     "useDefaultActor": false,
-    "entityId": "39533688859578633",
+    "entityId": "<id:2>",
     "__relay_internal__pv__FBUnifiedVideoEntityProfileAudioGridFirstPageSizerelayprovider": 4,
     "__relay_internal__pv__FBUnifiedVideoEntityProfileHeaderAudio_comet_reels_audio_dialog_saverelayprovider": true,
     "__relay_internal__pv__FBUnifiedVideoMediaContentContainer_comet_video_document_picture_in_picture_gkrelayprovider": false,

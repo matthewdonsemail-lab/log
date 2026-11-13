@@ -78,7 +78,7 @@ Sent:
   "fb_api_req_friendly_name": "IGDInboxInfoOffMsysQuery",
   "server_timestamps": "true",
   "variables": {
-    "thread_fbid": "1659203035864604",
+    "thread_fbid": "<id:1>",
     "__relay_internal__pv__IGDEnableOffMsysChatThemesQErelayprovider": false
   },
   "doc_id": "28792367400422466"
@@ -93,30 +93,30 @@ Answered:
     "get_slide_thread_nullable": {
       "as_ig_direct_thread": {
         "event_chat_info": null,
-        "id": "1659203035864604",
+        "id": "<id:1>",
         "isGroup": false,
-        "viewer_id": "23597386648",
+        "viewer_id": "<userId:1>",
         "users": [
           {
             "id": "65125809236",
-            "fbid_v2": "17841465077090726",
-            "interop_messaging_user_fbid": "17844200922169237",
+            "fbid_v2": "<id:2>",
+            "interop_messaging_user_fbid": "<id:3>",
             "friendship_status": {
               "blocking": false
             },
-            "username": "abelqx",
+            "username": "<name:1>",
             "profile_pic_url": "https://instagram.fdad3-6.fna.fbcdn.net/v/t51.82787-19/818172062_17969040024169237_3154656155475460693_n.jpg (577 chars)",
             "ai_agent_type": null,
-            "fullName": "abel",
+            "fullName": "<name:2>",
             "profilePicUrl": "https://instagram.fdad3-6.fna.fbcdn.net/v/t51.82787-19/818172062_17969040024169237_3154656155475460693_n.jpg (577 chars)"
           }
         ],
         "thread_subtype": "IG_BUSINESS_ACCOUNT_ONE_TO_ONE",
         "ig_thread_capabilities": {
-          "capabilities_0": "2265317209872843830",
+          "capabilities_0": "<id:4>",
           "capabilities_1": "84936834"
         },
-        "thread_fbid": "1659203035864604",
+        "thread_fbid": "<id:1>",
         "is_muted": false,
         "is_group": false,
         "mute_until": null,
@@ -125,17 +125,17 @@ Answered:
         "adminUserIds": [],
         "viewer": {
           "id": "23597386648",
-          "interop_messaging_user_fbid": "18117619519786649",
-          "fullName": "Matthew Don",
-          "username": "matthew164962",
-          "fbid_v2": "17841423599449673",
+          "interop_messaging_user_fbid": "<id:5>",
+          "fullName": "<name:3>",
+          "username": "<name:4>",
+          "fbid_v2": "<id:6>",
           "profilePicUrl": "https://instagram.fdad3-6.fna.fbcdn.net/v/t51.82787-19/818743097_18117619684786649_8701037773198366673_n.jpg (579 chars)",
           "ai_agent_type": null,
           "friendship_status": null
         },
         "nicknames": []
       },
-      "id": "1659203035864604"
+      "id": "<id:1>"
     }
   },
   "extensions": {
@@ -165,7 +165,7 @@ Sent:
     },
     "data": {
       "item_id": "",
-      "message_id": "mid.$7523457575324722502"
+      "message_id": "mid.$<id:7>"
     }
   },
   "doc_id": "27399783383056109",
@@ -182,7 +182,7 @@ Answered:
   "data": {
     "xig_direct_item_seen_mutation_with_slide_messaging_response": {
       "__typename": "XFBSlideReadReceipt",
-      "participant_eimu_id": "18117619519786649",
+      "participant_eimu_id": "<id:5>",
       "watermark_timestamp_ms": "1793732065239"
     }
   },

@@ -29,7 +29,7 @@ Seen 10 time(s) in 1 run(s).
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 4: goto /client | 3 | 200 | 291–900 ms | 6672–8949 ms | — |
 | inspect | step 5: saveState | 1 | 200 | 292 ms | 21591 ms | — |
-| inspect | step 6: goto /client/T0C4VCD06MR/D0C8VAE7REU | 4 | 200 | 289–360 ms | 4879–8593 ms | — |
+| inspect | step 6: goto /client/<teamId:1>/<channelId:1> | 4 | 200 | 289–360 ms | 4879–8593 ms | — |
 | inspect | step 14: press Enter | 1 | 200 | 283 ms | 96222 ms | — |
 | inspect | step 16: press Control+a | 1 | 200 | 461 ms | 86168 ms | — |
 
@@ -47,14 +47,14 @@ Sent:
     "_x_id": "2c6eaecf-1793689064.480",
     "_x_gantry": "true",
     "_x_desktop_ia": "4",
-    "slack_route": "T0C4VCD06MR",
+    "slack_route": "<teamId:1>",
     "_x_version_ts": "1793684253",
     "_x_frontend_build_type": "current",
     "fp": "6f",
     "_x_num_retries": "0"
   },
   "body": {
-    "------WebKitFormBoundaryiKAYKp7OWFDO0ByP\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\nxoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\r\n------WebKitFormBoundaryiKAYKp7OWFDO0ByP\r\nContent-Disposition: form-data; name=\"components\"\r\n\r\nSOCIAL_CHANNEL_FOREWORD_HUDDLE_CARD\r\n------WebKitFormBoundaryiKAYKp7OWFDO0ByP\r\nContent-Disposition: form-data; name=\"types\"\r\n\r\nCLICK\r\n------WebKitFormBoundaryiKAYKp7OWFDO0ByP\r\nCo… (834 chars)"
+    "------WebKitFormBoundaryiKAYKp7OWFDO0ByP\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\n<slackToken>\r\n------WebKitFormBoundaryiKAYKp7OWFDO0ByP\r\nContent-Disposition: form-data; name=\"components\"\r\n\r\nSOCIAL_CHANNEL_FOREWORD_HUDDLE_CARD\r\n------WebKitFormBoundaryiKAYKp7OWFDO0ByP\r\nContent-Disposition: form-data; name=\"types\"\r\n\r\nCLICK\r\n------WebKitFormBoundaryiKAYKp7OWFDO0ByP\r\nCo… (834 chars)"
   }
 }
 ```
@@ -79,7 +79,7 @@ Sent:
     "_x_gantry": "true",
     "_x_desktop_ia": "4",
     "_x_csid": "aVvVPXA0sak",
-    "slack_route": "T0C4VCD06MR",
+    "slack_route": "<teamId:1>",
     "_x_version_ts": "1793684253",
     "_x_foreground": "true",
     "_x_frontend_build_type": "current",
@@ -87,7 +87,7 @@ Sent:
     "_x_num_retries": "0"
   },
   "body": {
-    "------WebKitFormBoundaryjsiAvsxERZtwQtUi\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\nxoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\r\n------WebKitFormBoundaryjsiAvsxERZtwQtUi\r\nContent-Disposition: form-data; name=\"components\"\r\n\r\nACTIVITY_INBOX_ONBOARDING_MODAL,ACTIVITY_ONE_DOT_OH\r\n------WebKitFormBoundaryjsiAvsxERZtwQtUi\r\nContent-Disposition: form-data; name=\"types\"\r\n\r\nDISMISS,IMPRESSION\r\n------WebKitFor… (864 chars)"
+    "------WebKitFormBoundaryjsiAvsxERZtwQtUi\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\n<slackToken>\r\n------WebKitFormBoundaryjsiAvsxERZtwQtUi\r\nContent-Disposition: form-data; name=\"components\"\r\n\r\nACTIVITY_INBOX_ONBOARDING_MODAL,ACTIVITY_ONE_DOT_OH\r\n------WebKitFormBoundaryjsiAvsxERZtwQtUi\r\nContent-Disposition: form-data; name=\"types\"\r\n\r\nDISMISS,IMPRESSION\r\n------WebKitFor… (864 chars)"
   }
 }
 ```
@@ -101,7 +101,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261103T065639_mattSlack**, step 6: goto /client/T0C4VCD06MR/D0C8VAE7REU: 200, 360 ms
+**runs/inspect/20261103T065639_mattSlack**, step 6: goto /client/<teamId:1>/<channelId:1>: 200, 360 ms
 
 Sent:
 
@@ -112,14 +112,14 @@ Sent:
     "_x_gantry": "true",
     "_x_desktop_ia": "4",
     "_x_csid": "aVvVPXA0sak",
-    "slack_route": "T0C4VCD06MR",
+    "slack_route": "<teamId:1>",
     "_x_version_ts": "1793684253",
     "_x_frontend_build_type": "current",
     "fp": "6f",
     "_x_num_retries": "0"
   },
   "body": {
-    "------WebKitFormBoundaryRCLxJBL0auoMBAcx\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\nxoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\r\n------WebKitFormBoundaryRCLxJBL0auoMBAcx\r\nContent-Disposition: form-data; name=\"components\"\r\n\r\nHUDDLES_TRIAL_PRO_BANNER\r\n------WebKitFormBoundaryRCLxJBL0auoMBAcx\r\nContent-Disposition: form-data; name=\"types\"\r\n\r\nIMPRESSION\r\n------WebKitFormBoundaryRCLxJBL0auoMBAcx\r\nContent-… (817 chars)"
+    "------WebKitFormBoundaryRCLxJBL0auoMBAcx\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\n<slackToken>\r\n------WebKitFormBoundaryRCLxJBL0auoMBAcx\r\nContent-Disposition: form-data; name=\"components\"\r\n\r\nHUDDLES_TRIAL_PRO_BANNER\r\n------WebKitFormBoundaryRCLxJBL0auoMBAcx\r\nContent-Disposition: form-data; name=\"types\"\r\n\r\nIMPRESSION\r\n------WebKitFormBoundaryRCLxJBL0auoMBAcx\r\nContent-… (817 chars)"
   }
 }
 ```

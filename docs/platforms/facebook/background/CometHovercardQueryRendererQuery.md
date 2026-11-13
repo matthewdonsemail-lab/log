@@ -144,7 +144,7 @@ Seen 359 time(s) in 20 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/warmup/20261023T074930_61594063207669**, step 1: goto /: 200, 550 ms
+**runs/warmup/20261023T074930_<userId:1>**, step 1: goto /: 200, 550 ms
 
 Sent:
 
@@ -156,7 +156,7 @@ Sent:
   "variables": {
     "actionBarRenderLocation": "WWW_COMET_HOVERCARD",
     "context": "DEFAULT",
-    "entityID": "108424279189115",
+    "entityID": "<id:1>",
     "scale": 1,
     "__relay_internal__pv__WorkCometIsEmployeeGKProviderrelayprovider": false
   },
@@ -176,9 +176,9 @@ Answered:
       "comet_hovercard_renderer": {
         "__typename": "CometHovercardPageRenderer",
         "page": {
-          "id": "108424279189115",
+          "id": "<id:1>",
           "is_business_page_active": false,
-          "name": "New York, New York",
+          "name": "<name:1>",
           "entity_card_subtitle": {
             "text": "Town/city"
           },
@@ -197,12 +197,12 @@ Answered:
           "__typename": "Page",
           "pages_story_bucket_v2": {
             "__typename": "DirectMessageThreadBucket",
-            "id": "4256127501085418",
+            "id": "<id:2>",
             "first_story_to_show": null
           },
           "url": "https://www.facebook.com/pages/New-York-New-York/108424279189115",
           "profile_picture": {
-            "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t1.30497-1/83245568_1845797888897938_3274147281632231424_n.png (410 chars)",
+            "uri": "<mediaUrl> (410 chars)",
             "width": 100,
             "height": 100,
             "scale": 1
@@ -212,8 +212,8 @@ Answered:
               "full_address": "New York, NY, US"
             },
             "addressEditable": true,
-            "latitude": 40.7142,
-            "longitude": -74.0064,
+            "latitude": "<coordinate>",
+            "longitude": "<coordinate>",
             "websiteEditable": true,
             "website": "http://www.nyc.gov/",
             "open_hour_setting": "NO_STATUS",
@@ -238,13 +238,13 @@ Answered:
           "__dr": "CometHovercardPageRenderer.react"
         }
       },
-      "id": "108424279189115"
+      "id": "<id:1>"
     }
   },
   "extensions": {
     "prefetch_uris_v2": [
       {
-        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t1.30497-1/83245568_1845797888897938_3274147281632231424_n.png (410 chars)",
+        "uri": "<mediaUrl> (410 chars)",
         "label": null,
         "width": null,
         "height": null,
@@ -435,7 +435,7 @@ Answered:
 }
 ```
 
-**runs/warmup/20261023T074930_61594063207669**, step 3: scroll 4-7 x 300-600px: 200, 986 ms
+**runs/warmup/20261023T074930_<userId:1>**, step 3: scroll 4-7 x 300-600px: 200, 986 ms
 
 Sent:
 
@@ -447,7 +447,7 @@ Sent:
   "variables": {
     "actionBarRenderLocation": "WWW_COMET_HOVERCARD",
     "context": "DEFAULT",
-    "entityID": "61562855553053",
+    "entityID": "<userId:2>",
     "scale": 1,
     "__relay_internal__pv__WorkCometIsEmployeeGKProviderrelayprovider": false
   },
@@ -467,21 +467,21 @@ Answered:
       "comet_hovercard_renderer": {
         "__typename": "CometHovercardProfilePlusUserRenderer",
         "user": {
-          "id": "61562855553053",
-          "name": "The Big NYC",
+          "id": "<userId:2>",
+          "name": "<name:2>",
           "is_visibly_memorialized": false,
           "is_verified": false,
           "username_for_profile": null,
           "__isActor": "User",
           "__isEntity": "User",
-          "profile_url": "https://www.facebook.com/profile.php?id=61562855553053",
+          "profile_url": "https://www.facebook.com/profile.php?id=<userId:2>",
           "__typename": "User",
           "story_bucket": {
             "nodes": "(1 items)"
           },
-          "url": "https://www.facebook.com/profile.php?id=61562855553053",
+          "url": "https://www.facebook.com/profile.php?id=<userId:2>",
           "profile_picture": {
-            "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/657391294_122181091976428518_1135771770589420424_n.jpg (434 chars)",
+            "uri": "<mediaUrl> (434 chars)",
             "width": 100,
             "height": 100,
             "scale": 1
@@ -512,7 +512,7 @@ Answered:
           "__dr": "CometHovercardProfilePlusUserRenderer.react"
         }
       },
-      "id": "61562855553053"
+      "id": "<userId:2>"
     }
   },
   "extensions": {
@@ -546,7 +546,7 @@ Answered:
         "surface": null
       },
       {
-        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/657391294_122181091976428518_1135771770589420424_n.jpg (434 chars)",
+        "uri": "<mediaUrl> (434 chars)",
         "label": null,
         "width": null,
         "height": null,
@@ -631,7 +631,7 @@ Answered:
 }
 ```
 
-**runs/warmup/20261023T074930_61594063207669**, scroll: +535px in 12 wheel steps, 969 ms: 200, 592 ms
+**runs/warmup/20261023T074930_<userId:1>**, scroll: +535px in 12 wheel steps, 969 ms: 200, 592 ms
 
 Sent:
 
@@ -643,8 +643,8 @@ Sent:
   "variables": {
     "actionBarRenderLocation": "WWW_COMET_HOVERCARD",
     "context": "GROUP",
-    "entityID": "4191018610937243",
-    "groupID": "4191018610937243",
+    "entityID": "<id:3>",
+    "groupID": "<groupId:1>",
     "scale": 1,
     "__relay_internal__pv__WorkCometIsEmployeeGKProviderrelayprovider": false
   },
@@ -665,7 +665,7 @@ Answered:
         "__typename": "CometHovercardGroupRenderer",
         "group": {
           "if_viewer_can_see_wayfinding_topics": null,
-          "name": "Recommendations of Bethlehem, PA and Greater Lehigh Valley Region",
+          "name": "<name:3>",
           "url": "https://www.facebook.com/groups/4191018610937243/",
           "group_member_profiles": {
             "formatted_count_text": "17.3K members"
@@ -684,7 +684,7 @@ Answered:
               "… 2 more"
             ]
           },
-          "id": "4191018610937243",
+          "id": "<id:3>",
           "privacy_info": {
             "icon_name": "globe-americas",
             "title": {
@@ -700,10 +700,10 @@ Answered:
           "join_action_with_menu": {
             "__typename": "GroupJoinedGroupAction",
             "group": {
-              "id": "4191018610937243",
+              "id": "<id:3>",
               "url": "https://www.facebook.com/groups/4191018610937243/",
               "group_type_name_for_content": "GROUP",
-              "name": "Recommendations of Bethlehem, PA and Greater Lehigh Valley Region"
+              "name": "<name:3>"
             },
             "__module_operation_GroupsCometJoinGroupButtonWithMenuRelay_group_join_action": {
               "__dr": "GroupsCometJoinedGroupButton_action$normalization.graphql"
@@ -717,7 +717,7 @@ Answered:
           "profile_url": "https://www.facebook.com/groups/4191018610937243/",
           "__typename": "Group",
           "profile_picture": {
-            "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/645294606_10238351084488917_8182127059574139500_n.jpg (454 chars)",
+            "uri": "<mediaUrl> (454 chars)",
             "width": 100,
             "height": 100,
             "scale": 1
@@ -730,13 +730,13 @@ Answered:
           "__dr": "CometHovercardGroupRenderer.react"
         }
       },
-      "id": "4191018610937243"
+      "id": "<id:3>"
     }
   },
   "extensions": {
     "prefetch_uris_v2": [
       {
-        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/645294606_10238351084488917_8182127059574139500_n.jpg (454 chars)",
+        "uri": "<mediaUrl> (454 chars)",
         "label": null,
         "width": null,
         "height": null,

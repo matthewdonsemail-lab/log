@@ -2,7 +2,7 @@
 
 Switch the account's Facebook language to English (US): Settings, Language and region, Account language, English (US), OK; decided by useCometUSFScrollablePickerMutation answering en_US. Recorded on Scranton 2026-10-25 from Arabic.
 
-Built by `log flow fromInspect` from the recording `C:/Users/0/.logCli/runs/inspect/20261025T025641_61593881475391` (account 61593881475391). Run it on any account with `log flow run facebookLanguageEnglish --account <a> --live`, or over MCP as the tool `flowFacebookLanguageEnglish` (rule 31).
+Built by `log flow fromInspect` from the recording `~/.logCli/runs/inspect/20261025T025641_<userId:1>` (account <userId:1>). Run it on any account with `log flow run facebookLanguageEnglish --account <a> --live`, or over MCP as the tool `flowFacebookLanguageEnglish` (rule 31).
 
 ## Params
 

@@ -10,7 +10,7 @@
 | Path | `discord.com/api/users/badges` |
 | Sends | — |
 | Reads | `badges` |
-| Called from | `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1036.js:1 parse`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1245.js:2 anonymous` |
+| Called from | `runs/inspect/20261030T222341_<name:8>/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_<name:8>/script1036.js:1 parse`, `runs/inspect/20261030T222341_<name:8>/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_<name:8>/script1245.js:2 anonymous` |
 | rea | `ev_065e7ad37dcb5911d240f9de7d6e2882220c5a8d7c025d92b46a23de59cf297c` |
 
 Seen 7 time(s) in 4 run(s).
@@ -29,7 +29,7 @@ Seen 7 time(s) in 4 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder**, step 2: snapshot: 200, 691 ms
+**runs/inspect/20261030T222341_<name:8>**, step 2: snapshot: 200, 691 ms
 
 Sent:
 
@@ -44,7 +44,7 @@ Answered:
   "badges": [
     {
       "badge_id": 22,
-      "name": "Discord Staff",
+      "name": "<name:1>",
       "rarity": 5,
       "simple_icon_url": "https://cdn.discordapp.com/assets/content/ba692509432a91ed75d9460662b05c44a5fefb565566fa7df7698597a75f03ee.svg",
       "simple_icon_raster_url": "https://cdn.discordapp.com/badge-icons/5e74e9b61934fc1f67c65515d1f7e60d.png",
@@ -54,8 +54,8 @@ Answered:
     },
     {
       "badge_id": 21,
-      "name": "Game Variety",
-      "description": "Play more detectable PC games with Discord open to level up this badge.",
+      "name": "<name:2>",
+      "description": "<messageText>",
       "leveling_instructions": "Unlock more levels by playing more games.",
       "info_label": "2 games played",
       "rarity": 1,
@@ -86,8 +86,8 @@ Answered:
     },
     {
       "badge_id": 20,
-      "name": "Game Time",
-      "description": "Play more hours of detectable PC games with Discord open to level up this badge.",
+      "name": "<name:3>",
+      "description": "<messageText>",
       "leveling_instructions": "Unlock more levels by playing more hours of games.",
       "info_label": "25 hours of games played",
       "rarity": 1,
@@ -120,8 +120,8 @@ Answered:
     },
     {
       "badge_id": 19,
-      "name": "Streaming",
-      "description": "Stream more hours to other users to level up this badge.",
+      "name": "<name:4>",
+      "description": "<messageText>",
       "leveling_instructions": "Unlock more levels by streaming more hours.",
       "info_label": "970 hours streamed to others",
       "rarity": 2,
@@ -158,8 +158,8 @@ Answered:
     },
     {
       "badge_id": 1,
-      "name": "Nitro",
-      "description": "Subscribe to Nitro to unlock this badge.",
+      "name": "<name:5>",
+      "description": "<messageText>",
       "leveling_instructions": "Unlock more levels the longer you have Nitro.",
       "rarity": 1,
       "simple_icon_url": "https://cdn.discordapp.com/assets/content/f61ddf640d11d9bdfaf9de265eb862edf28986b659e545f293b54adf229433af.svg",
@@ -182,7 +182,7 @@ Answered:
     },
     {
       "badge_id": 2,
-      "name": "Discord Partner",
+      "name": "<name:6>",
       "rarity": 5,
       "simple_icon_url": "https://cdn.discordapp.com/assets/content/4c8defb95c334422c34032aa26a8b1703a1be6c3e10e0cec06e8364e85131d6f.svg",
       "simple_icon_raster_url": "https://cdn.discordapp.com/badge-icons/3f9748e53446a137a052f3454e2de41e.png",
@@ -195,7 +195,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder**, step 1: goto /login: 200, 530 ms
+**runs/inspect/20261028T074137_<name:8>**, step 1: goto /login: 200, 530 ms
 
 Sent:
 
@@ -210,7 +210,7 @@ Answered:
   "badges": [
     {
       "badge_id": 22,
-      "name": "Discord Staff",
+      "name": "<name:1>",
       "rarity": 5,
       "simple_icon_url": "https://cdn.discordapp.com/assets/content/ba692509432a91ed75d9460662b05c44a5fefb565566fa7df7698597a75f03ee.svg",
       "simple_icon_raster_url": "https://cdn.discordapp.com/badge-icons/5e74e9b61934fc1f67c65515d1f7e60d.png",
@@ -220,8 +220,8 @@ Answered:
     },
     {
       "badge_id": 20,
-      "name": "Game Time",
-      "description": "Play more hours of detectable PC games with Discord open to level up this badge.",
+      "name": "<name:3>",
+      "description": "<messageText>",
       "leveling_instructions": "Unlock more levels by playing more hours of games.",
       "info_label": "20 hours of games played",
       "rarity": 1,
@@ -254,8 +254,8 @@ Answered:
     },
     {
       "badge_id": 19,
-      "name": "Streaming",
-      "description": "Stream more hours to other users to level up this badge.",
+      "name": "<name:4>",
+      "description": "<messageText>",
       "leveling_instructions": "Unlock more levels by streaming more hours.",
       "info_label": "969 hours streamed to others",
       "rarity": 2,
@@ -292,8 +292,8 @@ Answered:
     },
     {
       "badge_id": 1,
-      "name": "Nitro",
-      "description": "Subscribe to Nitro to unlock this badge.",
+      "name": "<name:5>",
+      "description": "<messageText>",
       "leveling_instructions": "Unlock more levels the longer you have Nitro.",
       "rarity": 1,
       "simple_icon_url": "https://cdn.discordapp.com/assets/content/f61ddf640d11d9bdfaf9de265eb862edf28986b659e545f293b54adf229433af.svg",
@@ -316,7 +316,7 @@ Answered:
     },
     {
       "badge_id": 2,
-      "name": "Discord Partner",
+      "name": "<name:6>",
       "rarity": 5,
       "simple_icon_url": "https://cdn.discordapp.com/assets/content/4c8defb95c334422c34032aa26a8b1703a1be6c3e10e0cec06e8364e85131d6f.svg",
       "simple_icon_raster_url": "https://cdn.discordapp.com/badge-icons/3f9748e53446a137a052f3454e2de41e.png",
@@ -326,7 +326,7 @@ Answered:
     },
     {
       "badge_id": 3,
-      "name": "Moderator Program Alumni",
+      "name": "<name:7>",
       "rarity": 5,
       "simple_icon_url": "https://cdn.discordapp.com/assets/content/40378bb73aae6b093f7a751fb3d6d5d85886036635c276ffad940818aa7b58ce.svg",
       "simple_icon_raster_url": "https://cdn.discordapp.com/badge-icons/fee1624003e2fee35cb398e125dc479b.png",
@@ -339,7 +339,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261028T065202_sourcedandsoldtothehighestbidder**, step 1: goto /channels/@me/<id>: 200, 397 ms
+**runs/inspect/20261028T065202_<name:8>**, step 1: goto /channels/@me/<id>: 200, 397 ms
 
 Sent:
 
@@ -354,7 +354,7 @@ Answered:
   "badges": [
     {
       "badge_id": 22,
-      "name": "Discord Staff",
+      "name": "<name:1>",
       "rarity": 5,
       "simple_icon_url": "https://cdn.discordapp.com/assets/content/ba692509432a91ed75d9460662b05c44a5fefb565566fa7df7698597a75f03ee.svg",
       "simple_icon_raster_url": "https://cdn.discordapp.com/badge-icons/5e74e9b61934fc1f67c65515d1f7e60d.png",
@@ -364,8 +364,8 @@ Answered:
     },
     {
       "badge_id": 20,
-      "name": "Game Time",
-      "description": "Play more hours of detectable PC games with Discord open to level up this badge.",
+      "name": "<name:3>",
+      "description": "<messageText>",
       "leveling_instructions": "Unlock more levels by playing more hours of games.",
       "info_label": "20 hours of games played",
       "rarity": 1,
@@ -398,8 +398,8 @@ Answered:
     },
     {
       "badge_id": 19,
-      "name": "Streaming",
-      "description": "Stream more hours to other users to level up this badge.",
+      "name": "<name:4>",
+      "description": "<messageText>",
       "leveling_instructions": "Unlock more levels by streaming more hours.",
       "info_label": "969 hours streamed to others",
       "rarity": 2,
@@ -436,8 +436,8 @@ Answered:
     },
     {
       "badge_id": 1,
-      "name": "Nitro",
-      "description": "Subscribe to Nitro to unlock this badge.",
+      "name": "<name:5>",
+      "description": "<messageText>",
       "leveling_instructions": "Unlock more levels the longer you have Nitro.",
       "rarity": 1,
       "simple_icon_url": "https://cdn.discordapp.com/assets/content/f61ddf640d11d9bdfaf9de265eb862edf28986b659e545f293b54adf229433af.svg",
@@ -460,7 +460,7 @@ Answered:
     },
     {
       "badge_id": 2,
-      "name": "Discord Partner",
+      "name": "<name:6>",
       "rarity": 5,
       "simple_icon_url": "https://cdn.discordapp.com/assets/content/4c8defb95c334422c34032aa26a8b1703a1be6c3e10e0cec06e8364e85131d6f.svg",
       "simple_icon_raster_url": "https://cdn.discordapp.com/badge-icons/3f9748e53446a137a052f3454e2de41e.png",
@@ -470,7 +470,7 @@ Answered:
     },
     {
       "badge_id": 3,
-      "name": "Moderator Program Alumni",
+      "name": "<name:7>",
       "rarity": 5,
       "simple_icon_url": "https://cdn.discordapp.com/assets/content/40378bb73aae6b093f7a751fb3d6d5d85886036635c276ffad940818aa7b58ce.svg",
       "simple_icon_raster_url": "https://cdn.discordapp.com/badge-icons/fee1624003e2fee35cb398e125dc479b.png",

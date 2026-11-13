@@ -23,7 +23,7 @@ Seen 1 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261022T155857_61594063207669**, step 3: goto /marketplace/inbox: 200, 452 ms
+**runs/inspect/20261022T155857_<userId:1>**, step 3: goto /marketplace/inbox: 200, 452 ms
 
 Sent:
 
@@ -63,7 +63,7 @@ Answered:
       },
       "c2c_shipped_access": {
         "can_see_shipped_orders": "(1 fields)",
-        "id": "c2c_shipped_access_checker:61594063207669",
+        "id": "c2c_shipped_access_checker:<userId:1>",
         "can_see_shipped_payouts": "(1 fields)"
       },
       "is_above_tpv_limit_override": false,
@@ -91,7 +91,7 @@ Answered:
       "actor": {
         "__typename": "User",
         "__isActor": "User",
-        "id": "61594063207669",
+        "id": "<userId:1>",
         "profile_picture_160": "(1 fields)",
         "profile_picture_112": "(1 fields)",
         "profile_picture_64": "(1 fields)",

@@ -1,15 +1,14 @@
 import { useEffect, useState } from 'react'
+import { SiteHeader } from '../SiteHeader'
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faXTwitter } from '@fortawesome/free-brands-svg-icons'
 import { faArrowRight, faCheck, faComments, faCopy, faLaptop, faPlug } from '@fortawesome/free-solid-svg-icons'
 import { AgencyIntro } from '../AgencyIntro'
-import { Header } from '../Header'
 import { SiteFooter } from '../SiteFooter'
 import { ClayClouds } from '../ClayClouds'
 import { Control, Dashed } from '../Control'
 import { PLATFORMS } from '../PlatformSuite'
-import { LOG_REPO_URL, parseRepoUrl } from '../RepoLink'
 import { Byline } from '../HomeAnswers'
 import { StoryFaq } from '../story/StorySections'
 import { DitherFade } from '../useCases/DitherFade'
@@ -20,7 +19,6 @@ import { USE_CASES } from '../useCases/useCaseCatalog'
 import '../RepoModal.css'
 import { MCP_CLIENTS, MCP_FAQ, MCP_FIND_TOOLS, MCP_PLATFORMS, MCP_PLAY } from './mcpContent'
 
-const LOG_REPO = parseRepoUrl(LOG_REPO_URL)!
 const STICKER = 'sticker-word inline-block px-[0.08em] text-[1.18em] leading-none'
 const HAND = { fontFamily: "'Schoolbell', 'Cabin Sketch', cursive" }
 const PLAYS_LIMIT = 6
@@ -360,14 +358,7 @@ export function McpPage() {
   }, [])
   return (
     <div className="flex min-h-screen flex-col bg-white" style={{ fontFamily: "'Satoshi', 'Inter', system-ui, sans-serif" }}>
-      <Header
-        tone="light"
-        homeHref="/"
-        logoLabel="ListeningKit"
-        githubRepo={`${LOG_REPO.owner}/${LOG_REPO.repo}`}
-        className="z-[70]"
-        accountItems={[{ href: '/sign-in?returnPath=/console/start', label: 'Create account', variant: 'cta' }]}
-      />
+      <SiteHeader cta={{ href: '/sign-in?returnPath=/console/start', label: 'Create account' }} />
       <Hero />
       <PlayDemo />
       <Control
@@ -383,6 +374,7 @@ export function McpPage() {
           </>
         }
         platformLabel="your agent"
+        showSession={false}
       />
       <ThreeSteps play={MCP_PLAY} platform={{ ...platformOf('x'), label: 'AI agent' }} icon={faPlug} />
       <Platforms />

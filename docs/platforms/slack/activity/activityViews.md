@@ -23,7 +23,7 @@ Seen 4 time(s) in 1 run(s).
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 4: goto /client | 1 | 200 | 358 ms | 7583 ms | — |
 | inspect | step 5: saveState | 1 | 200 | 299 ms | 21605 ms | — |
-| inspect | step 6: goto /client/T0C4VCD06MR/D0C8VAE7REU | 1 | 200 | 412 ms | 5524 ms | — |
+| inspect | step 6: goto /client/<teamId:1>/<channelId:1> | 1 | 200 | 412 ms | 5524 ms | — |
 | inspect | step 16: press Control+a | 1 | 200 | 416 ms | 86193 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
@@ -40,7 +40,7 @@ Sent:
     "_x_id": "2c6eaecf-1793689064.906",
     "_x_gantry": "true",
     "_x_desktop_ia": "4",
-    "slack_route": "T0C4VCD06MR",
+    "slack_route": "<teamId:1>",
     "_x_version_ts": "1793684253",
     "_x_foreground": "true",
     "_x_frontend_build_type": "current",
@@ -48,7 +48,7 @@ Sent:
     "_x_num_retries": "0"
   },
   "body": {
-    "------WebKitFormBoundarytsZAa4pFGbXvC5dG\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\nxoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\r\n------WebKitFormBoundarytsZAa4pFGbXvC5dG\r\nContent-Disposition: form-data; name=\"_x_reason\"\r\n\r\nfetch-deferred-messaging-client-data\r\n------WebKitFormBoundarytsZAa4pFGbXvC5dG\r\nContent-Disposition: form-data; name=\"_x_mode\"\r\n\r\nonline\r\n------WebKitFormBoundarytsZAa4pFGbXvC5dG\r… (606 chars)"
+    "------WebKitFormBoundarytsZAa4pFGbXvC5dG\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\n<slackToken>\r\n------WebKitFormBoundarytsZAa4pFGbXvC5dG\r\nContent-Disposition: form-data; name=\"_x_reason\"\r\n\r\nfetch-deferred-messaging-client-data\r\n------WebKitFormBoundarytsZAa4pFGbXvC5dG\r\nContent-Disposition: form-data; name=\"_x_mode\"\r\n\r\nonline\r\n------WebKitFormBoundarytsZAa4pFGbXvC5dG\r… (606 chars)"
   }
 }
 ```
@@ -61,7 +61,7 @@ Answered:
   "views": [
     {
       "id": "Av01",
-      "name": "All",
+      "name": "<name:1>",
       "emoji": null,
       "view_type": "all",
       "position": "1000000000",
@@ -69,7 +69,7 @@ Answered:
     },
     {
       "id": "Av02",
-      "name": "DMs",
+      "name": "<name:2>",
       "emoji": null,
       "view_type": "dms",
       "position": "2000000000",
@@ -82,7 +82,7 @@ Answered:
     },
     {
       "id": "Av03",
-      "name": "Mentions",
+      "name": "<name:3>",
       "emoji": null,
       "view_type": "mentions",
       "position": "3000000000",
@@ -101,7 +101,7 @@ Answered:
     },
     {
       "id": "Av04",
-      "name": "Threads",
+      "name": "<name:4>",
       "emoji": null,
       "view_type": "threads",
       "position": "4000000000",
@@ -128,7 +128,7 @@ Sent:
     "_x_gantry": "true",
     "_x_desktop_ia": "4",
     "_x_csid": "aVvVPXA0sak",
-    "slack_route": "T0C4VCD06MR",
+    "slack_route": "<teamId:1>",
     "_x_version_ts": "1793684253",
     "_x_foreground": "true",
     "_x_frontend_build_type": "current",
@@ -136,7 +136,7 @@ Sent:
     "_x_num_retries": "0"
   },
   "body": {
-    "------WebKitFormBoundaryNRxjwdxPHSbI0T3q\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\nxoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\r\n------WebKitFormBoundaryNRxjwdxPHSbI0T3q\r\nContent-Disposition: form-data; name=\"_x_mode\"\r\n\r\nonline\r\n------WebKitFormBoundaryNRxjwdxPHSbI0T3q\r\nContent-Disposition: form-data; name=\"_x_app_name\"\r\n\r\nclient\r\n------WebKitFormBoundaryNRxjwdxPHSbI0T3q\r\nContent-Disposition: form-d… (474 chars)"
+    "------WebKitFormBoundaryNRxjwdxPHSbI0T3q\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\n<slackToken>\r\n------WebKitFormBoundaryNRxjwdxPHSbI0T3q\r\nContent-Disposition: form-data; name=\"_x_mode\"\r\n\r\nonline\r\n------WebKitFormBoundaryNRxjwdxPHSbI0T3q\r\nContent-Disposition: form-data; name=\"_x_app_name\"\r\n\r\nclient\r\n------WebKitFormBoundaryNRxjwdxPHSbI0T3q\r\nContent-Disposition: form-d… (474 chars)"
   }
 }
 ```
@@ -149,7 +149,7 @@ Answered:
   "views": [
     {
       "id": "Av01",
-      "name": "All",
+      "name": "<name:1>",
       "emoji": null,
       "view_type": "all",
       "position": "1000000000",
@@ -157,7 +157,7 @@ Answered:
     },
     {
       "id": "Av02",
-      "name": "DMs",
+      "name": "<name:2>",
       "emoji": null,
       "view_type": "dms",
       "position": "2000000000",
@@ -170,7 +170,7 @@ Answered:
     },
     {
       "id": "Av03",
-      "name": "Mentions",
+      "name": "<name:3>",
       "emoji": null,
       "view_type": "mentions",
       "position": "3000000000",
@@ -189,7 +189,7 @@ Answered:
     },
     {
       "id": "Av04",
-      "name": "Threads",
+      "name": "<name:4>",
       "emoji": null,
       "view_type": "threads",
       "position": "4000000000",
@@ -205,7 +205,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261103T065639_mattSlack**, step 6: goto /client/T0C4VCD06MR/D0C8VAE7REU: 200, 412 ms
+**runs/inspect/20261103T065639_mattSlack**, step 6: goto /client/<teamId:1>/<channelId:1>: 200, 412 ms
 
 Sent:
 
@@ -216,7 +216,7 @@ Sent:
     "_x_gantry": "true",
     "_x_desktop_ia": "4",
     "_x_csid": "aVvVPXA0sak",
-    "slack_route": "T0C4VCD06MR",
+    "slack_route": "<teamId:1>",
     "_x_version_ts": "1793684253",
     "_x_foreground": "true",
     "_x_frontend_build_type": "current",
@@ -224,7 +224,7 @@ Sent:
     "_x_num_retries": "0"
   },
   "body": {
-    "------WebKitFormBoundaryBmODzJL36nxO1lnK\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\nxoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\r\n------WebKitFormBoundaryBmODzJL36nxO1lnK\r\nContent-Disposition: form-data; name=\"_x_reason\"\r\n\r\nfetch-deferred-messaging-client-data\r\n------WebKitFormBoundaryBmODzJL36nxO1lnK\r\nContent-Disposition: form-data; name=\"_x_mode\"\r\n\r\nonline\r\n------WebKitFormBoundaryBmODzJL36nxO1lnK\r… (606 chars)"
+    "------WebKitFormBoundaryBmODzJL36nxO1lnK\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\n<slackToken>\r\n------WebKitFormBoundaryBmODzJL36nxO1lnK\r\nContent-Disposition: form-data; name=\"_x_reason\"\r\n\r\nfetch-deferred-messaging-client-data\r\n------WebKitFormBoundaryBmODzJL36nxO1lnK\r\nContent-Disposition: form-data; name=\"_x_mode\"\r\n\r\nonline\r\n------WebKitFormBoundaryBmODzJL36nxO1lnK\r… (606 chars)"
   }
 }
 ```
@@ -237,7 +237,7 @@ Answered:
   "views": [
     {
       "id": "Av01",
-      "name": "All",
+      "name": "<name:1>",
       "emoji": null,
       "view_type": "all",
       "position": "1000000000",
@@ -245,7 +245,7 @@ Answered:
     },
     {
       "id": "Av02",
-      "name": "DMs",
+      "name": "<name:2>",
       "emoji": null,
       "view_type": "dms",
       "position": "2000000000",
@@ -258,7 +258,7 @@ Answered:
     },
     {
       "id": "Av03",
-      "name": "Mentions",
+      "name": "<name:3>",
       "emoji": null,
       "view_type": "mentions",
       "position": "3000000000",
@@ -277,7 +277,7 @@ Answered:
     },
     {
       "id": "Av04",
-      "name": "Threads",
+      "name": "<name:4>",
       "emoji": null,
       "view_type": "threads",
       "position": "4000000000",

@@ -20,7 +20,7 @@ Seen 2 time(s) in 1 run(s).
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 4: goto /client | 1 | 200 | 852 ms | 3196 ms | — |
-| inspect | step 6: goto /client/T0C4VCD06MR/D0C8VAE7REU | 1 | 200 | 305 ms | 2333 ms | — |
+| inspect | step 6: goto /client/<teamId:1>/<channelId:1> | 1 | 200 | 305 ms | 2333 ms | — |
 
 ### What it sent and what came back (the newest 2 from our runs)
 
@@ -43,7 +43,7 @@ Sent:
     "_x_num_retries": "0"
   },
   "body": {
-    "------WebKitFormBoundaryyZuXdAJwZHCnkAKf\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\nxoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\r\n------WebKitFormBoundaryyZuXdAJwZHCnkAKf\r\nContent-Disposition: form-data; name=\"_x_reason\"\r\n\r\ninitial-data\r\n------WebKitFormBoundaryyZuXdAJwZHCnkAKf\r\nContent-Disposition: form-data; name=\"version_all_channels\"\r\n\r\nfalse\r\n------WebKitFormBoundaryyZuXdAJwZHCnkAKf\r\nContent-Dis… (710 chars)"
+    "------WebKitFormBoundaryyZuXdAJwZHCnkAKf\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\n<slackToken>\r\n------WebKitFormBoundaryyZuXdAJwZHCnkAKf\r\nContent-Disposition: form-data; name=\"_x_reason\"\r\n\r\ninitial-data\r\n------WebKitFormBoundaryyZuXdAJwZHCnkAKf\r\nContent-Disposition: form-data; name=\"version_all_channels\"\r\n\r\nfalse\r\n------WebKitFormBoundaryyZuXdAJwZHCnkAKf\r\nContent-Dis… (710 chars)"
   }
 }
 ```
@@ -57,8 +57,8 @@ Answered:
     "has_more_mpdms": false,
     "channels": [
       {
-        "id": "C0C4L7RSTGX",
-        "name": "all-matthew_s-team",
+        "id": "<channelId:2>",
+        "name": "<name:1>",
         "is_channel": true,
         "is_group": false,
         "is_im": false,
@@ -68,20 +68,20 @@ Answered:
         "is_archived": false,
         "is_general": true,
         "unlinked": 0,
-        "name_normalized": "all-matthew_s-team",
+        "name_normalized": "<name:1>",
         "is_shared": false,
         "is_frozen": false,
         "is_org_shared": false,
         "is_pending_ext_shared": false,
         "pending_shared": [],
-        "context_team_id": "T0C4VCD06MR",
+        "context_team_id": "<teamId:1>",
         "updated": 1793285854394,
         "parent_conversation": null,
-        "creator": "U0C4L7RF7HD",
+        "creator": "<userId:1>",
         "use_case": "welcome",
         "is_ext_shared": false,
         "shared_team_ids": [
-          "T0C4VCD06MR"
+          "<teamId:1>"
         ],
         "pending_connected_team_ids": [],
         "topic": {
@@ -91,7 +91,7 @@ Answered:
         },
         "purpose": {
           "value": "Share announcements and updates about company news, upcoming events, or teammates who deserve some kudos. ⭐",
-          "creator": "U0C4L7RF7HD",
+          "creator": "<userId:1>",
           "last_set": 1790614676
         },
         "properties": {
@@ -105,8 +105,8 @@ Answered:
         "is_slackbot_channel_eligible": false
       },
       {
-        "id": "C0C559K0JA0",
-        "name": "social",
+        "id": "<channelId:3>",
+        "name": "<name:2>",
         "is_channel": true,
         "is_group": false,
         "is_im": false,
@@ -116,20 +116,20 @@ Answered:
         "is_archived": false,
         "is_general": false,
         "unlinked": 0,
-        "name_normalized": "social",
+        "name_normalized": "<name:2>",
         "is_shared": false,
         "is_frozen": false,
         "is_org_shared": false,
         "is_pending_ext_shared": false,
         "pending_shared": [],
-        "context_team_id": "T0C4VCD06MR",
+        "context_team_id": "<teamId:1>",
         "updated": 1793285921304,
         "parent_conversation": null,
-        "creator": "U0C4L7RF7HD",
+        "creator": "<userId:1>",
         "use_case": "random",
         "is_ext_shared": false,
         "shared_team_ids": [
-          "T0C4VCD06MR"
+          "<teamId:1>"
         ],
         "pending_connected_team_ids": [],
         "topic": {
@@ -139,7 +139,7 @@ Answered:
         },
         "purpose": {
           "value": "Other channels are for work. This one’s just for fun. Get to know your teammates and show your lighter side. 🎈",
-          "creator": "U0C4L7RF7HD",
+          "creator": "<userId:1>",
           "last_set": 1790614677
         },
         "properties": {
@@ -151,8 +151,8 @@ Answered:
         "is_slackbot_channel_eligible": false
       },
       {
-        "id": "C0CCTFK2D5G",
-        "name": "matt-rheos",
+        "id": "<channelId:4>",
+        "name": "<name:3>",
         "is_channel": true,
         "is_group": false,
         "is_im": false,
@@ -162,20 +162,20 @@ Answered:
         "is_archived": true,
         "is_general": false,
         "unlinked": 1793180184,
-        "name_normalized": "matt-rheos",
+        "name_normalized": "<name:3>",
         "is_shared": false,
         "is_frozen": true,
         "is_org_shared": false,
         "is_pending_ext_shared": false,
         "pending_shared": [],
-        "context_team_id": "T0C4VCD06MR",
+        "context_team_id": "<teamId:1>",
         "updated": 1793180184924,
         "frozen_reason": "connection_severed",
         "parent_conversation": null,
-        "creator": "U0C4L7RF7HD",
+        "creator": "<userId:1>",
         "is_ext_shared": false,
         "shared_team_ids": [
-          "T0C4VCD06MR"
+          "<teamId:1>"
         ],
         "pending_connected_team_ids": [],
         "topic": {
@@ -196,12 +196,12 @@ Answered:
     ],
     "ims": [
       {
-        "id": "D0C4VCJA6NP",
+        "id": "<channelId:5>",
         "created": 1790614723,
         "is_org_shared": false,
         "is_im": true,
         "is_archived": false,
-        "context_team_id": "T0C4VCD06MR",
+        "context_team_id": "<teamId:1>",
         "updated": 1790614723826,
         "is_frozen": false,
         "is_slackbot_channel_enabled": false,
@@ -210,12 +210,12 @@ Answered:
         "is_open": true
       },
       {
-        "id": "D0C559JJT6Y",
+        "id": "<channelId:6>",
         "created": 1790614676,
         "is_org_shared": false,
         "is_im": true,
         "is_archived": false,
-        "context_team_id": "T0C4VCD06MR",
+        "context_team_id": "<teamId:1>",
         "updated": 1793285898858,
         "is_frozen": false,
         "is_slackbot_channel_enabled": false,
@@ -227,47 +227,47 @@ Answered:
         }
       },
       {
-        "id": "D0C5W04RGPJ",
+        "id": "<channelId:7>",
         "created": 1790614676,
         "is_org_shared": false,
         "is_im": true,
         "is_archived": false,
-        "context_team_id": "T0C4VCD06MR",
+        "context_team_id": "<teamId:1>",
         "updated": 1793285921277,
         "is_frozen": false,
         "is_slackbot_channel_enabled": false,
         "is_slackbot_channel_eligible": false,
-        "user": "U0C4L7RF7HD",
+        "user": "<userId:1>",
         "is_open": true,
         "properties": {
           "is_dormant": true
         }
       },
       {
-        "id": "D0C8VAE7REU",
+        "id": "<channelId:1>",
         "created": 1791540333,
         "is_org_shared": false,
         "is_im": true,
         "is_archived": false,
-        "context_team_id": "T0C4VCD06MR",
+        "context_team_id": "<teamId:1>",
         "updated": 1793354470891,
         "is_shared": true,
         "is_frozen": false,
         "is_slackbot_channel_enabled": false,
         "is_slackbot_channel_eligible": false,
-        "user": "U0A9JFXK21L",
+        "user": "<userId:2>",
         "is_open": true,
         "connected_team_ids": [
-          "T0C4VCD06MR",
-          "T0A9H4FM18V"
+          "<teamId:1>",
+          "<teamId:2>"
         ],
         "shared_team_ids": [
-          "T0A9H4FM18V"
+          "<teamId:2>"
         ],
         "is_ext_shared": true,
         "properties": {
           "meeting_notes": {
-            "file_id": "F0CDBB09HT5"
+            "file_id": "<fileId:1>"
           },
           "tabs": [
             {
@@ -279,7 +279,7 @@ Answered:
               "id": "Ct0CDC95GAMB",
               "type": "canvas",
               "data": {
-                "file_id": "F0CDBB09HT5",
+                "file_id": "<fileId:1>",
                 "shared_ts": "1793354470.599729"
               },
               "label": ""
@@ -293,7 +293,7 @@ Answered:
               "id": "Ct0CDC95GAMB",
               "type": "canvas",
               "data": {
-                "file_id": "F0CDBB09HT5",
+                "file_id": "<fileId:1>",
                 "shared_ts": "1793354470.599729"
               }
             }
@@ -303,9 +303,9 @@ Answered:
     ],
     "mpims": [],
     "is_open": [
-      "D0C4VCJA6NP",
-      "D0C5W04RGPJ",
-      "D0C8VAE7REU"
+      "<channelId:5>",
+      "<channelId:7>",
+      "<channelId:1>"
     ],
     "channels_priority": {}
   },
@@ -322,7 +322,7 @@ Answered:
       },
       {
         "channel_section_id": "L0CCXC3LQ1J",
-        "name": "Slack Connect",
+        "name": "<name:4>",
         "type": "slack_connect",
         "emoji": "",
         "last_updated": 1793194973,
@@ -340,7 +340,7 @@ Answered:
       },
       {
         "channel_section_id": "L0CCVJ11T5F",
-        "name": "Salesforce",
+        "name": "<name:5>",
         "type": "salesforce_records",
         "emoji": "salesforce",
         "last_updated": 1793180189,
@@ -349,7 +349,7 @@ Answered:
       },
       {
         "channel_section_id": "L0CCNCE5TV3",
-        "name": "Channels",
+        "name": "<name:6>",
         "type": "channels",
         "emoji": "",
         "last_updated": 1793180189,
@@ -358,7 +358,7 @@ Answered:
       },
       {
         "channel_section_id": "L0CCC9WMAUF",
-        "name": "Direct Messages",
+        "name": "<name:7>",
         "type": "direct_messages",
         "emoji": "",
         "last_updated": 1793180189,
@@ -373,7 +373,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261103T065639_mattSlack**, step 6: goto /client/T0C4VCD06MR/D0C8VAE7REU: 200, 305 ms
+**runs/inspect/20261103T065639_mattSlack**, step 6: goto /client/<teamId:1>/<channelId:1>: 200, 305 ms
 
 Sent:
 
@@ -390,7 +390,7 @@ Sent:
     "_x_num_retries": "0"
   },
   "body": {
-    "------WebKitFormBoundaryECI1JUjgnOTowPBr\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\nxoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\r\n------WebKitFormBoundaryECI1JUjgnOTowPBr\r\nContent-Disposition: form-data; name=\"_x_reason\"\r\n\r\ndeferred-data\r\n------WebKitFormBoundaryECI1JUjgnOTowPBr\r\nContent-Disposition: form-data; name=\"version_all_channels\"\r\n\r\nfalse\r\n------WebKitFormBoundaryECI1JUjgnOTowPBr\r\nContent-Di… (830 chars)"
+    "------WebKitFormBoundaryECI1JUjgnOTowPBr\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\n<slackToken>\r\n------WebKitFormBoundaryECI1JUjgnOTowPBr\r\nContent-Disposition: form-data; name=\"_x_reason\"\r\n\r\ndeferred-data\r\n------WebKitFormBoundaryECI1JUjgnOTowPBr\r\nContent-Disposition: form-data; name=\"version_all_channels\"\r\n\r\nfalse\r\n------WebKitFormBoundaryECI1JUjgnOTowPBr\r\nContent-Di… (830 chars)"
   }
 }
 ```
@@ -405,12 +405,12 @@ Answered:
     "channels": [],
     "ims": [
       {
-        "id": "D0C4VCJA6NP",
+        "id": "<channelId:5>",
         "created": 1790614723,
         "is_org_shared": false,
         "is_im": true,
         "is_archived": false,
-        "context_team_id": "T0C4VCD06MR",
+        "context_team_id": "<teamId:1>",
         "updated": 1790614723826,
         "is_frozen": false,
         "is_slackbot_channel_enabled": false,
@@ -419,12 +419,12 @@ Answered:
         "is_open": true
       },
       {
-        "id": "D0C559JJT6Y",
+        "id": "<channelId:6>",
         "created": 1790614676,
         "is_org_shared": false,
         "is_im": true,
         "is_archived": false,
-        "context_team_id": "T0C4VCD06MR",
+        "context_team_id": "<teamId:1>",
         "updated": 1793285898858,
         "is_frozen": false,
         "is_slackbot_channel_enabled": false,
@@ -436,47 +436,47 @@ Answered:
         }
       },
       {
-        "id": "D0C5W04RGPJ",
+        "id": "<channelId:7>",
         "created": 1790614676,
         "is_org_shared": false,
         "is_im": true,
         "is_archived": false,
-        "context_team_id": "T0C4VCD06MR",
+        "context_team_id": "<teamId:1>",
         "updated": 1793285921277,
         "is_frozen": false,
         "is_slackbot_channel_enabled": false,
         "is_slackbot_channel_eligible": false,
-        "user": "U0C4L7RF7HD",
+        "user": "<userId:1>",
         "is_open": true,
         "properties": {
           "is_dormant": true
         }
       },
       {
-        "id": "D0C8VAE7REU",
+        "id": "<channelId:1>",
         "created": 1791540333,
         "is_org_shared": false,
         "is_im": true,
         "is_archived": false,
-        "context_team_id": "T0C4VCD06MR",
+        "context_team_id": "<teamId:1>",
         "updated": 1793354470891,
         "is_shared": true,
         "is_frozen": false,
         "is_slackbot_channel_enabled": false,
         "is_slackbot_channel_eligible": false,
-        "user": "U0A9JFXK21L",
+        "user": "<userId:2>",
         "is_open": true,
         "connected_team_ids": [
-          "T0C4VCD06MR",
-          "T0A9H4FM18V"
+          "<teamId:1>",
+          "<teamId:2>"
         ],
         "shared_team_ids": [
-          "T0A9H4FM18V"
+          "<teamId:2>"
         ],
         "is_ext_shared": true,
         "properties": {
           "meeting_notes": {
-            "file_id": "F0CDBB09HT5"
+            "file_id": "<fileId:1>"
           },
           "tabs": [
             {
@@ -488,7 +488,7 @@ Answered:
               "id": "Ct0CDC95GAMB",
               "type": "canvas",
               "data": {
-                "file_id": "F0CDBB09HT5",
+                "file_id": "<fileId:1>",
                 "shared_ts": "1793354470.599729"
               },
               "label": ""
@@ -502,7 +502,7 @@ Answered:
               "id": "Ct0CDC95GAMB",
               "type": "canvas",
               "data": {
-                "file_id": "F0CDBB09HT5",
+                "file_id": "<fileId:1>",
                 "shared_ts": "1793354470.599729"
               }
             }
@@ -512,14 +512,14 @@ Answered:
     ],
     "mpims": [],
     "is_open": [
-      "D0C4VCJA6NP",
-      "D0C5W04RGPJ",
-      "D0C8VAE7REU"
+      "<channelId:5>",
+      "<channelId:7>",
+      "<channelId:1>"
     ],
     "unchanged_channel_ids": [
-      "C0C4L7RSTGX",
-      "C0C559K0JA0",
-      "C0CCTFK2D5G"
+      "<channelId:2>",
+      "<channelId:3>",
+      "<channelId:4>"
     ],
     "channels_priority": {}
   },
@@ -536,7 +536,7 @@ Answered:
       },
       {
         "channel_section_id": "L0CCXC3LQ1J",
-        "name": "Slack Connect",
+        "name": "<name:4>",
         "type": "slack_connect",
         "emoji": "",
         "last_updated": 1793194973,
@@ -554,7 +554,7 @@ Answered:
       },
       {
         "channel_section_id": "L0CCVJ11T5F",
-        "name": "Salesforce",
+        "name": "<name:5>",
         "type": "salesforce_records",
         "emoji": "salesforce",
         "last_updated": 1793180189,
@@ -563,7 +563,7 @@ Answered:
       },
       {
         "channel_section_id": "L0CCNCE5TV3",
-        "name": "Channels",
+        "name": "<name:6>",
         "type": "channels",
         "emoji": "",
         "last_updated": 1793180189,
@@ -572,7 +572,7 @@ Answered:
       },
       {
         "channel_section_id": "L0CCC9WMAUF",
-        "name": "Direct Messages",
+        "name": "<name:7>",
         "type": "direct_messages",
         "emoji": "",
         "last_updated": 1793180189,

@@ -106,6 +106,11 @@ export const PLATFORM_LIST = [
   { name: 'log for Slack', path: '/slack' },
   { name: 'log for Instagram', path: '/instagram' },
   { name: 'log for Reddit', path: '/reddit' },
+  { name: 'log for Cursor', path: '/cursor' },
+  { name: 'log for Claude', path: '/claude' },
+  { name: 'log for ChatGPT', path: '/chatgpt' },
+  { name: 'log for Hermes', path: '/hermes' },
+  { name: 'log for Grok', path: '/grok' },
 ]
 
 export function softwareApplication(featureList: string[] = []) {

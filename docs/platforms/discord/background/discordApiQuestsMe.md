@@ -10,7 +10,7 @@
 | Path | `discord.com/api/quests/@me` |
 | Sends | — |
 | Reads | `message`, `code`, `quests`, `excluded_quests`, `quest_enrollment_blocked_until`, `quest_access_suspended_until` |
-| Called from | `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1036.js:1 parse`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1245.js:2 anonymous` |
+| Called from | `runs/inspect/20261030T222341_<name:1>/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_<name:1>/script1036.js:1 parse`, `runs/inspect/20261030T222341_<name:1>/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_<name:1>/script1245.js:2 anonymous` |
 | rea | `ev_065e7ad37dcb5911d240f9de7d6e2882220c5a8d7c025d92b46a23de59cf297c` |
 
 Seen 7 time(s) in 4 run(s).
@@ -29,7 +29,7 @@ Seen 7 time(s) in 4 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder**, step 1: goto /channels/@me: 401, 344 ms
+**runs/inspect/20261030T222341_<name:1>**, step 1: goto /channels/@me: 401, 344 ms
 
 Sent:
 
@@ -46,7 +46,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder**, step 2: snapshot: 200, 705 ms
+**runs/inspect/20261030T222341_<name:1>**, step 2: snapshot: 200, 705 ms
 
 Sent:
 
@@ -60,7 +60,7 @@ Answered:
 {
   "quests": [
     {
-      "id": "1550379237335367680",
+      "id": "<id:1>",
       "config": "(13 fields)",
       "user_status": null,
       "targeted_content": "(0 items)",
@@ -71,7 +71,7 @@ Answered:
       "provenance_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dMVE1KUG1Dc3hDR1ZJU1pqWVlNWmQ1NlZKck5KKzdYTFlQMVl1NmRMWE5jcFlZRmE0N2VZUzdkZWhJdlFMNEVMTXhOd3hNY0pRRmlRancxN1RNOFdaNTlYZENxNU01RlltSXVJSkFpWGVHak1WTm1hamdDemVQYmNUVHRkMVJmRzIycVZnaE0yNVo2YjJjOGZhQzROTVFaS1hlMzNibUN0WmR3R0RvOVFoSHNkTEl6bmdqIn0="
     },
     {
-      "id": "1547647018090893312",
+      "id": "<id:2>",
       "config": "(13 fields)",
       "user_status": null,
       "targeted_content": "(0 items)",
@@ -82,7 +82,7 @@ Answered:
       "provenance_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dLS2REUkdCMjRxNkx3RnNwM3RUS2dnZ0ZRUzV0c3gyK1BxblBnZWNBWExoSFV4YVdVSDB1YkV5dWNndkY1eTRhNzJMMElRSUlxMG90czFZL2xPb2VzMkZKWUN3RnlHcy9TejN1SlBvcnhGQkM5S25ydlIyQ0FQQzQ4SE9lTkV4ZUlpU0U4ODMzWGR0QmZxc0xoTVdSSU0zTm1LbXNVd1NEdjVoblJtckZkWHA5dldweE1iIn0="
     },
     {
-      "id": "1550081499628441600",
+      "id": "<id:3>",
       "config": "(13 fields)",
       "user_status": null,
       "targeted_content": "(0 items)",
@@ -93,7 +93,7 @@ Answered:
       "provenance_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dMVEQwQ3BnZ2VUTzNZQzVtRVB5elhpaWtxQUEyc2owYnRwZFBYZ1F5Rk5yREFNc0U4T3REWSs2NHQrOUlvcUx2LzdkMk9EUklXYUZ3UzRIMXVobDhHbWlDOW9yTzJNVUhFVVErRWVIdnNRSGxwU2ZvK2dwc0JlMzNqb2djMTkvTWxKVnhRSGUxUjRJYWFGNG01NEZMVktoRHhwNU9ZbUxqeG9oR2EzeUhrS2wvSnVZUVF1In0="
     },
     {
-      "id": "1553154139435835392",
+      "id": "<id:4>",
       "config": "(13 fields)",
       "user_status": null,
       "targeted_content": "(0 items)",
@@ -104,7 +104,7 @@ Answered:
       "provenance_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dKd3QvQnd5UnpRZWIvQkZnV3FNMTUrOUFZMXFRampMc2R2azRucU1qaEVRb1NmMDJnbjFSSitpR3lIWlpWaHBmZFNydXhNczc4ZTcxZTV3WkxZK05kRk52SG81MEJyWFc3VExTUGdSNmU3SnVnUGR4aHBLcFRMc2ZPZEh1elBXQnorMEFEazdTR2ZlcFR3bklmYk1CSjlMdHlNbVh6RVRrSXoraG5ib3pYVUgxYzM3bFoxIn0="
     },
     {
-      "id": "1558112706446368769",
+      "id": "<id:5>",
       "config": "(13 fields)",
       "user_status": null,
       "targeted_content": "(0 items)",
@@ -115,7 +115,7 @@ Answered:
       "provenance_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dMZUxsN3l0cFpIaGhtVG9kb3NjSldtZnNaWWhsM2FJMld3bm9oNlEyR3RhTUpoV3NkK2d5RU1ldHR2dDVCU09ldlBVUGN1dUJ5clpxUHRQQ1BXNWhjeUsrQ2JpYWEwOEhSOUFkUU9YQ1BmMXRkTnFrTzNha2M4ZDFneGIrVkl1VENIWDBDaUdXOFhyUitDc3lLL2tSYmcwTVVjbkFhaFJobnhzZFVoS2NEcTU2VEUyOEZTIn0="
     },
     {
-      "id": "1555158122522349568",
+      "id": "<id:6>",
       "config": "(13 fields)",
       "user_status": null,
       "targeted_content": "(0 items)",
@@ -129,22 +129,22 @@ Answered:
   ],
   "excluded_quests": [
     {
-      "id": "1549087389715013632"
+      "id": "<id:7>"
     },
     {
-      "id": "1558176501663272961"
+      "id": "<id:8>"
     },
     {
-      "id": "1553392150924890112"
+      "id": "<id:9>"
     },
     {
-      "id": "1541371710417272834"
+      "id": "<id:10>"
     },
     {
-      "id": "1565032458741612545"
+      "id": "<id:11>"
     },
     {
-      "id": "1541369647985594369"
+      "id": "<id:12>"
     },
     "… 75 more"
   ],
@@ -153,7 +153,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder**, step 1: goto /login: 200, 553 ms
+**runs/inspect/20261028T074137_<name:1>**, step 1: goto /login: 200, 553 ms
 
 Sent:
 
@@ -167,7 +167,7 @@ Answered:
 {
   "quests": [
     {
-      "id": "1550379237335367680",
+      "id": "<id:1>",
       "config": "(13 fields)",
       "user_status": null,
       "targeted_content": "(0 items)",
@@ -178,7 +178,7 @@ Answered:
       "provenance_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dKYXQyaGRJZXdrbDZOeEZwd1BjV3V2MzAvSjFncEFpdzRaTTE4VHp4UnYra3plbkJVaGtBeUYvMTJCeXpHR2NtVGVrQldYM3hGeWNUUnV1OWtqeEZBMFVjKzI5WXhlK0x4MFd6ZDM3Nzg2UGs0MlNKTS9VY0l0czVBOHZsVjVkbEhoZG1jNmN0ZUNSNi9MdjY2STJINE5pVFZzck1BblExRGZYbnNLdXI5MDFYNit6WGp1In0="
     },
     {
-      "id": "1547647018090893312",
+      "id": "<id:2>",
       "config": "(13 fields)",
       "user_status": null,
       "targeted_content": "(0 items)",
@@ -189,7 +189,7 @@ Answered:
       "provenance_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dMZEsyMTd0N3VXVzRFbHp5NDFNRG9IOEFHbzVpajNSL0szekdzb21HMWRqa2t0Q1hpY0pHTndjTUE5aDE4TWdmNW9Yb3BiUFMyT25xMm1CZU1IMHgrQU90bnY0dDRyeHk5MFR0b3dRdmhvWTFIa3ozWTVXaFU4TWJ2WnhtL3RXZkQ0Vnc2NytlWkhlZXVXYUtveDV0UUpWbkRUb09Kd0VueDkwT3RQQ2N5ZmY2V2hsREtYIn0="
     },
     {
-      "id": "1550081499628441600",
+      "id": "<id:3>",
       "config": "(13 fields)",
       "user_status": null,
       "targeted_content": "(0 items)",
@@ -200,7 +200,7 @@ Answered:
       "provenance_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dMdlBieERYQ0pRYThnTkh1TkVGNEptSzBzQXZpNGhxM01RS1VjaHBNaHhPazdFOG1YNTFMQndTNFlvYWc0cE1VejlTQkROcndUeXZlZmFYeU1wTjd0SW5IQS8xMzI5YWVtemprdFVPcHJZSGRuSjJhWUxGTlQwTWZxVG41L3U3SSs5azViNXl5Nno5dHVNWE14RGpJR0xWK2VCeGlyMTcxaHBqdVduTXRLL1hzSms1UGtuIn0="
     },
     {
-      "id": "1548040517420449792",
+      "id": "<id:13>",
       "config": "(13 fields)",
       "user_status": null,
       "targeted_content": "(0 items)",
@@ -211,7 +211,7 @@ Answered:
       "provenance_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dKMzV2V2thWHVTQmw4ekhJeUhLSk5ZdzdTdnhWaEpua2F6L1JHSS91N2FqWnNsMVUxZ096TUVlaXNXR25UWkYyZ05mSlR6dFFLSzFMWDIwdFRicnZUNkxmQkhiU2pZeHZtWVowa3pacXYwcUhtK21ralZzcnpTdzFYMnVKTmYxbzk5SDhZUGFDN3RWRGlCdHVqNWREZ3BJY3pzR29zNTB3RGNTakxhV3ZiRkNPRDFELzErIn0="
     },
     {
-      "id": "1553154139435835392",
+      "id": "<id:4>",
       "config": "(13 fields)",
       "user_status": null,
       "targeted_content": "(0 items)",
@@ -222,7 +222,7 @@ Answered:
       "provenance_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dKOWpUV2FMZmhkdWxXZ3FSRC9oUk9jZkdFTVB0Yjk1RDRGam9TQS85cStKTUdTNWxJSUJHdG85OTNRRXpHZXF6czFhZkNjanE4Q1AycGlrbWVSZUt3Szd2L3B0b1VwMERyQTZvRDlDK01tY1pNL0dtN2VHMEZtVU5OZ0Y1TDVmQklaNXZsS3FEenhGWlFLQ1BjZC84a1FEcmZqVFlvN05ia0E5QjlIT0JMeUxtNTB0SmlBIn0="
     },
     {
-      "id": "1558112706446368769",
+      "id": "<id:5>",
       "config": "(13 fields)",
       "user_status": null,
       "targeted_content": "(0 items)",
@@ -236,22 +236,22 @@ Answered:
   ],
   "excluded_quests": [
     {
-      "id": "1549087389715013632"
+      "id": "<id:7>"
     },
     {
-      "id": "1558176501663272961"
+      "id": "<id:8>"
     },
     {
-      "id": "1553392150924890112"
+      "id": "<id:9>"
     },
     {
-      "id": "1541371710417272834"
+      "id": "<id:10>"
     },
     {
-      "id": "1541369647985594369"
+      "id": "<id:12>"
     },
     {
-      "id": "1552026570229813258"
+      "id": "<id:14>"
     },
     "… 73 more"
   ],

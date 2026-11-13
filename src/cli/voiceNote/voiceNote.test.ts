@@ -84,7 +84,7 @@ describe("log discord|instagram|slack voice (rule 142)", () => {
     mkdirSync(voiceNotesDir(), { recursive: true });
     const existing = join(voiceNotesDir(), "theirs.txt");
     writeFileSync(existing, "x");
-    for (const text of ["C:/Users/0/clip.ogg", "voice_123.m4a", existing]) {
+    for (const text of ["C:/Users/tester/clip.ogg", "voice_123.m4a", existing]) {
       const r = await run(["discord", "voice", "--account", "discordOne", "--channel", CHANNEL, "--text", text, "--approvedBy", "matt", "--live"]);
       expect(r.err + r.out).toContain("voiceNoteInvalid");
     }
@@ -127,7 +127,7 @@ describe("log discord|instagram|slack voice (rule 142)", () => {
   });
 
   test("an X voice note is a dry run without --live and contacts nothing", async () => {
-    const r = await run(["twitter", "voice", "--account", "xOne", "--with", "@AjeetVermai", "--text", "yo"]);
+    const r = await run(["twitter", "voice", "--account", "xOne", "--with", "@HandleA1", "--text", "yo"]);
     expect(r.code).toBe(0);
     expect(r.out).toContain("dry run");
     expect(r.specs.length).toBe(0);
@@ -135,11 +135,11 @@ describe("log discord|instagram|slack voice (rule 142)", () => {
   });
 
   test("an X voice note goes to the engine as xchatVoice with the handle, the file, its seconds and the saved PIN (rule 151)", async () => {
-    const r = await run(["twitter", "voice", "--account", "xOne", "--with", "@AjeetVermai", "--text", "yo", "--approvedBy", "matt", "--live"], { ok: true, event: "sent", mode: "xchatVoice", messageId: "m1" });
+    const r = await run(["twitter", "voice", "--account", "xOne", "--with", "@HandleA1", "--text", "yo", "--approvedBy", "matt", "--live"], { ok: true, event: "sent", mode: "xchatVoice", messageId: "m1" });
     expect(r.code).toBe(0);
     expect(rendered).toEqual(["inworld:twitter:yo"]);
     expect(r.specs).toHaveLength(1);
-    expect(r.specs[0]).toMatchObject({ action: "xchatVoice", screenName: "AjeetVermai", seconds: 2.5, live: true, approvedBy: "matt", chatPin: "2580" });
+    expect(r.specs[0]).toMatchObject({ action: "xchatVoice", screenName: "HandleA1", seconds: 2.5, live: true, approvedBy: "matt", chatPin: "2580" });
     expect(String(r.specs[0]!.path)).toEndWith(".m4a");
   });
 

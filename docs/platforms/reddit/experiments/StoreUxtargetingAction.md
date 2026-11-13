@@ -10,7 +10,7 @@
 | Path | `/svc/shreddit/graphql` |
 | Sends | `input` |
 | Reads | `data.storeUxTargetingAction`, `errors`, `operation`, `extensions.traceID` |
-| Called from | `runs/inspect/20261025T124815_MaleficentTry8338/script1.js:1477 r` |
+| Called from | `runs/inspect/20261025T124815_<name:1>/script1.js:1477 r` |
 | rea | `ev_1eabc44149f598f96afa3c84f9b0dd45c695eb446f0b569a4e6207cdee710c0f` |
 
 Seen 1 time(s) in 1 run(s).
@@ -23,7 +23,7 @@ Seen 1 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, scroll: +493px in 13 wheel steps, 953 ms: 200, 345 ms
+**runs/inspect/20261025T124815_<name:1>**, scroll: +493px in 13 wheel steps, 953 ms: 200, 345 ms
 
 Sent:
 

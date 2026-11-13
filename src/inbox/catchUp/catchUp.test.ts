@@ -61,8 +61,8 @@ describe("catching up after a gap (rule 135)", () => {
 
   test("an X user id finds its handle from the notifications the owner stored, so the voice gate reads the right chat", () => {
     expect(handleOfUserId("twitter", "acct", "1987816842371743744")).toBeNull();
-    appendEvent({ platform: "twitter", account: "acct", conversationId: "", type: "notification", with: "AjeetVermai", payload: { userId: "1987816842371743744", handle: "AjeetVermai" }, receivedAt: "2026-11-05T11:41:11Z" });
-    expect(handleOfUserId("twitter", "acct", "1987816842371743744")).toBe("AjeetVermai");
+    appendEvent({ platform: "twitter", account: "acct", conversationId: "", type: "notification", with: "HandleA1", payload: { userId: "1987816842371743744", handle: "HandleA1" }, receivedAt: "2026-11-05T11:41:11Z" });
+    expect(handleOfUserId("twitter", "acct", "1987816842371743744")).toBe("HandleA1");
     expect(handleOfUserId("twitter", "other", "1987816842371743744")).toBeNull();
   });
 
@@ -151,7 +151,7 @@ describe("a send catches up only its own chat, never waiting for the whole accou
 
   test("while catching up, this one chat is read and stored at once", () => {
     openGap("discord", "oneChatB", "2026-11-07T11:00:00Z", "ownerRestarted");
-    const got = catchUpOneChat("discord", "oneChatB", "c2", () => ({ ok: true, messages: [{ id: "1", at: "2026-11-07T11:01:00Z", from: "Kennedy", fromMe: false, text: "we gotta plan" }] }), new Date("2026-11-07T11:02:00Z"));
+    const got = catchUpOneChat("discord", "oneChatB", "c2", () => ({ ok: true, messages: [{ id: "1", at: "2026-11-07T11:01:00Z", from: "Kira", fromMe: false, text: "we gotta plan" }] }), new Date("2026-11-07T11:02:00Z"));
     expect(got).toEqual({ ok: true, how: "chatRead", stored: 1 });
   });
 

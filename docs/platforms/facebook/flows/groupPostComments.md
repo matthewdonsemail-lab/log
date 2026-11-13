@@ -2,7 +2,7 @@
 
 On a group's Open questions tab, open a post's comments, switch the sort to All comments and scroll them; read-only
 
-Built by `log flow fromInspect` from the recording `C:/Users/0/.logCli/runs/inspect/20261020T153648_61594063207669/sequences/groupPostComments` (account groupPostComments). Run it on any account with `log flow run groupPostComments --account <a> --live`, or over MCP as the tool `flowGroupPostComments` (rule 31).
+Built by `log flow fromInspect` from the recording `~/.logCli/runs/inspect/20261020T153648_<userId:1>/sequences/groupPostComments` (account groupPostComments). Run it on any account with `log flow run groupPostComments --account <a> --live`, or over MCP as the tool `flowGroupPostComments` (rule 31).
 
 ## Params
 

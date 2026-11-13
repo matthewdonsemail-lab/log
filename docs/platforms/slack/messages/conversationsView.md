@@ -20,7 +20,7 @@ Seen 2 time(s) in 1 run(s).
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 4: goto /client | 1 | 200 | 554 ms | 3163 ms | — |
-| inspect | step 6: goto /client/T0C4VCD06MR/D0C8VAE7REU | 1 | 200 | 338 ms | 2228 ms | — |
+| inspect | step 6: goto /client/<teamId:1>/<channelId:1> | 1 | 200 | 338 ms | 2228 ms | — |
 
 ### What it sent and what came back (the newest 2 from our runs)
 
@@ -43,7 +43,7 @@ Sent:
     "_x_num_retries": "0"
   },
   "body": {
-    "------WebKitFormBoundaryeQQNGgNZnW4W3ABy\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\nxoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\r\n------WebKitFormBoundaryeQQNGgNZnW4W3ABy\r\nContent-Disposition: form-data; name=\"canonical_avatars\"\r\n\r\ntrue\r\n------WebKitFormBoundaryeQQNGgNZnW4W3ABy\r\nContent-Disposition: form-data; name=\"no_user_profile\"\r\n\r\ntrue\r\n------WebKitFormBoundaryeQQNGgNZnW4W3ABy\r\nContent-Dispositi… (1549 chars)"
+    "------WebKitFormBoundaryeQQNGgNZnW4W3ABy\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\n<slackToken>\r\n------WebKitFormBoundaryeQQNGgNZnW4W3ABy\r\nContent-Disposition: form-data; name=\"canonical_avatars\"\r\n\r\ntrue\r\n------WebKitFormBoundaryeQQNGgNZnW4W3ABy\r\nContent-Disposition: form-data; name=\"no_user_profile\"\r\n\r\ntrue\r\n------WebKitFormBoundaryeQQNGgNZnW4W3ABy\r\nContent-Dispositi… (1549 chars)"
   }
 }
 ```
@@ -57,8 +57,8 @@ Answered:
     "messages": [
       {
         "subtype": "channel_join",
-        "user": "U0C4L7RF7HD",
-        "text": "<@U0C4L7RF7HD> has joined the channel",
+        "user": "<userId:1>",
+        "text": "<messageText>",
         "type": "message",
         "ts": "1790614677.128359"
       }
@@ -74,18 +74,18 @@ Answered:
   },
   "users": [
     {
-      "id": "U0C4L7RF7HD",
-      "name": "matthewdonsemail",
+      "id": "<userId:1>",
+      "name": "<name:1>",
       "is_bot": false,
       "updated": 1793356549,
       "is_app_user": false,
-      "team_id": "T0C4VCD06MR",
+      "team_id": "<teamId:1>",
       "deleted": false,
       "color": "5870dd",
       "is_email_confirmed": true,
-      "real_name": "Matthew Don",
-      "tz": "Asia/Bangkok",
-      "tz_label": "Indochina Time",
+      "real_name": "<name:2>",
+      "tz": "<timezone>",
+      "tz_label": "<timezone>",
       "tz_offset": 25200,
       "is_admin": true,
       "is_owner": true,
@@ -95,17 +95,17 @@ Answered:
       "has_2fa": false,
       "who_can_share_contact_card": "EVERYONE",
       "profile": {
-        "real_name": "Matthew Don",
+        "real_name": "<name:2>",
         "display_name": "",
         "avatar_hash": "c4e891e2ba88",
-        "real_name_normalized": "Matthew Don",
+        "real_name_normalized": "<name:2>",
         "display_name_normalized": "",
         "image_original": "https://s3-us-west-2.amazonaws.com/slack-files2/avatars/2026-09-28/12175321721380_c4e891e2ba88dcc86e9f_original.png",
         "is_custom_image": true,
-        "first_name": "Matthew",
-        "last_name": "Don",
-        "team": "T0C4VCD06MR",
-        "email": "matthewdonsemail@gmail.com",
+        "first_name": "<name:3>",
+        "last_name": "<name:4>",
+        "team": "<teamId:1>",
+        "email": "<email>",
         "title": "",
         "phone": "",
         "skype": "",
@@ -123,15 +123,15 @@ Answered:
   "channels": [],
   "emojis": {},
   "channel": {
-    "id": "C0C4L7RSTGX",
+    "id": "<channelId:2>",
     "created": 1790614676,
-    "creator": "U0C4L7RF7HD",
+    "creator": "<userId:1>",
     "is_org_shared": false,
     "is_im": false,
-    "context_team_id": "T0C4VCD06MR",
+    "context_team_id": "<teamId:1>",
     "updated": 1793285854394,
-    "name": "all-matthew_s-team",
-    "name_normalized": "all-matthew_s-team",
+    "name": "<name:5>",
+    "name_normalized": "<name:5>",
     "is_channel": true,
     "is_group": false,
     "is_mpim": false,
@@ -146,7 +146,7 @@ Answered:
     "parent_conversation": null,
     "purpose": {
       "value": "Share announcements and updates about company news, upcoming events, or teammates who deserve some kudos. ⭐",
-      "creator": "U0C4L7RF7HD",
+      "creator": "<userId:1>",
       "last_set": 1790614676
     },
     "topic": {
@@ -155,7 +155,7 @@ Answered:
       "last_set": 0
     },
     "shared_team_ids": [
-      "T0C4VCD06MR"
+      "<teamId:1>"
     ],
     "pending_connected_team_ids": [],
     "is_member": true,
@@ -179,7 +179,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261103T065639_mattSlack**, step 6: goto /client/T0C4VCD06MR/D0C8VAE7REU: 200, 338 ms
+**runs/inspect/20261103T065639_mattSlack**, step 6: goto /client/<teamId:1>/<channelId:1>: 200, 338 ms
 
 Sent:
 
@@ -196,7 +196,7 @@ Sent:
     "_x_num_retries": "0"
   },
   "body": {
-    "------WebKitFormBoundaryOe5fM1wvJmNSHEnW\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\nxoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\r\n------WebKitFormBoundaryOe5fM1wvJmNSHEnW\r\nContent-Disposition: form-data; name=\"canonical_avatars\"\r\n\r\ntrue\r\n------WebKitFormBoundaryOe5fM1wvJmNSHEnW\r\nContent-Disposition: form-data; name=\"no_user_profile\"\r\n\r\ntrue\r\n------WebKitFormBoundaryOe5fM1wvJmNSHEnW\r\nContent-Dispositi… (1654 chars)"
+    "------WebKitFormBoundaryOe5fM1wvJmNSHEnW\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\n<slackToken>\r\n------WebKitFormBoundaryOe5fM1wvJmNSHEnW\r\nContent-Disposition: form-data; name=\"canonical_avatars\"\r\n\r\ntrue\r\n------WebKitFormBoundaryOe5fM1wvJmNSHEnW\r\nContent-Disposition: form-data; name=\"no_user_profile\"\r\n\r\ntrue\r\n------WebKitFormBoundaryOe5fM1wvJmNSHEnW\r\nContent-Dispositi… (1654 chars)"
   }
 }
 ```
@@ -209,12 +209,12 @@ Answered:
   "history": {
     "messages": [
       {
-        "user": "U0C4L7RF7HD",
+        "user": "<userId:1>",
         "type": "message",
         "ts": "1793689111.667059",
         "client_msg_id": "1fc41dae-7241-49d9-833f-844b5a64cb91",
         "text": "yeah man",
-        "team": "T0C4VCD06MR",
+        "team": "<teamId:1>",
         "blocks": [
           {
             "type": "rich_text",
@@ -234,22 +234,22 @@ Answered:
         ]
       },
       {
-        "user": "U0A9JFXK21L",
+        "user": "<userId:2>",
         "type": "message",
         "ts": "1793689083.105289",
         "client_msg_id": "e75553d9-fdeb-4a3c-bf75-cbbba0a4f4e4",
-        "text": "u get paid on friday?",
-        "team": "T0C4VCD06MR",
-        "user_team": "T0A9H4FM18V",
-        "source_team": "T0A9H4FM18V",
+        "text": "<messageText>",
+        "team": "<teamId:1>",
+        "user_team": "<teamId:2>",
+        "source_team": "<teamId:2>",
         "user_profile": {
           "avatar_hash": "g20ac8b5db69",
-          "image_72": "https://secure.gravatar.com/avatar/20ac8b5db693fa622f5aa208ac2d569e.jpg?s=72&d=https%3A%2F%2Fa.slack-edge.com%2Fdf10d%2Fimg%2Favatars%2Fava_0000-72.png",
-          "first_name": "archie",
-          "real_name": "archie",
+          "image_72": "<avatarUrl>",
+          "first_name": "<name:6>",
+          "real_name": "<name:6>",
           "display_name": "",
-          "team": "T0A9H4FM18V",
-          "name": "archie",
+          "team": "<teamId:2>",
+          "name": "<name:6>",
           "is_restricted": false,
           "is_ultra_restricted": false
         },
@@ -272,22 +272,22 @@ Answered:
         ]
       },
       {
-        "user": "U0A9JFXK21L",
+        "user": "<userId:2>",
         "type": "message",
         "ts": "1793689069.817319",
         "client_msg_id": "6f8397a1-fa17-4f06-880f-5ba76bf25c00",
         "text": "laddddd",
-        "team": "T0C4VCD06MR",
-        "user_team": "T0A9H4FM18V",
-        "source_team": "T0A9H4FM18V",
+        "team": "<teamId:1>",
+        "user_team": "<teamId:2>",
+        "source_team": "<teamId:2>",
         "user_profile": {
           "avatar_hash": "g20ac8b5db69",
-          "image_72": "https://secure.gravatar.com/avatar/20ac8b5db693fa622f5aa208ac2d569e.jpg?s=72&d=https%3A%2F%2Fa.slack-edge.com%2Fdf10d%2Fimg%2Favatars%2Fava_0000-72.png",
-          "first_name": "archie",
-          "real_name": "archie",
+          "image_72": "<avatarUrl>",
+          "first_name": "<name:6>",
+          "real_name": "<name:6>",
           "display_name": "",
-          "team": "T0A9H4FM18V",
-          "name": "archie",
+          "team": "<teamId:2>",
+          "name": "<name:6>",
           "is_restricted": false,
           "is_ultra_restricted": false
         },
@@ -310,12 +310,12 @@ Answered:
         ]
       },
       {
-        "user": "U0C4L7RF7HD",
+        "user": "<userId:1>",
         "type": "message",
         "ts": "1793689024.177609",
         "client_msg_id": "0143404d-bb74-4227-ae81-eb5bdcacc0c2",
-        "text": "yeah i went overboard have to wait until friday like smh",
-        "team": "T0C4VCD06MR",
+        "text": "<messageText>",
+        "team": "<teamId:1>",
         "blocks": [
           {
             "type": "rich_text",
@@ -335,22 +335,22 @@ Answered:
         ]
       },
       {
-        "user": "U0A9JFXK21L",
+        "user": "<userId:2>",
         "type": "message",
         "ts": "1793688985.380489",
         "client_msg_id": "5f1e240e-c641-4c12-96e2-bee8cfa3211e",
-        "text": "you've ran out of ps?",
-        "team": "T0C4VCD06MR",
-        "user_team": "T0A9H4FM18V",
-        "source_team": "T0A9H4FM18V",
+        "text": "<messageText>",
+        "team": "<teamId:1>",
+        "user_team": "<teamId:2>",
+        "source_team": "<teamId:2>",
         "user_profile": {
           "avatar_hash": "g20ac8b5db69",
-          "image_72": "https://secure.gravatar.com/avatar/20ac8b5db693fa622f5aa208ac2d569e.jpg?s=72&d=https%3A%2F%2Fa.slack-edge.com%2Fdf10d%2Fimg%2Favatars%2Fava_0000-72.png",
-          "first_name": "archie",
-          "real_name": "archie",
+          "image_72": "<avatarUrl>",
+          "first_name": "<name:6>",
+          "real_name": "<name:6>",
           "display_name": "",
-          "team": "T0A9H4FM18V",
-          "name": "archie",
+          "team": "<teamId:2>",
+          "name": "<name:6>",
           "is_restricted": false,
           "is_ultra_restricted": false
         },
@@ -373,12 +373,12 @@ Answered:
         ]
       },
       {
-        "user": "U0C4L7RF7HD",
+        "user": "<userId:1>",
         "type": "message",
         "ts": "1793688960.221989",
         "client_msg_id": "4db67697-efe3-4692-a510-4d6b35c443cf",
-        "text": "or bank transfer or whatever its a uk bank acc just need to buy some stuff here went overboard there",
-        "team": "T0C4VCD06MR",
+        "text": "<messageText>",
+        "team": "<teamId:1>",
         "blocks": [
           {
             "type": "rich_text",
@@ -407,22 +407,22 @@ Answered:
     },
     "channel_actions_ts": null,
     "channel_actions_count": 0,
-    "next_ts": 1793688105842939
+    "next_ts": <id:1>
   },
   "users": [
     {
-      "id": "U0C4L7RF7HD",
-      "name": "matthewdonsemail",
+      "id": "<userId:1>",
+      "name": "<name:1>",
       "is_bot": false,
       "updated": 1793356549,
       "is_app_user": false,
-      "team_id": "T0C4VCD06MR",
+      "team_id": "<teamId:1>",
       "deleted": false,
       "color": "5870dd",
       "is_email_confirmed": true,
-      "real_name": "Matthew Don",
-      "tz": "Asia/Bangkok",
-      "tz_label": "Indochina Time",
+      "real_name": "<name:2>",
+      "tz": "<timezone>",
+      "tz_label": "<timezone>",
       "tz_offset": 25200,
       "is_admin": true,
       "is_owner": true,
@@ -432,17 +432,17 @@ Answered:
       "has_2fa": false,
       "who_can_share_contact_card": "EVERYONE",
       "profile": {
-        "real_name": "Matthew Don",
+        "real_name": "<name:2>",
         "display_name": "",
         "avatar_hash": "c4e891e2ba88",
-        "real_name_normalized": "Matthew Don",
+        "real_name_normalized": "<name:2>",
         "display_name_normalized": "",
         "image_original": "https://s3-us-west-2.amazonaws.com/slack-files2/avatars/2026-09-28/12175321721380_c4e891e2ba88dcc86e9f_original.png",
         "is_custom_image": true,
-        "first_name": "Matthew",
-        "last_name": "Don",
-        "team": "T0C4VCD06MR",
-        "email": "matthewdonsemail@gmail.com",
+        "first_name": "<name:3>",
+        "last_name": "<name:4>",
+        "team": "<teamId:1>",
+        "email": "<email>",
         "title": "",
         "phone": "",
         "skype": "",
@@ -456,25 +456,25 @@ Answered:
       }
     },
     {
-      "id": "U0A9JFXK21L",
-      "name": "archie",
+      "id": "<userId:2>",
+      "name": "<name:6>",
       "is_bot": false,
       "updated": 1793356549,
       "is_app_user": false,
-      "team_id": "T0A9H4FM18V",
+      "team_id": "<teamId:2>",
       "color": "50a0cf",
       "is_stranger": false,
       "who_can_share_contact_card": "EVERYONE",
       "profile": {
-        "real_name": "archie",
+        "real_name": "<name:6>",
         "display_name": "",
         "avatar_hash": "g20ac8b5db69",
-        "real_name_normalized": "archie",
+        "real_name_normalized": "<name:6>",
         "display_name_normalized": "",
-        "first_name": "archie",
+        "first_name": "<name:6>",
         "last_name": "",
-        "team": "T0A9H4FM18V",
-        "email": "archie@rheos.app"
+        "team": "<teamId:2>",
+        "email": "<email>"
       }
     }
   ],
@@ -482,33 +482,33 @@ Answered:
   "channels": [],
   "emojis": {},
   "im": {
-    "id": "D0C8VAE7REU",
+    "id": "<channelId:1>",
     "created": 1791540333,
     "is_org_shared": false,
     "is_im": true,
     "is_archived": false,
-    "context_team_id": "T0C4VCD06MR",
+    "context_team_id": "<teamId:1>",
     "updated": 1793354470891,
     "is_shared": true,
     "is_frozen": false,
     "is_slackbot_channel_enabled": false,
     "is_slackbot_channel_eligible": false,
-    "user": "U0A9JFXK21L",
+    "user": "<userId:2>",
     "last_read": "1793689111.667059",
     "is_open": true,
     "connected_team_ids": [
-      "T0C4VCD06MR",
-      "T0A9H4FM18V"
+      "<teamId:1>",
+      "<teamId:2>"
     ],
     "shared_team_ids": [
-      "T0A9H4FM18V"
+      "<teamId:2>"
     ],
     "is_ext_shared": true,
     "unread_count": 0,
     "unread_count_display": 0,
     "properties": {
       "meeting_notes": {
-        "file_id": "F0CDBB09HT5"
+        "file_id": "<fileId:1>"
       },
       "tabs": [
         {
@@ -520,7 +520,7 @@ Answered:
           "id": "Ct0CDC95GAMB",
           "type": "canvas",
           "data": {
-            "file_id": "F0CDBB09HT5",
+            "file_id": "<fileId:1>",
             "shared_ts": "1793354470.599729"
           },
           "label": ""
@@ -534,7 +534,7 @@ Answered:
           "id": "Ct0CDC95GAMB",
           "type": "canvas",
           "data": {
-            "file_id": "F0CDBB09HT5",
+            "file_id": "<fileId:1>",
             "shared_ts": "1793354470.599729"
           }
         }

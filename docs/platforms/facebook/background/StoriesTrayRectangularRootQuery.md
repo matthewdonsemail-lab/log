@@ -46,7 +46,7 @@ Seen 25 time(s) in 18 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/warmup/20261023T074930_61594063207669**, step 11: goto /marketplace/: 200, 1050 ms
+**runs/warmup/20261023T074930_<userId:1>**, step 11: goto /marketplace/: 200, 1050 ms
 
 Sent:
 
@@ -85,7 +85,7 @@ Answered:
             "node": {
               "__typename": "DirectMessageThreadBucket",
               "__isStoryBucket": "DirectMessageThreadBucket",
-              "id": "122126439807468773",
+              "id": "<id:1>",
               "unified_stories": {
                 "nodes": [],
                 "is_empty": true
@@ -94,18 +94,18 @@ Answered:
               "story_bucket_owner": {
                 "__typename": "User",
                 "profilePic": {
-                  "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg (454 chars)"
+                  "uri": "<mediaUrl> (454 chars)"
                 },
                 "__isNode": "User",
-                "id": "61594063207669",
+                "id": "<userId:1>",
                 "is_viewer_friend": false,
                 "gender": "FEMALE",
-                "name": "Bethlehem Trash",
+                "name": "<name:1>",
                 "profile_picture": {
-                  "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg (454 chars)"
+                  "uri": "<mediaUrl> (454 chars)"
                 },
                 "coverImage": {
-                  "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg (452 chars)"
+                  "uri": "<mediaUrl> (452 chars)"
                 }
               },
               "story_bucket_type": "STORY",
@@ -116,7 +116,7 @@ Answered:
               },
               "can_viewer_post": true,
               "should_show_close_friend_badge": false,
-              "ranking_tracking_string": "{\"request_id\":\"1d4fce12-54a1-4b5d-a249-e943acaa586d\",\"bucket_id\":\"122126439807468773\",\"owner_id\":\"61594063207669\",\"scored_time\":0,\"ranker_join_key\":\"1d4fce12-54a1-4b5d-a249-e943acaa586d\",\"raas_position\":0,\"raas_newly_scored_position\":0,\"random_rate\":0,\"usecase_id\":\"1\",\"is_suggested\":false,\"viewstate_token\":\"{\\\"shardManagerScope\\\":\\\"rva\\\",\\\"snapshotId\\\":7981457366225466703,\\\"versionId\\\":0,\\\"creatio… (421 chars)",
+              "ranking_tracking_string": "{\"request_id\":\"1d4fce12-54a1-4b5d-a249-e943acaa586d\",\"bucket_id\":\"<id:1>\",\"owner_id\":\"<userId:1>\",\"scored_time\":0,\"ranker_join_key\":\"1d4fce12-54a1-4b5d-a249-e943acaa586d\",\"raas_position\":0,\"raas_newly_scored_position\":0,\"random_rate\":0,\"usecase_id\":\"1\",\"is_suggested\":false,\"viewstate_token\":\"{\\\"shardManagerScope\\\":\\\"rva\\\",\\\"snapshotId\\\":<id:2>,\\\"versionId\\\":0,\\\"creatio… (421 chars)",
               "thumbnail_story_to_show": null,
               "is_bucket_live": false
             },
@@ -128,29 +128,29 @@ Answered:
           "has_next_page": false
         }
       },
-      "id": "61594063207669",
+      "id": "<userId:1>",
       "profilePicture": {
-        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg (452 chars)"
+        "uri": "<mediaUrl> (452 chars)"
       }
     },
     "viewer": {
       "actor": {
         "__typename": "User",
-        "id": "61594063207669"
+        "id": "<userId:1>"
       }
     }
   },
   "extensions": {
     "prefetch_uris_v2": [
       {
-        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg (452 chars)",
+        "uri": "<mediaUrl> (452 chars)",
         "label": null,
         "width": null,
         "height": null,
         "surface": null
       },
       {
-        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg (454 chars)",
+        "uri": "<mediaUrl> (454 chars)",
         "label": null,
         "width": null,
         "height": null,
@@ -166,7 +166,7 @@ Answered:
 }
 ```
 
-**runs/warmup/20261023T074930_61594063207669**, step 14: goto /marketplace/: 200, 797 ms
+**runs/warmup/20261023T074930_<userId:1>**, step 14: goto /marketplace/: 200, 797 ms
 
 Sent:
 
@@ -205,7 +205,7 @@ Answered:
             "node": {
               "__typename": "DirectMessageThreadBucket",
               "__isStoryBucket": "DirectMessageThreadBucket",
-              "id": "122126439807468773",
+              "id": "<id:1>",
               "unified_stories": {
                 "nodes": [],
                 "is_empty": true
@@ -214,18 +214,18 @@ Answered:
               "story_bucket_owner": {
                 "__typename": "User",
                 "profilePic": {
-                  "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg (454 chars)"
+                  "uri": "<mediaUrl> (454 chars)"
                 },
                 "__isNode": "User",
-                "id": "61594063207669",
+                "id": "<userId:1>",
                 "is_viewer_friend": false,
                 "gender": "FEMALE",
-                "name": "Bethlehem Trash",
+                "name": "<name:1>",
                 "profile_picture": {
-                  "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg (454 chars)"
+                  "uri": "<mediaUrl> (454 chars)"
                 },
                 "coverImage": {
-                  "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg (452 chars)"
+                  "uri": "<mediaUrl> (452 chars)"
                 }
               },
               "story_bucket_type": "STORY",
@@ -236,7 +236,7 @@ Answered:
               },
               "can_viewer_post": true,
               "should_show_close_friend_badge": false,
-              "ranking_tracking_string": "{\"request_id\":\"6aef2c79-927e-410f-81e1-333758f5d71e\",\"bucket_id\":\"122126439807468773\",\"owner_id\":\"61594063207669\",\"scored_time\":0,\"ranker_join_key\":\"6aef2c79-927e-410f-81e1-333758f5d71e\",\"raas_position\":0,\"raas_newly_scored_position\":0,\"random_rate\":0,\"usecase_id\":\"1\",\"is_suggested\":false,\"viewstate_token\":\"{\\\"shardManagerScope\\\":\\\"ncg\\\",\\\"snapshotId\\\":2336266685962601271,\\\"versionId\\\":0,\\\"creatio… (421 chars)",
+              "ranking_tracking_string": "{\"request_id\":\"6aef2c79-927e-410f-81e1-333758f5d71e\",\"bucket_id\":\"<id:1>\",\"owner_id\":\"<userId:1>\",\"scored_time\":0,\"ranker_join_key\":\"6aef2c79-927e-410f-81e1-333758f5d71e\",\"raas_position\":0,\"raas_newly_scored_position\":0,\"random_rate\":0,\"usecase_id\":\"1\",\"is_suggested\":false,\"viewstate_token\":\"{\\\"shardManagerScope\\\":\\\"ncg\\\",\\\"snapshotId\\\":<id:3>,\\\"versionId\\\":0,\\\"creatio… (421 chars)",
               "thumbnail_story_to_show": null,
               "is_bucket_live": false
             },
@@ -248,29 +248,29 @@ Answered:
           "has_next_page": false
         }
       },
-      "id": "61594063207669",
+      "id": "<userId:1>",
       "profilePicture": {
-        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg (452 chars)"
+        "uri": "<mediaUrl> (452 chars)"
       }
     },
     "viewer": {
       "actor": {
         "__typename": "User",
-        "id": "61594063207669"
+        "id": "<userId:1>"
       }
     }
   },
   "extensions": {
     "prefetch_uris_v2": [
       {
-        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg (452 chars)",
+        "uri": "<mediaUrl> (452 chars)",
         "label": null,
         "width": null,
         "height": null,
         "surface": null
       },
       {
-        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg (454 chars)",
+        "uri": "<mediaUrl> (454 chars)",
         "label": null,
         "width": null,
         "height": null,
@@ -286,7 +286,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261111T081957_61593610473511**, step 10: press Escape: 200, 429 ms
+**runs/inspect/20261111T081957_<userId:2>**, step 10: press Escape: 200, 429 ms
 
 Sent:
 
@@ -325,7 +325,7 @@ Answered:
             "node": {
               "__typename": "DirectMessageThreadBucket",
               "__isStoryBucket": "DirectMessageThreadBucket",
-              "id": "122099276547453682",
+              "id": "<id:4>",
               "unified_stories": {
                 "nodes": [],
                 "is_empty": true
@@ -334,18 +334,18 @@ Answered:
               "story_bucket_owner": {
                 "__typename": "User",
                 "profilePic": {
-                  "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t1.30497-1/453178253_471506465671661_2781666950760530985_n.png (403 chars)"
+                  "uri": "<mediaUrl> (403 chars)"
                 },
                 "__isNode": "User",
-                "id": "61593610473511",
+                "id": "<userId:2>",
                 "is_viewer_friend": false,
                 "gender": "FEMALE",
-                "name": "Halima Nxkdnb",
+                "name": "<name:2>",
                 "profile_picture": {
-                  "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t1.30497-1/453178253_471506465671661_2781666950760530985_n.png (403 chars)"
+                  "uri": "<mediaUrl> (403 chars)"
                 },
                 "coverImage": {
-                  "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t1.30497-1/453178253_471506465671661_2781666950760530985_n.png (419 chars)"
+                  "uri": "<mediaUrl> (419 chars)"
                 }
               },
               "story_bucket_type": "STORY",
@@ -356,7 +356,7 @@ Answered:
               },
               "can_viewer_post": true,
               "should_show_close_friend_badge": false,
-              "ranking_tracking_string": "{\"request_id\":\"9a89e463-86f5-46be-bc68-ec306990eea1\",\"bucket_id\":\"122099276547453682\",\"owner_id\":\"61593610473511\",\"scored_time\":0,\"ranker_join_key\":\"12209469-baa0-4d32-86e0-913f56438125\",\"raas_position\":0,\"raas_newly_scored_position\":-1,\"random_rate\":0,\"usecase_id\":\"1\",\"is_suggested\":false,\"viewstate_token\":\"{\\\"shardManagerScope\\\":\\\"hil\\\",\\\"snapshotId\\\":5620441670970226314,\\\"versionId\\\":0,\\\"creati… (422 chars)",
+              "ranking_tracking_string": "{\"request_id\":\"9a89e463-86f5-46be-bc68-ec306990eea1\",\"bucket_id\":\"<id:4>\",\"owner_id\":\"<userId:2>\",\"scored_time\":0,\"ranker_join_key\":\"12209469-baa0-4d32-86e0-913f56438125\",\"raas_position\":0,\"raas_newly_scored_position\":-1,\"random_rate\":0,\"usecase_id\":\"1\",\"is_suggested\":false,\"viewstate_token\":\"{\\\"shardManagerScope\\\":\\\"hil\\\",\\\"snapshotId\\\":<id:5>,\\\"versionId\\\":0,\\\"creati… (422 chars)",
               "thumbnail_story_to_show": null,
               "is_bucket_live": false
             },
@@ -368,29 +368,29 @@ Answered:
           "has_next_page": false
         }
       },
-      "id": "61593610473511",
+      "id": "<userId:2>",
       "profilePicture": {
-        "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t1.30497-1/453178253_471506465671661_2781666950760530985_n.png (401 chars)"
+        "uri": "<mediaUrl> (401 chars)"
       }
     },
     "viewer": {
       "actor": {
         "__typename": "User",
-        "id": "61593610473511"
+        "id": "<userId:2>"
       }
     }
   },
   "extensions": {
     "prefetch_uris_v2": [
       {
-        "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t1.30497-1/453178253_471506465671661_2781666950760530985_n.png (401 chars)",
+        "uri": "<mediaUrl> (401 chars)",
         "label": null,
         "width": null,
         "height": null,
         "surface": null
       },
       {
-        "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t1.30497-1/453178253_471506465671661_2781666950760530985_n.png (403 chars)",
+        "uri": "<mediaUrl> (403 chars)",
         "label": null,
         "width": null,
         "height": null,

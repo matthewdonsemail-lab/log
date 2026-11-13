@@ -10,7 +10,7 @@
 | Path | `status.discord.com/api/scheduled-maintenances/upcoming.json` |
 | Sends | — |
 | Reads | `page.id`, `page.name`, `page.url`, `page.time_zone`, `page.updated_at`, `scheduled_maintenances` |
-| Called from | `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1.js:254 statement`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script0.js:206 statement` |
+| Called from | `runs/inspect/20261030T222341_<name:1>/script1.js:254 statement`, `runs/inspect/20261028T074137_<name:1>/script0.js:206 statement` |
 | rea | `ev_47a4beb204f955e674b76416a65f5657484f4170026f07eb71bde5adf2f7eb12` |
 
 Seen 6 time(s) in 4 run(s).
@@ -28,7 +28,7 @@ Seen 6 time(s) in 4 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder**, step 2: snapshot: 200, 150 ms
+**runs/inspect/20261030T222341_<name:1>**, step 2: snapshot: 200, 150 ms
 
 Sent:
 
@@ -44,14 +44,14 @@ Answered:
     "id": "srhpyqt94yxb",
     "name": "Discord",
     "url": "https://discordstatus.com",
-    "time_zone": "America/Los_Angeles",
+    "time_zone": "<timezone>",
     "updated_at": "2026-10-30T15:10:10.138-07:00"
   },
   "scheduled_maintenances": []
 }
 ```
 
-**runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder**, step 1: goto /login: 200, 177 ms
+**runs/inspect/20261028T074137_<name:1>**, step 1: goto /login: 200, 177 ms
 
 Sent:
 
@@ -67,14 +67,14 @@ Answered:
     "id": "srhpyqt94yxb",
     "name": "Discord",
     "url": "https://discordstatus.com",
-    "time_zone": "America/Los_Angeles",
+    "time_zone": "<timezone>",
     "updated_at": "2026-10-28T00:17:35.842-07:00"
   },
   "scheduled_maintenances": []
 }
 ```
 
-**runs/inspect/20261028T065202_sourcedandsoldtothehighestbidder**, step 1: goto /channels/@me/<id>: 200, 140 ms
+**runs/inspect/20261028T065202_<name:1>**, step 1: goto /channels/@me/<id>: 200, 140 ms
 
 Sent:
 

@@ -45,7 +45,7 @@ const WEST_BANK_HAR = {
 }
 
 const KNOWN = new Set(['MarketplaceSearchAddressDataSourceQuery', 'CometMarketplaceSetBuyLocationMutation'])
-const ACCOUNT: StepAccount = { name: 'bethlehem', platform: 'facebook', homeCity: 'bethlehem', homeCountry: 'US', browser: 'adsPower', exit: 'exit 24.229.136.140 in US' }
+const ACCOUNT: StepAccount = { name: 'bethlehem', platform: 'facebook', homeCity: 'bethlehem', homeCountry: 'US', browser: 'adsPower', exit: 'exit 198.51.100.22 in US' }
 const TAKEN: StepTaken = { step: '04_setlocationBethlehemPa', action: 'setLocation', args: ['Bethlehem, PA'], ok: true, error: null, url: 'https://www.facebook.com/marketplace/101880973186304', title: 'Facebook Marketplace', ms: 28656, landedMs: 20688, mouse: null }
 const GOAL = "Set the account's Marketplace location to its home: Bethlehem, Pennsylvania"
 
@@ -127,7 +127,7 @@ function recordedStep(): { root: string; folder: string } {
   writeFileSync(join(folder, 'snapshot.yml'), '- button "Location: Bethlehem, West Bank, Within 65 km"\n- textbox "Location": Bethlehem, PA')
   writeFileSync(join(folder, 'screenshot.png'), Buffer.from([137, 80, 78, 71]))
   writeFileSync(join(folder, 'mouse.json'), JSON.stringify({ legs: [{ kind: 'flick', target: 'input ""', ms: 500 }], idleMoves: 2 }))
-  writeFileSync(join(root, 'adsPower', 'steps.jsonl'), `${JSON.stringify({ at: at(0), step: 'Gate passed: exit 24.229.136.140 in US (America/New_York), proxy to Facebook 2218 ms' })}\n`)
+  writeFileSync(join(root, 'adsPower', 'steps.jsonl'), `${JSON.stringify({ at: at(0), step: 'Gate passed: exit 198.51.100.22 in US (America/New_York), proxy to Facebook 2218 ms' })}\n`)
   writeFileSync(join(root, 'replies.jsonl'), [
     { id: 'a', result: { ok: true, step: '03_selllocation', action: 'sellLocation', args: [], url: 'https://www.facebook.com/marketplace/create/item', ms: 5484, notable: ['POST 200 /ajax/bnzai'] } },
     { id: 'b', result: { ok: true, step: '04_setlocationBethlehemPa', action: 'setLocation', args: ['Bethlehem, PA'], url: TAKEN.url, title: TAKEN.title, ms: 28656, landedMs: 20688 } }
@@ -177,7 +177,7 @@ describe('reading a recorded step (log inspect read, and every inspect do)', () 
       expect(asked[0].images).toHaveLength(1)
       const state = asked[0].state as Record<string, unknown>
       expect(state.goal).toBe(GOAL)
-      expect(state.account).toMatchObject({ homeCountry: 'US', exit: 'exit 24.229.136.140 in US (America/New_York), proxy to Facebook 2218 ms' })
+      expect(state.account).toMatchObject({ homeCountry: 'US', exit: 'exit 198.51.100.22 in US (America/New_York), proxy to Facebook 2218 ms' })
       expect(state.whatWeDid).toMatchObject({ action: 'setLocation', args: ['Bethlehem, PA'], ms: 28656, mouse: { moves: 1, idleMoves: 2 } })
       expect(state.earlierSteps).toEqual([{ step: '03_selllocation', action: 'sellLocation', args: [], ok: true, url: 'https://www.facebook.com/marketplace/create/item', ms: 5484, requests: ['POST 200 /ajax/bnzai'], meaning: null, forGoal: true, saved: [] }])
       expect(String(state.pageText)).toContain('textbox "Location": <redacted>')

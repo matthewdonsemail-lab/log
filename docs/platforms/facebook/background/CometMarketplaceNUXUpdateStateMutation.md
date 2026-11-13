@@ -27,7 +27,7 @@ Seen 6 time(s) in 5 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/host/20261026T170006_61594285317994**, step 4: goto /marketplace/status: -1, -1 ms
+**runs/host/20261026T170006_<userId:1>**, step 4: goto /marketplace/status: -1, -1 ms
 
 Sent:
 
@@ -39,7 +39,7 @@ Sent:
   "variables": {
     "input": {
       "nux_type": "mp_seller_announcement_center_nux",
-      "actor_id": "61594285317994",
+      "actor_id": "<userId:1>",
       "client_mutation_id": "1"
     }
   },

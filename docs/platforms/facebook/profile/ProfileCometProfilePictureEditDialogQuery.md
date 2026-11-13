@@ -28,7 +28,7 @@ Seen 7 time(s) in 7 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/host/20261026T180628_61594285317994**, step 9: clickRole menuitem "…": 200, 193 ms
+**runs/host/20261026T180628_<userId:1>**, step 9: clickRole menuitem "…": 200, 193 ms
 
 Sent:
 
@@ -60,7 +60,7 @@ Answered:
       "actor": {
         "__typename": "User",
         "__isIUser": "User",
-        "id": "61594285317994",
+        "id": "<userId:1>",
         "profile_video": null,
         "profile_picture_is_silhouette": true,
         "viewer_mv4b_asset_info": null,

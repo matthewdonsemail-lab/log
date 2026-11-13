@@ -10,7 +10,7 @@
 | Path | `discord.com/api/quests/decision` |
 | Sends | — |
 | Reads | `message`, `code`, `request_id`, `quest`, `creative.creative_type`, `creative.creative_content`, `creative.starts_at`, `creative.ends_at`, `ad_identifiers`, `ad_context`, `response_ttl_seconds`, `metadata_sealed` and 3 more |
-| Called from | `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1036.js:1 parse`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1245.js:2 anonymous` |
+| Called from | `runs/inspect/20261030T222341_<name:1>/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_<name:1>/script1036.js:1 parse`, `runs/inspect/20261030T222341_<name:1>/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_<name:1>/script1245.js:2 anonymous` |
 | rea | `ev_065e7ad37dcb5911d240f9de7d6e2882220c5a8d7c025d92b46a23de59cf297c` |
 
 Seen 7 time(s) in 4 run(s).
@@ -29,7 +29,7 @@ Seen 7 time(s) in 4 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder**, step 1: goto /channels/@me: 401, 359 ms
+**runs/inspect/20261030T222341_<name:1>**, step 1: goto /channels/@me: 401, 359 ms
 
 Sent:
 
@@ -53,7 +53,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder**, step 2: snapshot: 200, 505 ms
+**runs/inspect/20261030T222341_<name:1>**, step 2: snapshot: 200, 505 ms
 
 Sent:
 
@@ -63,7 +63,7 @@ Sent:
     "placement": "1",
     "client_heartbeat_session_id": "89081172-35da-4e8d-8b5c-da5e1bf81773",
     "client_ad_session_id": "a683df8e-3741-4919-9185-22ceb745e6fb",
-    "visible_guild_ids": "1493969349747146974"
+    "visible_guild_ids": "<id:1>"
   },
   "body": null
 }
@@ -93,7 +93,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder**, step 1: goto /login: 200, 887 ms
+**runs/inspect/20261028T074137_<name:1>**, step 1: goto /login: 200, 887 ms
 
 Sent:
 
@@ -103,7 +103,7 @@ Sent:
     "placement": "1",
     "client_heartbeat_session_id": "042a6464-5284-440e-831b-0ed816011058",
     "client_ad_session_id": "8b8ce89d-11bc-4e79-b242-5c10647e14f5",
-    "visible_guild_ids": "1514320796837875834"
+    "visible_guild_ids": "<id:2>"
   },
   "body": null
 }

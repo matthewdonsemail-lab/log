@@ -22,7 +22,7 @@ Seen 4 time(s) in 1 run(s).
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 4: goto /client | 2 | 200 | 390–937 ms | 6607–7545 ms | — |
-| inspect | step 6: goto /client/T0C4VCD06MR/D0C8VAE7REU | 2 | 200 | 294–428 ms | 4503–5524 ms | — |
+| inspect | step 6: goto /client/<teamId:1>/<channelId:1> | 2 | 200 | 294–428 ms | 4503–5524 ms | — |
 
 ### What it sent and what came back (the newest 2 from our runs)
 
@@ -38,14 +38,14 @@ Sent:
     "_x_id": "2c6eaecf-1793689064.415",
     "_x_gantry": "true",
     "_x_desktop_ia": "4",
-    "slack_route": "T0C4VCD06MR",
+    "slack_route": "<teamId:1>",
     "_x_version_ts": "1793684253",
     "_x_frontend_build_type": "current",
     "fp": "6f",
     "_x_num_retries": "0"
   },
   "body": {
-    "------WebKitFormBoundary4NAmQGZmaP24YS9K\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\nxoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\r\n------WebKitFormBoundary4NAmQGZmaP24YS9K\r\nContent-Disposition: form-data; name=\"prefs\"\r\n\r\nemoji_use,frecency\r\n------WebKitFormBoundary4NAmQGZmaP24YS9K\r\nContent-Disposition: form-data; name=\"_x_reason\"\r\n\r\nfetch-frecency-prefs\r\n------WebKitFormBoundary4NAmQGZmaP24YS9K\r\nConte… (700 chars)"
+    "------WebKitFormBoundary4NAmQGZmaP24YS9K\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\n<slackToken>\r\n------WebKitFormBoundary4NAmQGZmaP24YS9K\r\nContent-Disposition: form-data; name=\"prefs\"\r\n\r\nemoji_use,frecency\r\n------WebKitFormBoundary4NAmQGZmaP24YS9K\r\nContent-Disposition: form-data; name=\"_x_reason\"\r\n\r\nfetch-frecency-prefs\r\n------WebKitFormBoundary4NAmQGZmaP24YS9K\r\nConte… (700 chars)"
   }
 }
 ```
@@ -57,12 +57,12 @@ Answered:
   "ok": true,
   "prefs": {
     "emoji_use": "{\"slightly_smiling_face\":2,\"white_check_mark\":1,\"rolling_on_the_floor_laughing\":1,\"disappointed\":1,\"+1\":1}",
-    "frecency": "{\"\":[{\"id\":\"U0A9JFXK21L\",\"count\":6,\"visits\":[1790671582740,1791089165791,1791360557262,1792916228995,1793070674580,1793070765100]},{\"id\":\"C0C5VUS8GC8\",\"count\":9,\"visits\":[1790673449906,1791360543780,1791542292987,1791818799344,1792219371603,1792224205526,1792388900408,1792389116914,1792397022742]},{\"id\":\"E1f642\",\"count\":1,\"visits\":[1792219392409]},{\"id\":\"E1f44d\",\"count\":1,\"visits\":[1792389124209]}… (1674 chars)"
+    "frecency": "{\"\":[{\"id\":\"<userId:1>\",\"count\":6,\"visits\":[1790671582740,1791089165791,1791360557262,1792916228995,1793070674580,1793070765100]},{\"id\":\"<channelId:2>\",\"count\":9,\"visits\":[1790673449906,1791360543780,1791542292987,1791818799344,1792219371603,1792224205526,1792388900408,1792389116914,1792397022742]},{\"id\":\"E1f642\",\"count\":1,\"visits\":[1792219392409]},{\"id\":\"E1f44d\",\"count\":1,\"visits\":[1792389124209]}… (1674 chars)"
   }
 }
 ```
 
-**runs/inspect/20261103T065639_mattSlack**, step 6: goto /client/T0C4VCD06MR/D0C8VAE7REU: 200, 294 ms
+**runs/inspect/20261103T065639_mattSlack**, step 6: goto /client/<teamId:1>/<channelId:1>: 200, 294 ms
 
 Sent:
 
@@ -73,14 +73,14 @@ Sent:
     "_x_gantry": "true",
     "_x_desktop_ia": "4",
     "_x_csid": "aVvVPXA0sak",
-    "slack_route": "T0C4VCD06MR",
+    "slack_route": "<teamId:1>",
     "_x_version_ts": "1793684253",
     "_x_frontend_build_type": "current",
     "fp": "6f",
     "_x_num_retries": "0"
   },
   "body": {
-    "------WebKitFormBoundaryqAnZdOK72DUoN91p\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\nxoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\r\n------WebKitFormBoundaryqAnZdOK72DUoN91p\r\nContent-Disposition: form-data; name=\"prefs\"\r\n\r\nemoji_use,frecency\r\n------WebKitFormBoundaryqAnZdOK72DUoN91p\r\nContent-Disposition: form-data; name=\"_x_reason\"\r\n\r\nfetch-frecency-prefs\r\n------WebKitFormBoundaryqAnZdOK72DUoN91p\r\nConte… (700 chars)"
+    "------WebKitFormBoundaryqAnZdOK72DUoN91p\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\n<slackToken>\r\n------WebKitFormBoundaryqAnZdOK72DUoN91p\r\nContent-Disposition: form-data; name=\"prefs\"\r\n\r\nemoji_use,frecency\r\n------WebKitFormBoundaryqAnZdOK72DUoN91p\r\nContent-Disposition: form-data; name=\"_x_reason\"\r\n\r\nfetch-frecency-prefs\r\n------WebKitFormBoundaryqAnZdOK72DUoN91p\r\nConte… (700 chars)"
   }
 }
 ```
@@ -92,7 +92,7 @@ Answered:
   "ok": true,
   "prefs": {
     "emoji_use": "{\"slightly_smiling_face\":2,\"white_check_mark\":1,\"rolling_on_the_floor_laughing\":1,\"disappointed\":1,\"+1\":1}",
-    "frecency": "{\"\":[{\"id\":\"U0A9JFXK21L\",\"count\":6,\"visits\":[1790671582740,1791089165791,1791360557262,1792916228995,1793070674580,1793070765100]},{\"id\":\"C0C5VUS8GC8\",\"count\":9,\"visits\":[1790673449906,1791360543780,1791542292987,1791818799344,1792219371603,1792224205526,1792388900408,1792389116914,1792397022742]},{\"id\":\"E1f642\",\"count\":1,\"visits\":[1792219392409]},{\"id\":\"E1f44d\",\"count\":1,\"visits\":[1792389124209]}… (1674 chars)"
+    "frecency": "{\"\":[{\"id\":\"<userId:1>\",\"count\":6,\"visits\":[1790671582740,1791089165791,1791360557262,1792916228995,1793070674580,1793070765100]},{\"id\":\"<channelId:2>\",\"count\":9,\"visits\":[1790673449906,1791360543780,1791542292987,1791818799344,1792219371603,1792224205526,1792388900408,1792389116914,1792397022742]},{\"id\":\"E1f642\",\"count\":1,\"visits\":[1792219392409]},{\"id\":\"E1f44d\",\"count\":1,\"visits\":[1792389124209]}… (1674 chars)"
   }
 }
 ```

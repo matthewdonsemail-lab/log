@@ -41,7 +41,7 @@ Sent:
     "_x_gantry": "true",
     "_x_desktop_ia": "4",
     "_x_csid": "b3O92r22OFk",
-    "slack_route": "T0C4VCD06MR",
+    "slack_route": "<teamId:1>",
     "_x_version_ts": "1793684253",
     "_x_foreground": "true",
     "_x_frontend_build_type": "current",
@@ -49,7 +49,7 @@ Sent:
     "_x_num_retries": "0"
   },
   "body": {
-    "------WebKitFormBoundary30EK4iBOD7Bfti9G\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\nxoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\r\n------WebKitFormBoundary30EK4iBOD7Bfti9G\r\nContent-Disposition: form-data; name=\"blocks\"\r\n\r\n[{\"type\":\"rich_text\",\"elements\":[{\"type\":\"rich_text_section\",\"elements\":[{\"type\":\"text\",\"text\":\"affiliate marketing lad, i send out links for stuff and it pays out friday\"}]}]}]\r\n---… (1432 chars)"
+    "------WebKitFormBoundary30EK4iBOD7Bfti9G\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\n<slackToken>\r\n------WebKitFormBoundary30EK4iBOD7Bfti9G\r\nContent-Disposition: form-data; name=\"blocks\"\r\n\r\n[{\"type\":\"rich_text\",\"elements\":[{\"type\":\"rich_text_section\",\"elements\":[{\"type\":\"text\",\"text\":\"<messageText>\"}]}]}]\r\n---… (1432 chars)"
   }
 }
 ```
@@ -62,8 +62,8 @@ Answered:
   "draft": {
     "id": "Dr0CECL96ZMY",
     "date_created": 1793689329,
-    "user_id": "U0C4L7RF7HD",
-    "team_id": "T0C4VCD06MR",
+    "user_id": "<userId:1>",
+    "team_id": "<teamId:1>",
     "last_updated_ts": "1793689329.473815",
     "last_updated_client": "Chrome",
     "blocks": [
@@ -76,7 +76,7 @@ Answered:
             "elements": [
               {
                 "type": "text",
-                "text": "affiliate marketing lad, i send out links for stuff and it pays out friday"
+                "text": "<messageText>"
               }
             ]
           }
@@ -91,9 +91,9 @@ Answered:
     "date_scheduled": 0,
     "destinations": [
       {
-        "channel_id": "D0C8VAE7REU",
+        "channel_id": "<channelId:1>",
         "user_ids": [
-          "U0A9JFXK21L"
+          "<userId:2>"
         ]
       }
     ]
@@ -113,7 +113,7 @@ Sent:
     "_x_gantry": "true",
     "_x_desktop_ia": "4",
     "_x_csid": "b3O92r22OFk",
-    "slack_route": "T0C4VCD06MR",
+    "slack_route": "<teamId:1>",
     "_x_version_ts": "1793684253",
     "_x_foreground": "true",
     "_x_frontend_build_type": "current",
@@ -121,7 +121,7 @@ Sent:
     "_x_num_retries": "0"
   },
   "body": {
-    "------WebKitFormBoundaryxmY14VnyNayc0ije\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\nxoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\r\n------WebKitFormBoundaryxmY14VnyNayc0ije\r\nContent-Disposition: form-data; name=\"blocks\"\r\n\r\n[{\"type\":\"rich_text\",\"elements\":[{\"type\":\"rich_text_section\",\"elements\":[{\"type\":\"text\",\"text\":\"just need it for food till then\"}]}]}]\r\n------WebKitFormBoundaryxmY14VnyNayc0ije\r\nCont… (1389 chars)"
+    "------WebKitFormBoundaryxmY14VnyNayc0ije\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\n<slackToken>\r\n------WebKitFormBoundaryxmY14VnyNayc0ije\r\nContent-Disposition: form-data; name=\"blocks\"\r\n\r\n[{\"type\":\"rich_text\",\"elements\":[{\"type\":\"rich_text_section\",\"elements\":[{\"type\":\"text\",\"text\":\"<messageText>\"}]}]}]\r\n------WebKitFormBoundaryxmY14VnyNayc0ije\r\nCont… (1389 chars)"
   }
 }
 ```
@@ -134,8 +134,8 @@ Answered:
   "draft": {
     "id": "Dr0CDXER4MFZ",
     "date_created": 1793689367,
-    "user_id": "U0C4L7RF7HD",
-    "team_id": "T0C4VCD06MR",
+    "user_id": "<userId:1>",
+    "team_id": "<teamId:1>",
     "last_updated_ts": "1793689367.887142",
     "last_updated_client": "Chrome",
     "blocks": [
@@ -148,7 +148,7 @@ Answered:
             "elements": [
               {
                 "type": "text",
-                "text": "just need it for food till then"
+                "text": "<messageText>"
               }
             ]
           }
@@ -163,9 +163,9 @@ Answered:
     "date_scheduled": 0,
     "destinations": [
       {
-        "channel_id": "D0C8VAE7REU",
+        "channel_id": "<channelId:1>",
         "user_ids": [
-          "U0A9JFXK21L"
+          "<userId:2>"
         ]
       }
     ]
@@ -185,7 +185,7 @@ Sent:
     "_x_gantry": "true",
     "_x_desktop_ia": "4",
     "_x_csid": "Omg2iVUkYDE",
-    "slack_route": "T0C4VCD06MR",
+    "slack_route": "<teamId:1>",
     "_x_version_ts": "1793684253",
     "_x_foreground": "true",
     "_x_frontend_build_type": "current",
@@ -193,7 +193,7 @@ Sent:
     "_x_num_retries": "0"
   },
   "body": {
-    "------WebKitFormBoundaryzLndsa02haxLICiB\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\nxoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\r\n------WebKitFormBoundaryzLndsa02haxLICiB\r\nContent-Disposition: form-data; name=\"blocks\"\r\n\r\n[{\"type\":\"rich_text\",\"elements\":[{\"type\":\"rich_text_section\",\"elements\":[{\"type\":\"text\",\"text\":\"nah they went into inferencesaver, the ai gateway\"}]}]}]\r\n------WebKitFormBoundaryzLnd… (1407 chars)"
+    "------WebKitFormBoundaryzLndsa02haxLICiB\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\n<slackToken>\r\n------WebKitFormBoundaryzLndsa02haxLICiB\r\nContent-Disposition: form-data; name=\"blocks\"\r\n\r\n[{\"type\":\"rich_text\",\"elements\":[{\"type\":\"rich_text_section\",\"elements\":[{\"type\":\"text\",\"text\":\"<messageText>\"}]}]}]\r\n------WebKitFormBoundaryzLnd… (1407 chars)"
   }
 }
 ```
@@ -206,8 +206,8 @@ Answered:
   "draft": {
     "id": "Dr0CE6L4CUUT",
     "date_created": 1793689644,
-    "user_id": "U0C4L7RF7HD",
-    "team_id": "T0C4VCD06MR",
+    "user_id": "<userId:1>",
+    "team_id": "<teamId:1>",
     "last_updated_ts": "1793689644.928441",
     "last_updated_client": "Chrome",
     "blocks": [
@@ -220,7 +220,7 @@ Answered:
             "elements": [
               {
                 "type": "text",
-                "text": "nah they went into inferencesaver, the ai gateway"
+                "text": "<messageText>"
               }
             ]
           }
@@ -235,9 +235,9 @@ Answered:
     "date_scheduled": 0,
     "destinations": [
       {
-        "channel_id": "D0C8VAE7REU",
+        "channel_id": "<channelId:1>",
         "user_ids": [
-          "U0A9JFXK21L"
+          "<userId:2>"
         ]
       }
     ]

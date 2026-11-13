@@ -3,6 +3,9 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { api, errorText, useSelectedTeam, useWorkspaces, type InviteView, type MemberView, type PairingView, type WorkspaceView } from '@/lib/controlApi'
 import { ConsoleLayout, SectionHeading, WorkspaceChip, workspaceStateOf } from './ConsoleLayout'
 import { toast } from '@listeningkit/ui'
+import { useErrorToast } from '@/lib/useErrorToast'
+import { localConsole } from '@/lib/consoleMode'
+import { loadLocalSettings } from './settingsData'
 
 function origin(): string {
   return window.location.origin
@@ -185,8 +188,56 @@ function Members({ teamId, canInvite, manageOwners }: { teamId: string; canInvit
   )
 }
 
+function LocalSettings() {
+  const query = useQuery({ queryKey: ['consoleSettings'], queryFn: ({ signal }) => loadLocalSettings(signal), retry: false, refetchOnWindowFocus: false })
+  useErrorToast(query.isError, query.error, 'Could not read settings on this machine.')
+  if (query.isLoading) return <p className="text-sm text-slate-500">Reading this machine…</p>
+  if (query.isError || !query.data) return <p className="text-sm text-slate-600"><button type="button" onClick={() => query.refetch()} className="font-semibold underline">Try again</button></p>
+  const data = query.data
+  const paths = [['log.db', data.paths.database], ['Runs', data.paths.runs], ['Accounts', data.paths.accounts], ['Settings and keys', data.paths.env]]
+  return (
+    <>
+      <section className="mb-10">
+        <SectionHeading title="Paths" />
+        <dl className="divide-y divide-slate-100 rounded-2xl border border-slate-200 bg-white px-5">
+          {paths.map(([label, value]) => <div key={label} className="flex flex-wrap justify-between gap-3 py-3 text-sm"><dt className="text-slate-600">{label}</dt><dd className="min-w-0 break-all text-xs">{value}</dd></div>)}
+        </dl>
+      </section>
+      <section className="mb-10">
+        <SectionHeading title="Governor today" count={data.governors.length} />
+        {data.governors.length ? (
+          <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white">
+            <table className="w-full min-w-[560px] text-left text-sm">
+              <thead className="border-b border-slate-200 text-slate-600"><tr>{['Platform', 'Account', 'Requests', 'Writes', 'This hour', 'Cooldown'].map((label) => <th key={label} scope="col" className="px-4 py-2 font-medium">{label}</th>)}</tr></thead>
+              <tbody className="divide-y divide-slate-100">{data.governors.map((g) => <tr key={`${g.platform}:${g.account}`}>
+                <td className="px-4 py-2">{g.platform}</td>
+                <td className="px-4 py-2 font-semibold">{g.account}</td>
+                <td className="px-4 py-2 tabular-nums">{g.requests}/{data.requestsPerDay}</td>
+                <td className="px-4 py-2 tabular-nums">{g.writes}/{g.writesPerDay}</td>
+                <td className="px-4 py-2 tabular-nums">{g.hourRequests}</td>
+                <td className="px-4 py-2">{g.cooldownSeconds ? `${Math.ceil(g.cooldownSeconds / 60)} min` : '—'}</td>
+              </tr>)}</tbody>
+            </table>
+          </div>
+        ) : <p className="rounded-2xl border border-dashed border-slate-300 bg-white p-6 text-center text-sm text-slate-600">No account has a governor count yet.</p>}
+      </section>
+      <section>
+        <SectionHeading title="Web console" />
+        <p className="text-sm leading-6 text-slate-600">This page is served by <code className="rounded bg-slate-100 px-1">{data.webConsole.command}</code> on this machine only.</p>
+      </section>
+    </>
+  )
+}
+
 export function SettingsPage() {
   const { team } = useSelectedTeam()
+  if (localConsole) {
+    return (
+      <ConsoleLayout title="Settings" subtitle="Where log keeps things on this machine, and each account’s governor.">
+        <LocalSettings />
+      </ConsoleLayout>
+    )
+  }
   return (
     <ConsoleLayout title="Settings" subtitle="Your team’s workspace, members and invites.">
       {team ? (

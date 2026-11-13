@@ -25,7 +25,7 @@ Seen 15 time(s) in 7 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/host/20261026T180628_61594285317994**, openAny: read /marketplace/item/<id>/: 200, 385 ms
+**runs/host/20261026T180628_<userId:1>**, openAny: read /marketplace/item/<id>/: 200, 385 ms
 
 Sent:
 
@@ -36,9 +36,9 @@ Sent:
   "server_timestamps": "true",
   "variables": {
     "input": {
-      "listing_id": "1818774979262678",
+      "listing_id": "<id:1>",
       "start_time": 1793038230032,
-      "actor_id": "61594285317994",
+      "actor_id": "<userId:1>",
       "client_mutation_id": "3"
     }
   },

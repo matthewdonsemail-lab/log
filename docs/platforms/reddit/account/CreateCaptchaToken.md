@@ -10,7 +10,7 @@
 | Path | `/svc/shreddit/graphql` |
 | Sends | `input` |
 | Reads | `data.createCaptchaToken`, `errors`, `operation`, `extensions.traceID` |
-| Called from | `runs/inspect/20261025T124815_MaleficentTry8338/script111.js:15 anonymous` |
+| Called from | `runs/inspect/20261025T124815_<name:2>/script111.js:15 anonymous` |
 | rea | `ev_1487d2203e5198e4bbf7b178ae47731d1f00e8465d1e0b6f28430abba82e8d1a` |
 
 Seen 7 time(s) in 1 run(s).
@@ -21,7 +21,7 @@ Seen 7 time(s) in 1 run(s).
 | inspect | step 3: goto /r/AskReddit/ | 1 | 200 | 1154 ms | 8868 ms | — |
 | inspect | step 5: goto /search/ | 1 | 200 | 334 ms | 3195 ms | — |
 | inspect | step 6: goto /r/AskReddit/comments/1x8sr8s/whats_a_high_paying_but_soul_crushing_career_th | 1 | 200 | 324 ms | 4625 ms | — |
-| inspect | step 10: goto /user/Maleficent-Try-8338/ | 1 | 200 | 461 ms | 3923 ms | — |
+| inspect | step 10: goto /user/<name:1>/ | 1 | 200 | 461 ms | 3923 ms | — |
 | inspect | step 11: goto /notifications | 1 | 200 | 399 ms | 3241 ms | — |
 | inspect | step 12: goto /r/popular/ | 1 | 200 | 309 ms | 3943 ms | — |
 
@@ -29,7 +29,7 @@ Seen 7 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 1: goto /: 200, 587 ms
+**runs/inspect/20261025T124815_<name:2>**, step 1: goto /: 200, 587 ms
 
 Sent:
 
@@ -57,7 +57,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 3: goto /r/AskReddit/: 200, 1154 ms
+**runs/inspect/20261025T124815_<name:2>**, step 3: goto /r/AskReddit/: 200, 1154 ms
 
 Sent:
 
@@ -85,7 +85,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 5: goto /search/: 200, 334 ms
+**runs/inspect/20261025T124815_<name:2>**, step 5: goto /search/: 200, 334 ms
 
 Sent:
 

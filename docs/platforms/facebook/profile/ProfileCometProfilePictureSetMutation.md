@@ -28,7 +28,7 @@ Seen 7 time(s) in 7 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/host/20261026T180628_61594285317994**, step 11: clickRole button "…": 200, 3169 ms
+**runs/host/20261026T180628_<userId:1>**, step 11: clickRole button "…": 200, 3169 ms
 
 Sent:
 
@@ -39,11 +39,11 @@ Sent:
   "server_timestamps": "true",
   "variables": {
     "input": {
-      "attribution_id_v2": "ProfileCometTimelineListViewRoot.react,comet.profile.timeline.list,via_cold_start,1793038043453,728087,190055527696468,,",
+      "attribution_id_v2": "ProfileCometTimelineListViewRoot.react,comet.profile.timeline.list,via_cold_start,1793038043453,728087,<id:1>,,",
       "caption": "",
-      "existing_photo_id": "122127009279476177",
+      "existing_photo_id": "<id:2>",
       "expiration_time": null,
-      "profile_id": "61594285317994",
+      "profile_id": "<userId:1>",
       "profile_pic_method": "EXISTING",
       "profile_pic_source": "TIMELINE",
       "scaled_crop_rect": {
@@ -53,7 +53,7 @@ Sent:
         "y": 0.12087
       },
       "skip_cropping": true,
-      "actor_id": "61594285317994",
+      "actor_id": "<userId:1>",
       "client_mutation_id": "2"
     },
     "isPage": false,
@@ -74,7 +74,7 @@ Answered:
       "profile_picture_set": {
         "profile": {
           "__typename": "User",
-          "id": "61594285317994",
+          "id": "<userId:1>",
           "__isProfile": "User",
           "is_viewer_friend": false,
           "profile_active_messenger_room": null,
@@ -82,7 +82,7 @@ Answered:
             "nodes": [
               {
                 "should_show_close_friend_badge": false,
-                "id": "122095713291476177",
+                "id": "<id:3>",
                 "first_story_to_show": null
               }
             ]
@@ -92,46 +92,46 @@ Answered:
           "live_video_for_comet_live_ring": null,
           "msgr_user_rich_status": null,
           "is_live_for_comet_live_ring": false,
-          "name": "Halima Ndjzn",
+          "name": "<name:1>",
           "profilePhoto": {
-            "url": "https://www.facebook.com/photo/?fbid=122127009393476177&set=a.122127009405476177",
+            "url": "https://www.facebook.com/photo/?fbid=<userId:2>&set=a.122127009405476177",
             "viewer_image": {
               "height": 1059,
               "width": 803
             },
-            "id": "122127009393476177"
+            "id": "<id:4>"
           },
           "profilePicLarge": {
-            "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-1/861826748_122127009285476177_3116611628911920417_n.jpg (482 chars)"
+            "uri": "<mediaUrl> (482 chars)"
           },
           "profilePicMedium": {
-            "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-1/861826748_122127009285476177_3116611628911920417_n.jpg (482 chars)"
+            "uri": "<mediaUrl> (482 chars)"
           },
           "profilePicSmall": {
-            "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-1/861826748_122127009285476177_3116611628911920417_n.jpg (482 chars)"
+            "uri": "<mediaUrl> (482 chars)"
           },
           "profile_video": null,
           "profile_picture_expiration_time": null,
           "__isRenderedProfile": "User",
           "profile_photo": {
-            "accessibility_caption": "May be an image of one or more people",
-            "id": "122127009393476177",
+            "accessibility_caption": "<messageText>",
+            "id": "<id:4>",
             "image": {
               "height": 960,
-              "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-6/861826748_122127009285476177_3116611628911920417_n.jpg (467 chars)",
+              "uri": "<mediaUrl> (467 chars)",
               "width": 728
             },
-            "url": "https://www.facebook.com/photo/?fbid=122127009393476177&set=a.122127009405476177"
+            "url": "https://www.facebook.com/photo/?fbid=<userId:2>&set=a.122127009405476177"
           },
           "profilePic96": {
-            "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-1/861826748_122127009285476177_3116611628911920417_n.jpg (482 chars)"
+            "uri": "<mediaUrl> (482 chars)"
           },
           "__isIUser": "User",
           "profile_picture": {
-            "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-1/861826748_122127009285476177_3116611628911920417_n.jpg (484 chars)"
+            "uri": "<mediaUrl> (484 chars)"
           },
           "big_picture": {
-            "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-1/861826748_122127009285476177_3116611628911920417_n.jpg (482 chars)"
+            "uri": "<mediaUrl> (482 chars)"
           },
           "is_work_user": false,
           "work_info": null,
@@ -140,34 +140,34 @@ Answered:
           "is_viewer": true,
           "work_foreign_entity_info": null,
           "profilePic32": {
-            "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-1/861826748_122127009285476177_3116611628911920417_n.jpg (484 chars)"
+            "uri": "<mediaUrl> (484 chars)"
           },
           "profilePic40": {
-            "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-1/861826748_122127009285476177_3116611628911920417_n.jpg (484 chars)"
+            "uri": "<mediaUrl> (484 chars)"
           },
           "profilePic50": {
-            "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-1/861826748_122127009285476177_3116611628911920417_n.jpg (484 chars)"
+            "uri": "<mediaUrl> (484 chars)"
           },
           "profilePic52": {
-            "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-1/861826748_122127009285476177_3116611628911920417_n.jpg (484 chars)"
+            "uri": "<mediaUrl> (484 chars)"
           },
           "profile_pic": {
             "is_silhouette": false,
-            "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-1/861826748_122127009285476177_3116611628911920417_n.jpg (484 chars)"
+            "uri": "<mediaUrl> (484 chars)"
           }
         },
         "viewer": {
           "actor": {
             "__typename": "User",
-            "id": "61594285317994",
+            "id": "<userId:1>",
             "__isActor": "User",
-            "name": "Halima Ndjzn",
+            "name": "<name:1>",
             "is_viewer": true,
             "is_work_user": false,
             "work_info": null,
             "work_foreign_entity_info": null,
             "profile_picture": {
-              "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-1/861826748_122127009285476177_3116611628911920417_n.jpg (484 chars)",
+              "uri": "<mediaUrl> (484 chars)",
               "scale": 1
             }
           }
@@ -177,7 +177,7 @@ Answered:
     "extensions": {
       "prefetch_uris_v2": [
         {
-          "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-1/861826748_122127009285476177_3116611628911920417_n.jpg (484 chars)",
+          "uri": "<mediaUrl> (484 chars)",
           "label": null,
           "width": null,
           "height": null,
@@ -204,7 +204,7 @@ Answered:
           "nodes": [
             {
               "should_show_close_friend_badge": false,
-              "id": "122095713291476177",
+              "id": "<id:3>",
               "first_story_to_show": null
             }
           ]
@@ -213,7 +213,7 @@ Answered:
       "extensions": {
         "prefetch_uris_v2": [
           {
-            "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-1/861826748_122127009285476177_3116611628911920417_n.jpg (484 chars)",
+            "uri": "<mediaUrl> (484 chars)",
             "label": null,
             "width": null,
             "height": null,
@@ -234,7 +234,7 @@ Answered:
           "nodes": [
             {
               "should_show_close_friend_badge": false,
-              "id": "122095713291476177",
+              "id": "<id:3>",
               "first_story_to_show": null
             }
           ]
@@ -243,7 +243,7 @@ Answered:
       "extensions": {
         "prefetch_uris_v2": [
           {
-            "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-1/861826748_122127009285476177_3116611628911920417_n.jpg (484 chars)",
+            "uri": "<mediaUrl> (484 chars)",
             "label": null,
             "width": null,
             "height": null,
@@ -264,7 +264,7 @@ Answered:
           "nodes": [
             {
               "should_show_close_friend_badge": false,
-              "id": "122095713291476177",
+              "id": "<id:3>",
               "first_story_to_show": null
             }
           ]
@@ -273,7 +273,7 @@ Answered:
       "extensions": {
         "prefetch_uris_v2": [
           {
-            "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-1/861826748_122127009285476177_3116611628911920417_n.jpg (484 chars)",
+            "uri": "<mediaUrl> (484 chars)",
             "label": null,
             "width": null,
             "height": null,

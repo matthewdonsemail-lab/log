@@ -20,7 +20,7 @@ Seen 2 time(s) in 1 run(s).
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 4: goto /client | 1 | 200 | 539 ms | 3159 ms | — |
-| inspect | step 6: goto /client/T0C4VCD06MR/D0C8VAE7REU | 1 | 200 | 305 ms | 2225 ms | — |
+| inspect | step 6: goto /client/<teamId:1>/<channelId:1> | 1 | 200 | 305 ms | 2225 ms | — |
 
 ### What it sent and what came back (the newest 2 from our runs)
 
@@ -43,7 +43,7 @@ Sent:
     "_x_num_retries": "0"
   },
   "body": {
-    "------WebKitFormBoundaryuKH9Aya6mNRohK1B\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\nxoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\r\n------WebKitFormBoundaryuKH9Aya6mNRohK1B\r\nContent-Disposition: form-data; name=\"platform\"\r\n\r\nsonic\r\n------WebKitFormBoundaryuKH9Aya6mNRohK1B\r\nContent-Disposition: form-data; name=\"_x_app_name\"\r\n\r\nclient\r\n------WebKitFormBoundaryuKH9Aya6mNRohK1B\r\nContent-Disposition: form-d… (474 chars)"
+    "------WebKitFormBoundaryuKH9Aya6mNRohK1B\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\n<slackToken>\r\n------WebKitFormBoundaryuKH9Aya6mNRohK1B\r\nContent-Disposition: form-data; name=\"platform\"\r\n\r\nsonic\r\n------WebKitFormBoundaryuKH9Aya6mNRohK1B\r\nContent-Disposition: form-data; name=\"_x_app_name\"\r\n\r\nclient\r\n------WebKitFormBoundaryuKH9Aya6mNRohK1B\r\nContent-Disposition: form-d… (474 chars)"
   }
 }
 ```
@@ -82,7 +82,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261103T065639_mattSlack**, step 6: goto /client/T0C4VCD06MR/D0C8VAE7REU: 200, 305 ms
+**runs/inspect/20261103T065639_mattSlack**, step 6: goto /client/<teamId:1>/<channelId:1>: 200, 305 ms
 
 Sent:
 
@@ -99,7 +99,7 @@ Sent:
     "_x_num_retries": "0"
   },
   "body": {
-    "------WebKitFormBoundary7tQXAPxlsKoG9o1Q\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\nxoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\r\n------WebKitFormBoundary7tQXAPxlsKoG9o1Q\r\nContent-Disposition: form-data; name=\"platform\"\r\n\r\nsonic\r\n------WebKitFormBoundary7tQXAPxlsKoG9o1Q\r\nContent-Disposition: form-data; name=\"_x_app_name\"\r\n\r\nclient\r\n------WebKitFormBoundary7tQXAPxlsKoG9o1Q\r\nContent-Disposition: form-d… (474 chars)"
+    "------WebKitFormBoundary7tQXAPxlsKoG9o1Q\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\n<slackToken>\r\n------WebKitFormBoundary7tQXAPxlsKoG9o1Q\r\nContent-Disposition: form-data; name=\"platform\"\r\n\r\nsonic\r\n------WebKitFormBoundary7tQXAPxlsKoG9o1Q\r\nContent-Disposition: form-data; name=\"_x_app_name\"\r\n\r\nclient\r\n------WebKitFormBoundary7tQXAPxlsKoG9o1Q\r\nContent-Disposition: form-d… (474 chars)"
   }
 }
 ```
@@ -142,7 +142,7 @@ Answered:
 
 ## What it does
 
-Asks which feature flags (`features.feature_*`) are on for the workspace as the client boots: sent by step 4 (`goto /client`, 539 ms, 3.2 s after the step started) and again by step 6 (`goto /client/T0C4VCD06MR/D0C8VAE7REU`), answered 200 both times with `ok` and the flag map.
+Asks which feature flags (`features.feature_*`) are on for the workspace as the client boots: sent by step 4 (`goto /client`, 539 ms, 3.2 s after the step started) and again by step 6 (`goto /client/<teamId:1>/<channelId:1>`), answered 200 both times with `ok` and the flag map.
 
 ## What our machine does with it
 

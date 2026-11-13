@@ -23,7 +23,7 @@ const RECORDING: RecordedCommand[] = [
   cmd('click', ['e1262'], '05_click', PROFILE),
   cmd('wait', ['12'], '06_wait', PROFILE, ['POST 200 ProfileCometProfilePictureSetMutation (3400 ms)', 'POST 200 FBScreenTimeLogger_syncMutation (1724 ms)']),
   cmd('click', ['e999'], '07_click', PROFILE, [], false),
-  cmd('goto', ['https://accountscenter.facebook.com/profiles/61593967241658/name'], '08_goto', NAME),
+  cmd('goto', ['https://accountscenter.facebook.com/profiles/99900000000004/name'], '08_goto', NAME),
   cmd('click', ['e156'], '09_click', NAME),
   cmd('press', ['Control+a'], '10_press', NAME),
   cmd('type', ['e156', 'Lancaster'], '11_type', NAME),
@@ -39,7 +39,7 @@ describe('pageProblem: where a step really landed', () => {
     expect(pageProblem(goto('https://www.facebook.com/messages/'), { url: 'https://www.facebook.com/marketplace/' })).toMatchObject({ code: 'pageNotReached' })
     expect(pageProblem(goto('https://www.facebook.com/marketplace/'), { url: 'https://www.facebook.com/marketplace/113668691977096/' })).toBeNull()
     expect(pageProblem(goto('https://www.facebook.com/'), { url: 'https://www.facebook.com/' })).toBeNull()
-    expect(pageProblem(goto('https://www.facebook.com/me'), { url: 'https://www.facebook.com/profile.php?id=61594417970255' })).toBeNull()
+    expect(pageProblem(goto('https://www.facebook.com/me'), { url: 'https://www.facebook.com/profile.php?id=99900000000005' })).toBeNull()
     expect(pageProblem(goto('https://www.facebook.com/me'), { url: 'https://www.facebook.com/harrisburg.trash' })).toBeNull()
     expect(pageProblem(goto('https://www.facebook.com/me'), { url: 'https://www.facebook.com/checkpoint/1501092823525282/' })).toMatchObject({ code: 'checkpointed' })
   })
@@ -76,7 +76,7 @@ describe('flowFromRecording: a group page recorded with clickRole (Bethlehem, 20
     cmd('scrollIn', ['dialog', 'Comments', '3', '400-600'], '05_scrollIn', ''),
     cmd('press', ['Control+a'], '06_press', ''),
     cmd('clickRole', ['button', 'Actions for this post'], '07_clickRole', '', ['POST 200 useCIXLogMutation (583 ms)'])
-  ], { runDir: '/r', account: '61594063207669' })
+  ], { runDir: '/r', account: '99900000000001' })
 
   test('clickRole keeps its own role and name, Escape and scrollIn keep their arguments, a chord and a failure are dropped', () => {
     expect(group.steps.map((s) => [s.action, s.role ?? s.url ?? s.args, s.name ?? null])).toEqual([
@@ -97,12 +97,12 @@ describe('flowFromRecording: a group page recorded with clickRole (Bethlehem, 20
 
 describe('flowFromRecording: posting and deleting on the own profile (Bethlehem, run 20261020T162343)', () => {
   const photo = flowFromRecording('profilePhotoPost', 'test', [
-    cmd('goto', ['https://www.facebook.com/profile.php?id=61594063207669'], '01_goto', ''),
+    cmd('goto', ['https://www.facebook.com/profile.php?id=99900000000001'], '01_goto', ''),
     cmd('uploadRole', ['button', 'Photo/video', 'C:/photos/garbageRoom.jpg'], '10_uploadRole', ''),
     cmd('wait', ['5'], '11_wait', '', ['POST 200 /ajax/react_composer/attachments/photo/upload (5129 ms)']),
     cmd('clickRole', ['button', 'Post'], '12_clickRole', '', [], true),
     cmd('wait', ['8'], '13_wait', '', ['POST 200 ComposerStoryCreateMutation (3802 ms)'])
-  ], { runDir: '/r', account: '61594063207669' }, { file1: 'photo' })
+  ], { runDir: '/r', account: '99900000000001' }, { file1: 'photo' })
   const remove = flowFromRecording('deletePost', 'test', [
     cmd('clickRole', ['button', 'Actions for this post by Pat Example'], '14_clickRole', ''),
     cmd('clickRole', ['button', 'Move'], '17_clickRole', '', ['POST 200 useCometTrashPostMutation (848 ms)'])
@@ -131,7 +131,7 @@ describe('flowFromRecording: posting and deleting on the own profile (Bethlehem,
 })
 
 describe('flowFromRecording', () => {
-  const flow =flowFromRecording('profileSetup', 'test', RECORDING, { runDir: '/r', account: '61593967241658' }, { text1: 'firstName', file1: 'profilePhoto' })
+  const flow =flowFromRecording('profileSetup', 'test', RECORDING, { runDir: '/r', account: '99900000000004' }, { text1: 'firstName', file1: 'profilePhoto' })
 
   test('turns refs into the role and name the step acted on, and drops looks, failures and field clicks', () => {
     expect(flow.steps.map((s) => [s.action, s.role ?? s.url, s.name ?? null])).toEqual([
@@ -159,7 +159,7 @@ describe('flowFromRecording', () => {
       { name: 'firstName', kind: 'text', description: 'typed into textbox "First name"' }
     ])
     expect(JSON.stringify(flow)).not.toContain('Lancaster')
-    expect(fillStep(flow.steps[5], { uid: '61500000000001' }).url).toBe('https://accountscenter.facebook.com/profiles/61500000000001/name')
+    expect(fillStep(flow.steps[5], { uid: '99900000000006' }).url).toBe('https://accountscenter.facebook.com/profiles/99900000000006/name')
     expect(() => fillStep(flow.steps[6], {})).toThrow('missing value for {firstName}')
   })
 

@@ -61,7 +61,7 @@ log transcribe
 ```
 
 ```bash
-log transcribe --platform discord --account sourcedandsoldtothehighestbidder
+log transcribe --platform discord --account myDiscordName
 ```
 
 ```bash

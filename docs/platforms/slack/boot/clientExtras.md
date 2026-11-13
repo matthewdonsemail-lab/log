@@ -20,7 +20,7 @@ Seen 2 time(s) in 1 run(s).
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 4: goto /client | 1 | 200 | 555 ms | 3162 ms | — |
-| inspect | step 6: goto /client/T0C4VCD06MR/D0C8VAE7REU | 1 | 200 | 310 ms | 2227 ms | — |
+| inspect | step 6: goto /client/<teamId:1>/<channelId:1> | 1 | 200 | 310 ms | 2227 ms | — |
 
 ### What it sent and what came back (the newest 2 from our runs)
 
@@ -43,7 +43,7 @@ Sent:
     "_x_num_retries": "0"
   },
   "body": {
-    "------WebKitFormBoundary04DaMvzhwowPvAZL\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\nxoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\r\n------WebKitFormBoundary04DaMvzhwowPvAZL\r\nContent-Disposition: form-data; name=\"_x_reason\"\r\n\r\nfetch-client-extras-data\r\n------WebKitFormBoundary04DaMvzhwowPvAZL\r\nContent-Disposition: form-data; name=\"extras\"\r\n\r\ncache_timestamps,features,salesforce_features,misc,subteams,te… (710 chars)"
+    "------WebKitFormBoundary04DaMvzhwowPvAZL\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\n<slackToken>\r\n------WebKitFormBoundary04DaMvzhwowPvAZL\r\nContent-Disposition: form-data; name=\"_x_reason\"\r\n\r\nfetch-client-extras-data\r\n------WebKitFormBoundary04DaMvzhwowPvAZL\r\nContent-Disposition: form-data; name=\"extras\"\r\n\r\ncache_timestamps,features,salesforce_features,misc,subteams,te… (710 chars)"
   }
 }
 ```
@@ -72,7 +72,7 @@ Answered:
   "team_prefs": {
     "toplevel_prefs": "(366 fields)"
   },
-  "default_workspace": "T0C4VCD06MR",
+  "default_workspace": "<teamId:1>",
   "subteams": [],
   "features": {
     "paid_features": "(0 items)",
@@ -96,7 +96,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261103T065639_mattSlack**, step 6: goto /client/T0C4VCD06MR/D0C8VAE7REU: 200, 310 ms
+**runs/inspect/20261103T065639_mattSlack**, step 6: goto /client/<teamId:1>/<channelId:1>: 200, 310 ms
 
 Sent:
 
@@ -113,7 +113,7 @@ Sent:
     "_x_num_retries": "0"
   },
   "body": {
-    "------WebKitFormBoundaryTPAAfLjL1sov5Ehk\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\nxoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\r\n------WebKitFormBoundaryTPAAfLjL1sov5Ehk\r\nContent-Disposition: form-data; name=\"_x_reason\"\r\n\r\nfetch-client-extras-data\r\n------WebKitFormBoundaryTPAAfLjL1sov5Ehk\r\nContent-Disposition: form-data; name=\"extras\"\r\n\r\ncache_timestamps,features,salesforce_features,misc,subteams,te… (710 chars)"
+    "------WebKitFormBoundaryTPAAfLjL1sov5Ehk\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\n<slackToken>\r\n------WebKitFormBoundaryTPAAfLjL1sov5Ehk\r\nContent-Disposition: form-data; name=\"_x_reason\"\r\n\r\nfetch-client-extras-data\r\n------WebKitFormBoundaryTPAAfLjL1sov5Ehk\r\nContent-Disposition: form-data; name=\"extras\"\r\n\r\ncache_timestamps,features,salesforce_features,misc,subteams,te… (710 chars)"
   }
 }
 ```
@@ -142,7 +142,7 @@ Answered:
   "team_prefs": {
     "toplevel_prefs": "(366 fields)"
   },
-  "default_workspace": "T0C4VCD06MR",
+  "default_workspace": "<teamId:1>",
   "subteams": [],
   "features": {
     "paid_features": "(0 items)",
@@ -170,7 +170,7 @@ Answered:
 
 ## What it does
 
-Fetches extra workspace facts the client needs at boot: `misc.is_europe`, `misc.team_classification`, Salesforce feature switches and similar. Fired 3.2 s into step 4 (`goto /client`, 555 ms) and into step 6 (`goto /client/T0C4VCD06MR/D0C8VAE7REU`, 310 ms), both 200.
+Fetches extra workspace facts the client needs at boot: `misc.is_europe`, `misc.team_classification`, Salesforce feature switches and similar. Fired 3.2 s into step 4 (`goto /client`, 555 ms) and into step 6 (`goto /client/<teamId:1>/<channelId:1>`, 310 ms), both 200.
 
 ## What our machine does with it
 

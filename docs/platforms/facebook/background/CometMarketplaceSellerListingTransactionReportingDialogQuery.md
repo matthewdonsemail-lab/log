@@ -23,7 +23,7 @@ Seen 1 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261023T173652_61594063207669**, step 4: click e434: 200, 432 ms
+**runs/inspect/20261023T173652_<userId:1>**, step 4: click e434: 200, 432 ms
 
 Sent:
 
@@ -33,7 +33,7 @@ Sent:
   "fb_api_req_friendly_name": "CometMarketplaceSellerListingTransactionReportingDialogQuery",
   "server_timestamps": "true",
   "variables": {
-    "id": "1425935622848350",
+    "id": "<id:1>",
     "scale": 1
   },
   "doc_id": "24404336269153901"
@@ -49,7 +49,7 @@ Answered:
       "marketplace_listing": {
         "__typename": "GroupCommerceProductItem",
         "__isMarketplaceListingRenderable": "GroupCommerceProductItem",
-        "id": "1425935622848350",
+        "id": "<id:1>",
         "marketplace_listing_title": "Junk Removal & Cleanouts: Houses, Garages, Basements",
         "formatted_price": {
           "text": "$99"
@@ -57,15 +57,15 @@ Answered:
         "primary_listing_photo": {
           "__typename": "ProductImage",
           "image": {
-            "uri": "https://scontent-ord5-1.xx.fbcdn.net/v/t45.5328-4/856660594_2379535212790769_660742871528716392_n.jpg (428 chars)"
+            "uri": "<mediaUrl> (428 chars)"
           },
-          "id": "2379535206124103"
+          "id": "<id:2>"
         },
         "duplicate_hash": "f770b48411f2c3f8d5207912dc894c177586273bbc5be446c262c51b831cebf0",
         "__isMarketplaceListingWithVariants": "GroupCommerceProductItem",
         "base_marketplace_listing_title": "Junk Removal & Cleanouts: Houses, Garages, Basements",
         "is_multi_variant_listing": false,
-        "category_id": "895487550471874",
+        "category_id": "<id:3>",
         "potential_buyers": {
           "nodes": []
         },

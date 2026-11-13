@@ -23,7 +23,7 @@ Seen 1 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261023T045453_61594063207669**, step 7: goto /: 200, 467 ms
+**runs/inspect/20261023T045453_<userId:1>**, step 7: goto /: 200, 467 ms
 
 Sent:
 
@@ -61,12 +61,12 @@ Answered:
             "is_seen": false,
             "time": 1792727401,
             "node": {
-              "id": "61556829712306",
+              "id": "<userId:2>",
               "friendship_status": "INCOMING_REQUEST",
-              "name": "Tadele Azmeraw",
-              "url": "https://www.facebook.com/profile.php?id=61556829712306",
+              "name": "<name:1>",
+              "url": "https://www.facebook.com/profile.php?id=<userId:2>",
               "profile_picture": {
-                "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/840406481_122351384084227657_2181478911876956811_n.jpg (452 chars)"
+                "uri": "<mediaUrl> (452 chars)"
               },
               "__isFriendNode": "User",
               "social_context": {
@@ -75,12 +75,12 @@ Answered:
               "social_context_top_mutual_friends": [],
               "__typename": "User"
             },
-            "cursor": "61556829712306"
+            "cursor": "<userId:2>"
           }
         ],
         "page_info": {
           "has_next_page": false,
-          "end_cursor": "61556829712306"
+          "end_cursor": "<userId:2>"
         }
       },
       "should_show_osa_explainer": false

@@ -10,7 +10,7 @@
 | Path | `discord.com/api/guilds/top-emojis` |
 | Sends | — |
 | Reads | `items` |
-| Called from | `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1036.js:1 parse`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1245.js:2 anonymous` |
+| Called from | `runs/inspect/20261030T222341_<name:1>/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_<name:1>/script1036.js:1 parse`, `runs/inspect/20261030T222341_<name:1>/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_<name:1>/script1245.js:2 anonymous` |
 | rea | `ev_065e7ad37dcb5911d240f9de7d6e2882220c5a8d7c025d92b46a23de59cf297c` |
 
 Seen 1 time(s) in 1 run(s).
@@ -23,7 +23,7 @@ Seen 1 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261028T062914_sourcedandsoldtothehighestbidder**, step 20: press Enter: 200, 390 ms
+**runs/inspect/20261028T062914_<name:1>**, step 20: press Enter: 200, 390 ms
 
 Sent:
 
@@ -37,23 +37,23 @@ Answered:
 {
   "items": [
     {
-      "emoji_id": "1381468224176128050",
+      "emoji_id": "<id:1>",
       "emoji_rank": 1
     },
     {
-      "emoji_id": "1381494721616150649",
+      "emoji_id": "<id:2>",
       "emoji_rank": 2
     },
     {
-      "emoji_id": "1381468226667544647",
+      "emoji_id": "<id:3>",
       "emoji_rank": 3
     },
     {
-      "emoji_id": "1381494715194671114",
+      "emoji_id": "<id:4>",
       "emoji_rank": 4
     },
     {
-      "emoji_id": "1381468347484344511",
+      "emoji_id": "<id:5>",
       "emoji_rank": 5
     }
   ]

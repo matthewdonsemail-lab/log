@@ -23,7 +23,7 @@ Seen 1 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/host/20261024T222706_61593981307720**, step 34: press Escape: 200, 423 ms
+**runs/host/20261024T222706_<userId:1>**, step 34: press Escape: 200, 423 ms
 
 Sent:
 
@@ -40,7 +40,7 @@ Answered:
   "payload": {
     "completed": true
   },
-  "lid": "7700366098915907459"
+  "lid": "<id:1>"
 }
 ```
 

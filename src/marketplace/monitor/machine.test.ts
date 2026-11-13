@@ -81,7 +81,7 @@ describe('detectHealth', () => {
 })
 
 describe('classifySignal', () => {
-  test('maps Listaro signals onto one account issue each', () => {
+  test('maps the known signals onto one account issue each', () => {
     expect(classifySignal({ url: 'https://www.facebook.com/checkpoint/123' })).toBe('checkpointed')
     expect(classifySignal({ url: 'https://www.facebook.com/login/?next=x' })).toBe('sessionExpired')
     expect(classifySignal({ text: "You can't buy or sell on Facebook" })).toBe('suspended')

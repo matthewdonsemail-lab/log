@@ -18,7 +18,7 @@ Since then, log records a HAR for every browser step and rea reads each one, and
 ## Alongside, not blocking the capture
 
 6. **Live proof still outstanding at the time:** a residential proxy assignment, a live captcha solve, and `--live` past review. Each needs keys and a person. A flaky click on the fixture (2 of 4 runs) was also recorded; it's a bug to fix before trusting a live click.
-7. **Avoidance decisions:** canvas stability versus shared pixels, and where accounts should be hosted (`docs/deviceIsolation/`, `docs/scaleArchitecture/`). REA's script report informs the first; it doesn't pick the host.
+7. **Avoidance decisions:** canvas stability versus shared pixels, and where accounts should be hosted. REA's script report informs the first; it doesn't pick the host.
 
 ## Not planned
 

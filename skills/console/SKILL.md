@@ -1,0 +1,36 @@
+---
+name: console
+description: Read this machine's local console, the same data in the terminal, as JSON per screen, or in the web console served on loopback with no sign-in. Use when someone asks "is log set up here", "is the MCP running", "which accounts are signed in", "how many calls today", "show the latest events", "what MCP config do I paste into Claude Code / Codex / opencode", or "open the console".
+---
+
+# console
+
+`log console` is the local console. Everything it shows is read on this machine: log.db, `~/.logCli/localAccounts.json`, each account's governor and the MCP config. There is no sign-in, no team and no billing locally; a team needs `log login`.
+
+## Screens
+
+One screen per web console nav item, in the same order, each backed by one loader in `src/console/<domain>/`:
+
+| Screen | Terminal and MCP | Web (`log console --web`) | Loader |
+|---|---|---|---|
+| Start | `consoleStart` / `log console start` | `/console/start` | `src/console/start` |
+| Connections | `consoleConnections` / `log console connections` | `/console/connections` | `src/console/connections` |
+| Usage | `consoleUsage` { days: 1, 7 or 30 } | `/console/usage` | `src/console/usage` |
+| Events | `consoleEvents` { kind, status, page, pageSize } | `/console/events` | `src/console/events` |
+| AI clients | `consoleAiClients` { client } | `/console/mcp` | `src/console/aiClients` |
+| Settings | `consoleSettings` | `/console/settings` | `src/console/settings` |
+
+Every screen takes `--json`; the MCP tools return that JSON. Teams and Subscription say "local: no team or billing" and point to `log login`.
+
+## The loop
+
+1. **Read the screen that answers the question.** Use the MCP tool (`consoleStart`, `consoleEvents` …). It reads only; it never signs in, sends or resets anything.
+2. **Act through the command it names.** Connections lists accounts and their session state; checking or signing one in is `log <platform> session check` or `log <platform> cookies save`, which the interactive console runs for you through the same code as `log launch`.
+3. **The terminal console** is `log console` (or `log launch`, Console). It needs a terminal, so an agent reads the screens instead.
+4. **The web console** is `log console --web [--port <n>] [--noOpen]`. It serves the built site (`site/apps/web/dist`) on 127.0.0.1 (port 7338 by default), answers `/api/console/*` from the same loaders, and opens `/console/start`. The page knows it is local because the server injects `window.logConsoleMode = "local"` into the page, and `/api/console/mode` answers `{ mode: "local" }`; it then skips the sign-in and team redirects. If the site isn't built it prints the build command: `pnpm --dir site install && pnpm --dir site --filter web build`.
+
+## Hard boundaries
+
+- Loopback only. The server binds 127.0.0.1 and refuses any request whose Host, remote address or Origin isn't this machine, or which is cross-site, the same guard as the dev server's `/api/console/events`.
+- Reading only. Governor resets stay with `governorReset` and matt's word (rule 168); sends stay with their own tools and gates.
+- Parity is checked: `bun run check:consoleParity` fails when a web nav item has no terminal screen, or the two don't read the same `src/console/<domain>` loader.

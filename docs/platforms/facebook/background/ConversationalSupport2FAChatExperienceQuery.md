@@ -24,7 +24,7 @@ Seen 2 time(s) in 2 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261111T081957_61593610473511**, signIn: password typed; submitting with Enter: 200, 672 ms
+**runs/inspect/20261111T081957_<userId:1>**, signIn: password typed; submitting with Enter: 200, 672 ms
 
 Sent:
 

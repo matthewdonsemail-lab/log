@@ -38,7 +38,7 @@ Seen 17 time(s) in 16 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261025T064655_61593981307720**, step 3: goto /marketplace/inbox: 200, 425 ms
+**runs/inspect/20261025T064655_<userId:1>**, step 3: goto /marketplace/inbox: 200, 425 ms
 
 Sent:
 
@@ -64,13 +64,13 @@ Answered:
       "actor": {
         "__typename": "User",
         "should_block_mbs_redirect": false,
-        "id": "61593981307720"
+        "id": "<userId:1>"
       },
       "shortcut_bookmarks": {
         "shortcut_bookmark": {
           "nodes": []
         },
-        "id": "1592249071005526"
+        "id": "<id:1>"
       }
     }
   },
@@ -84,7 +84,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261023T045453_61594063207669**, step 6: wait 6s: 200, 635 ms
+**runs/inspect/20261023T045453_<userId:2>**, step 6: wait 6s: 200, 635 ms
 
 Sent:
 
@@ -110,21 +110,21 @@ Answered:
       "actor": {
         "__typename": "User",
         "should_block_mbs_redirect": false,
-        "id": "61594063207669"
+        "id": "<userId:2>"
       },
       "shortcut_bookmarks": {
         "shortcut_bookmark": {
           "nodes": [
             {
               "id": "Ym9va21hcms6NjE1OTQwNjMyMDc2Njk6MTU5MjI0OTA3MTAwNTUyNjo0MTkxMDE4NjEwOTM3MjQzOjo6OnVua25vd24=",
-              "name": "Recommendations of Bethlehem, PA and Greater Lehigh Valley Region",
+              "name": "<name:1>",
               "url": "https://www.facebook.com/groups/4191018610937243/",
-              "tracking": "{\"bmid\":4191018610937243,\"bookmark_type\":\"type_group\",\"content_type\":\"shortcut_entity\",\"cc_id\":\"cc_id_shortcut_default\",\"eligibility_reason\":\"eligible_shortcut\",\"content_ids\":[4191018610937243],\"linked_product_id\":2361831622,\"position\":0}",
+              "tracking": "{\"bmid\":<id:2>,\"bookmark_type\":\"type_group\",\"content_type\":\"shortcut_entity\",\"cc_id\":\"cc_id_shortcut_default\",\"eligibility_reason\":\"eligible_shortcut\",\"content_ids\":[<id:2>],\"linked_product_id\":2361831622,\"position\":0}",
               "bookmark_icon_image": {
                 "uri": "https://static.xx.fbcdn.net/rsrc.php/y8/r/iaP8U-_yJOY.webp"
               },
               "image": {
-                "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/645294606_10238351084488917_8182127059574139500_n.jpg (452 chars)",
+                "uri": "<mediaUrl> (452 chars)",
                 "is_silhouette": false
               },
               "section": "GROUP",
@@ -146,14 +146,14 @@ Answered:
             },
             {
               "id": "Ym9va21hcms6NjE1OTQwNjMyMDc2Njk6MTU5MjI0OTA3MTAwNTUyNjo2OTA1ODg4MTQ0MDc0NjQ6Ojo6dW5rbm93bg==",
-              "name": "Friends of Bethlehem PA",
+              "name": "<name:2>",
               "url": "https://www.facebook.com/groups/690588814407464/",
-              "tracking": "{\"bmid\":690588814407464,\"bookmark_type\":\"type_group\",\"content_type\":\"shortcut_entity\",\"cc_id\":\"cc_id_shortcut_default\",\"eligibility_reason\":\"eligible_shortcut\",\"content_ids\":[690588814407464],\"linked_product_id\":2361831622,\"position\":1}",
+              "tracking": "{\"bmid\":<id:3>,\"bookmark_type\":\"type_group\",\"content_type\":\"shortcut_entity\",\"cc_id\":\"cc_id_shortcut_default\",\"eligibility_reason\":\"eligible_shortcut\",\"content_ids\":[<id:3>],\"linked_product_id\":2361831622,\"position\":1}",
               "bookmark_icon_image": {
                 "uri": "https://static.xx.fbcdn.net/rsrc.php/y8/r/iaP8U-_yJOY.webp"
               },
               "image": {
-                "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/275511929_10127159636577474_4037586103475890512_n.jpg (457 chars)",
+                "uri": "<mediaUrl> (457 chars)",
                 "is_silhouette": false
               },
               "section": "GROUP",
@@ -175,14 +175,14 @@ Answered:
             },
             {
               "id": "Ym9va21hcms6NjE1OTQwNjMyMDc2Njk6MTU5MjI0OTA3MTAwNTUyNjoyNDc4MzMyMDE1ODEwMzkzOjo6OnVua25vd24=",
-              "name": "Bethlehem, PA Neighborhood",
+              "name": "<name:3>",
               "url": "https://www.facebook.com/groups/2478332015810393/",
-              "tracking": "{\"bmid\":2478332015810393,\"bookmark_type\":\"type_group\",\"content_type\":\"shortcut_entity\",\"cc_id\":\"cc_id_shortcut_default\",\"eligibility_reason\":\"eligible_shortcut\",\"content_ids\":[2478332015810393],\"linked_product_id\":2361831622,\"position\":2}",
+              "tracking": "{\"bmid\":<id:4>,\"bookmark_type\":\"type_group\",\"content_type\":\"shortcut_entity\",\"cc_id\":\"cc_id_shortcut_default\",\"eligibility_reason\":\"eligible_shortcut\",\"content_ids\":[<id:4>],\"linked_product_id\":2361831622,\"position\":2}",
               "bookmark_icon_image": {
                 "uri": "https://static.xx.fbcdn.net/rsrc.php/y8/r/iaP8U-_yJOY.webp"
               },
               "image": {
-                "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t1.6435-9/93806581_144287650470567_96044419450404864_n.png (442 chars)",
+                "uri": "<mediaUrl> (442 chars)",
                 "is_silhouette": false
               },
               "section": "GROUP",
@@ -204,7 +204,7 @@ Answered:
             }
           ]
         },
-        "id": "1592249071005526"
+        "id": "<id:1>"
       }
     }
   },
@@ -227,7 +227,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261022T130601_61594063207669**, step 4: goto /marketplace/inbox: 200, 1627 ms
+**runs/inspect/20261022T130601_<userId:2>**, step 4: goto /marketplace/inbox: 200, 1627 ms
 
 Sent:
 
@@ -253,21 +253,21 @@ Answered:
       "actor": {
         "__typename": "User",
         "should_block_mbs_redirect": false,
-        "id": "61594063207669"
+        "id": "<userId:2>"
       },
       "shortcut_bookmarks": {
         "shortcut_bookmark": {
           "nodes": [
             {
               "id": "Ym9va21hcms6NjE1OTQwNjMyMDc2Njk6MTU5MjI0OTA3MTAwNTUyNjo0MTkxMDE4NjEwOTM3MjQzOjo6OnVua25vd24=",
-              "name": "Recommendations of Bethlehem, PA and Greater Lehigh Valley Region",
+              "name": "<name:1>",
               "url": "https://www.facebook.com/groups/4191018610937243/",
-              "tracking": "{\"bmid\":4191018610937243,\"bookmark_type\":\"type_group\",\"content_type\":\"shortcut_entity\",\"cc_id\":\"cc_id_shortcut_default\",\"eligibility_reason\":\"eligible_shortcut\",\"content_ids\":[4191018610937243],\"linked_product_id\":2361831622,\"position\":0}",
+              "tracking": "{\"bmid\":<id:2>,\"bookmark_type\":\"type_group\",\"content_type\":\"shortcut_entity\",\"cc_id\":\"cc_id_shortcut_default\",\"eligibility_reason\":\"eligible_shortcut\",\"content_ids\":[<id:2>],\"linked_product_id\":2361831622,\"position\":0}",
               "bookmark_icon_image": {
                 "uri": "https://static.xx.fbcdn.net/rsrc.php/y8/r/iaP8U-_yJOY.webp"
               },
               "image": {
-                "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/645294606_10238351084488917_8182127059574139500_n.jpg (452 chars)",
+                "uri": "<mediaUrl> (452 chars)",
                 "is_silhouette": false
               },
               "section": "GROUP",
@@ -289,14 +289,14 @@ Answered:
             },
             {
               "id": "Ym9va21hcms6NjE1OTQwNjMyMDc2Njk6MTU5MjI0OTA3MTAwNTUyNjo2OTA1ODg4MTQ0MDc0NjQ6Ojo6dW5rbm93bg==",
-              "name": "Friends of Bethlehem PA",
+              "name": "<name:2>",
               "url": "https://www.facebook.com/groups/690588814407464/",
-              "tracking": "{\"bmid\":690588814407464,\"bookmark_type\":\"type_group\",\"content_type\":\"shortcut_entity\",\"cc_id\":\"cc_id_shortcut_default\",\"eligibility_reason\":\"eligible_shortcut\",\"content_ids\":[690588814407464],\"linked_product_id\":2361831622,\"position\":1}",
+              "tracking": "{\"bmid\":<id:3>,\"bookmark_type\":\"type_group\",\"content_type\":\"shortcut_entity\",\"cc_id\":\"cc_id_shortcut_default\",\"eligibility_reason\":\"eligible_shortcut\",\"content_ids\":[<id:3>],\"linked_product_id\":2361831622,\"position\":1}",
               "bookmark_icon_image": {
                 "uri": "https://static.xx.fbcdn.net/rsrc.php/y8/r/iaP8U-_yJOY.webp"
               },
               "image": {
-                "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/275511929_10127159636577474_4037586103475890512_n.jpg (457 chars)",
+                "uri": "<mediaUrl> (457 chars)",
                 "is_silhouette": false
               },
               "section": "GROUP",
@@ -318,14 +318,14 @@ Answered:
             },
             {
               "id": "Ym9va21hcms6NjE1OTQwNjMyMDc2Njk6MTU5MjI0OTA3MTAwNTUyNjoyNDc4MzMyMDE1ODEwMzkzOjo6OnVua25vd24=",
-              "name": "Bethlehem, PA Neighborhood",
+              "name": "<name:3>",
               "url": "https://www.facebook.com/groups/2478332015810393/",
-              "tracking": "{\"bmid\":2478332015810393,\"bookmark_type\":\"type_group\",\"content_type\":\"shortcut_entity\",\"cc_id\":\"cc_id_shortcut_default\",\"eligibility_reason\":\"eligible_shortcut\",\"content_ids\":[2478332015810393],\"linked_product_id\":2361831622,\"position\":2}",
+              "tracking": "{\"bmid\":<id:4>,\"bookmark_type\":\"type_group\",\"content_type\":\"shortcut_entity\",\"cc_id\":\"cc_id_shortcut_default\",\"eligibility_reason\":\"eligible_shortcut\",\"content_ids\":[<id:4>],\"linked_product_id\":2361831622,\"position\":2}",
               "bookmark_icon_image": {
                 "uri": "https://static.xx.fbcdn.net/rsrc.php/y8/r/iaP8U-_yJOY.webp"
               },
               "image": {
-                "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t1.6435-9/93806581_144287650470567_96044419450404864_n.png (442 chars)",
+                "uri": "<mediaUrl> (442 chars)",
                 "is_silhouette": false
               },
               "section": "GROUP",
@@ -347,7 +347,7 @@ Answered:
             }
           ]
         },
-        "id": "1592249071005526"
+        "id": "<id:1>"
       }
     }
   },
