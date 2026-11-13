@@ -17,6 +17,7 @@ When the owner asks for one of these, follow its page step by step.
 | `getGuide({ useCase: "inbox/bossMaxxing" })` | Bossmaxxing: giving out tasks to the team | "bossmaxxing", "give out the tasks", "send <person> the task in <group> and tag them", "tell <person> about everything I researched and give them an outline", "triage the jobs across the team", "walk <person> through setting up <tool>", "help <person> get set up like we did with <other person>" |
 | `getGuide({ useCase: "inbox/reaLooksmaxxing" })` | /rea-looksmaxxing: moneymaxx like a creator | "/rea-looksmaxxing how clavicular gets paid", "moneymaxx like <creator>", "how does <creator> get paid" |
 | `getGuide({ useCase: "inbox/reactions" })` | Reacting to a message | "react to that", "heart his message", "put a 😂 on what she said", "send a reaction to <person>" |
+| `getGuide({ useCase: "inbox/scopeAJob" })` | Scoping a job out of someone in a DM | "probe <person> so we can scope out what the task is", "scope it out with him", "find out what he actually wants done", "go through and then scope it out". |
 | `getGuide({ useCase: "inbox/voiceNote" })` | Sending a voice note | "send <person> a voice note saying …", "voice note him that …", "send a vn to the group saying …" |
 | `getGuide({ useCase: "instagram/dmReply" })` | Reading and answering an Instagram DM | "read my instagram dms", "what did <someone> say on instagram", "reply to <someone> on instagram", "send <someone> a meme on instagram" |
 
@@ -117,7 +118,7 @@ log instagram dms --account <accountName> [--with <handle|thread name|thread id>
 Without --with, lists the account's Instagram DM threads, newest first: who each is with, its last message and whether it is unread. With --with, reads that one thread's latest messages, oldest first.
 On the direct-API engine (vendor/instagrapi, direct_threads and direct_thread, no browser). Sends nothing, and marks nothing seen.
 Fill the named fields; each value goes through whole.
-Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "inbox/bossMaxxing" }), getGuide({ useCase: "inbox/reaLooksmaxxing" }), getGuide({ useCase: "inbox/reactions" }), getGuide({ useCase: "inbox/voiceNote" }), getGuide({ useCase: "instagram/dmReply" }).
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "inbox/bossMaxxing" }), getGuide({ useCase: "inbox/reaLooksmaxxing" }), getGuide({ useCase: "inbox/reactions" }), getGuide({ useCase: "inbox/scopeAJob" }), getGuide({ useCase: "inbox/voiceNote" }), getGuide({ useCase: "instagram/dmReply" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "instagram" }) (An Instagram account: its session, reading its DMs, sending text and photos, and the live realtime watch).
 AGENTS.md (log://agents): rules 175, 63, 2, 73, 83, 94, 138, 105, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 

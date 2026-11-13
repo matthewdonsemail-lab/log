@@ -39,12 +39,15 @@ export function pairsOf(conversations: readonly Conversation[]): VoicePair[] {
   for (const c of conversations) {
     const { chat, kind } = chatOf(c)
     const said = c.messages.filter((m) => m.text.trim())
+    if (!said.some((m) => m.fromMe)) continue
+    const answered = new Set<string>()
     for (let i = 0; i < said.length; i++) {
       if (!said[i].fromMe) continue
       let end = i
       while (end + 1 < said.length && said[end + 1].fromMe) end++
       const before: typeof said = []
       for (let j = i - 1; j >= 0 && !said[j].fromMe && before.length < SAID_MESSAGES; j--) before.unshift(said[j])
+      for (const m of before) answered.add(m.id)
       out.push({
         id: `${c.platform}:${c.account}:${c.conversationId}:${said[i].id}`,
         platform: c.platform,
@@ -61,6 +64,24 @@ export function pairsOf(conversations: readonly Conversation[]): VoicePair[] {
         gaps: said.slice(i + 1, end + 1).map((m, k) => Math.max(0, (Date.parse(m.at ?? '') - Date.parse(said[i + k].at ?? '')) / 1000)).filter((g) => Number.isFinite(g)),
       })
       i = end
+    }
+    for (const m of said) {
+      if (m.fromMe || answered.has(m.id)) continue
+      out.push({
+        id: `${c.platform}:${c.account}:${c.conversationId}:${m.id}`,
+        platform: c.platform,
+        account: c.account,
+        conversationId: c.conversationId,
+        chat,
+        kind,
+        with: c.with,
+        at: m.at,
+        said: m.text.replace(/\s+/g, ' ').trim(),
+        saidBy: m.from,
+        reply: '',
+        parts: 0,
+        gaps: [],
+      })
     }
   }
   return out
@@ -85,29 +106,40 @@ function situationOf(pair: VoicePair): string {
   return pair.said || pair.reply
 }
 
-export async function buildVoiceIndex(conversations: readonly Conversation[], embedder: Embedder, dir = voiceDir(), batch = 64): Promise<{ pairs: number; profiles: number; ms: number }> {
+export async function buildVoiceIndex(conversations: readonly Conversation[], embedder: Embedder, dir = voiceDir(), batch = 64): Promise<{ pairs: number; profiles: number; ms: number; current?: boolean }> {
   const started = performance.now()
   const pairs = pairsOf(conversations)
+  const answered = pairs.filter((p) => p.reply.trim())
+  const newest = pairs.reduce((latest, p) => (String(p.at ?? '') > latest ? String(p.at ?? '') : latest), '')
+  const meta = join(dir, 'model.json')
+  if (existsSync(join(dir, 'pairs.json')) && existsSync(meta)) {
+    const built = JSON.parse(readFileSync(meta, 'utf8')) as { builtAt?: string }
+    const held = JSON.parse(readFileSync(join(dir, 'pairs.json'), 'utf8')) as VoicePair[]
+    if (built.builtAt && held.length === pairs.length && newest && newest <= built.builtAt) return { pairs: pairs.length, profiles: Object.keys(readProfiles(dir)).length, ms: performance.now() - started, current: true }
+  }
   const profiles = profilesOf(pairs)
   rmSync(dir, { recursive: true, force: true })
   mkdirSync(dir, { recursive: true })
   writeFileSync(join(dir, 'pairs.json'), JSON.stringify(pairs))
   writeFileSync(join(dir, 'profiles.json'), JSON.stringify(profiles))
-  writePhraseIndex(buildPhraseIndex(pairs.map((p) => p.reply)), dir)
-  writeFileSync(join(dir, 'model.json'), JSON.stringify({ model: embedder.model, dimensions: embedder.dimensions, builtAt: new Date().toISOString() }))
+  writePhraseIndex(buildPhraseIndex(answered.map((p) => p.reply)), dir)
+  writeFileSync(meta, JSON.stringify({ model: embedder.model, dimensions: embedder.dimensions, builtAt: newest || new Date().toISOString() }))
   const keyword = new BM25()
   keyword.index(tokenize(pairs.map(situationOf)))
   await keyword.save(join(dir, 'bm25'))
   const db = await VectorDB.open({ path: join(dir, 'vectors') })
   const collection = await db.createCollection<PairMeta>('pairs', { vector: { dimensions: embedder.dimensions, metric: 'cosine' }, index: { type: 'hnsw', profile: 'balanced' } })
   const wording = await db.createCollection<PairMeta>('wording', { vector: { dimensions: embedder.dimensions, metric: 'cosine' }, index: { type: 'hnsw', profile: 'balanced' } })
+  const metaOf = (p: VoicePair) => ({ platform: p.platform, conversationId: p.conversationId })
   for (let start = 0; start < pairs.length; start += batch) {
     const slice = pairs.slice(start, start + batch)
     const situations = await embedder.embed(slice.map(situationOf))
+    await collection.insert(slice.map((p, i) => ({ id: p.id, vector: situations[i], metadata: metaOf(p) })))
+  }
+  for (let start = 0; start < answered.length; start += batch) {
+    const slice = answered.slice(start, start + batch)
     const replies = await embedder.embed(slice.map((p) => p.reply))
-    const meta = (p: VoicePair) => ({ platform: p.platform, conversationId: p.conversationId })
-    await collection.insert(slice.map((p, i) => ({ id: p.id, vector: situations[i], metadata: meta(p) })))
-    await wording.insert(slice.map((p, i) => ({ id: p.id, vector: replies[i], metadata: meta(p) })))
+    await wording.insert(slice.map((p, i) => ({ id: p.id, vector: replies[i], metadata: metaOf(p) })))
   }
   await db.close()
   return { pairs: pairs.length, profiles: Object.keys(profiles).length, ms: performance.now() - started }
@@ -145,9 +177,9 @@ export async function nearestPairs(index: VoiceIndex, situation: string, target:
   })()
   const [vector] = await index.embedder.embed([situation])
   const byMeaning = (await index.vectors.search({ vector, limit: depth })).matches.map((m: { id: string | number }) => String(m.id))
-  const fused = reciprocalRankFusion([byKeyword, byMeaning]).filter((f) => index.byId.has(f.id))
+  const fused = reciprocalRankFusion([byKeyword, byMeaning]).filter((f) => index.byId.get(f.id)?.reply.trim())
   const ranked = fused.map((f, i) => ({ pair: index.byId.get(f.id)!, rank: i + 1 })).map((r) => ({ ...r, tier: tierOf(r.pair, target) }))
-  const inChat = index.pairs.filter((p) => tierOf(p, target) === 'sameChat')
+  const inChat = index.pairs.filter((p) => p.reply.trim() && tierOf(p, target) === 'sameChat')
   const seen = new Set(ranked.map((r) => r.pair.id))
   const recent = inChat.filter((p) => !seen.has(p.id)).sort((a, b) => String(b.at ?? '').localeCompare(String(a.at ?? ''))).map((pair, i) => ({ pair, rank: ranked.length + i + 1, tier: 'sameChat' as const }))
   return [...ranked, ...recent].sort((a, b) => TIER_ORDER.indexOf(a.tier) - TIER_ORDER.indexOf(b.tier) || a.rank - b.rank).slice(0, limit)
@@ -157,7 +189,7 @@ export async function closestWording(index: VoiceIndex, draft: string, target: V
   const depth = Math.min(index.pairs.length, VOICE_DEPTH)
   if (!depth || !draft.trim()) return []
   const [vector] = await index.embedder.embed([draft])
-  const found = (await index.wording.search({ vector, limit: depth })).matches.map((m: { id: string | number }) => String(m.id)).filter((id) => index.byId.has(id))
+  const found = (await index.wording.search({ vector, limit: depth })).matches.map((m: { id: string | number }) => String(m.id)).filter((id) => index.byId.get(id)?.reply.trim())
   return found
     .map((id, i) => ({ pair: index.byId.get(id)!, rank: i + 1 }))
     .map((r) => ({ ...r, tier: tierOf(r.pair, target) }))
@@ -167,7 +199,7 @@ export async function closestWording(index: VoiceIndex, draft: string, target: V
 
 export function recentInChat(index: Pick<VoiceIndex, 'pairs'>, target: VoiceTarget, limit = NEAR_PAIRS): VoicePair[] {
   return index.pairs
-    .filter((p) => tierOf(p, target) === 'sameChat')
+    .filter((p) => p.reply.trim() && tierOf(p, target) === 'sameChat')
     .sort((a, b) => String(b.at ?? '').localeCompare(String(a.at ?? '')))
     .slice(0, limit)
 }

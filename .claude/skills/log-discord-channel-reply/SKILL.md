@@ -35,4 +35,5 @@ Say: **"go on docs/useCases/discord/channelReply.md for <chat>"**. The agent rea
 - **matt's own words.** When matt says what to tell them, the answer is his words, kept as close to how he said them as reads right. When the gate still refuses his own words, `overGate` on `discordSendLive` sends that exact message: the gate's read is skipped and the AI artifact check still runs (rule 152).
 - **A server channel is not a group DM.** When the message came from a channel in a server (the hook says "mentioned you in a server channel" or "replied to you in a server channel"), use [serverReply](../log-discord-server-reply/SKILL.md).
 - **One message per line.** A draft on several lines goes out one message per line, and the send stops the moment they write back (rules 90, 130).
+- **X links embed as fixupx.** Share an X post on Discord as https://fixupx.com/<user>/status/<id>, never x.com: Discord only embeds the post and its video from fixupx. `discordSendLive` turns any x.com or twitter.com post link into fixupx.com itself (matt, 2026-11-13).
 - **Name the chat.** A DM by the person, a group DM by its name or its members' names, never its id (rule 154).

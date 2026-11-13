@@ -134,6 +134,8 @@ async function evidenceFor(context: CommandContext, said: string, chat: string, 
       label,
       evidence: {
         chat: label,
+        platform: picked.platform,
+        kind: picked.kind,
         profile,
         replies: near.map((n) => ({ said: n.pair.said, reply: n.pair.reply, chat: n.pair.chat, tier: n.tier })),
         wording: wording.map((n) => ({ reply: n.pair.reply, chat: n.pair.chat, tier: n.tier })),
@@ -177,12 +179,10 @@ export function aiIndexStale(dir = aiIndexDir(), pairsFile = join(voiceDir(), "p
   return statSync(pairsFile).mtimeMs > Date.parse(index.builtAt);
 }
 
-async function ensureAiIndex(context: CommandContext): Promise<void> {
-  if (!aiIndexStale(aiIndexDir(), join(voiceDir(), "pairs.json"), JINA_EMBED_MODEL)) return;
-  const pairsFile = join(voiceDir(), "pairs.json");
-  const replies = existsSync(pairsFile) ? (JSON.parse(readFileSync(pairsFile, "utf8")) as VoicePair[]).map((p) => p.reply) : [];
-  context.err(`voice: the AI tells index is ${openAiIndex(aiIndexDir(), JINA_EMBED_MODEL) ? "older than matt's voice index" : `missing for ${JINA_EMBED_MODEL}`}, so it is built now (rule 112)`);
-  await buildAiIndex(voiceDeps.aiEmbedder(), replies, aiIndexDir(), undefined, undefined, (line) => context.err(line));
+async function ensureAiIndex(context: CommandContext): Promise<boolean> {
+  if (!aiIndexStale(aiIndexDir(), join(voiceDir(), "pairs.json"), JINA_EMBED_MODEL) && openAiIndex(aiIndexDir(), JINA_EMBED_MODEL)) return true;
+  context.err("voice: the AI tells index is older than matt's voice index, so AI phrasing isn't checked on this gate; it is rebuilt in the background by `log voice aiIndex`, never inline (a gate must not stall the send)");
+  return false;
 }
 
 export function ensurePhraseIndex(context: CommandContext, dir = voiceDir()) {
@@ -229,7 +229,9 @@ export const voiceCommand: Command = {
         context.err(`voice: pairing matt's replies in ${conversations.length} saved conversations and embedding them with ${embedder.model}`);
         const built = await buildVoiceIndex(conversations, embedder);
         embedder.stop?.();
-        const line = `log voice index: ${built.pairs} of matt's replies paired with what was said before them, ${built.profiles} profiles (chat, person, platform), in ${(built.ms / 1000).toFixed(1)} s at ${voiceDir()}`;
+        const line = built.current
+          ? `log voice index: already current, so nothing was re-paired: ${built.pairs} messages indexed across every chat matt has written in, ${built.profiles} profiles, at ${voiceDir()}`
+          : `log voice index: ${built.pairs} messages indexed across every chat matt has written in, each of his replies paired with what was said before it, ${built.profiles} profiles (chat, person, platform), in ${(built.ms / 1000).toFixed(1)} s at ${voiceDir()}`;
         return { code: 0, stdout: parsed.flags["json"] ? JSON.stringify(built, null, 2) : line };
       } catch (error) {
         return refuseError("voice index", error);
@@ -306,9 +308,9 @@ export async function gateReading(context: CommandContext, draft: { to: string; 
   if (!phraseIndex) context.err("voice: no voice index yet, so matt's own phrasing isn't measured: build it with `log voice index`");
   const phrases = phraseIndex ? readPhrases(text, phraseIndex, said) : undefined;
   const scrambler = voiceDeps.scrambler(text);
-  const scored = await readVoice({ to, text, ...(said ? { context: said } : {}), ...(evidence ? { evidence } : {}), ...(everywhere ? { everywhere } : {}), ...(phrases ? { phrasesNewToMatt: phrases.unfamiliar } : {}), ...(ranked.length ? { conversation: ranked } : {}), ...(draft.spoken ? { spoken: true, howMattTalks: voiceDeps.howMattTalks() } : {}), ...(draft.room ? { room: draft.room } : {}), ...(scrambler.ran ? { scrambler: { suspicious: scrambler.suspicious, kinds: [...new Set(scrambler.hits.map((h) => h.kind))] } } : {}) }, guide, voiceDeps.decisions());
+  const scored = await readVoice({ to, text, ...(said ? { context: said } : {}), ...(evidence ? { evidence } : {}), ...(everywhere ? { everywhere } : {}), ...(phrases ? { phrasesNewToMatt: phrases.newPhrasing } : {}), ...(ranked.length ? { conversation: ranked } : {}), ...(draft.spoken ? { spoken: true, howMattTalks: voiceDeps.howMattTalks() } : {}), ...(draft.room ? { room: draft.room } : {}), ...(scrambler.ran ? { scrambler: { suspicious: scrambler.suspicious, kinds: [...new Set(scrambler.hits.map((h) => h.kind))] } } : {}) }, guide, voiceDeps.decisions());
   const notHere = evidence && !draft.spoken ? offProfile(text, evidence.profile as VoiceProfile | null) : [];
-  await ensureAiIndex(context);
+  const aiReady = await ensureAiIndex(context);
   const aiIndex = openAiIndex(aiIndexDir(), JINA_EMBED_MODEL);
   if (!aiIndex) context.err("voice: the AI tells index couldn't be built, so AI phrasing isn't checked");
   const aiTells = aiIndex ? await readAiTells(text, aiIndex, voiceDeps.aiEmbedder()) : undefined;

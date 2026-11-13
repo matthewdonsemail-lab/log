@@ -80,6 +80,20 @@ describe('the voice gate', () => {
     expect(neverSaysIn('That is SPOT ON and a Big Swing')).toEqual(['big swing', 'spot on'])
   })
 
+  test('a draft written on several lines is read as the messages it will go out as, never as one block (matt, 2026-11-12)', async () => {
+    const { asked, decide } = answering(0.97)
+    const draft = 'send the folder over and ill take a run at it\nwhats the live recordings thing about'
+    const reading = await readVoice({ to: 'invoker', text: draft, context: 'okay let me know what you need' }, 'GUIDE', decide)
+    expect(reading.pass).toBe(true)
+    const state = asked[0].state as Record<string, unknown>
+    expect(state.dmAsItWillBeSent).toEqual(['send the folder over and ill take a run at it', 'whats the live recordings thing about'])
+    expect(state.wordsInEachMessageAsSent).toEqual([11, 6])
+    const questions = asked[0].questions as Record<string, { instructions: string }>
+    expect(questions.voice.instructions).toContain('dmAsItWillBeSent')
+    expect(questions.voice.instructions).toContain('never as one block')
+    expect(questions.voice.instructions).toContain('A subject he has never written about never counts against him')
+  })
+
   test('every gate reads matt across all his conversations, beside the chat and the guide', async () => {
     const { asked, decide } = answering(0.97)
     const everywhere = { chat: 'all', profile: { replies: 9 }, replies: [{ said: 'nice', reply: 'cheers lad', chat: 'x', tier: 'anywhere' }], wording: [] }

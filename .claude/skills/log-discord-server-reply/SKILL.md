@@ -56,5 +56,6 @@ Say: **"go on docs/useCases/discord/serverReply.md for <server> #<channel>"**. T
 - **The voice gate can't find a server channel by name.** Gate with `to` and `context` only, never `with`.
 - **matt's own words.** When matt says what to tell them, the answer is his words. When the gate still refuses them, `overGate` on `discordSendLive` sends that exact message; the AI artifact check still runs (rule 152).
 - **One message per line.** A draft on several lines goes out one message per line, and in a busy channel other people's messages can land between them. Keep a server answer to one or two lines (rule 90).
+- **X links embed as fixupx.** Share an X post on Discord as https://fixupx.com/<user>/status/<id>, never x.com: Discord only embeds the post and its video from fixupx. `discordSendLive` turns any x.com or twitter.com post link into fixupx.com itself (matt, 2026-11-13).
 - **Name the channel, never its id.** The chat-names hook refuses an id: `"<server> #<channel>"`, or `"<server> #<forum> > <post title>"` for a forum post (rule 154).
 - **Forums and threads.** A forum holds posts, each its own conversation: answer inside the post, never in the forum. What each part of a server is: the `discordServers` skill in the discord guide; going through a forum for posts to answer: [forumPosts](../log-discord-forum-posts/SKILL.md).
