@@ -74,12 +74,12 @@ export const cookiesCommand: Command = {
     const style = typeof parsed.flags["style"] === "string" ? (parsed.flags["style"] as string).trim() : undefined;
     if (style && !copyStyleOf(style)) return refuse("twitter cookies save", "copyStyleUnknown", `${style} (known: ${Object.keys(COPY_STYLES).join(", ")})`);
     if (!context.directTwitter) return { code: 1, stderr: "log twitter cookies save: the direct-API engine isn't wired in this context" };
-    if (!shouldPrompt(false, cookiesDeps.tty())) {
+    if (!context.cookiePrompts && !shouldPrompt(false, cookiesDeps.tty())) {
       return { code: 1, stderr: "log twitter cookies save: the cookies are typed in a Clack prompt, so it needs an interactive terminal: run it there (they are never passed as flags)" };
     }
     try {
       const found = await existing(context, handle);
-      const prompts = cookiesDeps.prompts;
+      const prompts = context.cookiePrompts ?? cookiesDeps.prompts;
       prompts.intro(`log twitter cookies save — @${handle}${found ? " (already in Twenty: its cookies are replaced)" : " (new in Twenty)"}`);
       const ask = async (message: string) => {
         const value = await prompts.password({ message, mask: "•", validate: (v) => (isCookieValue(v) ? undefined : "paste the cookie's value only") });

@@ -7,7 +7,7 @@ import { commandEngine } from "../../directApi/engine/index.ts";
 import type { FlowDefinition } from "../../browser/flow/index.ts";
 import type { Command, CommandInput, FlagSpec } from "../../cli/runner/types.ts";
 import { COMMAND_RULES, EVERY_TOOL_RULES } from "../../mcp/server/helpers/agentRules.ts";
-import { commandTools, commandWords, LONG_RUNNING } from "../../mcp/server/helpers/toolsFromCommands.ts";
+import { commandTools, commandWords, longRunning } from "../../mcp/server/helpers/toolsFromCommands.ts";
 import { TERMINAL_ONLY } from "../../mcp/server/types.ts";
 import type { CommandEntry, Flag, FlowEntry } from "./types.ts";
 
@@ -92,7 +92,7 @@ export function commandEntry(command: Command): CommandEntry {
     tool: terminalOnly ? null : tools.join(", "),
     typed: command.input !== undefined,
     terminalOnly,
-    longRunning: LONG_RUNNING.has(command.name),
+    longRunning: longRunning(command),
     browser: commandBrowser(command.name),
     engine: commandEngine(commandKey(command), command.name),
     platform: command.platform,

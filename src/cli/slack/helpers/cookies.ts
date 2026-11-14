@@ -80,12 +80,12 @@ export const slackCookiesCommand: Command = {
     if (!/^[A-Za-z0-9_.\-]{2,64}$/.test(accountName)) return { code: 1, error: "inputInvalid", stderr: `log slack cookies save: --account must be a name of letters, digits, _ . or -\n${SLACK_COOKIES_USAGE}` };
     const workspace = typeof parsed.flags["workspace"] === "string" ? parsed.flags["workspace"].trim() : "";
     if (!context.directSlack) return { code: 1, stderr: "log slack cookies save: the direct-API engine isn't wired in this context" };
-    if (!shouldPrompt(false, slackCookiesDeps.tty())) {
+    if (!context.cookiePrompts && !shouldPrompt(false, slackCookiesDeps.tty())) {
       return { code: 1, stderr: "log slack cookies save: the d cookie is typed in a Clack prompt, so it needs an interactive terminal: run it there (it is never passed as a flag)" };
     }
     try {
       const found = await existing(context, accountName);
-      const prompts = slackCookiesDeps.prompts;
+      const prompts = context.cookiePrompts ?? slackCookiesDeps.prompts;
       prompts.intro(`log slack cookies save — ${accountName}${found ? " (already saved: its d cookie is replaced)" : " (new, saved locally)"}`);
       const value = await prompts.password({ message: "d (slack.com cookie, starts with xoxd-)", mask: "•", validate: (v) => (isSlackD(v) ? undefined : "paste the d cookie's value only, xoxd- and the rest") });
       if (isCancel(value) || !isSlackD(value)) {

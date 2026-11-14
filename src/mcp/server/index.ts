@@ -27,7 +27,7 @@ import type { PlayScope } from "./helpers/index.ts";
 import { codeOfText, isPlatform } from "../../cli/runner/helpers/index.ts";
 import { flowRunInput, FLOW_RUN_TOOL } from "./helpers/index.ts";
 import { CALL_TOOL, catalog, catalogTools, getAnswer, isCatalogTool, resolveCall, searchAnswer, SEARCH_TOOL } from "../catalog/index.ts";
-import { AGENTS_URI, commandTools, CORE_GUIDE, flowArgv, flowOfTool, guardCall, GUIDE_TOOL, GUIDE_TOPICS, guideTool, listUseCases, readUseCase, withUseCases, hasShell, identityOf, legacyArgsTool, LONG_RUNNING, parseEnvText, readGuide, SERVER_INSTRUCTIONS, toolsFromCommands, toolsFromFlows } from "./helpers/index.ts";
+import { AGENTS_URI, commandTools, CORE_GUIDE, flowArgv, flowOfTool, guardCall, GUIDE_TOOL, GUIDE_TOPICS, guideTool, listUseCases, readUseCase, withUseCases, hasShell, identityOf, legacyArgsTool, longRunning, parseEnvText, readGuide, SERVER_INSTRUCTIONS, toolsFromCommands, toolsFromFlows } from "./helpers/index.ts";
 import type { LogStream } from "./helpers/index.ts";
 import type { LogToolInput, ProgressLine, ResultIdentity, ToolResult } from "./types.ts";
 import { RESULT_SIZE_META } from "./types.ts";
@@ -280,7 +280,7 @@ export async function runToolCall(
   if (noPlay) return refused(noPlay, codeOfText(noPlay), readBrowsers, identity);
   const progress: ProgressLine[] = [];
   const noted = (result: CallToolResult): CallToolResult => (guard.note ? { ...result, content: [...(result.content ?? []), { type: "text" as const, text: guard.note }] } : result);
-  if (!entry || !LONG_RUNNING.has(entry.command.name)) {
+  if (!entry || !longRunning(entry.command)) {
     const ran = await runGuarded(name, guard.argv, context, onLine, progress, null, identity, signal);
     const answered = noted(withBrowsers(ran.base, ran.text, ran.base.exit !== 0, readBrowsers, ran.images));
     return name === BROWSER_VIEW_TOOL ? withViewer(answered, input) : answered;

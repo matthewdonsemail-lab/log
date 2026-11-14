@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import { checkSession, checkSessions, nextStepOf, sessionsText, verdictOf } from "./index.ts";
-import type { SessionCheckAccount, SessionToolAnswer } from "./index.ts";
+import { Database } from "bun:sqlite";
+import { checkSession, checkSessions, checkStateOfStored, claimCheck, nextStepOf, readStoredChecks, reconcileChecks, runSessionCheck, sessionGate, sessionsText, verdictOf, writeCheck } from "./index.ts";
+import type { CheckStore, SessionCheckAccount, SessionToolAnswer, StoredCheck } from "./index.ts";
 
 const dead401: SessionToolAnswer = {
   isError: true,
@@ -33,19 +34,21 @@ describe("verdictOf", () => {
     expect(verdictOf({ isError: true, structuredContent: { ok: false } }).verdict).toBe("stopped");
   });
   test("log failing before the platform answers is unknown, with log's own code", () => {
-    const failed = verdictOf({ isError: true, structuredContent: { exit: 1, stderr: "log discord session check: twentyNotConfigured: TWENTY_BASE_URL or TWENTY_API_KEY is not set." } });
+    const failed = verdictOf({ isError: true, structuredContent: { exit: 1, ok: false, code: "twentyNotConfigured", stderr: "log discord session check: twentyNotConfigured: TWENTY_BASE_URL or TWENTY_API_KEY is not set." } });
     expect(failed).toMatchObject({ verdict: "unknown", code: "twentyNotConfigured" });
+    expect(verdictOf({ isError: true, structuredContent: { exit: 1, ok: false, code: null, stderr: "boom" } })).toMatchObject({ verdict: "unknown", code: "checkFailed", detail: "boom" });
   });
 });
 
 describe("nextStepOf", () => {
-  test("a browser platform opens the account's browser on its sign-in page", () => {
+  test("a browser platform signs in through sessionsSignIn, its own browser on the login screen", () => {
     const next = nextStepOf(discord, "signInNeeded");
-    expect(next?.tool).toEqual({ name: "inspectStart", input: { account: "fakeGuild", url: "https://discord.com/login", detach: true, goal: expect.any(String) } });
-    expect(next?.cli).toBe("log inspect start --account fakeGuild --url https://discord.com/login --detach");
+    expect(next?.tool).toEqual({ name: "sessionsSignIn", input: { account: "fakeGuild", platform: "discord" } });
+    expect(next?.cli).toBe("log sessions signIn --account fakeGuild --platform discord");
+    expect(next?.says).toContain("https://discord.com/login");
   });
   test("X signs in again from its cookie prompt", () => {
-    expect(nextStepOf(twitter, "signInNeeded")?.cli).toBe("log twitter cookies save --account fakeBird");
+    expect(nextStepOf(twitter, "signInNeeded")?.cli).toBe("log sessions signIn --account fakeBird --platform twitter --route cookies");
   });
   test("signed in needs nothing", () => {
     expect(nextStepOf(discord, "signedIn")).toBeNull();
@@ -66,7 +69,7 @@ describe("checkSession", () => {
     const report = await checkSession({ id: "f1", name: "fakeFace", platform: "facebook" }, async () => {
       throw new Error("not called");
     });
-    expect(report).toMatchObject({ verdict: "browserCheck", code: "browserCheckRequired" });
+    expect(report).toMatchObject({ verdict: "skipped", code: "browserCheckRequired", next: { tool: { name: "sessionsSignIn" } } });
   });
   test("a deactivated account is skipped", async () => {
     const report = await checkSession({ ...discord, status: "deactivated" }, async () => signedIn);
@@ -83,18 +86,18 @@ describe("checkSession", () => {
 describe("checkSessions", () => {
   const accounts = [discord, twitter];
   test("filters by platform, x meaning twitter", async () => {
-    const reports = await checkSessions(accounts, { platform: "x" }, async () => signedIn);
+    const reports = await checkSessions(accounts, { platform: "x" }, (account) => checkSession(account, async () => signedIn));
     expect(reports.map((report) => report.account)).toEqual(["fakeBird"]);
   });
   test("an unknown account is refused", async () => {
-    await expect(checkSessions(accounts, { account: "nobody" }, async () => signedIn)).rejects.toThrow("accountNotFound");
+    await expect(checkSessions(accounts, { account: "nobody" }, (account) => checkSession(account, async () => signedIn))).rejects.toThrow("accountNotFound");
   });
   test("an unknown platform is refused", async () => {
-    await expect(checkSessions(accounts, { platform: "myspace" }, async () => signedIn)).rejects.toThrow("sessionPlatformInvalid");
+    await expect(checkSessions(accounts, { platform: "myspace" }, (account) => checkSession(account, async () => signedIn))).rejects.toThrow("sessionPlatformInvalid");
   });
   test("checks one after another and writes a summary", async () => {
     const seen: string[] = [];
-    const reports = await checkSessions(accounts, {}, async (name) => (name === "discordSessionCheck" ? dead401 : signedIn), (report) => seen.push(report.account));
+    const reports = await checkSessions(accounts, {}, (account) => checkSession(account, async (name) => (name === "discordSessionCheck" ? dead401 : signedIn)), (report) => seen.push(report.account));
     expect(seen).toEqual(["fakeGuild", "fakeBird"]);
     const text = sessionsText(reports);
     expect(text).toContain("2 accounts: 1 needs signing in, 1 signed in");
@@ -105,20 +108,116 @@ describe("checkSessions", () => {
 describe("sign-in route per platform", () => {
   test("linkedin and slack open the browser first, with cookies as the other way", () => {
     const linkedin = nextStepOf({ name: "fakeLink", platform: "linkedin" }, "signInNeeded");
-    expect(linkedin?.tool?.name).toBe("inspectStart");
-    expect(linkedin?.alternative?.cli).toBe("log linkedin cookies save --account fakeLink");
-    expect(nextStepOf({ name: "fakeSlack", platform: "slack" }, "signInNeeded")?.alternative?.cli).toBe("log slack cookies save --account fakeSlack");
+    expect(linkedin?.tool?.name).toBe("sessionsSignIn");
+    expect(linkedin?.alternative?.cli).toBe("log sessions signIn --account fakeLink --platform linkedin --route cookies");
+    expect(nextStepOf({ name: "fakeSlack", platform: "slack" }, "signInNeeded")?.alternative?.cli).toBe("log sessions signIn --account fakeSlack --platform slack --route cookies");
   });
   test("reddit, instagram and discord open the browser, with no cookie prompt", () => {
     for (const platform of ["reddit", "instagram", "discord"] as const) {
       const next = nextStepOf({ name: "fake", platform }, "signInNeeded");
-      expect(next?.tool?.name).toBe("inspectStart");
+      expect(next?.tool?.name).toBe("sessionsSignIn");
       expect(next?.alternative).toBeNull();
     }
   });
   test("x has no browser yet, so it is cookies", () => {
     const next = nextStepOf({ name: "fakeBird", platform: "twitter" }, "signInNeeded");
     expect(next?.tool).toBeNull();
-    expect(next?.cli).toBe("log twitter cookies save --account fakeBird");
+    expect(next?.cli).toBe("log sessions signIn --account fakeBird --platform twitter --route cookies");
+  });
+});
+
+describe("one gate", () => {
+  test("a deactivated account, a stopped status or session, and a refused last check are never checked", () => {
+    expect(sessionGate({ name: "a", status: "deactivated" })).toMatchObject({ ok: false, code: "accountDeactivated" });
+    expect(sessionGate({ name: "a", status: "banned" })).toMatchObject({ ok: false, code: "accountCheckStopped" });
+    expect(sessionGate({ name: "a", state: "checkpoint" })).toMatchObject({ ok: false, code: "accountCheckStopped" });
+    expect(sessionGate({ name: "a", lastCheck: { state: "stopped", checkedAt: "2026-11-14T10:00:00Z" } })).toMatchObject({ ok: false, code: "accountCheckStopped" });
+    expect(sessionGate({ name: "a", checkedAt: "2026-11-14T11:00:00Z", lastCheck: { state: "stopped", checkedAt: "2026-11-14T10:00:00Z" } })).toEqual({ ok: true });
+    expect(sessionGate({ name: "a", lastCheck: { state: "unknown", checkedAt: "2026-11-14T10:00:00Z" } })).toEqual({ ok: true });
+    expect(sessionGate({ name: "a", lastCheck: { state: "stopped", checkedAt: "2026-11-14T10:00:00Z" } }, { openedByOwner: true })).toEqual({ ok: true });
+  });
+  test("checkSession calls nothing for an account held stopped", async () => {
+    const report = await checkSession({ ...discord, lastCheck: { state: "stopped", checkedAt: "2026-11-14T10:00:00Z" } }, async () => {
+      throw new Error("not called");
+    });
+    expect(report).toMatchObject({ verdict: "stopped", code: "accountCheckStopped" });
+  });
+});
+
+function memoryStore(alive: (pid: unknown) => boolean = () => true) {
+  const rows = new Map<string, StoredCheck>();
+  const store: CheckStore = {
+    claim(accountId, pid, now) {
+      const held = rows.get(accountId);
+      if (held?.state === "checking" && alive(held.pid)) return { claimed: false, holder: held.pid as number };
+      rows.set(accountId, { state: "checking", pid, startedAt: now.toISOString(), checkedAt: now.toISOString() });
+      return { claimed: true };
+    },
+    record: (accountId, check) => rows.set(accountId, check),
+  };
+  return { rows, store };
+}
+
+describe("the check machine", () => {
+  test("claims the account, checks it and records the platform's answer", async () => {
+    const { rows, store } = memoryStore();
+    const seen: string[] = [];
+    const run = await runSessionCheck(discord, { store, pid: 4242, callTool: async () => {
+      seen.push(rows.get("d1")?.state ?? "none");
+      return dead401;
+    } });
+    expect(seen).toEqual(["checking"]);
+    expect(run).toMatchObject({ outcome: "done", state: "signInNeeded", report: { verdict: "signInNeeded", code: "sessionDead" } });
+    expect(rows.get("d1")).toMatchObject({ state: "signInNeeded", code: "sessionDead" });
+  });
+  test("a second check of the same account while one runs is busy and calls nothing", async () => {
+    const { rows, store } = memoryStore();
+    rows.set("d1", { state: "checking", pid: 777, checkedAt: new Date().toISOString() });
+    const run = await runSessionCheck(discord, { store, pid: 4242, callTool: async () => {
+      throw new Error("not called");
+    } });
+    expect(run).toMatchObject({ outcome: "busy", state: "checking", report: { code: "accountCheckBusy" } });
+    expect(rows.get("d1")).toMatchObject({ state: "checking", pid: 777 });
+  });
+  test("a thrown platform call is recorded as unknown, never left checking", async () => {
+    const { rows, store } = memoryStore();
+    const run = await runSessionCheck(discord, { store, callTool: async () => {
+      throw new Error("bridge down");
+    } });
+    expect(run).toMatchObject({ outcome: "done", state: "unknown", report: { code: "checkFailed", detail: "bridge down" } });
+    expect(rows.get("d1")?.state).toBe("unknown");
+  });
+  test("a refused account writes nothing and calls nothing", async () => {
+    const { rows, store } = memoryStore();
+    const run = await runSessionCheck({ ...discord, status: "deactivated" }, { store, callTool: async () => {
+      throw new Error("not called");
+    } });
+    expect(run).toMatchObject({ outcome: "refused", state: "skipped" });
+    expect(rows.size).toBe(0);
+  });
+});
+
+describe("check rows in log.db", () => {
+  test("a checking row whose process is gone is reconciled to unknown; a live one stays checking and holds the account", () => {
+    const handle = new Database(":memory:");
+    handle.exec("CREATE TABLE state (scope TEXT NOT NULL, key TEXT NOT NULL, body TEXT NOT NULL, updatedAt INTEGER NOT NULL, PRIMARY KEY (scope, key))");
+    const alive = (pid: unknown) => pid === 1;
+    expect(claimCheck("live", 1, new Date(), handle, alive)).toEqual({ claimed: true });
+    expect(claimCheck("dead", 2, new Date(), handle, alive)).toEqual({ claimed: true });
+    writeCheck("old", { state: "running" as never, checkedAt: new Date().toISOString() }, handle);
+    expect(claimCheck("live", 3, new Date(), handle, alive)).toEqual({ claimed: false, holder: 1 });
+    const checks = readStoredChecks(handle, alive);
+    expect(checks.get("live")?.state).toBe("checking");
+    expect(checks.get("dead")).toMatchObject({ state: "unknown", code: "checkInterrupted" });
+    expect(checks.get("old")).toMatchObject({ state: "unknown", code: "checkInterrupted" });
+    expect(reconcileChecks(handle, alive)).toEqual([]);
+    expect(claimCheck("dead", 3, new Date(), handle, alive)).toEqual({ claimed: true });
+  });
+  test("old state names read as the one state type", () => {
+    expect(checkStateOfStored("succeeded")).toBe("signedIn");
+    expect(checkStateOfStored("running")).toBe("checking");
+    expect(checkStateOfStored("unavailable")).toBe("unknown");
+    expect(checkStateOfStored("signInNeeded")).toBe("signInNeeded");
+    expect(checkStateOfStored("nonsense")).toBeNull();
   });
 });

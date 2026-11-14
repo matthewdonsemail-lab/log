@@ -122,13 +122,26 @@ export async function saveSession(twenty: TwentyClient, accountId: string, state
   return true
 }
 
-export async function savePlatformSession(twenty: TwentyClient, accountId: string, state: { cookies: PlaywrightCookie[]; origins: unknown[] }): Promise<boolean> {
-  if (!state.cookies.length && !state.origins.length) return false
+export type SessionSaveCheck = (state: { cookies: PlaywrightCookie[]; origins: unknown[] }) => { ok: true } | { ok: false; code: string; detail: string }
+
+export type SessionSaveResult = { saved: true; code: null; detail: string } | { saved: false; code: string; detail: string }
+
+export async function savePlatformSession(
+  twenty: TwentyClient,
+  accountId: string,
+  state: { cookies: PlaywrightCookie[]; origins: unknown[] },
+  check: SessionSaveCheck,
+  now: Date = new Date()
+): Promise<SessionSaveResult> {
+  const gate = check(state)
+  if (!gate.ok) return { saved: false, code: gate.code, detail: gate.detail }
   await twenty.update(SOCIAL_ACCOUNTS, accountId, {
     cookies: state.cookies as unknown as AccountUpdate['cookies'],
-    storageOrigins: state.origins as unknown as AccountUpdate['storageOrigins']
-  })
-  return true
+    storageOrigins: state.origins as unknown as AccountUpdate['storageOrigins'],
+    sessionState: 'loggedIn',
+    sessionCheckedAt: now.toISOString()
+  } as AccountUpdate)
+  return { saved: true, code: null, detail: `${state.cookies.length} cookies, ${state.origins.length} origin(s)` }
 }
 
 export async function markProfileSet(twenty: TwentyClient, accountId: string, at: Date): Promise<void> {

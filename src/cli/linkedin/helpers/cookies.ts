@@ -80,12 +80,12 @@ export const linkedinCookiesCommand: Command = {
     const publicId = typeof raw === "string" ? publicIdOf(raw) : "";
     if (!/^[A-Za-z0-9\-_%]{3,100}$/.test(publicId)) return { code: 1, error: "inputInvalid", stderr: `log linkedin cookies save: --account must be the profile's public id (linkedin.com/in/<publicId>)\n${LINKEDIN_COOKIES_USAGE}` };
     if (!context.directLinkedin) return { code: 1, stderr: "log linkedin cookies save: the direct-API engine isn't wired in this context" };
-    if (!shouldPrompt(false, linkedinCookiesDeps.tty())) {
+    if (!context.cookiePrompts && !shouldPrompt(false, linkedinCookiesDeps.tty())) {
       return { code: 1, stderr: "log linkedin cookies save: the cookies are typed in a Clack prompt, so it needs an interactive terminal: run it there (they are never passed as flags)" };
     }
     try {
       const found = await existing(context, publicId);
-      const prompts = linkedinCookiesDeps.prompts;
+      const prompts = context.cookiePrompts ?? linkedinCookiesDeps.prompts;
       prompts.intro(`log linkedin cookies save — ${publicId}${found ? " (already in Twenty: its cookies are replaced)" : " (new in Twenty)"}`);
       const ask = async (message: string, valid: (v: unknown) => boolean, hint: string) => {
         const value = await prompts.password({ message, mask: "•", validate: (v) => (valid(v) ? undefined : hint) });

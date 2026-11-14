@@ -20,12 +20,12 @@ export const CONSOLE_MESSAGES: Record<string, string> = {
   accountCheckStopped: 'Resolve the recorded stop in log before checking again.',
   accountDeactivated: 'This account is deactivated.',
   browserCheckRequired: 'This account is checked in its own browser.',
-  accountCheckUnavailable: 'The status check could not be completed. Your last recorded status is still shown.',
   signInInputInvalid: 'Check the account name and what you pasted, then try again.',
   cookieSignInUnavailable: 'This platform does not sign in with pasted cookies. Use its browser sign-in.',
   passwordSignInUnavailable: 'This platform does not sign in with a username and password here. Paste cookies or use its browser sign-in.',
   cookiesIncomplete: 'Those cookies are missing one the platform needs. Copy them again from a signed-in browser.',
-  signInBusy: 'Another sign-in is running. Try again when it finishes.',
+  signInRouteUnavailable: 'This platform does not sign in that way.',
+  sessionSaveUnconfirmed: 'The browser closed, but saving its session was not confirmed. The stored session was left as it was.',
   usageRangeInvalid: 'Pick 1, 7 or 30 days.',
 }
 

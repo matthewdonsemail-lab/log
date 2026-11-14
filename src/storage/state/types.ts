@@ -11,6 +11,9 @@ export type StateScope =
   | 'mcpReload'
   | 'voicePasses'
   | 'consoleAccountCheck'
+  | 'browserCheckProof'
+  | 'signIn'
+  | 'sessionSave'
 
 export interface StateRow<T> {
   body: T

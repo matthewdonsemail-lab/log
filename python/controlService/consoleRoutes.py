@@ -25,12 +25,12 @@ RUNTIME_ERRORS = {
     "accountCheckStopped",
     "accountDeactivated",
     "browserCheckRequired",
-    "accountCheckUnavailable",
     "signInInputInvalid",
     "cookieSignInUnavailable",
     "passwordSignInUnavailable",
     "cookiesIncomplete",
-    "signInBusy",
+    "signInRouteUnavailable",
+    "sessionSaveUnconfirmed",
     "usageRangeInvalid",
     "browserMissing",
     "browserViewerUnavailable",
@@ -64,7 +64,7 @@ class AccountCheck(Strict):
 
 class AccountSignIn(Strict):
     platform: str = Field(min_length=1, max_length=20, pattern=r"^[a-z]+$")
-    method: str = Field(pattern=r"^(cookies|password)$")
+    method: str = Field(pattern=r"^(cookies|password|browser)$")
     account: str = Field(min_length=1, max_length=120)
     cookies: str | None = Field(default=None, max_length=65536)
     username: str | None = Field(default=None, max_length=320)

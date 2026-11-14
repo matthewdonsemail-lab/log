@@ -40,6 +40,7 @@ export interface CommandContext {
   now?: () => Date;
   sleep?: (ms: number) => Promise<void>;
   cancelled?: () => boolean;
+  cookiePrompts?: import("../../console/signIn/types.ts").SignInPrompts;
   directTwitter?: (account: import("../../marketplace/socialAccount/index.ts").FacebookAccount, spec: import("../../twitter/account/session/index.ts").TwitterEngineSpec) => import("../../twitter/account/session/index.ts").TwitterEngineRun | Promise<import("../../twitter/account/session/index.ts").TwitterEngineRun>;
   directTwitterLive?: (account: import("../../marketplace/socialAccount/index.ts").FacebookAccount, spec: import("../../twitter/account/session/index.ts").TwitterEngineSpec, onLive: (event: import("../../twitter/account/session/index.ts").XChatLiveEvent) => void) => Promise<import("../../twitter/account/session/index.ts").TwitterEngineRun>;
   directRead?: (account: import("../../marketplace/socialAccount/index.ts").FacebookAccount, groupId: string) => import("../../directApi/engine/index.ts").DirectOutcome<{ id: string | null; text: string; creation_time: number | null }>;
