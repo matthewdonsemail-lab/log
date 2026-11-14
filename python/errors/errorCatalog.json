@@ -2856,5 +2856,35 @@
       "console/browserCheck"
     ],
     "action": "Read the refusal it quotes (an account gate, a missing browser profile), fix that, then sign in again."
+  },
+  "accountNotConfigured": {
+    "layer": "account",
+    "meaning": "No account by that name is set up in this workspace (on that platform, when one was given), so there is nothing to sign in. The answer carries the platform and the step that adds it.",
+    "retryable": false,
+    "raisedIn": [
+      "platformKit/signIn",
+      "platformKit/sessionCheck"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Add the account (the console's Connections page, or log localAccount add), then sign it in."
+  },
+  "signInLinkInvalid": {
+    "layer": "tool",
+    "meaning": "The sign-in link is unknown, already used or more than ten minutes old. A link works once and grants nothing by itself.",
+    "retryable": false,
+    "raisedIn": [
+      "platformKit/signInLink"
+    ],
+    "action": "Ask for sign-in again (sessionsSignIn) to get a new link."
+  },
+  "signInLinkNotYours": {
+    "layer": "tool",
+    "meaning": "The sign-in link was made for another person. It was not used up; only the person who asked for the sign-in can open it.",
+    "retryable": false,
+    "raisedIn": [
+      "platformKit/signInLink"
+    ],
+    "action": "The person who asked for the sign-in opens the link, signed in to the console as themself."
   }
 }

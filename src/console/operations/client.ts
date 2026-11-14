@@ -4,6 +4,7 @@ import { readConsoleCredentials, saveConsoleCredentials } from "../credentials/i
 import { loadConsoleEvents, MAX_PAGE_SIZE } from "../events/index.ts";
 import { finishConsoleSignIn, signInConsoleAccount } from "../signIn/index.ts";
 import { loadConsoleUsage, usageDaysOf } from "../usage/index.ts";
+import { OWNER_REQUESTER, redeemSignInLink } from "../../platformKit/signInLink/index.ts";
 import { actOnBrowser, browserCheckFrame, browserCheckView, browserErrorCode, closeBrowser, openBrowser, saveBrowserState, sendBrowserInput } from "../browserCheck/index.ts";
 import type { ConnectionAccount } from "../connections/index.ts";
 import { CONSOLE_OPERATIONS, CONSOLE_SAFE_ERRORS, FRAME_TOOLS, PRIVATE_RESULT_TOOLS, REDACTED, SECRET_ARGS, STREAM_TOOLS } from "./types.ts";
@@ -82,6 +83,13 @@ export async function runConsoleOperation(tool: string, args: Record<string, unk
     return { values: readConsoleCredentials({ provider: args.provider }) };
   }
   if (tool === "accountCheck") return accountCheck(args, deps);
+  if (tool === "signInLinkOpen") {
+    const target = redeemSignInLink(args.token, deps.requester ?? OWNER_REQUESTER);
+    const connections = loadConnectionsView();
+    const account = connections.accounts.find((item) => item.platform === target.platform && item.name === target.account);
+    if (!account) throw new Error("accountNotFound");
+    return { accountId: account.id, platform: target.platform, account: target.account, connections };
+  }
   if (tool === "accountSignIn") {
     const result = await signInConsoleAccount(args, process.env, { callTool: deps.callTool, store: deps.signInStore, actors: deps.signInActors });
     return { ...result, connections: loadConnectionsView() };

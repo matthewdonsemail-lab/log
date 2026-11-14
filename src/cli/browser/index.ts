@@ -40,7 +40,7 @@ export function platformNameOf(account: string): string {
 }
 
 const REMOTE: Record<ViewerView["phase"], string> = {
-  browserMissing: "No browser is open for this account. Open one with inspectStart (log inspect start --account <name> --detach), then call browserView again.",
+  browserMissing: "No browser is open for this account. Open it for sign-in with sessionsSignIn { account }, on the local and the hosted server alike, then call browserView again.",
   viewerUnavailable: "The account's browser is open but its viewer could not be reached, so it cannot be shown. Nothing was sent to the page.",
   signInRequired: "The page asks for sign-in. The person signs in inside the browser view; their clicks and keys go to the page only while it still asks for sign-in, each one a recorded step. Wait for them, then call browserView again before carrying on.",
   needsAttention: "The page needs a person and is a stop (rule 94): input is off. Tell the person what the page shows; do not continue this account until they clear it.",
@@ -57,7 +57,7 @@ function localText(view: ViewerView, platform: string): string {
 export function browserViewText(view: ViewerView, location: BrowserViewLocation = browserViewLocation(), platform = platformNameOf(view.account)): string {
   const head = `${view.account}: ${view.phase}${view.pageState ? ` (page state ${view.pageState})` : ""}${view.address ? ` on ${view.address}` : ""}`;
   if (location === "local") return [head, localText(view, platform)].join("\n");
-  return [head, REMOTE[view.phase], ...(view.needsHuman ? ["Without an inline view (a host without MCP Apps), the person opens it in an MCP Apps host (Claude, ChatGPT, Cursor), or runs log console --web on the runtime's machine and uses the account's live browser button on Connections."] : [])].join("\n");
+  return [head, REMOTE[view.phase], ...(view.needsHuman ? ["Without an inline view (a host without MCP Apps), sessionsSignIn answers with a console link that works once, for ten minutes, for the person who asked; the console's Connections page shows the same live browser."] : [])].join("\n");
 }
 
 export type BrowserViewJson = Omit<ViewerView, "stream"> & { location: BrowserViewLocation; streamKind: "voxl" | "frames" | "none" };

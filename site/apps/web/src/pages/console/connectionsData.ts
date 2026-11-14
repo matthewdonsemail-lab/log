@@ -90,6 +90,12 @@ export async function readConnectionKeys(target: ConsoleTarget, provider: string
   return values as Record<string, string>
 }
 
+export async function openSignInLink(target: ConsoleTarget, token: string): Promise<{ accountId: string; connections: LocalConnections }> {
+  const body = record(await consoleRequest(target, { local: '/api/console/signInLink', hosted: '/console/signInLink', method: 'POST' }, { body: { token } }))
+  if (typeof body.accountId !== 'string') throw new Error('consoleResponseInvalid')
+  return { accountId: body.accountId, connections: parseConnections(body.connections) }
+}
+
 export async function checkConnection(target: ConsoleTarget, accountId: string): Promise<LocalConnections> {
   return parseConnections(record(await consoleRequest(target, { local: '/api/console/connections/check', hosted: '/console/accountCheck', method: 'POST' }, { body: { accountId } })).connections)
 }

@@ -53,3 +53,37 @@ Checked by: code and SubQ
 `pageStateOf` (`src/browser/flow/helpers/pageState.ts`) resolves `loginForm` to Facebook's own sign-in only on facebook.com. On another platform's site it is `<platform>Login` (`platformLoginState`), whose next step is the owner signing in themself; on an unknown site it stays `loginForm` with the owner signing in.
 
 Checked by: code and SubQ
+
+### REQ-SESSIONS-09: A missing account is a structured `accountNotConfigured`
+
+When no account by that name (on that platform, when one is given) is set up, `log sessions signIn` and `log sessions check --account` refuse with `accountNotConfigured` (`accountNotConfigured` in `src/platformKit/signIn/client.ts`), and the JSON answer is `{ ok: false, error: "accountNotConfigured", platform, account, next }`: the platform (null when none was given) and the step that adds the account (the console's Connections page, or `log localAccount add`). Through MCP the answer is always structured (`structuredContent.json`), so any host can show a connect step.
+
+Checked by: code and SubQ
+
+### REQ-SESSIONS-10: What the owner sees is decided from what the host declares
+
+`sessionsSignIn` is one tool on the local and the hosted server. `signInCall` (`src/mcp/apps/signIn/client.ts`) runs it and, when the machine is waiting for the owner on a remote runtime, picks one rung per session (`signInRungOf`):
+
+1. A host that draws MCP Apps gets the live browser inline: `structuredContent.view`, with the tool carrying `ui://log/browserView`; the view reads `view` as well as `json`.
+2. A host without MCP Apps that declares `elicitation.url` is sent `elicitation/create` with `mode: "url"` and the console link. Only the local server does this: the hosted server answers each request statelessly, so it has rungs 1 and 3.
+3. Every other host gets plain text with the same link.
+
+A local runtime (stdio) keeps today's answer: the browser window on this machine, no link.
+
+The link (`issueSignInLink`, `src/platformKit/signInLink/client.ts`) is the console's Connections page with an opaque token, never the stream URL. It holds no account, platform or secret, works once (`take` deletes the `signInLink` state row as it reads it), expires after ten minutes, and grants nothing by itself: the console's `signInLinkOpen` operation (`/api/console/signInLink` locally, `POST /teams/{teamId}/console/signInLink` hosted) needs the person's own console session and refuses anyone but the person the link was made for (`signInLinkNotYours`, which does not use the link up; `signInLinkInvalid` for an unknown, used or expired one). Hosted, that person is the dispatch authority's `actorUserId` on both sides; locally it is the machine's owner, and the local console serves loopback only. The page then opens that account's Browser check.
+
+The hosted `sessionsSignIn` opens the browser in the workspace through the same `inspectStart` the console's `browserOpen` uses. `browserView`'s answer for a missing browser names `sessionsSignIn`, not `inspectStart`.
+
+Checked by: code and SubQ
+
+### REQ-SESSIONS-11: Page states are classified per platform
+
+The live viewer classifies a page with `viewer_state` (`python/browser/viewerState.py`). On facebook.com, and on a site that is no platform's, it uses Facebook's own flow (`classify`) as before. On another platform's site a password field is `<platform>Login` and a one-time code field `<platform>TwoStep` (both take the owner's input); a checkpoint, disabled, suspended or locked address with neither field is `<platform>Stopped` (a stop, rule 94); anything else is `unknown`. Each platform has a fixture under `python/fixtures/loginPages/`, and its hosts match `PLATFORM_SITES`.
+
+Checked by: code and SubQ
+
+### REQ-SESSIONS-12: The live view's polling writes no hosted journal row
+
+The bridge runs a tool in `UNJOURNALED_TOOLS` (`src/console/operations/types.ts`: the four browser-view app tools and the console's `browserFrame` and `browserState`) without writing an `operations` row (`unjournaled` in `connectOnce`, `src/runtime/bridge/client.ts`), so a view polling about twice a second writes nothing. Every other tool is journaled as before.
+
+Checked by: code and SubQ

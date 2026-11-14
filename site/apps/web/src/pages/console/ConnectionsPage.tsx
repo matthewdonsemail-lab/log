@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDiscord, faFacebook, faInstagram, faLinkedin, faRedditAlien, faSlack, faXTwitter } from '@fortawesome/free-brands-svg-icons'
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core'
@@ -16,7 +16,7 @@ import { ConnectionPlatformFilter } from './ConnectionPlatformFilter'
 import { PlatformSignInDialog } from './PlatformSignInDialog'
 import { PlatformConnectionTongue } from './PlatformConnectionTongue'
 import { BrowserCheckDialog } from './BrowserCheckDialog'
-import { checkConnection, loadConnections, saveConnectionKeys, type LocalConnections } from './connectionsData'
+import { checkConnection, loadConnections, openSignInLink, saveConnectionKeys, type LocalConnections } from './connectionsData'
 import { targetKey } from './consoleClient'
 import { useConsoleTarget } from './useConsoleTarget'
 
@@ -85,6 +85,17 @@ export function ConnectionsPage() {
   const running = Boolean(target && connections.data)
   const browserCheckAccount = connected.find((account) => account.id === browserCheckAccountId)
   const keep = (data: LocalConnections) => queryClient.setQueryData(queryKey, data)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const signInToken = searchParams.get('signIn')
+  const openedLink = useRef<string | null>(null)
+  useEffect(() => {
+    if (!target || !signInToken || openedLink.current === signInToken) return
+    openedLink.current = signInToken
+    setSearchParams((params) => { params.delete('signIn'); return params }, { replace: true })
+    openSignInLink(target, signInToken)
+      .then((opened) => { keep(opened.connections); openBrowserCheck(opened.accountId) })
+      .catch((error) => toast.error('The sign-in link could not be opened', errorText(error)))
+  }, [target, signInToken])
 
   async function checkStatus(accountId: string) {
     if (checkingId || !target) return

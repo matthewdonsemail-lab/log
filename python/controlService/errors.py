@@ -56,6 +56,8 @@ STATUS = {
     "browserInputFailed": 409,
     "browserCheckUnresolved": 409,
     "browserOperationRefused": 409,
+    "signInLinkInvalid": 410,
+    "signInLinkNotYours": 403,
 }
 
 
