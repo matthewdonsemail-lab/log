@@ -6,12 +6,37 @@ import type { AdbClient, AdbDevice } from "./types.ts";
 
 const MEMU_ADB = "C:\\Program Files\\Microvirt\\MEmu\\adb.exe";
 const MUMU_ADB = "C:\\Program Files\\Netease\\MuMuPlayer\\nx_main\\adb.exe";
+const ROOTED = /restarting adbd as root|adbd is already running as root/i;
 
 export function adbExecutable(env: Record<string, string | undefined> = process.env): string {
   if (env.LOG_ADB) return env.LOG_ADB;
   if (existsSync(MEMU_ADB)) return MEMU_ADB;
   if (existsSync(MUMU_ADB)) return MUMU_ADB;
   return "adb";
+}
+
+async function waitForDevice(exe: string, serial: string, timeoutMs = 30_000): Promise<boolean> {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    const result = spawnSync(exe, ["devices", "-l"], { encoding: "utf8", windowsHide: true, maxBuffer: 16 * 1024 * 1024 });
+    const device = parseAdbDevices(result.stdout ?? "").find((entry) => entry.serial === serial);
+    if (device?.state === "device") return true;
+    const endpoint = parseTcpSerial(serial);
+    if (endpoint) {
+      spawnSync(exe, ["disconnect", endpoint], { encoding: "utf8", windowsHide: true, timeout: 20_000 });
+      spawnSync(exe, ["connect", endpoint], { encoding: "utf8", windowsHide: true, timeout: 20_000 });
+    }
+    await new Promise((resolve) => setTimeout(resolve, 1_000));
+  }
+  return false;
+}
+
+async function adbRoot(exe: string, serial: string): Promise<boolean> {
+  const result = spawnSync(exe, ["-s", serial, "root"], { encoding: "utf8", windowsHide: true, timeout: 30_000 });
+  if (result.error) throw new AdbError("adbNotFound", `${exe} could not run: ${result.error.message}`);
+  const output = `${result.stdout ?? ""} ${result.stderr ?? ""}`;
+  if (!ROOTED.test(output)) return false;
+  return waitForDevice(exe, serial);
 }
 
 export function createAdbClient(options: { exe?: string } = {}): AdbClient {
@@ -29,6 +54,9 @@ export function createAdbClient(options: { exe?: string } = {}): AdbClient {
       if (result.error) throw new AdbError("adbNotFound", `${exe} could not run: ${result.error.message}`);
       const output = `${result.stdout ?? ""} ${result.stderr ?? ""}`;
       return /connected to|already connected/i.test(output);
+    },
+    async root(serial: string): Promise<boolean> {
+      return adbRoot(exe, serial);
     },
     async shell(serial: string, command: string[]): Promise<string> {
       const result = spawnSync(exe, ["-s", serial, "shell", ...command], { encoding: "utf8", windowsHide: true, maxBuffer: 64 * 1024 * 1024, timeout: 40_000 });

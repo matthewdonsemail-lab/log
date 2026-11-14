@@ -11,6 +11,7 @@ export interface AdbDevice {
 export interface AdbClient {
   devices(): Promise<AdbDevice[]>;
   connect(serial: string): Promise<boolean>;
+  root(serial: string): Promise<boolean>;
   shell(serial: string, command: string[]): Promise<string>;
   execOut(serial: string, command: string[]): Promise<Uint8Array>;
 }

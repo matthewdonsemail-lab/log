@@ -55,6 +55,7 @@ does not connect.
 | `shell input tap <x> <y>` | one tap, in the screen's own pixels | `inspect --tap` |
 | `shell which tcpdump` | whether the phone can capture its own traffic | `inspect` |
 | `shell timeout 8 tcpdump -i any -A -s 0 -nn port 443` | the app's own calls over TLS | `inspect` |
+| `adb -s <serial> root` | asked for when the phone refuses the capture, and once more is not enough | `inspect` |
 | `shell logcat -d -v brief -t 300` | the fallback: the log, filtered for the app's hosts | `inspect` |
 
 The screen is a fallback, not the source. A camera screen has almost no UI
@@ -65,6 +66,23 @@ The network capture is best-effort and says which way it read the traffic:
 `/system/bin/timeout`), and the log when it does not, filtered for
 `snapchat.com`, `sc-cdn.net`, `kit.snapchat`, `okhttp` and `graphql`. A
 capture that failed is recorded as a failure, not as an empty result.
+
+Three things about the capture are worth knowing, because each of them is
+what a phone actually does rather than what a phone is expected to do:
+
+- The capture is asked for with its exit code masked, because a capture
+  that timed out still holds the traffic it saw, and the phone says so
+  with a non-zero exit that would otherwise throw the packets away.
+- The phone's own error is read as well as its output, because a phone
+  that will not let the capture run says so on its error stream.
+- When the phone refuses the capture for want of permission, the layer
+  asks the phone for root once and takes the capture again. A phone that
+  was already root, or that will not become root, is left as it is and
+  the failure is recorded.
+
+The UI tree is taken the same way. `uiautomator dump` writes the tree and
+then ends badly on some phones, so the tree that was written is read and
+kept rather than thrown away with the command's exit code.
 
 ## Timeouts
 
@@ -96,8 +114,15 @@ MuMu Player 15 runs the same way, on its own port:
 ```
 
 Instance 0 is on `127.0.0.1:16384`. It is an Android 15 image
-(`SM_A528B`), and it has no tcpdump, so the capture there is the log, not
-the packets. MuMu's Android takes a while to come up after it is launched:
-the port opens before the phone is ready, so the first state read can be
-too early and the next one is right.
+(`SM_A528B`), and it has tcpdump at `/system/bin/tcpdump` with
+`/system/bin/timeout` beside it. Its adbd starts as the shell user, so
+the capture is refused until the layer asks the phone for root, which it
+can do, and the capture then reads the packets. MuMu's Android takes a
+while to come up after it is launched: the port opens before the phone is
+ready, so the first state read can be too early and the next one is
+right.
+
+Asking a phone for root restarts its adbd. On a phone reached over a host
+and a port that restart drops the connection, so the layer connects the
+phone again and waits for it before it goes on.
 

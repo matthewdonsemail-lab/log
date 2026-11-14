@@ -4,7 +4,10 @@ import { mobileDeviceId } from "../device/index.ts";
 import type { MobileDeviceInfo, MobileDeviceState, MobileDriver, MobileNetworkCapture } from "../device/index.ts";
 
 const UI_DUMP_PATH = "/sdcard/window.xml";
+const CAPTURE_SECONDS = 8;
+const CAPTURE_FILE = "/data/local/tmp/logCapture.txt";
 const NETWORK_HOSTS = /snapchat\.com|sc-cdn\.net|kit\.snapchat|okhttp|graphql/i;
+const CAPTURE_REFUSED = /operation not permitted|permission to perform this capture|permission denied/i;
 
 export function adbStateToMobileState(state: AdbDeviceState): MobileDeviceState {
   if (state === "device") return "online";
@@ -18,6 +21,17 @@ function decode(bytes: Uint8Array): string {
 }
 
 export function createAndroidDriver(adb: AdbClient): MobileDriver {
+  async function readDump(serial: string): Promise<string | null> {
+    const bytes = await adb.execOut(serial, ["cat", UI_DUMP_PATH]).catch(() => null);
+    if (!bytes || !bytes.length) return null;
+    const text = decode(bytes);
+    return text.includes("hierarchy") ? text : null;
+  }
+
+  async function capture(serial: string, command: string): Promise<string> {
+    return adb.shell(serial, [command]).catch((error: Error) => `the capture failed: ${error.message}`);
+  }
+
   async function readState(serial: string): Promise<MobileDeviceInfo> {
     let devices = await adb.devices();
     let device = devices.find((entry) => entry.serial === serial);
@@ -87,19 +101,31 @@ export function createAndroidDriver(adb: AdbClient): MobileDriver {
       return adb.execOut(serial, ["screencap", "-p"]);
     },
     async uiTree(serial: string): Promise<string> {
-      const dumped = await adb.shell(serial, ["uiautomator", "dump", UI_DUMP_PATH]);
-      if (!dumped.includes("dumped to")) throw new AdbError("uiTreeFailed", `the phone did not write its UI tree: ${dumped.trim().slice(0, 200)}`);
-      return decode(await adb.execOut(serial, ["cat", UI_DUMP_PATH]));
+      let dumped = "";
+      let failure: Error | null = null;
+      try {
+        dumped = await adb.shell(serial, ["uiautomator", "dump", UI_DUMP_PATH]);
+      } catch (error) {
+        failure = error as Error;
+      }
+      const tree = await readDump(serial);
+      if (tree) return tree;
+      if (failure) throw failure;
+      throw new AdbError("uiTreeFailed", `the phone did not write its UI tree: ${dumped.trim().slice(0, 200)}`);
     },
     async networkCalls(serial: string): Promise<MobileNetworkCapture> {
       const probe = await adb.shell(serial, ["which", "tcpdump"]).catch(() => "");
       if (probe.includes("tcpdump")) {
         const hasTimeout = (await adb.shell(serial, ["which", "timeout"]).catch(() => "")).includes("timeout");
-        const capture = hasTimeout
-          ? ["timeout", "8", "tcpdump", "-i", "any", "-A", "-s", "0", "-nn", "port", "443"]
-          : ["tcpdump", "-i", "any", "-A", "-s", "0", "-nn", "-c", "50", "port", "443"];
-        const text = await adb.shell(serial, capture).catch((error: Error) => `the capture failed: ${error.message}`);
-        const lines = text.split(/\r?\n/).filter(Boolean).slice(-200);
+        const captureCommand = hasTimeout
+          ? `timeout ${CAPTURE_SECONDS} tcpdump -i any -A -s 0 -nn port 443 2>&1; exit 0`
+          : `tcpdump -i any -A -s 0 -nn -c 50 port 443 > ${CAPTURE_FILE} 2>&1 & sleep ${CAPTURE_SECONDS}; cat ${CAPTURE_FILE}; exit 0`;
+        let text = await capture(serial, captureCommand);
+        if (CAPTURE_REFUSED.test(text)) {
+          const rooted = await adb.root(serial).catch(() => false);
+          if (rooted) text = await capture(serial, captureCommand);
+        }
+        const lines = text.split(/\r?\n/).filter(Boolean).slice(0, 200);
         return { mode: "tcpdump", lines };
       }
       const text = await adb.shell(serial, ["logcat", "-d", "-v", "brief", "-t", "300"]).catch(() => "");

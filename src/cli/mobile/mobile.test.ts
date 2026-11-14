@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { mkdtempSync, rmSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createAndroidDriver } from "../../mobile/android/index.ts";
@@ -17,6 +17,9 @@ class FakeAdb implements AdbClient {
   calls: { serial: string; command: string[] }[] = [];
   tcpdump = true;
   connects: string[] = [];
+  roots: string[] = [];
+  captureRefused = false;
+  dumpFails = false;
 
   async devices(): Promise<AdbDevice[]> {
     return this.connected;
@@ -29,6 +32,12 @@ class FakeAdb implements AdbClient {
     return true;
   }
 
+  async root(serial: string): Promise<boolean> {
+    this.roots.push(serial);
+    this.captureRefused = false;
+    return true;
+  }
+
   async shell(serial: string, command: string[]): Promise<string> {
     this.calls.push({ serial, command });
     const joined = command.join(" ");
@@ -38,8 +47,14 @@ class FakeAdb implements AdbClient {
     if (joined === "dumpsys battery") return "  level: 87";
     if (joined === "which tcpdump") return this.tcpdump ? "/system/xbin/tcpdump" : "";
     if (joined === "which timeout") return "/system/bin/timeout";
-    if (joined.startsWith("tcpdump")) return "12:00:00.000000 IP 10.0.2.16.4432 > 104.18.7.1.443: Flags [S]";
-    if (joined.startsWith("uiautomator dump")) return "UI hierchary dumped to: /sdcard/window.xml";
+    if (joined.includes("tcpdump")) {
+      if (this.captureRefused) return "tcpdump: any: You don't have permission to perform this capture on that device\n(socket: Operation not permitted)";
+      return "12:00:00.000000 IP 10.0.2.16.4432 > 104.18.7.1.443: Flags [S]";
+    }
+    if (joined.startsWith("uiautomator dump")) {
+      if (this.dumpFails) throw new Error("adb shell uiautomator dump failed on " + serial);
+      return "UI hierchary dumped to: /sdcard/window.xml";
+    }
     return "";
   }
 
@@ -94,6 +109,11 @@ async function run(argv: string[], options: { adb?: FakeAdb; records?: MobileDev
 
 function runsDir(runs?: string): string {
   return runs ?? mkdtempSync(join(tmpdir(), "logMobile"));
+}
+
+function readSteps(runs: string): { uiTree: string | null; network: { mode: string; lines: string[] } | null }[] {
+  const file = join(runs, "20261114T100000_snapOne", "steps.json");
+  return JSON.parse(readFileSync(file, "utf8")).steps;
 }
 
 describe("the route", () => {
@@ -286,5 +306,39 @@ describe("the account's own phone", () => {
     const done = await run(["mobile", "android", "snapchat", "inspect", "--account", "snapOne"], { records: attached, adb, runs: mkdtempSync(join(tmpdir(), "logMobileRun")) });
     expect(done.code).toBe(0);
     expect(done.out).toContain("read with logcat");
+  });
+
+  test("a capture the phone will not allow is taken again once the phone is given root", async () => {
+    const adb = new FakeAdb();
+    adb.captureRefused = true;
+    const runs = mkdtempSync(join(tmpdir(), "logMobileRun"));
+    try {
+      const done = await run(["mobile", "android", "snapchat", "inspect", "--account", "snapOne"], { records: attached, adb, runs });
+      expect(done.code).toBe(0);
+      expect(adb.roots).toContain(SERIAL);
+      const steps = readSteps(runs);
+      const lines = steps[0].network?.lines.join("\n") ?? "";
+      expect(lines).toContain("104.18.7.1.443");
+      expect(lines).not.toContain("Operation not permitted");
+    } finally {
+      rmSync(runs, { recursive: true, force: true });
+    }
+  });
+
+  test("a UI tree the phone wrote is kept even when its dump ends badly", async () => {
+    const adb = new FakeAdb();
+    adb.dumpFails = true;
+    const runs = mkdtempSync(join(tmpdir(), "logMobileRun"));
+    try {
+      const done = await run(["mobile", "android", "snapchat", "inspect", "--account", "snapOne"], { records: attached, adb, runs });
+      expect(done.code).toBe(0);
+      const steps = readSteps(runs);
+      expect(steps[0].uiTree).toBe("recorded");
+      const xml = join(runs, "20261114T100000_snapOne", "step1.xml");
+      expect(existsSync(xml)).toBe(true);
+      expect(readFileSync(xml, "utf8")).toContain("hierarchy");
+    } finally {
+      rmSync(runs, { recursive: true, force: true });
+    }
   });
 });
