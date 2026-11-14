@@ -92,7 +92,7 @@ Logs that the support chat on a checkpoint page was shown (`xfb_support_conversa
 
 ## What our machine does with it
 
-Nothing. It is logging on a checkpoint page; no state of `marketplace/connect` or `marketplace/publish` waits for it or reads it.
+Nothing. It is logging on a checkpoint page; no state of `platformKit/connect` or `facebook/marketplace/publish` waits for it or reads it.
 
 ## What can go wrong
 

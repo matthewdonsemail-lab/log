@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test } from "bun:test";
-import { listAccounts } from "../../marketplace/account/index.ts";
-import { listListings } from "../../marketplace/listing/index.ts";
+import { listAccounts } from "../../platformKit/account/index.ts";
+import { listListings } from "../../facebook/marketplace/listing/index.ts";
 import { marketplaceFixture } from "../../twenty/graphql/index.ts";
 import type { CommandContext } from "../runner/types.ts";
 import { launchDeps, parseLaunchArgs, runLaunch, setEnvValue, setupSummary, shouldPrompt, SETUP_HARNESSES } from "./index.ts";

@@ -16,7 +16,7 @@ const PLATFORM = 'src/cli/warmup/helpers/platformActivity.ts'
 const PERSONA_RUN = 'src/cli/warmup/helpers/personaRun.ts'
 const VIEWER = 'src/warmup/viewer/client.ts'
 const INTEREST = 'src/warmup/viewer/helpers/interestEffect.ts'
-const LIFECYCLE = 'src/marketplace/lifecycle/types.ts'
+const LIFECYCLE = 'src/platformKit/lifecycle/types.ts'
 
 const FLOWS: [string, string][] = [
   ['feedBrowse', 'warmupFeedBrowse'],

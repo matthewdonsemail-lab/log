@@ -1,5 +1,3 @@
-import type { ReasoningPrompts } from '../facebookClient/index'
-
 export interface BundleScript {
   file: string
   text: string
@@ -14,7 +12,6 @@ export interface SourceSlice {
 export interface PlatformClientRules {
   domains: [string, RegExp][]
   mutation: RegExp
-  reasoning: ReasoningPrompts
   apiMethod?: RegExp
   hostAliases?: [RegExp, string][]
 }
@@ -23,12 +20,6 @@ export const MAX_SLICES = 4
 export const MAX_SLICE_CHARS = 20_000
 export const MIN_SLICE_CHARS = 400
 export const MAX_LITERAL_CHARS = 300
-
-export const GENERIC_REASONING: ReasoningPrompts = [
-  ['What it does', "What this request is for on the platform's side, from rea's reading of the code that sends it and the step it fires in."],
-  ['What our machine does with it', 'Which flow, inspect step or engine action waits for it, reads it, or ignores it, and why.'],
-  ['What can go wrong', 'The errors and statuses it can return, what each means for the run, and what our machine does then.']
-]
 
 export const PLATFORM_CLIENT_RULES: Record<string, PlatformClientRules> = {
   reddit: {
@@ -43,8 +34,7 @@ export const PLATFORM_CLIENT_RULES: Record<string, PlatformClientRules> = {
       ['experiments', /exposeVariant|uxtargeting|deferredExperiences|devvit|enrollIn/i],
       ['telemetry', /events|perfmetrics|reports|policy|v4P|preloadHead/i]
     ],
-    mutation: /^(Create|Update|Store|Expose|Enroll|Delete|Add|Remove|Set|Mark|Submit|Send|Save)/,
-    reasoning: GENERIC_REASONING
+    mutation: /^(Create|Update|Store|Expose|Enroll|Delete|Add|Remove|Set|Mark|Submit|Send|Save)/
   },
   slack: {
     domains: [
@@ -58,7 +48,6 @@ export const PLATFORM_CLIENT_RULES: Record<string, PlatformClientRules> = {
       ['telemetry', /(clogTrack|beaconError|ClogTrack|BeaconError)/]
     ],
     mutation: /^[a-z]+(Post|Create|Update|Delete|Mark|Set|Add|Remove|Send|Join|Leave|Open|Close|Invite|Archive|Rename|Track)/,
-    reasoning: GENERIC_REASONING,
     apiMethod: /^\/api\/([a-z][A-Za-z]*(?:\.[A-Za-z]+)+)$/,
     hostAliases: [[/^(?!app\.|edgeapi\.|wss|www\.|slack\.com$)[a-z0-9-]+\.slack\.com$/, 'workspace.slack.com']]
   }

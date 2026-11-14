@@ -2,7 +2,7 @@
 
 One doc per request Facebook's pages made in our runs, grouped by domain.
 This is what we know about Facebook's side of every step our machines
-(`marketplace/connect`, `marketplace/publish`) take, so a run that fails or
+(`platformKit/connect`, `facebook/marketplace/publish`) take, so a run that fails or
 hangs is explained from its recording, not guessed at (AGENTS.md, "How we
 fix problems"; rules 25 and 27).
 
@@ -60,9 +60,9 @@ lands in `background/` is a gap in that table: move it there.
 ## Commands
 
 ```bash
-log facebook capture --docs          # rebuild from every run, rea reads new slices
-log facebook capture --docs --noRea  # facts only, no rea
-bun run check:facebookClientDocs              # the pre-push gate (lefthook.yml)
+log capture docs          # rebuild from every run, rea reads new slices
+log capture docs --noRea  # facts only, no rea
+bun run check:clientDocs              # the pre-push gate (lefthook.yml)
 ```
 
 Run it live (AGENTS.md, "Always run it live"): each stage prints a line,

@@ -1,5 +1,5 @@
 import type { DoctorChecks, ScanResult } from "../../../camofox/worker/index.ts";
-import type { LossReport } from "../../../marketplace/replacement/index.ts";
+import type { LossReport } from "../../../facebook/marketplace/replacement/index.ts";
 import { renderTable } from "../../runner/helpers/index.ts";
 
 export function renderScan(scan: ScanResult): string {

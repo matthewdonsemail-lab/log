@@ -4,11 +4,11 @@
 
 ## log
 
-`python/session/publishSession.py` is log's only publish browser. The split is simple: `src/marketplace/publish/machine.ts` decides, and the Python only acts. One Camoufox process stays up; TypeScript sends one JSON line per step and reads one JSON line back.
+`python/session/publishSession.py` is log's only publish browser. The split is simple: `src/facebook/marketplace/publish/machine.ts` decides, and the Python only acts. One Camoufox process stays up; TypeScript sends one JSON line per step and reads one JSON line back.
 
 Before anything opens:
 
-1. `checkRunnable` (`src/marketplace/socialAccount/helpers/checkRunnable.ts`) refuses anything that isn't a FACEBOOK account with a usable status, a readable proxy and a home country. Sign-in is included.
+1. `checkRunnable` (`src/platformKit/socialAccount/helpers/checkRunnable.ts`) refuses anything that isn't a FACEBOOK account with a usable status, a readable proxy and a home country. Sign-in is included.
 2. `prepareRun` (`src/browser/run/client.ts`) refuses with `outsideActiveHours` outside the account's hours.
 3. `python/browser/proxyGate.py` checks the exit country.
 4. The launch self-check compares timezone, locale and exit IP before Facebook loads.
@@ -35,7 +35,7 @@ Its production browser isn't Camoufox. `agent/src/adspower.ts` starts an [AdsPow
 - The server poster is `src/lib/poster/facebook-poster.ts` (`postToFacebookMarketplace`).
 - Both treat a fixed wait as proof of upload, and the server path can report success with no listing URL. log rejected both shortcuts (see [How a Marketplace listing gets posted](../listingPublish/README.md)).
 
-The listing monitor's rules came from this project (an empty scan, one queued repost, resting when rate-limited). They're already in `src/marketplace/monitor/machine.ts`, so REA isn't needed to work them out again.
+The listing monitor's rules came from this project (an empty scan, one queued repost, resting when rate-limited). They're already in `src/facebook/marketplace/monitor/machine.ts`, so REA isn't needed to work them out again.
 
 ## What REA can and can't attach to
 

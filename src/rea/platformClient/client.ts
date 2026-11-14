@@ -1,15 +1,15 @@
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { PLATFORM_SITES } from "../../cli/runner/helpers/platforms";
+import { PLATFORM_LABELS, PLATFORM_SITES } from "../../cli/runner/helpers/platforms";
 import type { Platform } from "../../cli/runner/helpers/platforms";
 import { exchangesOf } from "../../subq/stepReading/helpers/exchangesOf";
 import { evidenceIdOf } from "../capture/client";
 import { parseSteps, splitHarBySteps } from "../capture/helpers/index";
 import type { ReaRunner } from "../capture/types";
-import { clientFactsPath, findRunCaptures, scriptsFromHar, writeOperationDocs } from "../facebookClient/index";
+import { clientFactsPath, findRunCaptures, PLATFORM_EVIDENCE, requestDocPrompts, scriptsFromHar, writeOperationDocs } from "../facebookClient/index";
 import type { ClientOperation, RequestSeen, RunCapture } from "../facebookClient/index";
-import { aliasHost, domainOfRequest, forgetParsed, methodNameOf, needlesOf, operationOf, requestNameOf, slicesFor, stablePath } from "./helpers/index";
+import { aliasHost, domainOfRequest, platformMachines, forgetParsed, methodNameOf, needlesOf, operationOf, requestNameOf, slicesFor, stablePath } from "./helpers/index";
 import { PLATFORM_CLIENT_RULES } from "./types";
 import type { BundleScript, PlatformClientRules, SourceSlice } from "./types";
 
@@ -251,7 +251,7 @@ export async function buildPlatformClientMap(options: BuildPlatformMapOptions): 
     if (sighting) operation.reaEvidenceId = evidence.get(`${sighting.run}\u0000${sighting.step}`) ?? null;
   }
   writeFileSync(join(options.outDir, "clientMap.json"), `${JSON.stringify({ builtAt: new Date().toISOString(), operations }, null, 2)}\n`, { mode: 0o600 });
-  const docs = writeOperationDocs(operations, options.docsDir, used.length, options.storePath ?? platformFactsPath(platform), rules?.reasoning);
+  const docs = writeOperationDocs(operations, options.docsDir, used.length, options.storePath ?? platformFactsPath(platform), requestDocPrompts({ name: PLATFORM_LABELS[platform], evidence: PLATFORM_EVIDENCE, machines: platformMachines(platform) }));
   const sliced = operations.filter((o) => (slicesByName.get(o.name) ?? []).length).length;
   const read = operations.filter((o) => o.reaEvidenceId).length;
   return `${platform} client map: ${operations.length} requests from ${used.length} runs; ${sliced} with their code found in its bundles, ${read} read by rea (their code, or the step's network where no code was found). Docs: ${options.docsDir} (${docs.toWrite} still need their reasoning written).`;

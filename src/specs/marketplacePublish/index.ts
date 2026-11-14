@@ -2,8 +2,8 @@ import { noul } from 'jev-spec'
 import { MET, NOT_VIOLATED } from '../types'
 import type { RequirementAnchors } from '../anchors/index'
 
-const MACHINE = 'src/marketplace/publish/machine.ts'
-const END = 'src/marketplace/publish/helpers/publishEnd.ts'
+const MACHINE = 'src/facebook/marketplace/publish/machine.ts'
+const END = 'src/facebook/marketplace/publish/helpers/publishEnd.ts'
 const COMMAND = 'src/cli/publish/index.ts'
 const SOLVER = 'src/captcha/router/helpers/planNextSolver.ts'
 const CAPTCHA = 'src/captcha/router/types.ts'
@@ -33,7 +33,7 @@ const anchors: RequirementAnchors = {
   ],
   'REQ-LISTING-19': [
     { kind: 'symbol', file: COMMAND, name: 'checkPublishable' },
-    { kind: 'symbol', file: 'src/marketplace/replacement/helpers/pickAccount.ts', name: 'countPostedToday' },
+    { kind: 'symbol', file: 'src/facebook/marketplace/replacement/helpers/pickAccount.ts', name: 'countPostedToday' },
     { kind: 'string', file: COMMAND, includes: 'dailyCapReached' },
   ],
   'REQ-LISTING-20': [

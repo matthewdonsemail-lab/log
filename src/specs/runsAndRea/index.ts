@@ -6,9 +6,10 @@ const capture = 'src/rea/capture/client.ts'
 const captureCli = 'src/cli/capture/index.ts'
 const facebook = 'src/rea/facebookClient/client.ts'
 const platform = 'src/rea/platformClient/client.ts'
-const docsGate = 'scripts/checks/checkFacebookClientDocs.mjs'
+const docsGate = 'scripts/checks/checkClientDocs.mjs'
 const store = 'src/browser/runStore/client.ts'
 const verdict = 'src/browser/runStore/helpers/storageVerdict.ts'
+const docTemplate = 'src/rea/facebookClient/helpers/renderOperationDoc.ts'
 
 export const runsAndRea = {
   description: 'Every action records a HAR, request docs by platform and domain are built and read by rea, runs are pruned once analysed and their findings kept',
@@ -20,7 +21,9 @@ export const runsAndRea = {
     'src/rea/facebookClient/client.ts',
     'src/rea/facebookClient/helpers/domainOf.ts',
     'src/rea/platformClient/client.ts',
-    'scripts/checks/checkFacebookClientDocs.mjs',
+    'src/rea/facebookClient/helpers/renderOperationDoc.ts',
+    'src/rea/platformClient/helpers/platformMachines.ts',
+    'scripts/checks/checkClientDocs.mjs',
     'src/browser/runStore/client.ts',
     'src/browser/runStore/helpers/storageVerdict.ts',
     'scripts/hooks/storage.ts',
@@ -40,7 +43,7 @@ export const runsAndRea = {
     ],
     'REQ-RUNS-03': [
       { kind: 'symbol', file: capture, name: 'settleInBackground' },
-      { kind: 'string', file: capture, includes: '--settle' },
+      { kind: 'value', file: capture, name: 'SETTLE_ARGS', equals: ['capture', 'settle'] },
       { kind: 'string', file: captureCli, includes: 'settle.json' },
     ],
     'REQ-RUNS-04': [
@@ -56,7 +59,7 @@ export const runsAndRea = {
       { kind: 'string', file: 'src/rea/facebookClient/helpers/domainOf.ts', includes: 'groups' },
       { kind: 'string', file: 'src/rea/facebookClient/helpers/domainOf.ts', includes: 'reels' },
       { kind: 'string', file: 'src/rea/facebookClient/helpers/domainOf.ts', includes: 'login' },
-      { kind: 'string', file: captureCli, includes: '../../../docs/platforms/facebook' },
+      { kind: 'string', file: captureCli, includes: '../../../docs/platforms/' },
       { kind: 'uses', file: facebook, name: 'redactDoc' },
       { kind: 'symbol', file: 'src/privacy/redact/index.ts', name: 'redactDoc' },
     ],
@@ -102,22 +105,31 @@ export const runsAndRea = {
       { kind: 'string', file: verdict, includes: '`runsPrune` { apply: true }' },
       { kind: 'string', file: 'src/agentHooks/registry/index.ts', includes: 'scripts/hooks/storage.ts' },
     ],
+    'REQ-RUNS-15': [
+      { kind: 'symbol', file: docTemplate, name: 'requestDocPrompts' },
+      { kind: 'symbol', file: docTemplate, name: 'factsSpan' },
+      { kind: 'value', file: docTemplate, name: 'FACTS_START_MARK', equals: '<!-- facts:start' },
+      { kind: 'symbol', file: 'src/rea/platformClient/helpers/platformMachines.ts', name: 'platformMachines' },
+      { kind: 'uses', file: facebook, name: 'requestDocPrompts' },
+      { kind: 'uses', file: platform, name: 'requestDocPrompts' },
+    ],
   },
   rubrics: {
     'REQ-RUNS-01': noul('Does _force_capture, called by _force_context for every new_context and launch_persistent_context the gate installs, set recordHarPath to a session.har in the capture folder with recordHarContent embed and recordHarMode full, with no flag that skips it?'),
     'REQ-RUNS-02': noul('Do _force_capture and gate_attached raise GateError captureMissing when no capture folder was armed, before any page loads?'),
-    'REQ-RUNS-03': noul('Does settleInBackground start log facebook capture --settle on the capture folder of the run, and does the capture --settle path write settle.json in that folder after settleRunCapture?'),
+    'REQ-RUNS-03': noul('Does settleInBackground start log capture settle on the capture folder of the run, and does the capture settle form write settle.json in that folder after settleRunCapture?'),
     'REQ-RUNS-04': noul('Does settleRunCapture split session.har with splitHarBySteps by the parsed steps.jsonl, write each part as its own HAR under steps/, run rea on each one, and write findings.md where the section of each step carries the evidence id that rea returned for that same step, taken from its output with evidenceIdOf?'),
     'REQ-RUNS-05': noul('Does writeOperationDocs write each operation to docsDir/<operation.domain>/<operation.name>.md and list every one in DOCS_INDEX, with the domain chosen by domainOf from the name of the request?'),
     'REQ-RUNS-06': noul('Does buildClientMap index the Facebook modules from the runs with indexRunModules and, when a runner is given, call readSlices so rea reads the slice of each request and sets its reaEvidenceId?'),
-    'REQ-RUNS-07': noul('Does the capture --docs path call buildPlatformClientMap for every platform other than facebook whose PLATFORM_SITES entry has browser set, and does buildPlatformClientMap keep only calls to the hosts of that platform, find their code in its bundles, have rea read them, and fall back to the rea evidence of the step when no code was found?'),
+    'REQ-RUNS-07': noul('Does the capture docs form call buildPlatformClientMap for every platform other than facebook whose PLATFORM_SITES entry has browser set, and does buildPlatformClientMap keep only calls to the hosts of that platform, find their code in its bundles, have rea read them, and fall back to the rea evidence of the step when no code was found?'),
     'REQ-RUNS-08': noul('Does writeOperationDocs read the facts store, pass each operation with its earlier stored facts (or factsFromDoc of the old doc when the store has none) into foldOperation so the rows from earlier runs are kept and only added to, and write the store back?'),
-    'REQ-RUNS-09': noul('Does checkFacebookClientDocs push a problem when a listed doc is missing, when the doc still holds the toWrite marker, when a non-endpoint operation has no reaEvidenceId, for a doc file not listed in the index, for a Query or Mutation name in src or python with no doc, and for a session.har newer than builtAt, doing the same missing, toWrite and evidence checks for every other platform, and exiting 1 when there is any problem?'),
+    'REQ-RUNS-09': noul('Does checkClientDocs push a problem when a listed doc is missing, when the doc still holds the toWrite marker, when a non-endpoint operation has no reaEvidenceId, for a doc file not listed in the index, for a Query or Mutation name in src or python with no doc, and for a session.har newer than builtAt, doing the same missing, toWrite and evidence checks for every other platform, and exiting 1 when there is any problem?'),
     'REQ-RUNS-10': noul('In listRuns, is keep left null, so that the run may go, only when the run is not open, has not changed within BUSY_MS of 10 minutes, has settle.json, and its session.har is not newer than docsBuiltAt?'),
     'REQ-RUNS-11': noul('Does pruneRuns delete a run folder only when options.apply is true, and does the runs prune subcommand pass apply only when the --apply flag is given?'),
     'REQ-RUNS-12': noul('When applying, does pruneRuns call backfillExchanges on the run first and skip the run, keeping it on disk, when any step failed to have its exchanges taken out?'),
     'REQ-RUNS-13': noul('Does pruneRuns copy KEPT_FILES and, through keepReadings, every exchanges.json, reading.json and readingState.json of each step and the KEPT_RUN_FILES into runs/kept, write pruned.json with the domains of the run from domainsInHar, and append a prunedRun record to log.db before deleting the run?'),
     'REQ-RUNS-14 warns': noul('In storageVerdict, is a line pushed when runsBytes is greater than RUNS_WARN_BYTES, another when freeBytes is less than DISK_WARN_BYTES, is null returned when no line was pushed, and does the returned text end with PRUNE_ADVICE?'),
+    'REQ-RUNS-15': noul('Do buildClientMap and buildPlatformClientMap write each new doc with prompts from requestDocPrompts that name the platform by its label and list the machines platformMachines finds under src/<platform>/, does renderOperationDoc default to prompts that name no platform, and do renderOperationDoc and factsFromDoc find the facts block by FACTS_START_MARK so a doc written under an older facts:start line keeps its reasoning and its facts?'),
     unspecifiedBehavior: noul('Does any of this code delete a run that rea has not settled or the docs do not hold, drop what a pruned run taught, or let a browser context run without recording a HAR, by a route the specification does not describe?'),
   },
   assertions: {
@@ -135,6 +147,7 @@ export const runsAndRea = {
     'REQ-RUNS-12': MET,
     'REQ-RUNS-13': MET,
     'REQ-RUNS-14 warns': MET,
+    'REQ-RUNS-15': MET,
     unspecifiedBehavior: NOT_VIOLATED,
   },
 }

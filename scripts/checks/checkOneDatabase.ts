@@ -53,7 +53,7 @@ const ALLOWED: Record<string, { writes: number; kind: Kind }> = {
   'src/facebook/group/members/client.ts': { writes: 2, kind: 'capture' },
   'src/facebook/marketplace/check/client.ts': { writes: 1, kind: 'capture' },
   'src/inbox/watch/client.ts': { writes: 3, kind: 'log' },
-  'src/marketplace/host/helpers/progress.ts': { writes: 2, kind: 'capture' },
+  'src/facebook/marketplace/host/helpers/progress.ts': { writes: 2, kind: 'capture' },
   'src/mcp/oauth/client.ts': { writes: 1, kind: 'session' },
   'src/media/persona/client.ts': { writes: 3, kind: 'dataset' },
   'src/media/photo/client.ts': { writes: 1, kind: 'dataset' },

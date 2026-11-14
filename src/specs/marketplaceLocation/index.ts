@@ -9,7 +9,7 @@ const SESSION = 'python/session/inspectSession.py'
 const PUBLISH_SESSION = 'python/session/publishSession.py'
 const HOST = 'src/cli/host/helpers/hostActors.ts'
 const COUNTRY = 'src/browser/proxy/helpers/countryOfLocation.ts'
-const LISTING = 'src/marketplace/agencyListing/helpers/toPublishListing.ts'
+const LISTING = 'src/facebook/marketplace/agencyListing/helpers/toPublishListing.ts'
 
 const anchors: RequirementAnchors = {
   'REQ-LISTING-01': [

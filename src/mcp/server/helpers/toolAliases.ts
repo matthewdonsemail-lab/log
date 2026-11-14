@@ -43,7 +43,11 @@ export const RENAMED_COMMAND_TOOLS: Readonly<Record<string, string>> = {
   conversationLead: "facebookConversationLead",
   conversationLink: "facebookConversationLink",
   conversationRecord: "facebookConversationRecord",
-  capture: "facebookCapture",
+};
+
+export const RENAMED_SHARED_TOOLS: Readonly<Record<string, string>> = {
+  capture: "captureDocs",
+  facebookCapture: "captureDocs",
 };
 
 export const RENAMED_FLOW_TOOLS: Readonly<Record<string, string>> = {
@@ -87,7 +91,7 @@ export const RENAMED_FLOW_TOOLS: Readonly<Record<string, string>> = {
   flowWarmupSellingVisitLive: "facebookFlowWarmupSellingVisitLive",
 };
 
-export const RENAMED_TOOLS: Readonly<Record<string, string>> = { ...RENAMED_COMMAND_TOOLS, ...RENAMED_FLOW_TOOLS };
+export const RENAMED_TOOLS: Readonly<Record<string, string>> = { ...RENAMED_COMMAND_TOOLS, ...RENAMED_FLOW_TOOLS, ...RENAMED_SHARED_TOOLS };
 
 export const ARGS_TOOLS_GIVEN_FORMS: ReadonlySet<string> = new Set([
   "adsPower",
@@ -112,7 +116,6 @@ export const ARGS_TOOLS_GIVEN_FORMS: ReadonlySet<string> = new Set([
   "facebookCampaign",
   "facebookCampaignLive",
   "graph",
-  "facebookCapture",
   "logout",
   "whoami",
 ]);

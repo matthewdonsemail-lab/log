@@ -1,5 +1,5 @@
-import type { AgencyListing } from "../../../marketplace/agencyListing/index.ts";
-import type { FacebookAccount } from "../../../marketplace/socialAccount/index.ts";
+import type { AgencyListing } from "../../../facebook/marketplace/agencyListing/index.ts";
+import type { FacebookAccount } from "../../../platformKit/socialAccount/index.ts";
 import { renderTable } from "../../runner/helpers/index.ts";
 
 const upper = (value: string | null) => (value ? value.replace(/([A-Z])/g, "_$1").toUpperCase() : "unset");

@@ -106,7 +106,7 @@ flowchart LR
   answer --> twenty["Twenty: account, listing, clicks"]
 ```
 
-- Each account runs one lifecycle machine (`src/marketplace/lifecycle`): proxying, opening, signingIn, checkingAccount, settingProfile, settingName, settingLocation, warming, attached, then watching and checking.
+- Each account runs one lifecycle machine (`src/platformKit/lifecycle`): proxying, opening, signingIn, checkingAccount, settingProfile, settingName, settingLocation, warming, attached, then watching and checking.
 - Flows are recorded once with `log inspect` and then replayed on any account (`src/browser/flow/definitions/*.json`, docs in `docs/platforms/facebook/flows/`).
 - When a step lands somewhere new, its internal API calls are read, SubQ is asked what they mean, and the new state gets a name (rule one at the top of `AGENTS.md`).
 

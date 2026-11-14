@@ -1,8 +1,8 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { pageProblem } from "../../../browser/flow/index.ts";
-import { setStatusAndReplace } from "../../../marketplace/replacement/index.ts";
-import type { FacebookAccount } from "../../../marketplace/socialAccount/index.ts";
+import { setStatusAndReplace } from "../../../facebook/marketplace/replacement/index.ts";
+import type { FacebookAccount } from "../../../platformKit/socialAccount/index.ts";
 import type { CommandContext } from "../../runner/types.ts";
 
 export const NAVIGATIONS_FILE = "navigations.jsonl";

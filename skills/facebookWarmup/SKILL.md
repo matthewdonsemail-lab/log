@@ -24,7 +24,7 @@ log facebook warmup stages log --account <a> --follow                 # the stag
 ```
 
 `--only feedBrowse,sellingVisit` limits it. After recording, rebuild the
-request docs: `log facebook capture --docs`.
+request docs: `log capture docs`.
 
 Doc: `docs/lifecycle.md` (the warm-up section); scripts:
 `src/facebook/warmup/stages/helpers/scripts.ts`.

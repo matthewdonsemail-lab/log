@@ -50,7 +50,7 @@ The West Bank step's SubQ reading was about 49,000 tokens.
 ## Request docs
 
 Rebuild Facebook's request docs after recording or changing a page:
-`log facebook capture --docs`.
+`log capture docs`.
 
 ## The mouse on Facebook
 

@@ -2,7 +2,7 @@
 
 This is the order of work for reading Facebook's web client with REA, written when the plan was made. It's ordered by what blocks a true reading of the client, and no step starts by attaching REA to a live account. Read it to see what was planned, what was blocked, and how to tell a capture worked.
 
-Since then, log records a HAR for every browser step and rea reads each one, and `log facebook capture --docs` documents every request a page makes (see [From a recording to a reusable flow](../recordToFlow.md)).
+Since then, log records a HAR for every browser step and rea reads each one, and `log capture docs` documents every request a page makes (see [From a recording to a reusable flow](../recordToFlow.md)).
 
 ## First
 
@@ -13,7 +13,7 @@ Since then, log records a HAR for every browser step and rea reads each one, and
 
 3. **Save files from one dry run.** The account passes `checkRunnable`, the proxy exits in its country, and the self-check passes. Use the real create page only if the owner asks for that run; otherwise stop at the local fixture and note that the scripts weren't captured. The capture only listens: it doesn't call Facebook's API and doesn't click Publish. It writes two files into the run's private folder: the script bodies, and a HAR of the responses the page made. Neither is committed.
 4. **Read them with REA, offline.** `rea analyze-web-bundle` on the scripts, `rea inspect-web-network-capture` on the HAR. Keep the evidence id. The report answers: which fields the create form submits, which requests the page itself fires, and which browser surfaces those scripts read.
-5. **Compare with the poster log has.** The selectors in [The create form](../listingPublish/formFill.md), the steps in `src/marketplace/publish/machine.ts`, and the earlier Camoufox client's `form_driver.py`. A mismatch becomes a failing test on `python/fixtures/createItem.html` or a new local fixture, never a live retry.
+5. **Compare with the poster log has.** The selectors in [The create form](../listingPublish/formFill.md), the steps in `src/facebook/marketplace/publish/machine.ts`, and the earlier Camoufox client's `form_driver.py`. A mismatch becomes a failing test on `python/fixtures/createItem.html` or a new local fixture, never a live retry.
 
 ## Alongside, not blocking the capture
 

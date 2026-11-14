@@ -29,7 +29,7 @@ The platform is always the first word after `log`. Everything after the command 
 | `log campaign fill\|heal\|run\|show --campaign …` | `log facebook campaign fill\|heal\|run\|show --campaign …` |
 | `log conversations [--account] [--listing]` | `log facebook conversations [--account] [--listing]` |
 | `log conversation show\|read\|lead\|link\|record …` | `log facebook conversation show\|read\|lead\|link\|record …` |
-| `log capture --har\|--settle\|--docs` | `log facebook capture --har\|--settle\|--docs` (its docs are in `docs/platforms/facebook/`) |
+| `log capture --har\|--settle\|--docs` | `log facebook capture --har\|--settle\|--docs` until 14 November 2026, then shared again as `log capture har\|settle\|docs`: it reads every platform's runs (its docs are in `docs/platforms/<platform>/`) |
 | `log warmup facebook <activity> …` | `log facebook warmup <activity> …` (e.g. `log facebook warmup reel`, `log facebook warmup stages run`) |
 | `log facebook warmup plan\|record\|run\|feed` | `log facebook warmup stages plan\|record\|run\|log` |
 
@@ -81,7 +81,7 @@ The MCP tools follow the same rule: every platform's tools start with the platfo
 | `conversationLead` | `facebookConversationLead` |
 | `conversationLink` | `facebookConversationLink` |
 | `conversationRecord` | `facebookConversationRecord` |
-| `capture` | `facebookCapture` |
+| `capture`, then `facebookCapture` | `captureDocs` (with `captureHar` and `captureSettle`: capture is shared) |
 
 ## The poll
 

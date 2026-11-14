@@ -1,7 +1,7 @@
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import { basename, join, relative, sep } from 'node:path'
 import { PAGE_STATES } from '../../../browser/flow/helpers/pageState'
-import type { FacebookAccount } from '../../../marketplace/socialAccount/types'
+import type { FacebookAccount } from '../../../platformKit/socialAccount/types'
 import { scrubSecrets } from './scrub'
 import type { KbArticle, KbKind, KbSources } from '../types'
 

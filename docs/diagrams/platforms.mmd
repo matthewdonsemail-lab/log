@@ -4,7 +4,7 @@ flowchart LR
   twenty[("Twenty socialAccounts: one row per account, its platform, session and proxy")]
   api["The platform's internal API: its own answer decides (rule 73)"]
   drivers["The account's browser: AdsPower or Camoufox, through the driver (The browser layer)"]
-  p_facebook["Facebook (FACEBOOK): 23 commands of its own"]
+  p_facebook["Facebook (FACEBOOK): 22 commands of its own"]
   twenty --> p_facebook
   p_facebook -->|"direct API: facebook read"| e_fbk["fbk (vendor/fbk): the saved session, a governor per account"]
   e_fbk --> api
@@ -52,7 +52,7 @@ flowchart LR
   anyB --> b_linkedin
   anyB --> b_slack
   anyB --> b_instagram
-  anyN["Any platform, no browser: launch, console, adsPower, localAccount, proxy, errors, graph, runs, storage, timing, inbox, media, browsers, browser, report, job, mcp, login, logout, whoami, voice, search, kb, runtime, memelord, treg, balance, governor, sessions, chats, messages, watchers, clone, transcribe, new"]
+  anyN["Any platform, no browser: launch, console, adsPower, localAccount, proxy, errors, graph, capture, runs, storage, timing, inbox, media, browsers, browser, report, job, mcp, login, logout, whoami, voice, search, kb, runtime, memelord, treg, balance, governor, sessions, chats, messages, watchers, clone, transcribe, new"]
   anyN -.-> twenty
   newP["log new platform name: one more platform, wired whole (rule 83)"] -.-> twenty
   drivers --> api

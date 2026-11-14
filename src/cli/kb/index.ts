@@ -2,7 +2,7 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 import { KB_KINDS, collectAll, kbConfig, redisKbIndex, rememberKnowledge, searchKnowledge, syncKnowledge, twentyKbStore } from "../../knowledge/base/index.ts";
 import type { KbConfig, KbHit, KbIndex, KbKind, KbStore } from "../../knowledge/base/index.ts";
-import { listFacebookAccounts } from "../../marketplace/socialAccount/index.ts";
+import { listFacebookAccounts } from "../../platformKit/socialAccount/index.ts";
 import { localEmbedder } from "../../search/conversations/index.ts";
 import type { Embedder } from "../../search/conversations/index.ts";
 import { JSON_FLAG, listOf, numberOf, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";

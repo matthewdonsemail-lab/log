@@ -6,7 +6,7 @@ import { parseArgs } from 'node:util'
 import { assignPersonas, backgroundOf, drawPersonas, nextBackground, imageOf, liveDeps, makeProfilePicture, personasDir, personasFile, readPersonas, recheckPicture, refreshPrompt, rejectPicture, writePersonas } from '../../src/media/persona/index'
 import type { PersonaRecord, PictureFacet } from '../../src/media/persona/index'
 import { readDatasets } from '../../src/warmup/persona/index'
-import { listFacebookAccounts, saveProfilePhoto } from '../../src/marketplace/socialAccount/index'
+import { listFacebookAccounts, saveProfilePhoto } from '../../src/platformKit/socialAccount/index'
 import { createTwentyClient } from '../../src/twenty/graphql/client'
 import { personaPath, seedOf } from '../../src/cli/warmup/helpers/personaRun'
 
