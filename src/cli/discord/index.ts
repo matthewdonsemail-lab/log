@@ -1,3 +1,6 @@
+import { cancel, intro, isCancel, outro, password, text } from "@clack/prompts";
+import { shouldPrompt } from "../launch/helpers/index.ts";
+import type { LaunchTTY } from "../launch/helpers/index.ts";
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { homedir } from "node:os";
 import { basename, isAbsolute, join, relative, resolve as resolvePath } from "node:path";
@@ -371,7 +374,7 @@ export const discordWatchCommand: Command = {
           else if (shown(event)) context.err(parsed.flags["json"] ? JSON.stringify(event) : watchLine(event));
         },
         run: (emit) => {
-          context.err(`${account.accountName}: the one owner of Discord's gateway through vendor/endcord${only ? `, showing only ${only}` : ""}${seconds ? `, for ${seconds} s` : ", until stopped"}; new DMs, group messages, mentions and replies go to the inbox and every event to every attached subscriber`);
+          context.err(`${account.accountName}: the one owner of Discord's gateway as the account's own browser${only ? `, showing only ${only}` : ""}${seconds ? `, for ${seconds} s` : ", until stopped"}; new DMs, group messages, mentions and replies go to the inbox and every event to every attached subscriber`);
           return directDiscordLive(account, { action: "watch", seconds }, (event) => {
             emit(event);
             if (event.kind === "message" && !event.guildId && event.channelId && event.id) {
@@ -944,3 +947,75 @@ export const discordSearchCommand: Command = {
     }
   },
 };
+
+export const DISCORD_SECRETS_USAGE = [
+  "Usage: log discord secrets --account <accountName> [--show]",
+  "Asks for the Discord account's email, password and 2FA secret (the base32 key from its authenticator setup, optional) in a Clack prompt, masked, and keeps them in Twenty (socialAccounts email, password, totpSecret) for the account's sign-in in its own browser. Nothing is printed; --show says only which are set. It never calls Discord, the direct-API engine included.",
+].join("\n");
+
+interface SecretPrompts {
+  intro(title: string): void;
+  outro(message?: string): void;
+  cancel(message?: string): void;
+  text(option: Parameters<typeof text>[0]): Promise<unknown>;
+  password(option: Parameters<typeof password>[0]): Promise<unknown>;
+}
+
+export const discordSecretsDeps: { prompts: SecretPrompts; tty: () => LaunchTTY } = {
+  prompts: { intro, outro, cancel, text: text as SecretPrompts["text"], password: password as SecretPrompts["password"] },
+  tty: () => ({ stdinTTY: process.stdin?.isTTY, stdoutTTY: process.stdout?.isTTY }),
+};
+
+export function totpSecretOf(value: string): string | null {
+  const key = value.replace(/[\s-]/g, "").toUpperCase();
+  return /^[A-Z2-7]{16,}=*$/.test(key) ? key : null;
+}
+
+const mark = (value: unknown): string => (value ? "<set>" : "<empty>");
+
+export const discordSecretsCommand: Command = {
+  usage: DISCORD_SECRETS_USAGE,
+  platform: "discord",
+  name: "secrets",
+  terminalOnly: "asks for a Discord account's email, password and 2FA secret in a Clack prompt (masked). Run `log discord secrets --account <a>` in a terminal.",
+  effect: "write",
+  summary: "The Discord account's email, password and 2FA secret, asked in a Clack prompt and kept in Twenty for its sign-in, never printed",
+  args: "--account <a> [--show]",
+  async run(context, argv) {
+    const parsed = parseArgs(argv, { boolean: ["show"], valued: ["account"] });
+    if (!parsed.ok) return refuseInput("discord secrets", parsed.error, DISCORD_SECRETS_USAGE);
+    if (parsed.positionals.length) return refuseInput("discord secrets", "takes no words, only flags", DISCORD_SECRETS_USAGE);
+    const ref = parsed.flags["account"];
+    if (typeof ref !== "string") return refuseInput("discord secrets", "--account is needed", DISCORD_SECRETS_USAGE);
+    let account;
+    try {
+      account = await findDiscordAccount(context.twenty, ref);
+    } catch (error) {
+      return refuseError("discord secrets", error);
+    }
+    if (parsed.flags["show"]) {
+      const held = await context.twenty.loginSecrets(account.id);
+      return { code: 0, stdout: `${account.accountName}: email ${mark(held?.email)}, password ${mark(held?.password)}, 2FA secret ${mark(held?.totpSecret)}` };
+    }
+    if (!shouldPrompt(false, discordSecretsDeps.tty())) {
+      return refuse("discord secrets", "terminalOnly", "they are typed in a Clack prompt, so it needs an interactive terminal: run it there (they are never passed as flags)");
+    }
+    const prompts = discordSecretsDeps.prompts;
+    prompts.intro(`log discord secrets — ${account.accountName}`);
+    const email = await prompts.text({ message: "The account's Discord email", validate: (v) => (typeof v === "string" && /^\S+@\S+\.\S+$/.test(v.trim()) ? undefined : "An email address") });
+    if (isCancel(email) || typeof email !== "string") return stopped(prompts);
+    const pass = await prompts.password({ message: "Its Discord password", mask: "•", validate: (v) => (typeof v === "string" && v.length >= 6 ? undefined : "At least 6 characters") });
+    if (isCancel(pass) || typeof pass !== "string") return stopped(prompts);
+    const totp = await prompts.password({ message: "Its 2FA secret (base32 key; leave empty if the account has no authenticator)", mask: "•", validate: (v) => (!v || totpSecretOf(String(v)) ? undefined : "A base32 key, letters A-Z and digits 2-7") });
+    if (isCancel(totp)) return stopped(prompts);
+    const totpSecret = typeof totp === "string" && totp ? totpSecretOf(totp) : null;
+    await context.twenty.update("socialAccounts", account.id, { email: email.trim(), password: pass, ...(totpSecret ? { totpSecret } : {}) } as never);
+    prompts.outro("Saved. They are typed into Discord's sign-in in the account's own browser, never printed.");
+    return { code: 0, stdout: `${account.accountName}: email <set>, password <set>, 2FA secret ${mark(totpSecret)} in Twenty` };
+  },
+};
+
+function stopped(prompts: SecretPrompts) {
+  prompts.cancel("Nothing saved.");
+  return refuseInput("discord secrets", "cancelled, nothing saved");
+}

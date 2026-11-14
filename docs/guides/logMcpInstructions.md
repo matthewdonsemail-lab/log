@@ -35,6 +35,8 @@ With no prompt hook, getGuide({ ask }) routes the owner's words to the one that 
 | `getGuide({ useCase: "inbox/voiceNote" })` | Sending a voice note |
 | `getGuide({ useCase: "instagram/dmReply" })` | Reading and answering an Instagram DM |
 | `getGuide({ useCase: "instagram/newPlatform" })` | Bringing a new platform up, then vendoring its client |
+| `getGuide({ useCase: "linkedin/network" })` | Growing a LinkedIn network and reading its inbox |
+| `getGuide({ useCase: "linkedin/posts" })` | Posting on LinkedIn, and liking or taking a post down |
 | `getGuide({ useCase: "reddit/contributorMaxxing" })` | Contributor maxxing: finding talented builders through what they share |
 | `getGuide({ useCase: "slack/dmReply" })` | Reading and answering a Slack DM |
 | `getGuide({ useCase: "twitter/affiliateMarketing" })` | Affiliate marketing through your DMs |
@@ -96,7 +98,7 @@ Each tool's description names its guide. Load it with `getGuide({ topic })` befo
 | `discord` | A Discord account: its session, DMs and group DMs, servers with their channels, forums, posts and threads, server search, reading, the live gateway watch, sending and deleting its own messages |
 | `reddit` | A Reddit account: its session, reading subreddits, the home feed and posts with their comments, and posting, commenting and voting |
 | `slack` | A Slack account: its session and workspaces, chats, reading, the live websocket watch and sending |
-| `linkedin` | A LinkedIn account's session: saving its cookies from a masked prompt and checking them with LinkedIn |
+| `linkedin` | A LinkedIn account: saving its cookies, checking its session, posting or deleting its own posts, inviting people LinkedIn suggests, liking posts, and reading its inbox and conversations |
 | `accountsAndProxies` | Every account in the workspace with its session state, and each account's proxy: checking it, giving it one from a provider in its home city, and providers' traffic; and the interactive launcher that sets log up and adds accounts |
 | `runsAndEvidence` | What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs, every call's timings, log.db's typed tables checked and rebuilt from its events, and the MCP server itself |
 | `knowledgeAndSearch` | Finding context: the knowledge base, the conversation search (keyword and meaning at once) and every voice note transcribed into it |

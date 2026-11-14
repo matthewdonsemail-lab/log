@@ -153,4 +153,18 @@ describe("an inbox watcher for an account gone from Twenty", () => {
     expect(started).toEqual(["live"]);
     expect(out).toEqual(["live"]);
   });
+
+  test("is not started again once its session died, until the session is checked loggedIn after it", () => {
+    const root = process.env.LOG_INBOX_STATE as string;
+    const dead = `dead${process.pid}${Date.now()}`;
+    mkdirSync(join(root, "discord", dead), { recursive: true });
+    writeFileSync(join(root, "discord", dead, "watch.log"), "log discord watch: deepman2: platformError: Discord's gateway didn't send READY within 45 s\n");
+    const started: string[] = [];
+    ensureLiveWatchers("discord", [dead], (account) => (started.push(account), 4242), () => false);
+    expect(started).toEqual([]);
+    mkdirSync(join(root, "..", "discord", dead), { recursive: true });
+    writeFileSync(join(root, "..", "discord", dead, "session.json"), JSON.stringify({ sessionState: "loggedIn", checkedAt: new Date(Date.now() + 60_000).toISOString() }));
+    ensureLiveWatchers("discord", [dead], (account) => (started.push(account), 4242), () => false);
+    expect(started).toEqual([dead]);
+  });
 });

@@ -112,7 +112,62 @@
     ],
     "publish": "blocked",
     "monitor": "blocked",
-    "action": "Copy li_at and JSESSIONID again from a browser where the account is signed in to linkedin.com, and run it again."
+    "action": "Sign in to linkedin.com again in Chrome, copy a www.linkedin.com request as cURL from DevTools, Network, and run it again."
+  },
+  "linkedinRequestUnusable": {
+    "layer": "account",
+    "meaning": "The request log linkedin cookies save read from the clipboard can't carry the account to LinkedIn as its browser (not a linkedin.com request copied as cURL, or without li_at, JSESSIONID, bcookie, bscookie or the user agent), so LinkedIn was never called and nothing was saved.",
+    "retryable": false,
+    "raisedIn": [
+      "cli/linkedin"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "In Chrome signed in to linkedin.com: DevTools, Network, right-click a www.linkedin.com request (not a static file), Copy, Copy as cURL, then run it again."
+  },
+  "profileNotSuggested": {
+    "layer": "account",
+    "meaning": "log linkedin connect only sends what a suggested person's own Connect button on My Network sends, and the profile asked for isn't among the people LinkedIn suggests to the account right now, so nothing was sent.",
+    "retryable": false,
+    "raisedIn": [
+      "cli/linkedin"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Pick someone from log linkedin suggestions --account <a>. Connecting from a profile page needs a Chrome recording of that first."
+  },
+  "likeUnconfirmed": {
+    "layer": "account",
+    "meaning": "LinkedIn answered log linkedin like without committing the post's reaction state, so the like isn't known to have landed.",
+    "retryable": false,
+    "raisedIn": [
+      "cli/linkedin"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Open the post in Chrome to see whether it is liked. Nothing is retried; wait for the person who approved it before trying again (rule 94)."
+  },
+  "conversationNotFound": {
+    "layer": "account",
+    "meaning": "log linkedin messages --with names nobody in the account's 20 newest LinkedIn conversations, so nothing was read.",
+    "retryable": false,
+    "raisedIn": [
+      "cli/linkedin"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Run log linkedin inbox --account <a> and pass the person's name or profile id as it shows there, or the conversation's urn with --conversation."
+  },
+  "conversationAmbiguous": {
+    "layer": "account",
+    "meaning": "log linkedin messages --with matches more than one of the account's newest LinkedIn conversations, so nothing was read.",
+    "retryable": false,
+    "raisedIn": [
+      "cli/linkedin"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Pass the conversation's urn with --conversation, from log linkedin inbox --account <a> --json."
   },
   "linkedinCookiesWrongAccount": {
     "layer": "account",

@@ -16,6 +16,8 @@ When the owner asks for one of these, follow its page step by step.
 | `getGuide({ useCase: "facebook/marketplaceListings" })` | From accounts to live Marketplace listings | "post a marketplace listing in <town>", "get listings up on facebook marketplace in every town", "set up the facebook accounts and publish the listings", "take the marketplace listing down". |
 | `getGuide({ useCase: "inbox/signIn" })` | Signing an account in: checking it, then the live browser | "sign in to my account", "is my x account logged in", "check my accounts", "log me back into instagram", "my session expired", "check the status of my accounts", "open the browser so I can sign in" |
 | `getGuide({ useCase: "instagram/newPlatform" })` | Bringing a new platform up, then vendoring its client | "make a new platform via the MCP for <platform>", "open <platform> in AdsPower", "find me via the gh api the most likely to go into the vendor", "make it work" |
+| `getGuide({ useCase: "linkedin/network" })` | Growing a LinkedIn network and reading its inbox | "connect with people on linkedin", "who does linkedin suggest", "read my linkedin messages", "what did <someone> say on linkedin" |
+| `getGuide({ useCase: "linkedin/posts" })` | Posting on LinkedIn, and liking or taking a post down | "post this on linkedin", "put this up on linkedin with the picture", "like <someone>'s post on linkedin", "delete that linkedin post" |
 | `getGuide({ useCase: "slack/dmReply" })` | Reading and answering a Slack DM | "read the messages with <someone> on slack", "reply to <someone> on slack", "what did <someone> say in <workspace>" |
 
 ## The tools in this guide

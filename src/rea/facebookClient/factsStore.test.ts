@@ -3,13 +3,17 @@ import { mkdtempSync, readFileSync, writeFileSync, mkdirSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { writeOperationDocs } from './client'
-import { factsFromDoc, fitSample, foldOperation, renderStoredSightings } from './helpers/index'
+import { factsFromDoc, fitSample, foldOperation, renderStoredSightings, unsigned } from './helpers/index'
 import type { ClientOperation, OperationSighting } from './types'
 
 const sight = (run: string, step: string, ms: number): OperationSighting => ({ run, action: 'warmup', step, status: 200, ms, afterStepMs: ms * 2, errors: [] })
 const op = (sightings: OperationSighting[], reads: string[] = ['viewer.x']): ClientOperation => ({ name: 'FBYRPTimeLimitsEnforcementQuery', domain: 'background', kind: 'query', docId: '1', path: '/api/graphql/', sends: [], reads, calledFrom: reads.length ? ['FBYRP.react'] : [], sightings, reaEvidenceId: reads.length ? 'ev_ab' : null })
 
 describe('the request docs keep what pruned runs showed (rule 66)', () => {
+  test('a sign-in ticket is taken out like a token, wherever it sits in the body', () => {
+    expect(unsigned({ ticket: 'abc.def.ghi', nested: { mfa_ticket: 'x', login: 'kept' } })).toEqual({ ticket: '(taken out)', nested: { mfa_ticket: '(taken out)', login: 'kept' } })
+  })
+
   test('a run is counted once, however many builds read it', () => {
     const once = foldOperation(null, op([sight('r1', 'step 1: goto /', 400)]))
     const twice = foldOperation(once, op([sight('r1', 'step 1: goto /', 400), sight('r2', 'step 1: goto /', 500)]))

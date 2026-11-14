@@ -10,20 +10,21 @@
 | Path | `discord.com/api/users/@me/billing/payment-sources` |
 | Sends | — |
 | Reads | — |
-| Called from | `runs/inspect/20261030T222341_<name:1>/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_<name:1>/script1036.js:1 parse`, `runs/inspect/20261030T222341_<name:1>/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_<name:1>/script1245.js:2 anonymous` |
-| rea | `ev_065e7ad37dcb5911d240f9de7d6e2882220c5a8d7c025d92b46a23de59cf297c` |
+| Called from | `runs/inspect/20261113T231616_deepman2/script3.js:232 625075`, `runs/inspect/20261113T231616_deepman2/script3.js:124 559868`, `runs/inspect/20261113T231616_deepman2/script3.js:124 961943`, `runs/inspect/20261111T233723_deepman2/script1280.js:1 anonymous` |
+| rea | `ev_d78b30b4313e24290a50643652180951b2f676391474d4145d6a41ce0b273f77` |
 
-Seen 2 time(s) in 1 run(s).
+Seen 3 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 8: click e221 | 2 | 200 | 417–744 ms | 1820–1823 ms | — |
+| inspect | step 1: goto /login | 1 | 200 | 388 ms | 140824 ms | — |
 
 ### What it sent and what came back (the newest 1 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261028T062914_<name:1>**, step 8: click e221: 200, 417 ms
+**runs/inspect/20261109T194954_deepman2**, step 1: goto /login: 200, 388 ms
 
 Sent:
 

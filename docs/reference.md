@@ -5,7 +5,7 @@ Generated from the code by `bun run docs:build`, so it always matches what `log`
 <!-- surface:start · written by `bun run docs:build` from the code. Not edited by hand. -->
 ## Commands, MCP tools and hooks
 
-log-cli is platform-agnostic: 7 platforms so far, Facebook (22 commands of its own), X (18 commands of its own), Reddit (5 commands of its own), Discord (12 commands of its own), LinkedIn (2 commands of its own), Slack (9 commands of its own), Instagram (6 commands of its own), and a new one is made by `log new platform <name>` (rule 83). A command that acts on one platform names it first, `log <platform> <command> …` (`log facebook listings`, `log twitter session`, `log reddit session`, `log discord session`, `log linkedin session`, `log slack session`, `log instagram session`), in every form; one that works on any platform takes none (the Platform column, rule 63).
+log-cli is platform-agnostic: 7 platforms so far, Facebook (22 commands of its own), X (18 commands of its own), Reddit (5 commands of its own), Discord (13 commands of its own), LinkedIn (9 commands of its own), Slack (9 commands of its own), Instagram (6 commands of its own), and a new one is made by `log new platform <name>` (rule 83). A command that acts on one platform names it first, `log <platform> <command> …` (`log facebook listings`, `log twitter session`, `log reddit session`, `log discord session`, `log linkedin session`, `log slack session`, `log instagram session`), in every form; one that works on any platform takes none (the Platform column, rule 63).
 Each command runs on the platform's direct API first where it has one, and on the account's browser otherwise (the Engine and Browser columns). log-cli is browser-agnostic too: each account's browser is a driver (AdsPower first, Camoufox kept, more browser providers to come), and every driver opens through the same gates.
 Every command is a CLI command (`log [<platform>] <command>`) and, unless it only works in a terminal, an MCP tool on the `log` server (Facebook's take the command's name, every other platform's start with the platform: `twitterReply`, `redditSessionCheck`).
 The same hooks fire whether it runs from a shell or over MCP, and both write the same live log, `~/.logCli/mcp/<day>.log`.
@@ -38,15 +38,15 @@ flowchart LR
   e_reverseChud --> api
   p_reddit -->|"browser: the any-platform commands"| b_reddit["Reddit's browser path: no proxy: this machine's own exit, the profile's timezone follows it (rule 84)"]
   b_reddit --> drivers
-  p_discord["Discord (DISCORD): 12 commands of its own"]
+  p_discord["Discord (DISCORD): 13 commands of its own"]
   twenty --> p_discord
-  p_discord -->|"direct API: discord session, discord chats, discord servers, discord channels, discord posts, discord search, discord read, discord watch, discord send, discord delete, discord react, discord voice"| e_endcord["endcord (vendor/endcord): the saved session, a governor per account"]
+  p_discord -->|"direct API: discord session, discord secrets, discord chats, discord servers, discord channels, discord posts, discord search, discord read, discord watch, discord send, discord delete, discord react, discord voice"| e_endcord["endcord (vendor/endcord): the saved session, a governor per account"]
   e_endcord --> api
   p_discord -->|"browser: the any-platform commands"| b_discord["Discord's browser path: no proxy: this machine's own exit, the profile's timezone follows it (rule 84)"]
   b_discord --> drivers
-  p_linkedin["LinkedIn (LINKEDIN): 2 commands of its own"]
+  p_linkedin["LinkedIn (LINKEDIN): 9 commands of its own"]
   twenty --> p_linkedin
-  p_linkedin -->|"direct API: linkedin session, linkedin cookies"| e_openLinkedinApi["openLinkedinApi (vendor/openLinkedinApi): the saved session, a governor per account"]
+  p_linkedin -->|"direct API: linkedin session, linkedin cookies, linkedin post, linkedin delete, linkedin suggestions, linkedin connect, linkedin like, linkedin inbox, linkedin messages"| e_openLinkedinApi["openLinkedinApi (vendor/openLinkedinApi): the saved session, a governor per account"]
   e_openLinkedinApi --> api
   p_linkedin -->|"browser: the any-platform commands"| b_linkedin["LinkedIn's browser path: no proxy: this machine's own exit, the profile's timezone follows it (rule 84)"]
   b_linkedin --> drivers
@@ -95,7 +95,7 @@ flowchart LR
   more["Next browser provider: one more driver (src/browser/name), rule 44"] -.-> gates
   gates --> session
   account["On the account's browser: facebook host, inspect, flow, #lt;platform#gt; warmup, facebook join, facebook read, facebook poll, facebook check, reddit read, discord read, slack read"]
-  camoufox["Camoufox only, not on the driver yet: facebook doctor, facebook connect, facebook profile, facebook scan, facebook status, facebook watch, facebook publish, facebook campaign, discord watch, slack watch, instagram watch"]
+  camoufox["Camoufox only, not on the driver yet: facebook doctor, facebook connect, facebook profile, facebook scan, facebook status, facebook watch, facebook publish, facebook campaign, discord watch, linkedin connect, slack watch, instagram watch"]
   session --> account
   camoufox -.->|"launches Camoufox itself"| d_camoufox
   nobrowser["No browser path: X (direct API only, rule 80)"] -.-x pick
@@ -104,15 +104,15 @@ flowchart LR
 Source: [`docs/diagrams/browsers.mmd`](diagrams/browsers.mmd).
 
 - **The account's browser, through the driver:** `facebook host`, `inspect`, `flow`, `<platform> warmup`, `facebook join`, `facebook read`, `facebook poll`, `facebook check`, `reddit read`, `discord read`, `slack read`. They run on whichever browser the account uses: AdsPower when it has a linked profile (`socialAccounts.adsPowerProfileId`), Camoufox otherwise, or what `socialAccounts.browserDriver` says.
-- **Camoufox only, not on the driver yet:** `facebook doctor`, `facebook connect`, `facebook profile`, `facebook scan`, `facebook status`, `facebook watch`, `facebook publish`, `facebook campaign`, `discord watch`, `slack watch`, `instagram watch`. They launch Camoufox themselves (facebook-camofox-client's worker, or the publish, connect and profile sessions), so on an AdsPower account they don't open its AdsPower profile. Moving one onto the driver is moving it into `OPENER_ACTIONS` (`src/browser/run`).
-- **No browser:** `launch`, `console`, `credentials`, `facebook listings`, `facebook listing`, `facebook accounts`, `facebook account`, `adsPower`, `localAccount`, `accounts`, `facebook lifecycle`, `facebook preflight`, `proxy`, `facebook conversations`, `facebook conversation`, `facebook messenger`, `errors`, `graph`, `capture`, `runs`, `storage`, `timing`, `inbox`, `media`, `browsers`, `browser`, `report`, `job`, `mcp`, `login`, `logout`, `whoami`, `twitter session`, `twitter follows`, `twitter dms`, `twitter chat`, `twitter cookies`, `voice`, `search`, `kb`, `runtime`, `memelord`, `treg`, `balance`, `governor`, `sessions`, `chats`, `messages`, `watchers`, `voiceNotes`, `clone`, `transcribe`, `twitter followers`, `twitter notifications`, `twitter reply`, `twitter quote`, `twitter post`, `twitter like`, `twitter list`, `twitter repost`, `twitter follow`, `twitter dm`, `twitter react`, `twitter queue`, `new`, `reddit session`, `reddit post`, `reddit reply`, `reddit vote`, `discord session`, `discord chats`, `discord servers`, `discord channels`, `discord posts`, `discord search`, `discord send`, `discord delete`, `discord react`, `discord voice`, `linkedin session`, `linkedin cookies`, `slack session`, `slack workspaces`, `slack chats`, `slack send`, `slack cookies`, `slack react`, `slack voice`, `instagram session`, `instagram dms`, `instagram send`, `instagram react`, `instagram voice`, `twitter voice`.
+- **Camoufox only, not on the driver yet:** `facebook doctor`, `facebook connect`, `facebook profile`, `facebook scan`, `facebook status`, `facebook watch`, `facebook publish`, `facebook campaign`, `discord watch`, `linkedin connect`, `slack watch`, `instagram watch`. They launch Camoufox themselves (facebook-camofox-client's worker, or the publish, connect and profile sessions), so on an AdsPower account they don't open its AdsPower profile. Moving one onto the driver is moving it into `OPENER_ACTIONS` (`src/browser/run`).
+- **No browser:** `launch`, `console`, `credentials`, `facebook listings`, `facebook listing`, `facebook accounts`, `facebook account`, `adsPower`, `localAccount`, `accounts`, `facebook lifecycle`, `facebook preflight`, `proxy`, `facebook conversations`, `facebook conversation`, `facebook messenger`, `errors`, `graph`, `capture`, `runs`, `storage`, `timing`, `inbox`, `media`, `browsers`, `browser`, `report`, `job`, `mcp`, `login`, `logout`, `whoami`, `twitter session`, `twitter follows`, `twitter dms`, `twitter chat`, `twitter cookies`, `voice`, `search`, `kb`, `runtime`, `memelord`, `treg`, `balance`, `governor`, `sessions`, `chats`, `messages`, `watchers`, `voiceNotes`, `clone`, `transcribe`, `twitter followers`, `twitter notifications`, `twitter reply`, `twitter quote`, `twitter post`, `twitter like`, `twitter list`, `twitter repost`, `twitter follow`, `twitter dm`, `twitter react`, `twitter queue`, `new`, `reddit session`, `reddit post`, `reddit reply`, `reddit vote`, `discord session`, `discord secrets`, `discord chats`, `discord servers`, `discord channels`, `discord posts`, `discord search`, `discord send`, `discord delete`, `discord react`, `discord voice`, `linkedin session`, `linkedin cookies`, `linkedin post`, `linkedin delete`, `linkedin suggestions`, `linkedin like`, `linkedin inbox`, `linkedin messages`, `slack session`, `slack workspaces`, `slack chats`, `slack send`, `slack cookies`, `slack react`, `slack voice`, `instagram session`, `instagram dms`, `instagram send`, `instagram react`, `instagram voice`, `twitter voice`.
 - **No browser path at all:** X. Its accounts run on the direct API only (rule 80).
 
 Each browser's capabilities, built or not: [`docs/browsers.md`](browsers.md) (generated, `bun run check:browsers`). AdsPower's setup: [`docs/adsPower.md`](adsPower.md).
 
 ### Engines: the direct API first, the browser behind it
 
-A command on the direct-API engine calls the platform's internal API with the account's saved session, paced by its own governor, and opens no browser. Each platform has its own vendored client: Facebook through fbk (`vendor/fbk`), X through twikit (`vendor/twikit`), Reddit through reverseChud (`vendor/reverseChud`), Discord through endcord (`vendor/endcord`), LinkedIn through openLinkedinApi (`vendor/openLinkedinApi`), Slack through gabrielSlack (`vendor/gabrielSlack`), Instagram through instagrapi (`vendor/instagrapi`). Every one reaches the network through one pinned browser-impersonating session: curl_cffi for the Python clients (`check:twikitTransport`), wreq-js for reverseChud (`check:reverseChudTransport`). Which engine runs each command is code (`DIRECT_ROUTES` and `commandEngine` in `src/directApi/engine`), and this section, the Engine column and every MCP tool's description are generated from it (7 clients, 53 commands).
+A command on the direct-API engine calls the platform's internal API with the account's saved session, paced by its own governor, and opens no browser. Each platform has its own vendored client: Facebook through fbk (`vendor/fbk`), X through twikit (`vendor/twikit`), Reddit through reverseChud (`vendor/reverseChud`), Discord through endcord (`vendor/endcord`), LinkedIn through openLinkedinApi (`vendor/openLinkedinApi`), Slack through gabrielSlack (`vendor/gabrielSlack`), Instagram through instagrapi (`vendor/instagrapi`). Every one reaches the network through one pinned browser-impersonating session: curl_cffi for the Python clients (`check:twikitTransport`), wreq-js for reverseChud (`check:reverseChudTransport`). Which engine runs each command is code (`DIRECT_ROUTES` and `commandEngine` in `src/directApi/engine`), and this section, the Engine column and every MCP tool's description are generated from it (7 clients, 61 commands).
 
 **Facebook.** Facebook's own page decides, not accountStatus: loggedIn reads; checkpoint stops and deactivates the account; loggedOut or accountWarning hands over to the browser path. Each account has its own governor (gaps of 4 s or more, 120 an hour, 500 a day, 40 writes a day, a 15-minute pause on a soft block, 6 hours on a checkpoint) and its result is written to socialAccounts.sessionState.
 
@@ -150,6 +150,7 @@ A command on the direct-API engine calls the platform's internal API with the ac
 **Discord.** Discord's own answer decides. Each account has its own governor under ~/.logCli/discord/<account>, refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.
 
 - `log discord session`: the direct-API engine only (endcord, vendored in vendor/endcord, account.ping for the session check; no browser).
+- `log discord secrets`: the direct-API engine only (endcord, vendored in vendor/endcord, account.none for the secrets (a Clack prompt; the email, password and 2FA secret go to Twenty, Discord is not called); no browser).
 - `log discord chats`: the direct-API engine only (endcord, vendored in vendor/endcord, messages.get_dms for the chats (the DMs and group DMs); no browser).
 - `log discord servers`: the direct-API engine only (endcord, vendored in vendor/endcord, account.get_guilds for the servers (the servers the account is in); no browser).
 - `log discord channels`: the direct-API engine only (endcord, vendored in vendor/endcord, messages.get_channels for the channels (one server, by category and kind); no browser).
@@ -166,6 +167,13 @@ A command on the direct-API engine calls the platform's internal API with the ac
 
 - `log linkedin session`: the direct-API engine only (openLinkedinApi, vendored in vendor/openLinkedinApi, account.ping for the session check; no browser).
 - `log linkedin cookies`: the direct-API engine only (openLinkedinApi, vendored in vendor/openLinkedinApi, account.ping for the cookies save (the cookies are checked with LinkedIn before they are saved); no browser).
+- `log linkedin post`: the direct-API engine only (openLinkedinApi, vendored in vendor/openLinkedinApi, posts.post for the a feed post, with an optional image (LinkedIn composer calls recorded from a real post); no browser).
+- `log linkedin delete`: the direct-API engine only (openLinkedinApi, vendored in vendor/openLinkedinApi, posts.deletePost for the deleting one of the accounts own posts; no browser).
+- `log linkedin suggestions`: the direct-API engine only (openLinkedinApi, vendored in vendor/openLinkedinApi, network.suggestions for the the people LinkedIn suggests on My Network (calls recorded from a real visit); no browser).
+- `log linkedin connect`: the direct-API engine only (openLinkedinApi, vendored in vendor/openLinkedinApi, network.connect for the one invitation to a suggested person, the request its own Connect button carries; no browser).
+- `log linkedin like`: the direct-API engine only (openLinkedinApi, vendored in vendor/openLinkedinApi, posts.like for the a like on one post, the request the feed Like button sends; no browser).
+- `log linkedin inbox`: the direct-API engine only (openLinkedinApi, vendored in vendor/openLinkedinApi, messages.inbox for the the 20 newest conversations (messengerConversations, recorded from a real visit); no browser).
+- `log linkedin messages`: the direct-API engine only (openLinkedinApi, vendored in vendor/openLinkedinApi, messages.messages for the one conversation in full (messengerMessages); no browser).
 
 **Slack.** Slack's own answer decides. Each account has its own governor under ~/.logCli/slack/<account>, refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.
 
@@ -197,9 +205,9 @@ flowchart LR
   agent["Agent (Claude Code, Codex)"]
   matt["matt, in a terminal"]
   shell["Bash / PowerShell / Monitor"]
-  mcp["MCP server log: 248 command tools + saved flows"]
+  mcp["MCP server log: 260 command tools + saved flows"]
   bin["bin/log.ts"]
-  runCli["runCli: 116 commands (COMMANDS)"]
+  runCli["runCli: 124 commands (COMMANDS)"]
   live[("~/.logCli/mcp/day.log: the live log")]
   engine{"commandEngine: DIRECT_ROUTES"}
   direct["Direct-API engine: fbk, twikit, reverseChud, endcord, openLinkedinApi, gabrielSlack, instagrapi (vendor/), the account's saved session, a governor per account"]
@@ -341,6 +349,7 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | [`log reddit reply`](#log-reddit-reply) | Comment on a Reddit post or reply to one of its comments through the account's direct-API engine; a dry run unless --live | `reddit` first | `--account <accountName>` `--url <post permalink>` `--text <text>` `[--comment <t1_id>]` `[--approvedBy <who>]` `[--live]` `[--json]` | direct API only | none | `redditReply`, `redditReplyLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 41, 73, 94, 30, 38, 39, 40, 41 |
 | [`log reddit vote`](#log-reddit-vote) | Vote on a Reddit post or comment through the account's direct-API engine; a dry run unless --live | `reddit` first | `--account <accountName>` `[--url <post permalink>]` `[--target <t3_id|t1_id>]` `[--direction <up|down|none>]` `[--approvedBy <who>]` `[--live]` `[--json]` | direct API only | none | `redditVote`, `redditVoteLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 73, 94, 30, 38, 39, 40, 41 |
 | [`log discord session`](#log-discord-session) | Check that Discord still accepts an account's saved session, on the direct-API engine, sending nothing; the answer goes to Twenty | `discord` first | `--account <accountName>` `[--json]` | direct API only | none | `discordSessionCheck` | PreToolUse, PostToolUse · PreToolUse, PostToolUse | no | 73, 94, 30, 38, 39, 40, 41 |
+| [`log discord secrets`](#log-discord-secrets) | The Discord account's email, password and 2FA secret, asked in a Clack prompt and kept in Twenty for its sign-in, never printed | `discord` first | `--account <accountName>` `--show` | direct API only | none | terminal only: asks for a Discord account's email, password and 2FA secret in a Clack prompt (masked). Run `log discord secrets --account <a>` in a terminal. | PreToolUse, PostToolUse · n/a | no | 35, 94, 30, 38, 39, 40, 41 |
 | [`log discord chats`](#log-discord-chats) | List the account's DMs and group DMs with their ids, on the direct-API engine, sending nothing | `discord` first | `--account <accountName>` `[--json]` | direct API only | none | `discordChats` | PreToolUse, PostToolUse · PreToolUse, PostToolUse | no | 73, 94, 30, 38, 39, 40, 41 |
 | [`log discord servers`](#log-discord-servers) | List the Discord servers the account is in, on the direct-API engine, sending nothing | `discord` first | `--account <accountName>` `[--json]` | direct API only | none | `discordServers` | PreToolUse, PostToolUse · PreToolUse, PostToolUse | no | 73, 94, 30, 38, 39, 40, 41 |
 | [`log discord channels`](#log-discord-channels) | List one Discord server's channels by category and kind (text, forum, media, voice), on the direct-API engine, sending nothing | `discord` first | `--account <accountName>` `--server <server name>` `[--json]` | direct API only | none | `discordChannels` | PreToolUse, PostToolUse · PreToolUse, PostToolUse | no | 73, 94, 30, 38, 39, 40, 41 |
@@ -352,8 +361,15 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | [`log discord delete`](#log-discord-delete) | Delete the account's own Discord messages by id, on the direct-API engine; a dry run unless --live | `discord` first | `--account <accountName>` `--channel <channelId|chat name>` `--message <messageId,…>` `[--approvedBy <who>]` `[--live]` `[--json]` | direct API only | none | `discordDelete`, `discordDeleteLive` | PreToolUse, PostToolUse · PreToolUse, PostToolUse | no | 8, 73, 94, 30, 38, 39, 40, 41 |
 | [`log discord react`](#log-discord-react) | React to a Discord message with an emoji, on the direct-API engine; a dry run unless --live | `discord` first | `--account <accountName>` `--channel <channel>` `--message <id>` `--emoji <emoji>` `[--remove]` `[--approvedBy <who>]` `[--live]` `[--json]` | direct API only | none | `discordReact`, `discordReactLive` | PreToolUse, PostToolUse · PreToolUse, PostToolUse | no | 8, 73, 94, 133, 30, 38, 39, 40, 41 |
 | [`log discord voice`](#log-discord-voice) | Send a voice note in the owner's cloned voice as Discord's own voice note, from text; a dry run unless --live | `discord` first | `--account <accountName>` `--channel <channel>` `--text <text>` `[--provider <inworld|fishAudio>]` `[--mattsWords]` `[--translationOf <text>]` `[--language <code>]` `[--approvedBy <who>]` `[--live]` `[--json]` | direct API only | none | `discordVoice`, `discordVoiceLive` | PreToolUse, PostToolUse · PreToolUse, PostToolUse | no | 8, 73, 94, 133, 109, 137, 142, 30, 38, 39, 40, 41 |
-| [`log linkedin session`](#log-linkedin-session) | Check that LinkedIn still accepts an account's saved session, on the direct-API engine, sending nothing; the answer goes to Twenty | `linkedin` first | `--account <accountName>` `[--json]` | direct API only | none | `linkedinSessionCheck` | PreToolUse, PostToolUse · PostToolUse | no | 73, 30, 38, 39, 40, 41 |
-| [`log linkedin cookies`](#log-linkedin-cookies) | Add or refresh a LinkedIn account in Twenty: its session cookies from a masked prompt, checked against LinkedIn | `linkedin` first | `--account <publicId>` `[--name <label>]` | direct API only | none | terminal only: asks for a LinkedIn account's session cookies in a Clack prompt (masked) and checks them with LinkedIn before saving. Run `log linkedin cookies save --account <publicId>` in a terminal. | PreToolUse, PostToolUse · n/a | no | 35, 73, 30, 38, 39, 40, 41 |
+| [`log linkedin session`](#log-linkedin-session) | Check that LinkedIn still accepts an account's saved session, on the direct-API engine, sending nothing; the answer goes to Twenty | `linkedin` first | `--account <accountName>` `[--json]` | direct API only | none | `linkedinSessionCheck`, `linkedinSessionScripts` | PreToolUse, PostToolUse · PostToolUse | no | 73, 30, 38, 39, 40, 41 |
+| [`log linkedin cookies`](#log-linkedin-cookies) | Add or refresh a LinkedIn account in Twenty: every cookie and the browser's headers from a request copied as cURL, checked against LinkedIn | `linkedin` first | `--account <publicId>` `[--name <label>]` `[--har <file>]` | direct API only | none | terminal only: asks for a LinkedIn account's session cookies in a Clack prompt (masked) and checks them with LinkedIn before saving. Run `log linkedin cookies save --account <publicId>` in a terminal. | PreToolUse, PostToolUse · n/a | no | 35, 73, 30, 38, 39, 40, 41 |
+| [`log linkedin post`](#log-linkedin-post) | Post to the account's LinkedIn feed, with an optional image, on the direct-API engine; a dry run unless --live | `linkedin` first | `--account <accountName>` `--text <text>` `[--image <path>]` `[--approvedBy <who>]` `[--live]` `[--json]` | direct API only | none | `linkedinPost`, `linkedinPostLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 73, 94, 137, 30, 38, 39, 40, 41 |
+| [`log linkedin delete`](#log-linkedin-delete) | Delete one of the account's own LinkedIn posts on the direct-API engine; a dry run unless --live | `linkedin` first | `--account <accountName>` `--activity <activityId|post url>` `[--approvedBy <who>]` `[--live]` `[--json]` | direct API only | none | `linkedinDelete`, `linkedinDeleteLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 73, 94, 30, 38, 39, 40, 41 |
+| [`log linkedin suggestions`](#log-linkedin-suggestions) | List the people LinkedIn suggests on the account's My Network page, on the direct-API engine | `linkedin` first | `--account <accountName>` `[--json]` `--profile` | direct API only | none | `linkedinSuggestions` | PreToolUse, PostToolUse · PostToolUse | no | 73, 94, 30, 38, 39, 40, 41 |
+| [`log linkedin connect`](#log-linkedin-connect) | Send one connection invitation to someone LinkedIn suggests, on the direct-API engine; a dry run unless --live | `linkedin` first | `--account <accountName>` `--profile <publicId|profile url>` `[--approvedBy <who>]` `[--live]` `[--json]` | direct API only | Camoufox only | `linkedinConnect`, `linkedinConnectLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 73, 94, 30, 38, 39, 40, 41 |
+| [`log linkedin like`](#log-linkedin-like) | Like one LinkedIn post on the direct-API engine; a dry run unless --live | `linkedin` first | `--account <accountName>` `--post <activityId|post url>` `[--approvedBy <who>]` `[--live]` `[--json]` | direct API only | none | `linkedinLike`, `linkedinLikeLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 73, 94, 30, 38, 39, 40, 41 |
+| [`log linkedin inbox`](#log-linkedin-inbox) | List the account's newest LinkedIn conversations, on the direct-API engine | `linkedin` first | `--account <accountName>` `[--json]` | direct API only | none | `linkedinInbox` | PreToolUse, PostToolUse · PostToolUse | no | 73, 94, 30, 38, 39, 40, 41 |
+| [`log linkedin messages`](#log-linkedin-messages) | Read one LinkedIn conversation in full, on the direct-API engine | `linkedin` first | `--account <accountName>` `[--with <name|profileId|publicId>]` `[--conversation <urn>]` `[--json]` | direct API only | none | `linkedinMessages` | PreToolUse, PostToolUse · PostToolUse | no | 73, 94, 30, 38, 39, 40, 41 |
 | [`log slack session`](#log-slack-session) | Check that Slack still accepts an account's saved session, on the direct-API engine, sending nothing; the answer goes to its row | `slack` first | `--account <accountName>` `[--workspace <domain>]` `[--json]` | direct API only | none | `slackSessionCheck` | PreToolUse, PostToolUse · PreToolUse, PostToolUse | no | 73, 30, 38, 39, 40, 41 |
 | [`log slack workspaces`](#log-slack-workspaces) | List the workspaces a Slack account is signed in to, on the direct-API engine, sending nothing | `slack` first | `--account <accountName>` `[--json]` `--workspace` | direct API only | none | `slackWorkspaces` | PreToolUse, PostToolUse · PreToolUse, PostToolUse | no | 73, 30, 38, 39, 40, 41 |
 | [`log slack chats`](#log-slack-chats) | List a Slack account's DMs and group DMs in a workspace with their ids, on the direct-API engine, sending nothing | `slack` first | `--account <accountName>` `[--workspace <domain>]` `[--limit <integer 1..200>]` `[--json]` | direct API only | none | `slackChats` | PreToolUse, PostToolUse · PreToolUse, PostToolUse | no | 73, 94, 30, 38, 39, 40, 41 |
@@ -504,6 +520,7 @@ flowchart TB
   end
   subgraph g_discord["Discord"]
     c_discordSession["session"]
+    c_discordSecrets["secrets"]
     c_discordChats["chats"]
     c_discordServers["servers"]
     c_discordChannels["channels"]
@@ -519,6 +536,13 @@ flowchart TB
   subgraph g_linkedin["LinkedIn"]
     c_linkedinSession["session"]
     c_linkedinCookies["cookies"]
+    c_linkedinPost["post"]
+    c_linkedinDelete["delete"]
+    c_linkedinSuggestions["suggestions"]
+    c_linkedinConnect["connect"]
+    c_linkedinLike["like"]
+    c_linkedinInbox["inbox"]
+    c_linkedinMessages["messages"]
   end
   subgraph g_slack["Slack"]
     c_slackSession["session"]
@@ -734,6 +758,8 @@ flowchart TB
   mcp --> c_redditVote
   cli --> c_discordSession
   mcp --> c_discordSession
+  cli --> c_discordSecrets
+  c_discordSecrets -.- terminal
   cli --> c_discordChats
   mcp --> c_discordChats
   cli --> c_discordServers
@@ -762,6 +788,20 @@ flowchart TB
   mcp --> c_linkedinSession
   cli --> c_linkedinCookies
   c_linkedinCookies -.- terminal
+  cli --> c_linkedinPost
+  mcp --> c_linkedinPost
+  cli --> c_linkedinDelete
+  mcp --> c_linkedinDelete
+  cli --> c_linkedinSuggestions
+  mcp --> c_linkedinSuggestions
+  cli --> c_linkedinConnect
+  mcp --> c_linkedinConnect
+  cli --> c_linkedinLike
+  mcp --> c_linkedinLike
+  cli --> c_linkedinInbox
+  mcp --> c_linkedinInbox
+  cli --> c_linkedinMessages
+  mcp --> c_linkedinMessages
   cli --> c_slackSession
   mcp --> c_slackSession
   cli --> c_slackWorkspaces
@@ -1968,6 +2008,15 @@ Checks that Discord still accepts the account's saved session, on the direct-API
 Discord's own answer decides. The result goes to socialAccounts.sessionState, and refreshed cookies are merged back into the row.
 ```
 
+#### log discord secrets
+
+The Discord account's email, password and 2FA secret, asked in a Clack prompt and kept in Twenty for its sign-in, never printed Terminal only: asks for a Discord account's email, password and 2FA secret in a Clack prompt (masked). Run `log discord secrets --account <a>` in a terminal.
+
+```text
+log discord secrets --account <accountName> [--show]
+Asks for the Discord account's email, password and 2FA secret (the base32 key from its authenticator setup, optional) in a Clack prompt, masked, and keeps them in Twenty (socialAccounts email, password, totpSecret) for the account's sign-in in its own browser. Nothing is printed; --show says only which are set. It never calls Discord, the direct-API engine included.
+```
+
 #### log discord chats
 
 List the account's DMs and group DMs with their ids, on the direct-API engine, sending nothing MCP tools: `discordChats`, one per form, with named fields.
@@ -2076,22 +2125,95 @@ A voice note goes out only when matt asks for one (rule 142). The provider is --
 
 #### log linkedin session
 
-Check that LinkedIn still accepts an account's saved session, on the direct-API engine, sending nothing; the answer goes to Twenty MCP tools: `linkedinSessionCheck`, one per form, with named fields.
+Check that LinkedIn still accepts an account's saved session, on the direct-API engine, sending nothing; the answer goes to Twenty MCP tools: `linkedinSessionCheck`, `linkedinSessionScripts`, one per form, with named fields.
 
 ```text
 log linkedin session check --account <accountName> [--json]
+log linkedin session scripts --account <accountName> [--json]
 Checks that LinkedIn still accepts the account's saved session, on the direct-API engine (openLinkedinApi, no browser). Sends nothing.
 LinkedIn's own answer decides. The result goes to socialAccounts.sessionState, and refreshed cookies are merged back into the row.
+scripts reads the signed-in /feed/ page once and saves the app's bundle URLs to ~/.logCli/linkedin/<account>/appScripts.json, for rea to read LinkedIn's own code. Sends nothing.
 ```
 
 #### log linkedin cookies
 
-Add or refresh a LinkedIn account in Twenty: its session cookies from a masked prompt, checked against LinkedIn Terminal only: asks for a LinkedIn account's session cookies in a Clack prompt (masked) and checks them with LinkedIn before saving. Run `log linkedin cookies save --account <publicId>` in a terminal.
+Add or refresh a LinkedIn account in Twenty: every cookie and the browser's headers from a request copied as cURL, checked against LinkedIn Terminal only: asks for a LinkedIn account's session cookies in a Clack prompt (masked) and checks them with LinkedIn before saving. Run `log linkedin cookies save --account <publicId>` in a terminal.
 
 ```text
-log linkedin cookies save --account <publicId> [--name <label>]
-Saves a LinkedIn account's session to Twenty from a masked Clack prompt: its li_at and JSESSIONID cookies, copied from a browser signed in to linkedin.com, never passed as flags or printed. --account is the profile's public id, the part after linkedin.com/in/.
+log linkedin cookies save --account <publicId> [--name <label>] [--har <file>]
+Saves a LinkedIn account's session to Twenty: every cookie and the browser's headers (user agent, client hints, x-li-track) from one www.linkedin.com request, never passed as flags or printed. The request is copied as cURL from Chrome's DevTools and read off the clipboard after a Clack prompt, or, with --har, taken from a recording of the account's own browser (a `log inspect` step's HAR, the account signed in there). --account is the profile's public id, the part after linkedin.com/in/.
 They are checked first: the direct-API engine (openLinkedinApi, no browser, no proxy) reads /voyager/api/me with them, and only cookies LinkedIn accepts for that same profile are saved. A profile Twenty doesn't have yet gets a new LINKEDIN socialAccounts row (rule 13); one it has gets its cookies replaced.
+```
+
+#### log linkedin post
+
+Post to the account's LinkedIn feed, with an optional image, on the direct-API engine; a dry run unless --live MCP tools: `linkedinPost`, `linkedinPostLive`, one per form, with named fields.
+
+```text
+log linkedin post --account <accountName> --text "<post>" [--image <path>] [--approvedBy <who>] [--live] [--json]
+Posts to the account's LinkedIn feed (anyone can see and comment), with one image if --image, on the direct-API engine (no browser), replaying the calls LinkedIn's own composer makes (ShareCompose, DispatchPostCreateWithDetour, the image upload, CreatePost), recorded from a real post.
+@[Name] in the text mentions a person or page: LinkedIn's own mention search must give exactly one match with that name, and @[Name|entityID] picks one of several. The dry run looks them up (reads only) and shows each pick. After the post, the composer's own follow-up calls go out as the browser sends them (FetchSharingAfterPostNBA, addUpdateToFeedListRequest, restoreTagPills, collaboratorResetOnDiscardAction, TrackShareboxInteraction), and the calls are paced like a person typing. The app version comes from LinkedIn's own x-li-application-version answer header; without one nothing is sent (appVersionUnknown).
+A dry run unless --live, which needs --approvedBy (rule 8). The image must be under OUTBOX or ~/.logCli, a JPEG, PNG or GIF of at most 20 MB. The copy is read for what AI chat interfaces leave in text first (rule 111). LinkedIn's answer decides: the new post's activityId is the post, and anything else stops the run with nothing retried (rule 94). The governor counts it as a write, 10 a day (rule 102).
+```
+
+#### log linkedin delete
+
+Delete one of the account's own LinkedIn posts on the direct-API engine; a dry run unless --live MCP tools: `linkedinDelete`, `linkedinDeleteLive`, one per form, with named fields.
+
+```text
+log linkedin delete --account <accountName> --activity <activityId|post url> [--approvedBy <who>] [--live] [--json]
+Deletes one of the account's own LinkedIn posts by its activity id (what log linkedin post printed, or the urn:li:activity in its URL), on the direct-API engine (no browser), replaying LinkedIn's own deletePost call.
+A dry run unless --live, which needs --approvedBy (rule 8). LinkedIn's answer decides; a refusal stops it with nothing retried (rule 94). The governor counts it as a write.
+```
+
+#### log linkedin suggestions
+
+List the people LinkedIn suggests on the account's My Network page, on the direct-API engine MCP tools: `linkedinSuggestions`, one per form, with named fields.
+
+```text
+log linkedin suggestions --account <accountName> [--json]
+Lists the people LinkedIn suggests on the account's My Network page, on the direct-API engine (no browser): the feed, then My Network the way the browser opens it (the MyNetwork navigation, then its own mojoTabsBadge, addaMarkNotificationsSeen and addaClearUnseenInvitationsMutation), recorded from a real visit. Each suggestion's public id is what log linkedin connect --profile takes.
+Reads only: nothing is sent to anyone. Opening My Network marks its notifications seen, as the browser does.
+```
+
+#### log linkedin connect
+
+Send one connection invitation to someone LinkedIn suggests, on the direct-API engine; a dry run unless --live MCP tools: `linkedinConnect`, `linkedinConnectLive`, one per form, with named fields.
+
+```text
+log linkedin connect --account <accountName> --profile <publicId|profile url> [--approvedBy <who>] [--live] [--json]
+Sends one connection invitation, without a note, to a person LinkedIn suggests on the account's My Network page, on the direct-API engine (no browser): My Network is opened as log linkedin suggestions opens it, and the invitation is the request that person's own Connect button carries (addaAddConnection), sent as the browser sent it. Someone not among the suggestions is refused (profileNotSuggested), since a profile page's Connect hasn't been recorded yet.
+A dry run unless --live, which needs --approvedBy (rule 8); the dry run only says whether the person is suggested. One invitation a run, at least 15 minutes apart and at most 5 in 24 hours (connectTooSoon, connectDailyCap): in a recorded session LinkedIn refused every connect sent within seconds of another, then ended the session (rule 94). LinkedIn's answer decides: the invitation is sent only when it sets it to Pending; its "invitation not sent" stops the run with nothing retried. The governor counts it as a write, 10 a day (rule 102).
+```
+
+#### log linkedin like
+
+Like one LinkedIn post on the direct-API engine; a dry run unless --live MCP tools: `linkedinLike`, `linkedinLikeLive`, one per form, with named fields.
+
+```text
+log linkedin like --account <accountName> --post <activityId|post url> [--approvedBy <who>] [--live] [--json]
+Likes one LinkedIn post, on the direct-API engine (no browser): the feed, then reactions.create, the request the feed's Like button sends, recorded from a real visit. The post is its activity id or its URL (linkedin.com/feed/update/urn:li:activity:<id>).
+A dry run unless --live, which needs --approvedBy (rule 8); the dry run sends nothing. LinkedIn's answer decides: the like counts only when it commits the post's reaction state; otherwise likeUnconfirmed, and nothing is retried (rule 94). The governor counts it as a write, 10 a day (rule 102).
+```
+
+#### log linkedin inbox
+
+List the account's newest LinkedIn conversations, on the direct-API engine MCP tools: `linkedinInbox`, one per form, with named fields.
+
+```text
+log linkedin inbox --account <accountName> [--json]
+Lists the account's 20 newest LinkedIn conversations (its primary inbox), on the direct-API engine (no browser): the feed, the account's own profile (/voyager/api/me, for its mailbox), then messengerConversations, the call LinkedIn's messaging page makes, recorded from a real visit. Each conversation names the people in it, its unread count and its last message.
+Reads only: nothing is sent, and nothing is marked seen or read.
+```
+
+#### log linkedin messages
+
+Read one LinkedIn conversation in full, on the direct-API engine MCP tools: `linkedinMessages`, one per form, with named fields.
+
+```text
+log linkedin messages --account <accountName> (--with <name|profileId|publicId> | --conversation <urn>) [--json]
+Reads one LinkedIn conversation in full, on the direct-API engine (no browser): the inbox as log linkedin inbox reads it, then messengerMessages for the conversation, the call LinkedIn's messaging page makes when one is opened. --with picks the conversation among the 20 newest by the other person's name, profile id or public id; --conversation takes its urn from log linkedin inbox --json.
+Reads only: nothing is sent, and nothing is marked seen or read. Someone not in the 20 newest is refused (conversationNotFound), two matches too (conversationAmbiguous).
 ```
 
 #### log slack session

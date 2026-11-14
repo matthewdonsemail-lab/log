@@ -627,6 +627,18 @@ class Inspector:
                     await asyncio.sleep(random.uniform(1.0, 2.0))
                 log(f"  clickAny: {len(chosen)} {role} /{pattern}/")
             return await self.step("clickAny", f'{count} x {role} /{pattern}/', click_any)
+        if action == "clearSession":
+            async def clear_session() -> None:
+                site = self.config.get("site") or {}
+                domain = str(site.get("domain") or "").lstrip(".")
+                if not domain:
+                    raise RuntimeError("clearSession needs the platform's site")
+                domains = sorted({str(c.get("domain") or "") for c in await self.context.cookies() if domain in str(c.get("domain") or "")})
+                for d in domains:
+                    await self.context.clear_cookies(domain=d)
+                log(f"  clearSession: {site.get('platform')} cookies cleared on {len(domains)} domain(s): {', '.join(domains) or 'none'}")
+                await page.goto(f"https://www.{domain}/", wait_until="domcontentloaded")
+            return await self.step("clearSession", "", clear_session)
         if action == "saveState":
             async def save_state() -> None:
                 await self.context.storage_state(path=str(self.config["storageStatePath"]))

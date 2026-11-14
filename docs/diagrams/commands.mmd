@@ -104,6 +104,7 @@ flowchart TB
   end
   subgraph g_discord["Discord"]
     c_discordSession["session"]
+    c_discordSecrets["secrets"]
     c_discordChats["chats"]
     c_discordServers["servers"]
     c_discordChannels["channels"]
@@ -119,6 +120,13 @@ flowchart TB
   subgraph g_linkedin["LinkedIn"]
     c_linkedinSession["session"]
     c_linkedinCookies["cookies"]
+    c_linkedinPost["post"]
+    c_linkedinDelete["delete"]
+    c_linkedinSuggestions["suggestions"]
+    c_linkedinConnect["connect"]
+    c_linkedinLike["like"]
+    c_linkedinInbox["inbox"]
+    c_linkedinMessages["messages"]
   end
   subgraph g_slack["Slack"]
     c_slackSession["session"]
@@ -334,6 +342,8 @@ flowchart TB
   mcp --> c_redditVote
   cli --> c_discordSession
   mcp --> c_discordSession
+  cli --> c_discordSecrets
+  c_discordSecrets -.- terminal
   cli --> c_discordChats
   mcp --> c_discordChats
   cli --> c_discordServers
@@ -362,6 +372,20 @@ flowchart TB
   mcp --> c_linkedinSession
   cli --> c_linkedinCookies
   c_linkedinCookies -.- terminal
+  cli --> c_linkedinPost
+  mcp --> c_linkedinPost
+  cli --> c_linkedinDelete
+  mcp --> c_linkedinDelete
+  cli --> c_linkedinSuggestions
+  mcp --> c_linkedinSuggestions
+  cli --> c_linkedinConnect
+  mcp --> c_linkedinConnect
+  cli --> c_linkedinLike
+  mcp --> c_linkedinLike
+  cli --> c_linkedinInbox
+  mcp --> c_linkedinInbox
+  cli --> c_linkedinMessages
+  mcp --> c_linkedinMessages
   cli --> c_slackSession
   mcp --> c_slackSession
   cli --> c_slackWorkspaces

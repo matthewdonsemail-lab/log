@@ -30,7 +30,7 @@ export const MAX_SAMPLE_CHARS = 6_000
 
 const SIGNED_URL = /(https?:\/\/[^/?\s"]*(?:fbcdn\.net|cdninstagram\.com)[^?\s"]*)\?[^\s"]*/g
 
-const SECRET_KEY = /token|^serialized_state$|^fb_dtsg|^jazoest$|^lsd$/i
+const SECRET_KEY = /token|ticket|^serialized_state$|^fb_dtsg|^jazoest$|^lsd$/i
 
 export function unsigned(value: unknown): unknown {
   if (typeof value === 'string') return value.replace(SIGNED_URL, '$1')

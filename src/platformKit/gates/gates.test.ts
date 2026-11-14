@@ -64,7 +64,7 @@ afterAll(() => {
 
 describe("the gate lists come from each command, keyed by command key", () => {
   test("terminal-only, long-running and no-prompt are fields of the command", () => {
-    expect(Object.keys(terminalOnlyByKey(COMMANDS)).sort()).toEqual(["facebookMessenger", "launch", "linkedinCookies", "login", "mcp", "runtime", "slackCookies", "twitterChat", "twitterCookies"]);
+    expect(Object.keys(terminalOnlyByKey(COMMANDS)).sort()).toEqual(["discordSecrets", "facebookMessenger", "launch", "linkedinCookies", "login", "mcp", "runtime", "slackCookies", "twitterChat", "twitterCookies"]);
     expect(noPromptByKey(COMMANDS)).toEqual({ facebookConnect: "--noPrompt" });
     const long = longRunningKeys(COMMANDS);
     for (const key of ["facebookPublish", "inspect", "discordRead", "slackWatch", "twitterQueue", "sessions", "messages"]) expect(long.has(key)).toBe(true);

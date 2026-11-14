@@ -74,6 +74,8 @@ const ALLOWED: Record<string, { writes: number; kind: Kind }> = {
   'src/subq/stepReading/helpers/stepExchanges.ts': { writes: 1, kind: 'capture' },
   'src/twenty/graphql/helpers/localAccounts.ts': { writes: 1, kind: 'session' },
   'src/twitter/account/session/client.ts': { writes: 6, kind: 'session' },
+  'src/linkedin/account/browser/client.ts': { writes: 1, kind: 'session' },
+  'src/cli/linkedin/index.ts': { writes: 1, kind: 'capture' },
   'src/voice/pairs/client.ts': { writes: 3, kind: 'index' },
   'src/voice/phrases/client.ts': { writes: 1, kind: 'index' },
   'src/warmup/viewer/client.ts': { writes: 1, kind: 'dataset' },

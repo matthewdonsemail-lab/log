@@ -10,10 +10,10 @@
 | Path | `discord.com/api/quests/get-decisions` |
 | Sends | — |
 | Reads | `request_id`, `decisions` |
-| Called from | `runs/inspect/20261113T141543_<name:1>/script1.js:232 625075`, `runs/inspect/20261113T141543_<name:1>/script1.js:124 559868`, `runs/inspect/20261113T141543_<name:1>/script1.js:124 961943`, `runs/inspect/20261113T141543_<name:1>/script1294.js:1 634654` |
-| rea | `ev_a9fa69c7432fa1fcc41058ba491790444cfcec72f4c96150b3d2566a4e5def67` |
+| Called from | `runs/inspect/20261113T231616_deepman2/script3.js:232 625075`, `runs/inspect/20261113T231616_deepman2/script3.js:124 559868`, `runs/inspect/20261113T231616_deepman2/script3.js:124 961943`, `runs/inspect/20261111T233723_deepman2/script1280.js:1 anonymous` |
+| rea | `ev_7a525aed00bc250f2d78abf5e6721b142bcec911114b9df420a19b0ab47e0c32` |
 
-Seen 8 time(s) in 6 run(s).
+Seen 14 time(s) in 12 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -21,14 +21,16 @@ Seen 8 time(s) in 6 run(s).
 | inspect | step 5: click e40 | 1 | 200 | 362 ms | 16903 ms | — |
 | inspect | step 9: goto /channels/@me | 1 | 200 | 692 ms | 15056 ms | — |
 | inspect | step 25: goto /channels/@me | 1 | 200 | 523 ms | 15461 ms | — |
-| inspect | step 1: goto /login | 3 | 200 | 395–7336 ms | 24174–1059434 ms | — |
+| inspect | step 1: goto /login | 7 | 200 | 207–7336 ms | 24174–1059434 ms | — |
 | inspect | step 2: snapshot | 1 | 200 | 508 ms | 53252 ms | — |
+| inspect | step 6: wait 45s | 1 | 200 | 258 ms | 30799 ms | — |
+| inspect | step 1: goto /channels/@me | 1 | 200 | 257 ms | 9915 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261113T141543_<name:1>**, step 1: goto /login: 200, 611 ms
+**runs/inspect/20261113T231616_deepman2**, step 6: wait 45s: 200, 258 ms
 
 Sent:
 
@@ -37,8 +39,8 @@ Sent:
   "query": {
     "placement": "3",
     "num_decisions_requested": "1",
-    "client_heartbeat_session_id": "ee3b2ed0-a8b3-4c1c-a140-de9d15be9685",
-    "client_ad_session_id": "01455f41-69fa-4b5c-b99a-57a872bda1ba"
+    "client_heartbeat_session_id": "cffd82cb-9599-4f81-b608-3478c0ebc298",
+    "client_ad_session_id": "af98833d-5f77-4668-a5de-227e26811adf"
   },
   "body": null
 }
@@ -48,12 +50,12 @@ Answered:
 
 ```json
 {
-  "request_id": "c10c538c-926c-427a-8d11-73b4fba56cb6",
+  "request_id": "c63590fd-e048-491a-8064-8757368fafa0",
   "decisions": []
 }
 ```
 
-**runs/inspect/20261030T222341_<name:1>**, step 2: snapshot: 200, 508 ms
+**runs/inspect/20261111T233723_deepman2**, step 1: goto /login: 200, 217 ms
 
 Sent:
 
@@ -62,8 +64,8 @@ Sent:
   "query": {
     "placement": "3",
     "num_decisions_requested": "1",
-    "client_heartbeat_session_id": "89081172-35da-4e8d-8b5c-da5e1bf81773",
-    "client_ad_session_id": "a683df8e-3741-4919-9185-22ceb745e6fb"
+    "client_heartbeat_session_id": "30c3d4ef-2b9a-4b4c-9a1c-30b16e540d5e",
+    "client_ad_session_id": "f733fcca-d313-4cc3-bc70-62be786db5cf"
   },
   "body": null
 }
@@ -73,12 +75,12 @@ Answered:
 
 ```json
 {
-  "request_id": "b5af6f95-b8d1-436e-bf9b-d90acf885631",
+  "request_id": "b6a40f37-e081-46e4-92ee-f6f341c771dd",
   "decisions": []
 }
 ```
 
-**runs/inspect/20261028T065202_<name:1>**, step 1: goto /channels/@me/<id>: 200, 450 ms
+**runs/inspect/20261109T192314_deepman2**, step 1: goto /channels/@me: 200, 257 ms
 
 Sent:
 
@@ -87,8 +89,8 @@ Sent:
   "query": {
     "placement": "3",
     "num_decisions_requested": "1",
-    "client_heartbeat_session_id": "76647484-56eb-47e1-a676-e51ce70342ac",
-    "client_ad_session_id": "c139cbba-8718-4677-a6a8-4401494e07df"
+    "client_heartbeat_session_id": "632d3126-b263-4648-9842-2930fe948640",
+    "client_ad_session_id": "d3e19332-c1be-4a1f-a7c5-fbb9920245a3"
   },
   "body": null
 }
@@ -98,7 +100,7 @@ Answered:
 
 ```json
 {
-  "request_id": "a5280851-3126-4788-8a5f-1d6052692aa7",
+  "request_id": "4d96c3d3-077d-46ad-b5cf-31ae6fd89725",
   "decisions": []
 }
 ```

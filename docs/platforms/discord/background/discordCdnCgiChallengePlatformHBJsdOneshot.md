@@ -10,25 +10,25 @@
 | Path | `discord.com/cdn-cgi/challenge-platform/h/b/jsd/oneshot` |
 | Sends | — |
 | Reads | — |
-| Called from | `runs/inspect/20261113T141543_<name:1>/script1.js:232 625075`, `runs/inspect/20261113T141543_<name:1>/script1.js:124 559868`, `runs/inspect/20261113T141543_<name:1>/script1.js:124 961943`, `runs/inspect/20261113T141543_<name:1>/script1294.js:1 634654` |
-| rea | `ev_a9fa69c7432fa1fcc41058ba491790444cfcec72f4c96150b3d2566a4e5def67` |
+| Called from | `runs/inspect/20261113T231616_deepman2/script3.js:232 625075`, `runs/inspect/20261113T231616_deepman2/script3.js:124 559868`, `runs/inspect/20261113T231616_deepman2/script3.js:124 961943`, `runs/inspect/20261111T233723_deepman2/script1280.js:1 anonymous` |
+| rea | `ev_13e337b741bd43d0ac8cba4fd211db16cabdc06f12ec02fd20221db474c448f1` |
 
-Seen 1 time(s) in 1 run(s).
+Seen 5 time(s) in 5 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 1: goto /login | 1 | 200 | 142 ms | 2386 ms | — |
+| inspect | step 1: goto /login | 5 | 200 | 29–142 ms | 453–2386 ms | — |
 
 ### What it sent and what came back (the newest 1 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261113T141543_<name:1>**, step 1: goto /login: 200, 142 ms
+**runs/inspect/20261113T231616_deepman2**, step 1: goto /login: 200, 69 ms
 
 Sent:
 
 ```json
-"vQZvfbBWsVFwo8LQ8Q8Cs2g8eQ3ydfNd3Ic6pmyGrM1EvT90JZxW$0L$x9xwoL46-p68KyuMTSdEN6+Bh9Cyzw0jfwdwTAhg8lI3FwA$WXkAn6n+OsAtwzcp0XAyKilXaXXDlujgI1C1KmRS$mqciUGv4mSkN0GvlaF8+0h$2iyiTjNLTUS1Fv5tM5eh++F8lA5wgYICs9o2QkRgrj68qDdWW$h+esEYd7CNTl11$8kf0VVvN0yb3I41dADivNbKJxV4RUp43LRVnDyhoAy472GM7B2s0Kzkq7nuAeHZN2zCi+MgNN0RofixJfDBK7eMdk4Qs1T0G7rNnbCwwp8qjzmH$EWg4tS9cLgOdCxDYHka972-wDGvFENACJ$oosFYeT$wG3Nlz9Yo7ZlC… (16456 chars)"
+"8NWETcl+TnzCm0PJYNik9zOuZkkNoD127IAFLOQq2YP3qz7K9KmSffPWSi5BqIgwZHeoCV-umUS2Rb4GR9aBd2WFpIz-Pu1pOouN5OHa43DM-AlP0HvN7-BAWcnzzFsXI9rBU8o1g8C4+xWjpHou9eVyan-X-etRKag+y+sx60NRtNjr1T-GN06boFRmrjLr679ou-FkKuAAEsZivMtcvxLm-neUV+SU8WrIbJ92f80yXRqyyVniyfE5HJ-scTH6tViJhtOvQS5iYS+emoHjkwBmXjxpoKA+lA3ypulWYzONonzg9xtr-ByHvOGn-iice8OnWaVc7D6taaJj9yvjPH4xFWOA0fgCW-Gk0IeTo+JczDK0FZv14e6jXZPC38Dpcm54Bxfj7EKp8qyx… (16504 chars)"
 ```
 
 Answered:

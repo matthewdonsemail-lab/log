@@ -4,6 +4,9 @@ READ_TOOLS = frozenset({
     "twitterSessionCheck",
     "discordSessionCheck",
     "linkedinSessionCheck",
+    "linkedinSuggestions",
+    "linkedinInbox",
+    "linkedinMessages",
     "redditSessionCheck",
     "instagramSessionCheck",
     "slackSessionCheck",
@@ -46,6 +49,10 @@ WRITE_TOOLS = frozenset({
     "twitterFollowLive",
     "twitterRepostLive",
     "discordSendLive",
+    "linkedinPostLive",
+    "linkedinDeleteLive",
+    "linkedinConnectLive",
+    "linkedinLikeLive",
 })
 
 

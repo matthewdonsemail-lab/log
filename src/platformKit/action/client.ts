@@ -20,6 +20,12 @@ export function confirmParts(parts: PartsOutcome): Confirmation {
   return confirmAnswer({ ok: false, code: parts.last?.code, detail: parts.last?.detail });
 }
 
+export async function actOnEngine<Run extends { answer: { ok: boolean; code?: string; detail?: string } }>(act: () => Run | Promise<Run>): Promise<Run> {
+  const acted = await runAction<null, Run>({ gate: passGate, act: async () => act(), confirm: (run) => confirmAnswer(run.answer) });
+  rethrowFailure(acted);
+  return acted.answer!;
+}
+
 export const passGate = async (): Promise<GateVerdict<null>> => ({ ok: true, held: null });
 
 export const errorText = (error: unknown): string => (error instanceof Error ? error.message : String(error));
