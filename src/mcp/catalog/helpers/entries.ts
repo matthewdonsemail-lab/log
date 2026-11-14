@@ -5,9 +5,9 @@ import { FLOWS_GUIDE, guideOfCommand } from "../../server/helpers/guides.ts";
 import { flowTool } from "../../server/helpers/toolsFromFlows.ts";
 import { flowPlatform } from "../../../browser/flow/index.ts";
 import type { FlowDefinition } from "../../../browser/flow/index.ts";
-import { argsLiveFlags, commandTools, longRunning } from "../../server/helpers/toolsFromCommands.ts";
+import { argsLiveFlags, commandTools } from "../../server/helpers/toolsFromCommands.ts";
 import type { CommandTool } from "../../server/helpers/toolsFromCommands.ts";
-import { TERMINAL_ONLY } from "../../server/types.ts";
+import { isLongRunning } from "../../../platformKit/gates/helpers/commandGates.ts";
 import type { CatalogEntry, CatalogInput, InputType } from "../types.ts";
 
 const TYPE_OF: Readonly<Record<string, InputType>> = { string: "string", integer: "integer", number: "number", boolean: "boolean", booleanValue: "boolean", enum: "enum", pairs: "pairs", rest: "list", list: "list" };
@@ -62,7 +62,7 @@ function entryOf(plain: CommandTool, live: CommandTool | undefined): CatalogEntr
     inputs,
     liveInputs,
     bypass: form ? form.flags.some((f) => f.bypass) : /--bypass\b/.test(command.usage),
-    longRunning: longRunning(command),
+    longRunning: isLongRunning(command),
     guide: guideOfCommand(command),
     terminalOnly: null,
   };
@@ -70,7 +70,7 @@ function entryOf(plain: CommandTool, live: CommandTool | undefined): CatalogEntr
 
 function terminalEntries(commands: readonly Command[]): CatalogEntry[] {
   return commands
-    .filter((command) => command.name in TERMINAL_ONLY)
+    .filter((command) => command.terminalOnly)
     .flatMap((command) =>
       (command.input?.forms ?? [null]).map((form): CatalogEntry => ({
         id: catalogIdOf(command, form),
@@ -87,7 +87,7 @@ function terminalEntries(commands: readonly Command[]): CatalogEntry[] {
         bypass: false,
         longRunning: false,
         guide: guideOfCommand(command),
-        terminalOnly: TERMINAL_ONLY[command.name],
+        terminalOnly: command.terminalOnly ?? null,
       })),
     );
 }

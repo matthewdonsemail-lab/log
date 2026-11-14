@@ -611,7 +611,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'The account named is kept under another platform than the one given. Nothing was contacted.',
     retryable: false,
-    raisedIn: ['platformKit/capability'],
+    raisedIn: ['platformKit/capability', 'platformKit/session'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Leave the platform out so the account decides it, or name the account kept on that platform. The detail says where it was found.'
@@ -2144,6 +2144,13 @@ export const ERROR_CATALOG = {
     retryable: false,
     raisedIn: ['mcp/server'],
     action: 'Pass confirmBypass: true only when the owner asked for a run outside the hours (rule 86).'
+  },
+  approvalRequired: {
+    layer: 'tool',
+    meaning: 'A live tool reached the hosted runtime, where a live run needs an approval that is not built yet, so nothing ran.',
+    retryable: false,
+    raisedIn: ['platformKit/gates'],
+    action: 'The owner runs it from a local client, where confirmLive and approvedBy are the approval.'
   },
   playMissing: {
     layer: 'tool',

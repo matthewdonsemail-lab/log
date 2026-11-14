@@ -2,6 +2,7 @@ import { createAdsPowerClient } from "../../browser/adsPower/index.ts";
 import { adsPowerHomes, homesOf, remarkAccountId, syncProfiles } from "../../browser/adsPower/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf, refuseError, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
+import { liveThroughAction } from "../../platformKit/action/index.ts";
 
 export const ADS_POWER_USAGE = [
   "Usage: log adsPower status",
@@ -18,7 +19,7 @@ export const ADS_POWER_INPUT: CommandInput = {
       summary: "One AdsPower profile per account: release, make and link them (a dry run unless apply)",
       positionals: [],
       flags: [
-        { name: "apply", kind: "boolean", description: "Release, make and link the profiles; without it a dry run that changes nothing" },
+        { name: "apply", kind: "boolean", live: true, description: "Release, make and link the profiles; without it a dry run that changes nothing" },
         { name: "account", kind: "string", description: "Only this account" },
         { name: "homes", kind: "list", pattern: "^[A-Za-z]{2}$", takes: "two-letter country codes", description: "Only accounts whose home country is one of these (default LOG_ADSPOWER_HOMES)" },
         JSON_FLAG,
@@ -27,7 +28,7 @@ export const ADS_POWER_INPUT: CommandInput = {
   ],
 };
 
-export const adsPowerCommand: Command = {
+export const adsPowerCommand: Command = liveThroughAction<Command>({
   usage: ADS_POWER_USAGE,
   platform: "any",
   name: "adsPower",
@@ -68,4 +69,4 @@ export const adsPowerCommand: Command = {
       return refuseError("adsPower", error);
     }
   },
-};
+}, ["apply"]);

@@ -7,6 +7,12 @@ const CHAT: CapabilityInput = { name: "chat", kind: "string", required: true, de
 
 const WATCH_CHAT: CapabilityInput = { name: "chat", kind: "string", description: "Only this chat: as the owner says it or its id; refused with inputUnsupported on a platform whose watch takes none" };
 const SECONDS: CapabilityInput = { name: "seconds", kind: "integer", min: 5, max: 3600, fallback: 60, description: "Listen for this many seconds, then stop (default 60)" };
+const SEND_TO: CapabilityInput = { name: "chat", kind: "string", required: true, description: "Who it goes to: the chat or channel id from chatsList, a Slack chat as the owner says it, an Instagram handle, or on X the person's numeric user id" };
+const TEXT: CapabilityInput = { name: "text", kind: "string", required: true, description: "What is sent, in the owner's approved words" };
+const AS_ONE: CapabilityInput = { name: "asOne", kind: "boolean", description: "Send a draft of several lines as one message, only when the owner asked (rule 90); refused with inputUnsupported on a platform whose send has no asOne" };
+const MESSAGE: CapabilityInput = { name: "message", kind: "string", required: true, description: "The message reacted to, by its id from messagesRead" };
+const EMOJI: CapabilityInput = { name: "emoji", kind: "string", required: true, description: "The emoji" };
+const APPROVED_BY: CapabilityInput = { name: "approvedBy", kind: "string", approval: true, description: "Who approved it: needed on a live run (rule 8)" };
 
 const X_CONVERSATION_ID = /^\d+[-:]\d+$/;
 
@@ -50,6 +56,48 @@ export const CAPABILITIES: readonly CapabilityDefinition[] = [
       discord: { command: "discordWatch", words: [], inputs: { account: { flag: "account" }, chat: { flag: "channel" }, seconds: { flag: "seconds" } } },
       slack: { command: "slackWatch", words: [], inputs: { account: { flag: "account" }, chat: { flag: "chat" }, space: { flag: "workspace" }, seconds: { flag: "seconds" } } },
       instagram: { command: "instagramWatch", words: [], inputs: { account: { flag: "account" }, seconds: { flag: "seconds" } } },
+    },
+  },
+  {
+    noun: "messages",
+    verb: "send",
+    summary: "Send a message as the account on its own platform, the platform taken from the account; a dry run unless live",
+    effect: "write",
+    live: true,
+    inputs: [ACCOUNT, SEND_TO, TEXT, SPACE, AS_ONE, APPROVED_BY],
+    platforms: {
+      twitter: { command: "twitterDm", words: [], inputs: { account: { flag: "account" }, chat: { flag: "userId" }, text: { flag: "text" }, asOne: { flag: "asOne" }, approvedBy: { flag: "approvedBy" } } },
+      discord: { command: "discordSend", words: [], inputs: { account: { flag: "account" }, chat: { flag: "channel" }, text: { flag: "text" }, asOne: { flag: "asOne" }, approvedBy: { flag: "approvedBy" } } },
+      slack: { command: "slackSend", words: [], inputs: { account: { flag: "account" }, chat: { flag: "chat" }, text: { flag: "text" }, space: { flag: "workspace" }, asOne: { flag: "asOne" }, approvedBy: { flag: "approvedBy" } } },
+      instagram: { command: "instagramSend", words: [], inputs: { account: { flag: "account" }, chat: { flag: "with" }, text: { flag: "text" }, asOne: { flag: "asOne" }, approvedBy: { flag: "approvedBy" } } },
+    },
+  },
+  {
+    noun: "messages",
+    verb: "react",
+    summary: "React to one message as the account on its own platform, the platform taken from the account; a dry run unless live",
+    effect: "write",
+    live: true,
+    inputs: [ACCOUNT, CHAT, MESSAGE, EMOJI, SPACE, APPROVED_BY],
+    platforms: {
+      twitter: { command: "twitterReact", words: [], inputs: { account: { flag: "account" }, chat: { flag: "chat" }, message: { flag: "message" }, emoji: { flag: "emoji" }, approvedBy: { flag: "approvedBy" } } },
+      discord: { command: "discordReact", words: [], inputs: { account: { flag: "account" }, chat: { flag: "channel" }, message: { flag: "message" }, emoji: { flag: "emoji" }, approvedBy: { flag: "approvedBy" } } },
+      slack: { command: "slackReact", words: [], inputs: { account: { flag: "account" }, chat: { flag: "chat" }, message: { flag: "message" }, emoji: { flag: "emoji" }, space: { flag: "workspace" }, approvedBy: { flag: "approvedBy" } } },
+      instagram: { command: "instagramReact", words: [], inputs: { account: { flag: "account" }, chat: { flag: "thread" }, message: { flag: "message" }, emoji: { flag: "emoji" }, approvedBy: { flag: "approvedBy" } } },
+    },
+  },
+  {
+    noun: "voiceNotes",
+    verb: "send",
+    summary: "Send a voice note in the owner's cloned voice as the account on its own platform, the platform taken from the account; a dry run unless live",
+    effect: "write",
+    live: true,
+    inputs: [ACCOUNT, SEND_TO, TEXT, SPACE, APPROVED_BY],
+    platforms: {
+      twitter: { command: "twitterVoice", words: [], inputs: { account: { flag: "account" }, chat: { flag: "with" }, text: { flag: "text" }, approvedBy: { flag: "approvedBy" } } },
+      discord: { command: "discordVoice", words: [], inputs: { account: { flag: "account" }, chat: { flag: "channel" }, text: { flag: "text" }, approvedBy: { flag: "approvedBy" } } },
+      slack: { command: "slackVoice", words: [], inputs: { account: { flag: "account" }, chat: { flag: "chat" }, text: { flag: "text" }, space: { flag: "workspace" }, approvedBy: { flag: "approvedBy" } } },
+      instagram: { command: "instagramVoice", words: [], inputs: { account: { flag: "account" }, chat: { flag: "with" }, text: { flag: "text" }, approvedBy: { flag: "approvedBy" } } },
     },
   },
 ];

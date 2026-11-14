@@ -68,7 +68,9 @@ describe("the console browser check on the runtime", () => {
     calls = [];
     live = view("signInRequired");
     await expect(runConsoleOperation("browserAction", { accountId: seller, action: "resolve", generation: "c".repeat(32) }, { callTool })).rejects.toThrow("browserGenerationChanged");
-    await runConsoleOperation("browserAction", { accountId: seller, action: "resolve", generation: "a".repeat(32) }, { callTool });
+    await expect(runConsoleOperation("browserAction", { accountId: seller, action: "resolve", generation: "a".repeat(32) }, { callTool })).rejects.toThrow("liveNotConfirmed");
+    expect(calls).toEqual([]);
+    await runConsoleOperation("browserAction", { accountId: seller, action: "resolve", generation: "a".repeat(32), confirmLive: true }, { callTool });
     expect(calls).toEqual(["inspectDoLive signIn live"]);
   });
 

@@ -345,6 +345,7 @@ export const instagramWatchCommand: Command = {
   usage: INSTAGRAM_WATCH_USAGE,
   platform: "instagram",
   name: "watch",
+  longRunning: true,
   effect: "read",
   input: INSTAGRAM_WATCH_INPUT,
   summary: "Watch an Instagram account's DMs as Instagram's realtime connection pushes them, nothing polled, sending nothing",

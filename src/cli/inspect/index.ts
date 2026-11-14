@@ -190,6 +190,7 @@ export const inspectCommand: Command = {
   usage: INSPECT_USAGE,
   platform: "any",
   name: "inspect",
+  longRunning: true,
   effect: "browser",
   input: INSPECT_INPUT,
   summary: "Drive the account's browser, gated and headed, a step at a time: each step's snapshot, screenshot, HAR and rea, recorded as it happens (rule 29)",

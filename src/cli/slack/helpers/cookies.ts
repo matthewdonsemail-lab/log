@@ -68,6 +68,7 @@ export const slackCookiesCommand: Command = {
   usage: SLACK_COOKIES_USAGE,
   platform: "slack",
   name: "cookies",
+  terminalOnly: "asks for a Slack account's session cookie (d) in a Clack prompt (masked) and checks it with Slack before saving. Run `log slack cookies save --account <name>` in a terminal.",
   effect: "write",
   summary: "Add or refresh a Slack account locally: its d cookie from a masked prompt, checked against Slack",
   input: SLACK_COOKIES_INPUT,

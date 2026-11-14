@@ -2,6 +2,7 @@ import { backfillAll, diskFree, listRuns, pruneRuns, runsBytes, storageVerdict }
 import type { RunEntry } from "../../browser/runStore/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
+import { liveThroughAction } from "../../platformKit/action/index.ts";
 
 export const RUNS_USAGE = [
   "Usage: log runs [list] [--json]   (every recorded run: its size, settled by rea, in the request docs, and why it is kept or that it may go)",
@@ -29,13 +30,13 @@ export const RUNS_INPUT: CommandInput = {
       words: ["prune"], effect: "delete",
       summary: "Delete each analysed run after taking out its steps' exchanges, keeping its findings, exchanges, readings and goal findings; a dry run unless apply",
       positionals: [],
-      flags: [{ name: "before", kind: "string", format: "date", description: "Only runs started before this day, YYYY-MM-DD" }, { name: "apply", kind: "boolean", description: "Delete them (without it, it only lists what would go)" }],
+      flags: [{ name: "before", kind: "string", format: "date", description: "Only runs started before this day, YYYY-MM-DD" }, { name: "apply", kind: "boolean", live: true, description: "Delete them (without it, it only lists what would go)" }],
     },
     { words: ["space"], summary: "The size of the runs folder and the disk's free space", positionals: [], flags: [] },
   ],
 };
 
-export const runsCommand: Command = {
+export const runsCommand: Command = liveThroughAction<Command>({
   usage: RUNS_USAGE,
   platform: "any",
   name: "runs",
@@ -74,4 +75,4 @@ export const runsCommand: Command = {
       ].join("\n"),
     };
   },
-};
+}, ["apply"]);

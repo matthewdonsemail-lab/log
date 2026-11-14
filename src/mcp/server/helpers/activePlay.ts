@@ -1,5 +1,6 @@
 import { randomBytes } from "node:crypto";
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
+import { isPlatform } from "../../../cli/runner/helpers/platforms.ts";
 
 export interface PlayStep {
   n: string;
@@ -179,8 +180,15 @@ export function playFooter(tool: string, play: ActivePlay | null = activePlay())
 export interface PlayGate {
   mode: "required" | "anyPlay" | "ifPlay" | "none";
   platform?: string | null;
+  capability?: string | null;
   useCases: readonly string[];
   play?: ActivePlay | null;
+}
+
+export function playCoversCapability(play: ActivePlay, capability: string, platform: string | null): boolean {
+  const named = new Set(play.steps.flatMap((s) => s.tools));
+  const folder = play.id.split("/")[0];
+  return (named.has(capability) || named.has(twinOf(capability))) && (!isPlatform(folder) || folder === platform);
 }
 
 export function playRefusal(tool: string, gate: PlayGate): string | null {
@@ -191,7 +199,7 @@ export function playRefusal(tool: string, gate: PlayGate): string | null {
     if (gate.mode === "ifPlay") return null;
     return `playMissing: ${tool} sends as the owner, and no play is loaded for this caller (none was loaded, it expired after ${PLAY_IDLE_MS / 3_600_000} idle hours, or its handle is unknown), so nothing was sent. The plays that use it: ${options}. Every message in a play is written from that person's own thread, and no two read alike.`;
   }
-  if (gate.mode === "anyPlay" || playCovers(play, tool, gate.platform ?? null)) return null;
+  if (gate.mode === "anyPlay" || playCovers(play, tool, gate.platform ?? null) || (gate.capability ? playCoversCapability(play, gate.capability, gate.platform ?? null) : false)) return null;
   return `playNotCovering: ${tool} sends as the owner, and the active play ${play.id} neither names it in its steps nor is filed under its platform, so nothing was sent. Two ways out: end the play with getGuide({ clearPlay: true }), or load the play that fits (${options}), which replaces ${play.id}.`;
 }
 

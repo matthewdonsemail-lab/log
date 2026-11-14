@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 49 domains, 557 requirements. Each one's anchors are proved against its code by the syntax tree on every commit, push and pull request (`bun run check:specs`). SubQ reads a requirement against its code only when asked (`bun run check:specs --subq`, rule 170). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 49 domains, 559 requirements. Each one's anchors are proved against its code by the syntax tree on every commit, push and pull request (`bun run check:specs`). SubQ reads a requirement against its code only when asked (`bun run check:specs --subq`, rule 170). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -61,6 +61,7 @@ The log MCP server is how every agent works with log-cli: it carries matt's rule
 - **REQ-MCP-22** Guides are scoped by capability and platform, fit every host, and say "the owner"
 - **REQ-MCP-23** Every result carries its code, platform and capability
 - **REQ-MCP-24** Both servers serve revision 2026-07-28 statelessly beside the older revisions
+- **REQ-MCP-25** One gate pipeline for every path
 
 ## [The platform-neutral scorecard](./agnosticScorecard.md)
 
@@ -80,6 +81,7 @@ A capability is one thing log does on any platform, with one name and one input 
 - **REQ-CAP-02** The platform comes from the account
 - **REQ-CAP-03** Canonical inputs become that platform's flags, or a refusal that contacts nothing
 - **REQ-CAP-04** Each noun is one shared command, and its tools are generated like any other
+- **REQ-CAP-05** The write capabilities run the platform command, gated as that platform tool
 
 ## [Platform actions](./platformActions.md)
 

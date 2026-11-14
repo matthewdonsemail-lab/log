@@ -250,12 +250,12 @@ describe("every form tool, driven through its command's own run", () => {
     const live = toolsFromCommands(COMMANDS).filter((t) => t.name.endsWith("Live"));
     const entries = commandTools(COMMANDS).filter((t) => t.live && t.form);
     const approving = entries.filter((t) => t.form!.flags.some((f) => f.approval));
-    expect(approving.length).toBe(24);
+    expect(approving.length).toBe(27);
     for (const entry of approving) {
       const schema = live.find((t) => t.name === entry.tool)!.inputSchema as { required: string[] };
       expect(schema.required).toContain("approvedBy");
       const input = minimalInput(entry.form!, platformOf(entry));
-      expect(argvOfInput(entry.form!, input, { live: true })).toEqual({ ok: false, message: "approvedBy is needed on a live run (rule 8)" });
+      expect(argvOfInput(entry.form!, input, { live: true })).toEqual({ ok: false, code: "notApproved", message: "approvedBy is needed on a live run (rule 8)" });
     }
     const treg = live.find((t) => t.name === "tregCallLive")!.inputSchema as { required: string[] };
     expect(treg.required).not.toContain("approvedBy");

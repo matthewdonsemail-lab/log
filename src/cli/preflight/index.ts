@@ -10,6 +10,7 @@ import { findAccount, listFacebookAccounts } from "../../platformKit/socialAccou
 import type { FacebookAccount } from "../../platformKit/socialAccount/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf, refuseError, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandContext, CommandInput } from "../runner/types.ts";
+import { liveThroughAction } from "../../platformKit/action/index.ts";
 
 export const PREFLIGHT_USAGE = [
   "Usage: log facebook preflight [--account <accountName>] [--homes <US,CA>] [--noProxy] [--apply] [--json]",
@@ -68,14 +69,14 @@ export const PREFLIGHT_INPUT: CommandInput = {
         { name: "account", kind: "string", description: "Only this account" },
         { name: "homes", kind: "list", pattern: "^[A-Za-z]{2}$", takes: "two-letter country codes", description: "Only accounts whose home country is one of these (default LOG_ADSPOWER_HOMES)" },
         { name: "noProxy", kind: "boolean", description: "Skip measuring each proxy" },
-        { name: "apply", kind: "boolean", description: "Download a missing browser kernel and wait for it; nothing opens on the platform" },
+        { name: "apply", kind: "boolean", live: true, description: "Download a missing browser kernel and wait for it; nothing opens on the platform" },
         JSON_FLAG,
       ],
     },
   ],
 };
 
-export const preflightCommand: Command = {
+export const preflightCommand: Command = liveThroughAction<Command>({
   usage: PREFLIGHT_USAGE,
   platform: "facebook",
   name: "preflight",
@@ -117,4 +118,4 @@ export const preflightCommand: Command = {
       return refuseError("preflight", error);
     }
   },
-};
+}, ["apply"]);

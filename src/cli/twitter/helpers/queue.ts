@@ -347,6 +347,7 @@ export const queueCommand: Command = {
   usage: QUEUE_USAGE,
   platform: "twitter",
   name: "queue",
+  longRunning: true,
   effect: "write",
   input: QUEUE_INPUT,
   summary: "Build, approve, plan and run a queue of approved X replies, quotes or dms at random moments, on the direct-API engine",

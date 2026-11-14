@@ -127,6 +127,7 @@ export const sessionsCommand: Command = {
   usage: SESSIONS_USAGE,
   platform: "any",
   name: "sessions",
+  longRunning: true,
   effect: "read",
   input: SESSIONS_INPUT,
   summary: "Check every account's saved session through its platform's own answer, and sign one in from its own browser",

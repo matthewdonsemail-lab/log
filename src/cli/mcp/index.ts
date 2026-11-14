@@ -18,6 +18,7 @@ export const mcpCommand: Command = {
   usage: MCP_USAGE,
   platform: "any",
   name: "mcp",
+  terminalOnly: "manages who may sign in to this server's MCP (OAuth through Twenty). The owner runs `log mcp clients` or `mcp revoke <clientId|all>` in a terminal on the server.",
   effect: "read",
   input: MCP_INPUT,
   summary: "This server's MCP sign-ins over OAuth (through Twenty, the owner only): list the clients, revoke them",

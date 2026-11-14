@@ -27,7 +27,9 @@ Each tool's own description carries its full usage, notes, live line and rules; 
 | `facebookAccountStatus` | Set an account's status | `log facebook account status <accountName> <ACTIVE\|WARMING\|LIMITED\|PAUSED\|NEEDS_LOGIN\|CHECKPOINT\|RESTRICTED\|BANNED\|DEAD\|DEACTIVATED> [--reason <code>] [--detail <text>]` |
 | `facebookLifecycle` | Each Facebook account's place in its lifecycle | `log facebook lifecycle [--account <name>] [--json]` |
 | `facebookLifecycleStates` | The lifecycle machine's state tree | `log facebook lifecycle states [--write]   (the machine's state tree; --write regenerates docs/lifecycle.md)` |
+| `facebookLifecycleStatesLive` | The lifecycle machine's state tree, live on Facebook | `log facebook lifecycle states [--write]   (the machine's state tree; --write regenerates docs/lifecycle.md)` |
 | `facebookPreflight` | Before any browser opens, check each Facebook account will get through | `log facebook preflight [--account <accountName>] [--homes <US,CA>] [--noProxy] [--apply] [--json]` |
+| `facebookPreflightLive` | Before any browser opens, check each Facebook account…, live on Facebook | `log facebook preflight [--account <accountName>] [--homes <US,CA>] [--noProxy] [--apply] [--json]` |
 | `facebookDoctor` | Check python, facebook-camofox-client, Camoufox, Twenty, and which… | `log facebook doctor [--json]` |
 | `facebookConnect` | Sign a Facebook account in through its proxy | `log facebook connect --account <accountName> [--noPrompt] [--wait <seconds>] [--bypass] [--now]` |
 | `facebookProfileSetup` | Set a Facebook account's profile picture and cover photo from its… | `log facebook profile setup --account <accountName> [--live] [--bypass] [--json]` |

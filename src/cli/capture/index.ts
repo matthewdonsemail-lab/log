@@ -91,6 +91,7 @@ export const captureCommand: Command = {
   usage: CAPTURE_USAGE,
   platform: "any",
   name: "capture",
+  longRunning: true,
   effect: "write",
   input: CAPTURE_INPUT,
   summary: "Read a run's raw HAR and scripts with offline rea (any platform or browser driver), settle a run's capture, or build every platform's client docs. No browser.",

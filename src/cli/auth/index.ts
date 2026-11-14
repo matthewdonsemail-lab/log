@@ -103,6 +103,7 @@ export const loginCommand: Command = {
   usage: LOGIN_USAGE,
   platform: "any",
   name: "login",
+  terminalOnly: "opens a browser for Twenty OAuth and waits for it. Run `log login` in a terminal.",
   effect: "write",
   summary: "Only for a team on Twenty: sign in to its Twenty through its sign-in app (OAuth). Local accounts need no sign-in, and without Twenty set up it says so",
   args: "[--webUrl <url>] [--apiUrl <url>] [--token <t>] [--json]",

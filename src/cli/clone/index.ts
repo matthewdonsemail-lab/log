@@ -5,6 +5,7 @@ import { hashOf, readTranscript } from "../../media/voiceNotes/index.ts";
 import type { ReferenceAudio, Recording, SpeakFormat, VoiceProvider, VoiceProviderClient } from "../../extensions/voiceClone/index.ts";
 import { JSON_FLAG, listOf, parseArgs, parserSpecOf, refuse } from "../runner/helpers/index.ts";
 import type { Command, CommandInput, FlagSpec } from "../runner/types.ts";
+import { liveThroughAction } from "../../platformKit/action/index.ts";
 
 export const CLONE_USAGE = [
   "Usage: log clone voice [--provider inworld|fishAudio] [--from <file>[,<file>]] [--apply] [--replace] [--json]   (the owner's voice, cloned once per provider from their own voice notes, or from recordings of their own they name with --from, each one's words read from a .txt beside it; without --apply it lists the recordings it would use; --replace makes it again and keeps the old voice id under previous)",
@@ -20,7 +21,7 @@ export const CLONE_INPUT: CommandInput = {
       words: ["voice"],
       summary: "the owner's voice cloned once on the voice provider from their own voice notes; without --apply it lists the recordings it would use",
       positionals: [],
-      flags: [PROVIDER, { name: "from", kind: "list", description: "the owner's own recordings to clone from instead of his voice notes (his voiceovers, comma separated), each one's exact words in a .txt of the same name beside it when there is one (rule 146)" }, { name: "apply", kind: "boolean", description: "Make the clone on the provider from the recordings listed" }, { name: "replace", kind: "boolean", description: "Make the clone again though one exists; the old voice id is kept in the clone file under previous, never deleted (rule 145)" }, JSON_FLAG],
+      flags: [PROVIDER, { name: "from", kind: "list", description: "the owner's own recordings to clone from instead of his voice notes (his voiceovers, comma separated), each one's exact words in a .txt of the same name beside it when there is one (rule 146)" }, { name: "apply", kind: "boolean", live: true, description: "Make the clone on the provider from the recordings listed" }, { name: "replace", kind: "boolean", description: "Make the clone again though one exists; the old voice id is kept in the clone file under previous, never deleted (rule 145)" }, JSON_FLAG],
     },
     {
       words: ["speak"],
@@ -84,7 +85,7 @@ function referencesFor(client: VoiceProviderClient, picked: Recording[]): Refere
   return refs;
 }
 
-export const cloneCommand: Command = {
+export const cloneCommand: Command = liveThroughAction<Command>({
   usage: CLONE_USAGE,
   platform: "any",
   name: "clone",
@@ -147,4 +148,4 @@ export const cloneCommand: Command = {
     if (json) return { code: 0, stdout: JSON.stringify({ provider, path: spoken.path, bytes: spoken.bytes, model: spoken.model, format }, null, 2) };
     return { code: 0, stdout: `log clone speak: ${spoken.path} (${provider}, ${format}, ${spoken.bytes} bytes, ${spoken.model}). Nothing was played or sent.` };
   },
-};
+}, ["apply"]);

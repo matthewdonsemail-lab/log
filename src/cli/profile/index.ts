@@ -31,6 +31,7 @@ export const profileCommand: Command = {
   usage: PROFILE_USAGE,
   platform: "facebook",
   name: "profile",
+  longRunning: true,
   effect: "browser",
   input: PROFILE_INPUT,
   summary: "Set an account's profile picture and cover photo from its account record (dry run unless --live, rule 35)",

@@ -6,7 +6,7 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { COMMANDS } from "../../cli/runner/index.ts";
 import { marketplaceFixture } from "../../twenty/graphql/index.ts";
-import { AGENTS_MD, AGENTS_URI, citedRules, COMMAND_RULES, createLogMcpServer, DEVELOPER_RULES, GUIDES_DIR, MAX_RESULT_CHARS, RULES_REVIEWED_THROUGH, SERVER_INSTRUCTIONS, TERMINAL_ONLY } from "./index.ts";
+import { AGENTS_MD, AGENTS_URI, citedRules, COMMAND_RULES, createLogMcpServer, DEVELOPER_RULES, GUIDES_DIR, MAX_RESULT_CHARS, RULES_REVIEWED_THROUGH, SERVER_INSTRUCTIONS } from "./index.ts";
 
 const agents = readFileSync(AGENTS_MD, "utf8");
 const rules = [...agents.matchAll(/^(\d+)\. 20\d\d-\d\d-\d\d/gm)].map((m) => Number(m[1]));
@@ -30,7 +30,7 @@ describe("AGENTS.md in the MCP server", () => {
   });
 
   test("every tool has its own AGENTS.md rules (a new command can't ship without them)", () => {
-    const unmapped = COMMANDS.filter((c) => !(c.name in TERMINAL_ONLY)).map(commandKey).filter((key) => !(key in COMMAND_RULES));
+    const unmapped = COMMANDS.filter((c) => !c.terminalOnly).map(commandKey).filter((key) => !(key in COMMAND_RULES));
     expect(unmapped).toEqual([]);
   });
 
@@ -53,7 +53,7 @@ describe("AGENTS.md in the MCP server", () => {
     for (const tool of tools.filter((t) => t.name !== "getGuide")) {
       const cited = ((tool.description ?? "").split("\n").at(-1) ?? "").replace(/^.*rules /, "").replace(/\.$/, "").split(", ");
       expect(new Set(cited).size).toBe(cited.length);
-      if (tool.name !== "newPlatform") expect(cited.filter((n) => DEVELOPER_RULES.has(Number(n)))).toEqual([]);
+      if (!["newPlatform", "newPlatformLive"].includes(tool.name)) expect(cited.filter((n) => DEVELOPER_RULES.has(Number(n)))).toEqual([]);
     }
     expect(tools.find((t) => t.name === "facebookJoinGroup")?.description).toContain("rules 8, 35, 25, 26, 29, 73, 30, 38, 39, 40, 41.");
     await client.close();

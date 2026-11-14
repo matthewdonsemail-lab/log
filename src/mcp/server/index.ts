@@ -22,12 +22,16 @@ import { accountOfArgv, appendProgress, busyJob, cancelRequested, DEFAULT_WAIT_M
 import type { JobRecord } from "../jobs/index.ts";
 import { oauthFromEnv } from "../oauth/index.ts";
 import type { OAuthServer } from "../oauth/index.ts";
-import { activePlay, currentToolName, FLOW_LIVE_TOOL, forgetPlayScope, gatedToolOf, guideAnswer, handleOf, PLAY_HANDLE_FIELD, playMeta, playRefusal, actingAsOwnerTools, folderOfPlay, namedByPlay, platformOfTool, playGateMode, stepToolsOf, playScope, processPlayScope, renamedTool, touchPlay, withoutHandle, withPlayFooter, withRenamedNote } from "./helpers/index.ts";
+import { activePlay, currentToolName, FLOW_LIVE_TOOL, forgetPlayScope, gatedToolOf, guideAnswer, handleOf, PLAY_HANDLE_FIELD, playMeta, playRefusal, actingAsOwnerTools, capabilityPlayGateMode, folderOfPlay, namedByPlay, platformOfTool, playGateMode, stepToolsOf, playScope, processPlayScope, renamedTool, touchPlay, withoutHandle, withPlayFooter, withRenamedNote } from "./helpers/index.ts";
 import type { PlayScope } from "./helpers/index.ts";
-import { codeOfText, isPlatform } from "../../cli/runner/helpers/index.ts";
+import { isPlatform } from "../../cli/runner/helpers/index.ts";
+import { capabilityDeps } from "../../cli/capabilities/index.ts";
+import { loadConnectionsView } from "../../console/connections/index.ts";
+import { gateCall } from "../../platformKit/gates/index.ts";
+import type { GateCaller, GateDeps, GatedTool } from "../../platformKit/gates/index.ts";
 import { flowRunInput, FLOW_RUN_TOOL } from "./helpers/index.ts";
 import { CALL_TOOL, catalog, catalogTools, getAnswer, isCatalogTool, resolveCall, searchAnswer, SEARCH_TOOL } from "../catalog/index.ts";
-import { AGENTS_URI, commandTools, CORE_GUIDE, flowArgv, flowOfTool, guardCall, GUIDE_TOOL, GUIDE_TOPICS, guideTool, listUseCases, readUseCase, withUseCases, hasShell, identityOf, legacyArgsTool, longRunning, parseEnvText, readGuide, SERVER_INSTRUCTIONS, toolsFromCommands, toolsFromFlows } from "./helpers/index.ts";
+import { AGENTS_URI, commandTools, CORE_GUIDE, flowArgv, flowOfTool, guardCall, GUIDE_TOOL, GUIDE_TOPICS, guideTool, listUseCases, readUseCase, withUseCases, hasShell, identityOf, legacyArgsTool, parseEnvText, readGuide, SERVER_INSTRUCTIONS, toolsFromCommands, toolsFromFlows } from "./helpers/index.ts";
 import type { LogStream } from "./helpers/index.ts";
 import type { LogToolInput, ProgressLine, ResultIdentity, ToolResult } from "./types.ts";
 import { RESULT_SIZE_META } from "./types.ts";
@@ -42,7 +46,7 @@ import type { StatelessHandlers } from "../stateless/index.ts";
 
 export * from "./helpers/index.ts";
 export type { GuardResult, LogTool, LogToolInput } from "./types.ts";
-export { MAX_RESULT_CHARS, NO_PROMPT, RESULT_SIZE_META, TERMINAL_ONLY, TOOL_RESULT_SCHEMA } from "./types.ts";
+export { MAX_RESULT_CHARS, RESULT_SIZE_META, TOOL_RESULT_SCHEMA } from "./types.ts";
 
 export type ReadBrowsers = () => BrowserView[];
 
@@ -212,6 +216,18 @@ async function runTimed(name: string, argv: string[], context: Partial<CommandCo
   return { base: { exit: code, ok: code === 0, code: failed, ...identity, stdout, stderr: err.join("\n"), log: processLog, progress, ...(json === undefined ? {} : { json }) }, text, cancelled, images };
 }
 
+export const gateDeps: Pick<GateDeps, "accounts" | "busy" | "session"> = {
+  accounts: () => capabilityDeps.accounts(),
+  busy: (account) => busyJob(account),
+  session: (account, platform) => {
+    try {
+      return loadConnectionsView().accounts.find((a) => a.platform === platform && a.name.toLowerCase() === account.trim().replace(/^@/, "").toLowerCase()) ?? null;
+    } catch {
+      return null;
+    }
+  },
+};
+
 function commandOfTool(name: string) {
   return commandTools(COMMANDS).find((t) => t.tool === name) ?? null;
 }
@@ -235,11 +251,12 @@ export async function runToolCall(
   appCaller: boolean = browserViewLocation() === "remote",
   scope: PlayScope = processPlayScope(),
   shell: boolean = true,
+  caller: Exclude<GateCaller, "cli"> = "mcp",
 ): Promise<CallToolResult> {
   const handle = handleOf(input);
   const given = withoutHandle(input);
-  const again = (tool: string, next: LogToolInput | undefined, app: boolean = appCaller) => runToolCall(tool, handle && next ? { ...next, [PLAY_HANDLE_FIELD]: handle } : next, context, onLine, readBrowsers, signal, app, scope, shell);
-  if (renamedTool(name)) return withRenamedNote(name, await again(currentToolName(name), input));
+  const again = (tool: string, next: LogToolInput | undefined, app: boolean = appCaller, by: Exclude<GateCaller, "cli"> = caller) => runToolCall(tool, handle && next ? { ...next, [PLAY_HANDLE_FIELD]: handle } : next, context, onLine, readBrowsers, signal, app, scope, shell, by);
+  if (renamedTool(name)) return withRenamedNote(name, await again(currentToolName(name), input, appCaller, caller === "mcp" ? "alias" : caller));
   if (isAppTool(name)) return runAppTool(name, given, appCaller);
   if (name === REPORT_TOOL) return runReport(given, appCaller);
   if (name === GUIDE_TOOL) {
@@ -252,19 +269,20 @@ export async function runToolCall(
     if (name === CALL_TOOL) {
       const target = resolveCall(entries, given);
       if (!target.ok) return refused(target.message, "inputInvalid", readBrowsers);
-      return again(target.tool, target.input, false);
+      return again(target.tool, target.input, false, caller === "mcp" ? "logCall" : caller);
     }
     const answer = name === SEARCH_TOOL ? searchAnswer(entries, given) : getAnswer(entries, given);
     return withBrowsers({ exit: answer.ok ? 0 : 1, ok: answer.ok, code: answer.ok ? null : "inputInvalid", ...NO_IDENTITY, stdout: answer.text, stderr: answer.ok ? "" : answer.text, log: [], progress: [], json: answer.json }, answer.text, !answer.ok, readBrowsers);
   }
   const { waitMs, ...fields } = given ?? {};
   const flows = savedFlows();
-  const gate = (tool: string) => {
+  const gate = (gated: GatedTool) => {
+    const { tool, platform, capability } = gated;
     const play = activePlay(scope, handle);
-    const pages = listUseCases([tool]);
-    const platform = platformOfTool(tool, COMMANDS, flows);
-    const mode = playGateMode(tool, actingAsOwnerTools(COMMANDS, flows), pages, platform);
-    const refusal = playRefusal(tool, { mode, platform, useCases: pages.filter((u) => namedByPlay(tool, stepToolsOf([u])) || (platform !== null && folderOfPlay(u.id) === platform)).map((u) => u.id), play });
+    const pages = listUseCases(capability ? [tool, capability] : [tool]);
+    const mode = capabilityPlayGateMode(capability, tool, actingAsOwnerTools(COMMANDS, flows), pages, platform);
+    const fits = (u: { id: string; text: string }) => namedByPlay(tool, stepToolsOf([u])) || (platform !== null && folderOfPlay(u.id) === platform) || (capability !== null && namedByPlay(capability, stepToolsOf([u])) && !isPlatform(folderOfPlay(u.id)));
+    const refusal = playRefusal(tool, { mode, platform, capability, useCases: pages.filter(fits).map((u) => u.id), play });
     if (!refusal) touchPlay(play);
     return refusal;
   };
@@ -275,22 +293,19 @@ export async function runToolCall(
     const ran = await again(flowCall.live ? FLOW_LIVE_TOOL : FLOW_RUN_TOOL, { ...built.input, confirmLive: fields.confirmLive, confirmBypass: fields.confirmBypass, ...(waitMs === undefined ? {} : { waitMs }) });
     return ran.structuredContent ? { ...ran, structuredContent: { ...ran.structuredContent, ...flowIdentity(flowCall.flow) } } : ran;
   }
-  const guard = guardCall(name, given === undefined ? undefined : fields, COMMANDS);
-  const entry = commandOfTool(name) ?? legacyArgsTool(currentToolName(name), COMMANDS);
-  const identity = entry ? identityOf(entry, guard.ok ? guard.argv : []) : NO_IDENTITY;
+  const guard = gateCall(name, given === undefined ? undefined : fields, caller, { commands: COMMANDS, flows, accounts: gateDeps.accounts, play: gate, session: gateDeps.session, busy: gateDeps.busy });
+  const entry = guard.entry;
+  const identityBase = entry ? identityOf(entry, guard.ok ? guard.argv : []) : NO_IDENTITY;
+  const identity = guard.ok && guard.gated.capability && guard.gated.platform ? { ...identityBase, platform: guard.gated.platform } : identityBase;
   if (!guard.ok) return refused(guard.message, guard.code, readBrowsers, identity);
-  const noPlay = gate(gatedToolOf(name, fields as Record<string, unknown>, flows));
-  if (noPlay) return refused(noPlay, codeOfText(noPlay), readBrowsers, identity);
   const progress: ProgressLine[] = [];
   const noted = (result: CallToolResult): CallToolResult => (guard.note ? { ...result, content: [...(result.content ?? []), { type: "text" as const, text: guard.note }] } : result);
-  if (!entry || !longRunning(entry.command)) {
+  if (!entry || !guard.longRunning) {
     const ran = await runGuarded(name, guard.argv, context, onLine, progress, null, identity, signal);
     const answered = noted(withBrowsers(ran.base, ran.text, ran.base.exit !== 0, readBrowsers, ran.images));
     return name === BROWSER_VIEW_TOOL ? withViewer(answered, input) : answered;
   }
-  const account = accountOfArgv(guard.argv);
-  const holder = busyJob(account);
-  if (holder) return refused(`accountBusy: job ${holder.id} (${holder.tool}) holds ${account}, started ${holder.startedAt}. Follow it with jobStatus { jobId: "${holder.id}" }, or stop it with jobCancel (rule 35).`, "accountBusy", readBrowsers, identity);
+  const account = guard.account;
   const job = startJob({ tool: name, argv: guard.argv, account, live: entry.live });
   const run = runGuarded(name, guard.argv, context, onLine, progress, job, identity, signal).then((ran) => {
     const status = ran.cancelled ? "cancelled" : ran.base.exit === 0 ? "completed" : "failed";
@@ -435,7 +450,7 @@ export function statelessLogHandlers(context: Partial<CommandContext> = {}, opti
     },
     callTool: async (params, caller) => {
       const input = params.arguments as LogToolInput | undefined;
-      const run = (given: LogToolInput | undefined) => runToolCall(params.name, given, context, onLine, options.readBrowsers ?? browserViews, caller.signal, uiCapable(caller.capabilities), scope, hasShell(caller.clientInfo?.name));
+      const run = (given: LogToolInput | undefined) => runToolCall(params.name, given, context, onLine, options.readBrowsers ?? browserViews, caller.signal, uiCapable(caller.capabilities), scope, hasShell(caller.clientInfo?.name), "stateless");
       if (!isSignInCall(params.name)) return withCallFooter(params.name, input, await run(input), scope);
       const expect = { tool: params.name, digest: argumentsDigest(withoutHandle(input)), principal, key: SIGN_IN_INPUT_KEY };
       const answered = answeredAction(caller, expect, stateKey);

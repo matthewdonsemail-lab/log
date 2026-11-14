@@ -99,6 +99,7 @@ export type ToolEffect = "read" | "write" | "delete" | "browser" | "spend";
 export interface InputForm {
   words: readonly string[];
   effect?: ToolEffect;
+  liveEffect?: ToolEffect;
   summary: string;
   positionals: readonly PositionalSpec[];
   flags: readonly FlagSpec[];
@@ -119,5 +120,8 @@ export interface Command {
   platform: Platform | "any" | "byArgument";
   effect: ToolEffect;
   input?: CommandInput;
+  terminalOnly?: string;
+  longRunning?: true;
+  noPrompt?: string;
   run(context: CommandContext, argv: string[]): Promise<CommandResult> | CommandResult;
 }

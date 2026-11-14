@@ -52,6 +52,7 @@ export const hostCommand: Command = {
   usage: HOST_USAGE,
   platform: "facebook",
   name: "host",
+  longRunning: true,
   effect: "browser",
   input: HOST_INPUT,
   summary: "Run an account's lifecycle in ONE browser kept open for its day, resuming where it left (rule 35); send it events; read its progress",
