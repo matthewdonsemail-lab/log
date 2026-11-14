@@ -867,7 +867,7 @@ const HERMES: HarnessSetup = {
   connect: [
     { label: 'Hermes', line: `mcp_servers › log › url: ${HOSTED_MCP} · auth: oauth` },
     { label: 'Hermes on your machine', line: 'mcp_servers › log › command: logMcp' },
-    { label: 'Hermes plugin', line: 'hermes plugins install listeningkit-log --enable' },
+    { label: 'Hermes plugin', line: 'hermes plugins pack install https://log.listeningkit.com/hermes-pack.yaml' },
   ],
   routes: [
     {
@@ -876,8 +876,7 @@ const HERMES: HarnessSetup = {
       best: 'Best when log and Hermes run on the same machine: every play as a skill, a log tab in the dashboard, and the router that names the play before each answer.',
       steps: [
         { text: 'Install log and sign in your accounts:', code: `${LOG_INSTALL}\nlog launch --setup` },
-        { text: 'Install the plugin from the Hermes catalog. It starts logMcp, adds every log play as a skill, and asks before anything is sent:', code: 'hermes plugins install listeningkit-log --enable' },
-        { text: 'For the router, pick Hermes in log launch --setup, then turn on the hook it installed. Before each answer it tells Hermes which play you asked for and who is waiting on you:', code: 'hermes plugins enable logHooks' },
+        { text: 'Install the whole plugin with one command: log’s tools, every play as a skill, and the router hook that tells Hermes which play you asked for and who is waiting on you before each answer. Hermes shows what it installs and asks once:', code: 'hermes plugins pack install https://log.listeningkit.com/hermes-pack.yaml' },
         { text: 'Open hermes dashboard: the log tab shows who is waiting on a reply, every account’s session and today’s sends against its limit. Ask Hermes copies a ready prompt for that conversation.' },
       ],
       sources: [{ label: 'log: the Hermes plugin', href: 'https://github.com/matthewdonsemail-lab/log/blob/main/hermesPlugin/README.md' }, { label: 'Hermes Agent docs: plugins', href: 'https://hermes-agent.nousresearch.com/docs/user-guide/features/plugins' }],

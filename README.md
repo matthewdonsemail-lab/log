@@ -131,7 +131,7 @@ Then check it with `log <platform> session check --account <name>`, which sends 
 | Agent | How to connect |
 |---|---|
 | Claude Code | `claude mcp add log -- logMcp` |
-| Hermes | `hermes plugins install listeningkit-log --enable`: the [log plugin for Hermes](hermesPlugin/README.md) |
+| Hermes | `hermes plugins pack install https://log.listeningkit.com/hermes-pack.yaml`: the [log plugin for Hermes](hermesPlugin/README.md), tools, skills, dashboard tab and router hook in one install |
 | Codex, Cursor, OpenCode and other MCP clients | add `logMcp` as a stdio MCP server: [docs/mcp.md](docs/mcp.md) |
 | Claude, ChatGPT and Grok, or an agent on a server | the hosted server, `https://mcp.listeningkit.com/mcp`, over OAuth |
 
@@ -181,10 +181,10 @@ The full table, written from the code (`HARNESSES` in `src/agentHooks/harness/ty
 Hermes runs all day, on your machine or a server, and talks to you on Telegram, Slack and its desktop app. The [log plugin](hermesPlugin/README.md) gives it log's tools, every play as a skill, and a log tab in its dashboard. Hermes reads freely, and every send, reply or post asks you first.
 
 ```bash
-hermes plugins install listeningkit-log --enable   # from the Hermes catalog
-log launch --setup                                 # pick Hermes: installs the router hook
-hermes plugins enable logHooks
+hermes plugins pack install https://log.listeningkit.com/hermes-pack.yaml
 ```
+
+One command installs and enables both halves: `log` (log's tools, every play as a skill, the dashboard's log tab) and `logHooks` (the router hook). Hermes shows what the pack installs, pinned to an exact commit, and asks once. Install log itself first; the hook finds it on its own.
 
 <table>
 <tr>
