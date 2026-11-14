@@ -30,6 +30,15 @@ export interface ActionResult<Held, Answer> {
   error?: unknown;
 }
 
+export interface PartsOutcome {
+  sent: number;
+  total: number;
+  interrupted?: boolean;
+  movedOn?: boolean;
+  lost?: boolean;
+  last?: { ok: boolean; code?: string; detail?: string };
+}
+
 export interface ActionOptions {
   onStage?: (stage: ActionStage) => void;
 }
