@@ -102,6 +102,18 @@ describe("who stopped a catch-up", () => {
     expect(notThePlatform("xSessionHostError: name 'XCHAT_MEDIA_PART_BYTES' is not defined")).toBe(true);
   });
 
+  test("a Python import that fails on this machine is our own error, not the platform", () => {
+    expect(notThePlatform("reading 1156984415931600977: ImportError: DLL load failed while importing win32clipboard: The specified module could not be found.")).toBe(true);
+    expect(notThePlatform("reading the inbox: ImportError: cannot import name 'ArgsKwargs' from 'pydantic_core._pydantic_core' (unknown location)")).toBe(true);
+    expect(notThePlatform("ModuleNotFoundError: No module named 'curl_cffi'")).toBe(true);
+  });
+
+  test("X Chat unlocking and then timing out is a network failure, not a locked account", () => {
+    expect(notThePlatform("xchatReadFailed: X Chat unlocked but its messages didn't open: Failed to perform, curl: (28) Operation timed out after 32090 milliseconds with 0 bytes received.")).toBe(true);
+    expect(notThePlatform("xchatLocked: X Chat didn't unlock with the saved PIN")).toBe(false);
+    expect(notThePlatform("this account is locked")).toBe(false);
+  });
+
   test("the platform's own refusal stays a refusal", () => {
     expect(notThePlatform("429: Too Many Requests")).toBe(false);
     expect(notThePlatform("226: this request looks like it might be automated")).toBe(false);

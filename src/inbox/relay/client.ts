@@ -6,7 +6,9 @@ import { hostname } from 'node:os'
 import { addAlert, claimWatcher, killTree, processAlive, processStartedAt, releaseWatcher, sameProcess, watchHolder } from '../watch/index'
 import { appendEvent, asOwner, behindOf, db, lastEventAt, markGap, markStage, openGap, OwnerFencedError } from '../store/index'
 import { CHAT_ACCESS_REFUSAL, HEARTBEAT_MS, HEARTBEAT_RETRIES, HEARTBEAT_RETRY_MS, MAX_BUFFERED_BYTES, NETWORK_FAILURE, OWN_FAILURE, PLATFORM_REFUSAL, STALE_CONFIRM_MS, STALE_MS } from './types'
-import type { AttachResult, CatchUp, Relay, RelaySession, RelayStatus } from './types'
+import type { AttachResult, CatchUp, CatchUpRun, Relay, RelaySession, RelayStatus } from './types'
+import { gapCatchUpMachine } from './machine'
+import { createActor } from 'xstate'
 import { recordWatcherEnd, startAccountWatcher, watchEndOf } from '../../platformKit/watcher/client.ts'
 import type { WatcherEnd, WatcherEvent, WatcherState } from '../../platformKit/watcher/types.ts'
 
@@ -154,7 +156,9 @@ export async function ownOrAttach<R>(platform: string, account: string, options:
   let fenced = false
   let recheck: ReturnType<typeof setInterval> | null = null
   const catching = catchUpRunner(platform, account, options.catchUp, options.log)
-  const catchUpAsOwner = () => asOwner(platform, account, () => catching.run()).catch((error: unknown) => {
+  const catchUpAsOwner = () => asOwner(platform, account, async () => {
+    await catching.run()
+  }).catch((error: unknown) => {
     if (!(error instanceof OwnerFencedError)) throw error
     fenced = true
   })
@@ -289,53 +293,22 @@ export function notThePlatform(detail: string | null | undefined): boolean {
   return NETWORK_FAILURE.test(detail) || OWN_FAILURE.test(detail) || CHAT_ACCESS_REFUSAL.test(detail)
 }
 
-export function catchUpRunner(platform: string, account: string, catchUp: CatchUp | undefined, log: (line: string) => void = () => {}): { run: () => Promise<void>; settled: () => Promise<void> } {
-  let running: Promise<void> | null = null
-  const once = async () => {
-    let gap = behindOf(platform, account)
-    if (gap?.status === 'refused' && notThePlatform(gap.detail)) {
-      markGap(gap.id, 'open', `reopened: the platform never refused it (${gap.detail})`)
-      log(`${platform} ${account}: the gap from ${gap.fromAt} was stopped by a network failure or our own error, not by the platform, so it is caught up again`)
-      gap = behindOf(platform, account)
-    }
-    if (!gap || gap.status === 'refused') return
-    if (!catchUp) {
-      log(`${platform} ${account}: behind from ${gap.fromAt} (${gap.reason}), and this owner has no catch-up yet`)
-      return
-    }
-    const drops = gap.drops ?? 0
-    markGap(gap.id, 'catchingUp')
-    log(`${platform} ${account}: catching up from ${gap.fromAt} (${gap.reason}) through its own session`)
-    try {
-      const got = await catchUp(gap)
-      if (got.refused && notThePlatform(got.refused)) {
-        markGap(gap.id, 'open', `the platform didn't refuse it (a network failure or our own error), so it is tried again at the next check: ${got.refused}`, got.appended)
-        log(`${platform} ${account}: catch-up failed without the platform refusing (${got.refused}); still behind, tried again at the next check`)
-        return
-      }
-      if (got.refused) {
-        markGap(gap.id, 'refused', got.refused, got.appended)
-        log(`${platform} ${account}: catch-up refused: ${got.refused}; it stays behind until matt says so (rule 94)`)
-        return
-      }
-      if (!markGap(gap.id, 'closed', got.detail ?? null, got.appended, new Date(), drops)) {
-        markGap(gap.id, 'open', 'the socket dropped again while catching up, so the gap stays open and is caught up again')
-        log(`${platform} ${account}: dropped again while catching up, ${got.appended} event(s) added; catching up again`)
-        return
-      }
-      log(`${platform} ${account}: caught up, ${got.appended} event(s) added from the gap`)
-    } catch (error) {
-      markGap(gap.id, 'open', error instanceof Error ? error.message : String(error))
-      log(`${platform} ${account}: catch-up failed (${error instanceof Error ? error.message : String(error)}), still behind`)
-    }
-  }
+export function catchUpRunner(platform: string, account: string, catchUp: CatchUp | undefined, log: (line: string) => void = () => {}): { run: () => Promise<CatchUpRun>; settled: () => Promise<void> } {
+  let running: Promise<CatchUpRun> | null = null
+  const machine = gapCatchUpMachine({ platform, account, behind: () => behindOf(platform, account), mark: markGap, notThePlatform, catchUp, log })
+  const once = () =>
+    new Promise<CatchUpRun>((resolve, reject) => {
+      const actor = createActor(machine)
+      actor.subscribe({ complete: () => resolve(actor.getSnapshot().output as CatchUpRun), error: reject })
+      actor.start()
+    })
   return {
     run: () => {
       if (!running) running = once().finally(() => (running = null))
       return running
     },
     settled: async () => {
-      if (running) await running
+      if (running) await running.catch(() => {})
     },
   }
 }

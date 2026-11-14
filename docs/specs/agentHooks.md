@@ -151,7 +151,9 @@ Checked by: code and SubQ
 
 ### REQ-HOOKS-23: Only the platform's refusal stops a catch-up
 
-`notThePlatform` (`src/inbox/relay/client.ts`) is true for a failure that `NETWORK_FAILURE` or `OWN_FAILURE` matches and `PLATFORM_REFUSAL` does not. Such a failure leaves the gap open for the next check, and a gap once refused for one is reopened. A 429, 226, 344, soft block or rate limit is still a refusal, and nothing resumes until matt says so (rules 94, 150). Once, one account had been held since a DNS failure and another since a crash of log's own.
+`notThePlatform` (`src/inbox/relay/client.ts`) is true for a failure that `NETWORK_FAILURE` or `OWN_FAILURE` matches and `PLATFORM_REFUSAL` does not. Such a failure leaves the gap open for the next check, and a gap once refused for one is reopened. A 429, 226, 344, soft block or rate limit is still a refusal, and nothing resumes until matt says so (rules 94, 150). Once, one account had been held since a DNS failure and another since a crash of log's own. `OWN_FAILURE` covers a Python import that fails on this machine (`ImportError`, `ModuleNotFoundError`, `DLL load failed`, `cannot import name`, `No module named`), and `PLATFORM_REFUSAL` matches a locked account but not X Chat saying it unlocked (`(?<!un)locked`): on 2026-11-14 a broken Python import held Discord and Instagram, and an X Chat timeout after unlocking held X.
+
+Each catch-up run is a machine, `gapCatchUpMachine` (`src/inbox/relay/machine.ts`, rule 6), that `catchUpRunner` starts inside the account's one watcher, so it runs the same whichever harness started the watcher. Its states are `checking` (read the gap), `reopening` (a gap held for a failure that wasn't the platform's), `catchingUp` (the platform's own catch-up, through the account's session), `settling` and `closing`, and every run ends as one of `nothingBehind`, `held` (refused by the platform, until matt resumes it), `noCatchUp`, `caughtUp`, `refused` or `retryLater` (left open for the next `RECHECK_GAP_MS` check). Every invoke has `onError`, which leaves the gap open.
 
 Checked by: code and SubQ
 
