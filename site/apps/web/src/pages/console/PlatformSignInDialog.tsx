@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef, useState, type FormEvent } from 'react'
 import { motion, useReducedMotion } from 'motion/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faXmark, faUser, faCookieBite, faArrowLeft, faEye, faEyeSlash, faSpinner, faCheck } from '@fortawesome/free-solid-svg-icons'
+import { faXmark, faUser, faCookieBite, faArrowLeft, faEye, faEyeSlash, faSpinner, faCheck, faDesktop } from '@fortawesome/free-solid-svg-icons'
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core'
 import { useToast } from '@listeningkit/ui'
 import { errorText } from '@/lib/controlApi'
@@ -40,12 +40,13 @@ export function PlatformSignInDialog({ platform, target, accounts, onClose, onSi
   const titleId = useId()
   const descriptionId = useId()
   const toast = useToast()
-  const [method, setMethod] = useState<'password' | 'cookies' | null>(null)
+  const [method, setMethod] = useState<'password' | 'cookies' | 'browser' | null>(null)
   const [showPassword, setShowPassword] = useState(false)
   const [pending, setPending] = useState(false)
   const [form, setForm] = useState({ account: '', username: '', password: '', cookies: '' })
   const known = accounts.filter((account) => (account.platform === 'twitter' ? 'x' : account.platform) === platform.service)
-  const ready = Boolean(target && form.account.trim() && (method === 'password' ? form.username.trim() && form.password : form.cookies.trim()))
+  const hasBrowser = platform.service !== 'x'
+  const ready = Boolean(target && form.account.trim() && (method === 'browser' ? true : method === 'password' ? form.username.trim() && form.password : form.cookies.trim()))
   useEffect(() => {
     const trigger = document.activeElement as HTMLElement | null
     const previousOverflow = document.body.style.overflow
@@ -59,10 +60,10 @@ export function PlatformSignInDialog({ platform, target, accounts, onClose, onSi
     if (!ready || !target || !method || pending) return
     setPending(true)
     try {
-      const answer = await signInAccount(target, method === 'password' ? { platform: platform.service, method, account: form.account.trim(), username: form.username.trim(), password: form.password } : { platform: platform.service, method, account: form.account.trim(), cookies: form.cookies })
+      const answer = await signInAccount(target, method === 'browser' ? { platform: platform.service, method, account: form.account.trim() } : method === 'password' ? { platform: platform.service, method, account: form.account.trim(), username: form.username.trim(), password: form.password } : { platform: platform.service, method, account: form.account.trim(), cookies: form.cookies })
       setForm({ account: '', username: '', password: '', cookies: '' })
       if (answer.signedIn) toast.success(`${platform.label} signed in`, `${form.account.trim()} is signed in. Its session stays in your workspace.`)
-      else if (answer.next === 'browserCheck') toast.success('Login saved', `Finish signing ${form.account.trim()} in from its browser.`)
+      else if (answer.next === 'browserCheck') toast.success(method === 'browser' ? 'Browser opened' : 'Login saved', `Finish signing ${form.account.trim()} in from its browser.`)
       else toast.error(`${platform.label} did not sign in`, answer.detail || 'Nothing was saved.')
       onSignedIn(answer)
     } catch (error) {
@@ -75,21 +76,22 @@ export function PlatformSignInDialog({ platform, target, accounts, onClose, onSi
     <div className="relative p-6 sm:p-7">
       <button type="button" autoFocus disabled={pending} onClick={onClose} aria-label="Close sign-in dialog" className="absolute right-4 top-4 flex size-9 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-500"><FontAwesomeIcon icon={faXmark} className="size-4" /></button>
       <div className="flex items-center gap-3 pr-9"><FontAwesomeIcon icon={platform.icon} className="size-8 shrink-0 text-[#0D2A4C]" aria-hidden="true" /><h2 id={titleId} className="min-w-0 text-xl font-semibold tracking-tight">Sign in to {platform.label}</h2></div>
-      <p id={descriptionId} className="mt-3 text-sm leading-6 text-slate-600">{!method ? 'Sign in with your username and password, or paste cookies from a browser where you’re already signed in.' : method === 'password' ? `Enter your ${platform.label} username and password.` : `Paste the cookies from your signed-in ${platform.label} browser session.`}</p>
+      <p id={descriptionId} className="mt-3 text-sm leading-6 text-slate-600">{!method ? (hasBrowser ? 'Sign in on the login screen in the account’s own browser, with your username and password, or paste cookies from a browser where you’re already signed in.' : 'Sign in with your username and password, or paste cookies from a browser where you’re already signed in.') : method === 'browser' ? `The account’s own browser opens on the ${platform.label} login screen. Sign in there; the session is saved from it once you’re signed in.` : method === 'password' ? `Enter your ${platform.label} username and password.` : `Paste the cookies from your signed-in ${platform.label} browser session.`}</p>
       {!method ? <div className="mb-2 mt-6 flex flex-col gap-3">
         <button type="button" onClick={() => setMethod('password')} className="group flex w-full flex-col overflow-hidden rounded-xl border border-[#2A8CFF] bg-[#2A8CFF] text-sm font-semibold text-white hover:bg-blue-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"><SignInMethodPreview method="password" /><span className="flex min-h-12 items-center justify-center gap-3 px-4 py-3"><FontAwesomeIcon icon={faUser} className="size-4" />Continue with Username &amp; Password</span></button>
         <button type="button" onClick={() => setMethod('cookies')} className="group flex w-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-700 hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"><SignInMethodPreview method="cookies" /><span className="flex min-h-12 items-center justify-center gap-3 px-4 py-3"><FontAwesomeIcon icon={faCookieBite} className="size-4" />Paste cookies</span></button>
+        {hasBrowser ? <button type="button" onClick={() => setMethod('browser')} className="flex min-h-12 w-full items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"><FontAwesomeIcon icon={faDesktop} className="size-4" />Sign in in its own browser</button> : null}
       </div> : <form className="mt-6" onSubmit={(event) => { void submit(event) }} aria-busy={pending}>
         <button type="button" disabled={pending} onClick={() => { setMethod(null); setShowPassword(false) }} className="mb-5 inline-flex items-center gap-2 rounded-md py-1 text-sm font-semibold text-slate-500 hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-500"><FontAwesomeIcon icon={faArrowLeft} className="size-3.5" />Back</button>
         <div className="space-y-4">
           <label className="block text-sm font-semibold text-slate-700">Account<input autoFocus name="account" list={`${titleId}-accounts`} value={form.account} onChange={set('account')} disabled={pending} autoComplete="off" autoCapitalize="none" spellCheck={false} placeholder={platform.service === 'x' ? 'The handle, without @' : platform.service === 'linkedin' ? 'The part after linkedin.com/in/' : 'The account’s name in log'} className={field} /></label>
           <datalist id={`${titleId}-accounts`}>{known.map((account) => <option key={account.id} value={account.name} />)}</datalist>
-          {method === 'password' ? <>
+          {method === 'browser' ? null : method === 'password' ? <>
             <label className="block text-sm font-semibold text-slate-700">Username<input name="username" value={form.username} onChange={set('username')} disabled={pending} autoComplete="off" autoCapitalize="none" spellCheck={false} placeholder="Username or email" className={field} /></label>
             <div><label htmlFor={`${titleId}-password`} className="block text-sm font-semibold text-slate-700">Password</label><div className="relative mt-2"><input id={`${titleId}-password`} name="password" type={showPassword ? 'text' : 'password'} value={form.password} onChange={set('password')} disabled={pending} autoComplete="off" className="h-11 w-full rounded-lg border border-slate-300 pl-3 pr-12 text-base outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" /><button type="button" aria-label={showPassword ? 'Hide password' : 'Show password'} aria-pressed={showPassword} onClick={() => setShowPassword((visible) => !visible)} className="absolute inset-y-0 right-0 flex w-11 items-center justify-center rounded-r-lg text-slate-500 hover:text-blue-600"><FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} className="size-4" /></button></div></div>
           </> : <label className="block text-sm font-semibold text-slate-700">Cookies<textarea name="cookies" value={form.cookies} onChange={set('cookies')} disabled={pending} autoComplete="off" autoCapitalize="none" spellCheck={false} rows={7} placeholder="Paste your cookies" className="mt-2 w-full resize-y rounded-lg border border-slate-300 p-3 text-sm font-normal outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" /></label>}
         </div>
-        <div className="mt-6 flex justify-end border-t border-slate-100 pt-5"><button type="submit" disabled={!ready || pending} className="inline-flex items-center gap-2 rounded-lg bg-[#2A8CFF] px-4 py-2 text-sm font-semibold text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400">{pending ? <><FontAwesomeIcon icon={faSpinner} className="size-3.5 animate-spin motion-reduce:animate-none" aria-hidden="true" />{method === 'password' ? 'Signing in…' : 'Checking session…'}</> : 'Continue'}</button></div>
+        <div className="mt-6 flex justify-end border-t border-slate-100 pt-5"><button type="submit" disabled={!ready || pending} className="inline-flex items-center gap-2 rounded-lg bg-[#2A8CFF] px-4 py-2 text-sm font-semibold text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400">{pending ? <><FontAwesomeIcon icon={faSpinner} className="size-3.5 animate-spin motion-reduce:animate-none" aria-hidden="true" />{method === 'browser' ? 'Opening browser…' : method === 'password' ? 'Signing in…' : 'Checking session…'}</> : 'Continue'}</button></div>
       </form>}
     </div>
   </dialog>

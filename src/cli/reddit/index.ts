@@ -1,6 +1,6 @@
 import { findRedditAccount, recordRedditSession, redditGate } from "../../reddit/account/session/index.ts";
 import type { PlatformAnswer } from "../../platformKit/session/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../runner/helpers/index.ts";
+import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuse, refuseError, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandInput, FlagSpec } from "../runner/types.ts";
 
 export const REDDIT_SESSION_USAGE = [
@@ -38,10 +38,10 @@ export const redditSessionCommand: Command = {
   args: "check --account <a> [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(REDDIT_SESSION_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log reddit session: ${parsed.error}\n${REDDIT_SESSION_USAGE}` };
+    if (!parsed.ok) return refuseInput("reddit session", parsed.error, REDDIT_SESSION_USAGE);
     if (parsed.positionals[0] !== "check" || parsed.positionals.length > 1) return { code: 1, stderr: `log reddit session: give check\n${REDDIT_SESSION_USAGE}` };
     const ref = parsed.flags["account"];
-    if (typeof ref !== "string") return { code: 1, stderr: `log reddit session check: --account is needed\n${REDDIT_SESSION_USAGE}` };
+    if (typeof ref !== "string") return { code: 1, error: "inputInvalid", stderr: `log reddit session check: --account is needed\n${REDDIT_SESSION_USAGE}` };
     try {
       const account = await findRedditAccount(context.twenty, ref);
       const gate = redditGate(account);
@@ -91,7 +91,7 @@ export const REDDIT_READ_INPUT: CommandInput = {
       flags: [
         REDDIT_ACCOUNT_FLAG,
         { name: "subreddit", kind: "string", required: true, description: "The subreddit, with or without r/" },
-        { name: "days", kind: "string", description: "How many days back, default 7" },
+        { name: "days", kind: "number", max: 365, description: "How many days back, default 7, at most 365" },
         { name: "linksTo", kind: "string", description: "Keep only posts linking to this host (github.com), ranked by score then comments" },
         JSON_FLAG,
       ],
@@ -109,7 +109,7 @@ export const REDDIT_READ_INPUT: CommandInput = {
       flags: [
         REDDIT_ACCOUNT_FLAG,
         { name: "url", kind: "string", required: true, description: "The post's link (its permalink)" },
-        { name: "limit", kind: "string", description: "How many comments, default 50" },
+        { name: "limit", kind: "integer", min: 1, max: 500, description: "How many comments, default 50, at most 500" },
         JSON_FLAG,
       ],
     },
@@ -177,11 +177,11 @@ export const redditReadCommand: Command = {
   args: "subreddits --account <a> --query <words> | posts --account <a> --subreddit <name> [--days <n>] [--linksTo <host>] [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(REDDIT_READ_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log reddit read: ${parsed.error}\n${REDDIT_READ_USAGE}` };
+    if (!parsed.ok) return refuseInput("reddit read", parsed.error, REDDIT_READ_USAGE);
     const form = parsed.positionals[0];
     if (!["subreddits", "posts", "home", "post"].includes(form ?? "") || parsed.positionals.length > 1) return { code: 1, stderr: `log reddit read: give subreddits, posts, home or post\n${REDDIT_READ_USAGE}` };
     const ref = parsed.flags["account"];
-    if (typeof ref !== "string") return { code: 1, stderr: `log reddit read: --account is needed\n${REDDIT_READ_USAGE}` };
+    if (typeof ref !== "string") return { code: 1, error: "inputInvalid", stderr: `log reddit read: --account is needed\n${REDDIT_READ_USAGE}` };
     const json = Boolean(parsed.flags["json"]);
     try {
       const account = await findRedditAccount(context.twenty, ref);
@@ -191,7 +191,7 @@ export const redditReadCommand: Command = {
       const now = context.now?.() ?? new Date();
       if (form === "subreddits") {
         const query = parsed.flags["query"];
-        if (typeof query !== "string" || !query.trim()) return { code: 1, stderr: `log reddit read subreddits: --query is needed\n${REDDIT_READ_USAGE}` };
+        if (typeof query !== "string" || !query.trim()) return { code: 1, error: "inputInvalid", stderr: `log reddit read subreddits: --query is needed\n${REDDIT_READ_USAGE}` };
         context.err(`${account.accountName}: looking up subreddits for "${query}"`);
         const run = context.directReddit(account, { action: "subreddits", query });
         for (const line of await recordRedditSession(context.twenty, account, run, now)) context.err(line);
@@ -213,10 +213,8 @@ export const redditReadCommand: Command = {
       }
       if (form === "post") {
         const url = parsed.flags["url"];
-        if (typeof url !== "string" || !url.trim()) return { code: 1, stderr: `log reddit read post: --url is needed\n${REDDIT_READ_USAGE}` };
-        const limitFlag = parsed.flags["limit"];
-        const limit = typeof limitFlag === "string" ? Number(limitFlag) : 50;
-        if (!Number.isInteger(limit) || limit < 1 || limit > 500) return { code: 1, stderr: "log reddit read post: --limit is a number of comments, 1 to 500" };
+        if (typeof url !== "string" || !url.trim()) return { code: 1, error: "inputInvalid", stderr: `log reddit read post: --url is needed\n${REDDIT_READ_USAGE}` };
+        const limit = numberOf(parsed, "limit") ?? 50;
         context.err(`${account.accountName}: reading ${url} and its comments`);
         const run = context.directReddit(account, { action: "post", url, limit });
         for (const line of await recordRedditSession(context.twenty, account, run, now)) context.err(line);
@@ -238,10 +236,9 @@ export const redditReadCommand: Command = {
         };
       }
       const subreddit = parsed.flags["subreddit"];
-      if (typeof subreddit !== "string" || !subreddit.trim()) return { code: 1, stderr: `log reddit read posts: --subreddit is needed\n${REDDIT_READ_USAGE}` };
-      const daysFlag = parsed.flags["days"];
-      const days = typeof daysFlag === "string" ? Number(daysFlag) : 7;
-      if (!Number.isFinite(days) || days <= 0 || days > 365) return { code: 1, stderr: "log reddit read posts: --days is a number of days, 1 to 365" };
+      if (typeof subreddit !== "string" || !subreddit.trim()) return { code: 1, error: "inputInvalid", stderr: `log reddit read posts: --subreddit is needed\n${REDDIT_READ_USAGE}` };
+      const days = numberOf(parsed, "days") ?? 7;
+      if (days <= 0) return { code: 1, stderr: "log reddit read posts: --days is a number of days, 1 to 365" };
       const linksTo = parsed.flags["linksTo"];
       const host = typeof linksTo === "string" && linksTo.trim() ? linksTo.trim() : undefined;
       context.err(`${account.accountName}: reading r/${subreddit}'s newest posts back ${days} days`);
@@ -265,10 +262,10 @@ export const redditReadCommand: Command = {
   },
 };
 
-const APPROVED_BY_FLAG: FlagSpec = { name: "approvedBy", kind: "string", description: "Who approved it: needed with --live (rule 8)" };
+const APPROVED_BY_FLAG: FlagSpec = { name: "approvedBy", kind: "string", approval: true, description: "Who approved it: needed with --live (rule 8)" };
 
 function liveFlag(what: string): FlagSpec {
-  return { name: "live", kind: "boolean", live: true, description: `${what} on Reddit, only when matt asked (rule 8); without it a dry run sends nothing` };
+  return { name: "live", kind: "boolean", live: true, description: `${what} on Reddit, only when the owner asked (rule 8); without it a dry run sends nothing` };
 }
 
 interface RedditWrite {
@@ -300,9 +297,9 @@ function redditWriteCommand(write: RedditWrite): Command {
     async run(context, argv) {
       const parsed = parseArgs(argv, parserSpecOf(write.input));
       if (!parsed.ok) return { code: 1, stderr: `log reddit ${write.name}: ${parsed.error}\n${write.usage}` };
-      if (parsed.positionals.length) return { code: 1, stderr: `log reddit ${write.name}: takes no words, only flags\n${write.usage}` };
+      if (parsed.positionals.length) return { code: 1, error: "inputInvalid", stderr: `log reddit ${write.name}: takes no words, only flags\n${write.usage}` };
       const ref = text(parsed.flags, "account");
-      if (!ref) return { code: 1, stderr: `log reddit ${write.name}: --account is needed\n${write.usage}` };
+      if (!ref) return { code: 1, error: "inputInvalid", stderr: `log reddit ${write.name}: --account is needed\n${write.usage}` };
       const built = write.spec(parsed.flags);
       if ("error" in built) return { code: 1, stderr: `log reddit ${write.name}: ${built.error}\n${write.usage}` };
       const live = parsed.flags["live"] === true;
@@ -441,12 +438,13 @@ const REDDIT_VOTE_INPUT: CommandInput = {
       flags: [
         REDDIT_ACCOUNT_FLAG,
         { name: "url", kind: "string", description: "The post's link (its permalink), to vote on the post" },
-        { name: "target", kind: "string", description: "A post (t3_…) or comment (t1_…) id, instead of --url" },
+        { name: "target", kind: "string", pattern: "^[tT][13]_[a-zA-Z0-9]+$", takes: "a t3_ post or t1_ comment id", description: "A post (t3_…) or comment (t1_…) id, instead of --url" },
         { name: "direction", kind: "enum", values: ["up", "down", "none"], description: "up (the default), down, or none to take a vote back" },
         APPROVED_BY_FLAG,
         liveFlag("Vote"),
         JSON_FLAG,
       ],
+      groups: [{ rule: "atLeastOne", names: ["url", "target"] }],
     },
   ],
 };

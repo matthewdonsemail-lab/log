@@ -1,4 +1,4 @@
-import type { AccountStanding } from "../../../marketplace/lifecycle/index.ts";
+import type { AccountStanding } from "../../../platformKit/lifecycle/index.ts";
 
 export interface LifecycleRow {
   accountName: string;

@@ -1,4 +1,4 @@
-import type { FacebookAccount } from '../../../marketplace/socialAccount/index'
+import type { FacebookAccount } from '../../../platformKit/socialAccount/index'
 import type { EngineAnswer, SessionState } from '../types'
 
 interface Cookie { name: string; value: string; domain?: string; path?: string; expires?: number; httpOnly?: boolean }

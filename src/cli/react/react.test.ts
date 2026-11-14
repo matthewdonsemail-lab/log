@@ -62,6 +62,25 @@ describe("log discord react (rule 140)", () => {
     expect(r.out).toContain("reactRefused");
     expect(r.specs.length).toBe(1);
   });
+
+  test("it runs through the shared action machine: an engine that throws is a crash said once, never retried", async () => {
+    const sent = await run(["discord", "react", "--account", "discordOne", "--channel", CHANNEL, "--message", MESSAGE, "--emoji", "fire", "--approvedBy", "matt", "--live"], { ok: true, event: "sent", loginState: "loggedIn" });
+    expect(sent.err).toContain("on the direct-API engine, approved by matt");
+    let calls = 0;
+    const err: string[] = [];
+    const code = await runCli(["discord", "react", "--account", "discordOne", "--channel", CHANNEL, "--message", MESSAGE, "--emoji", "fire", "--approvedBy", "matt", "--live"], {
+      twenty: fixture(),
+      out: () => {},
+      err: (l) => err.push(l),
+      directDiscord: () => {
+        calls += 1;
+        throw new Error("socket closed");
+      },
+    });
+    expect(code).toBe(2);
+    expect(err.join("\n")).toContain("crashed");
+    expect(calls).toBe(1);
+  });
 });
 
 const python = process.env.LOG_PYTHON || "python";

@@ -8,25 +8,25 @@ sequenceDiagram
   Agent->>Hook: SessionStart
   Note over Hook: where every open browser is, the moment a session starts or comes back from compaction
   Note over Hook: ~/.logCli/runs over 2 GB or the disk nearly full: said with `log runs prune` before AdsPower refuses to start
-  Note over Hook: which commands run on the direct-API engine (from DIRECT_ROUTES) and each account's session state and governor use, so a session coming back from compaction knows the engines#59; and, loudly, when the log MCP server runs older code than the checkout, and which code files have uncommitted local changes (rule 106)
-  Note over Hook: the knowledge base is there and how to search it and save to it, with how many chunks Redis holds, so a session looks things up before it guesses (rule 93)
+  Note over Hook: which commands run on the direct-API engine (from DIRECT_ROUTES) and each account's session state and governor use, so a session coming back from compaction knows the engines#59; and, loudly, when the log MCP server runs older code than the checkout, and which code files have uncommitted local changes (rule 163)
+  Note over Hook: the knowledge base is there and how to search it and save to it, with how many chunks Redis holds, so a session looks things up before it guesses
   Note over Hook: anyone who wrote to a signed-in account's inbox since the last look (every platform's inbox, incl. X Chat, read in the background every 4 to 8 minutes, and what each account's live watcher pushed: X Chat's socket, Discord's gateway, Slack's websocket in every workspace, rule 123), said loudly so a reply is never missed#59; and, from each X account's local inbox store with no network, who wrote last and is waiting on a reply
-  Note over Hook: what every account's queue did since the last look (held, sent, cooling off, stopped), so a queue is never running out of the agent's sight (rule 114)
+  Note over Hook: what every account's queue did since the last look (held, sent, cooling off, stopped), so a queue is never running out of the agent's sight (rule 109)
   Note over Hook: the play this session loaded, read from its own transcript, put back with the step it reached when the session comes back from compaction or resumes, and the context layer service started (rule 158)
-  Note over Hook: what X's own client shows on each X account right now (its unread notifications, DMs and X Chat, read through the account's one session the way x.com polls it), and every new like, retweet, reply, quote, mention or follow since this Claude session last looked (rule 115)
+  Note over Hook: what X's own client shows on each X account right now (its unread notifications, DMs and X Chat, read through the account's one session the way x.com polls it), and every new like, retweet, reply, quote, mention or follow since this Claude session last looked (rule 109)
   matt->>Agent: a prompt
   Agent->>Hook: UserPromptSubmit
-  Note over Hook: where every open browser is, with each of matt's prompts
-  Note over Hook: the same storage check with each of matt's prompts (measured at most every 15 minutes)
-  Note over Hook: the same engine line with matt's prompt, only when an account's session state, its governor use or the MCP server's freshness changed
-  Note over Hook: the same inbox check with each of matt's prompts: a poll starts when one is due, and new messages from the last poll are put in front of the agent
-  Note over Hook: the play matt's prompt asks for, matched against every use case's own #quot;How the owner asks for it#quot; phrases and title, named with getGuide to load it before anything is done (rule 158)
-  Note over Hook: the same queue events with each of matt's prompts
-  Note over Hook: the same X live state with each of matt's prompts, only what is new for this session
+  Note over Hook: where every open browser is, with each of the owner's prompts
+  Note over Hook: the same storage check with each of the owner's prompts (measured at most every 15 minutes)
+  Note over Hook: the same engine line with the owner's prompt, only when an account's session state, its governor use or the MCP server's freshness changed
+  Note over Hook: the same inbox check with each of the owner's prompts: a poll starts when one is due, and new messages from the last poll are put in front of the agent
+  Note over Hook: the play the owner's prompt asks for, matched against every use case's own #quot;How the owner asks for it#quot; phrases and title, named with getGuide to load it before anything is done (rule 158)
+  Note over Hook: the same queue events with each of the owner's prompts
+  Note over Hook: the same X live state with each of the owner's prompts, only what is new for this session
   loop each tool call
     Agent->>Hook: PreToolUse
-    Note over Hook: a Discord, Slack or Instagram call that names its chat by a bare id is refused and told to pass the name (a person, a group, or #quot;#lt;server#gt; ##lt;channel#gt;#quot;), so matt sees where every call goes (rule 154)
-    Note over Hook: a log-cli run that would hide its lines (piped through tail or head) is refused before it starts#59; a long one off a Monitor is told to start one (rule 26)#59; any log action run by hand from a shell is refused and pointed at its MCP tool (rule 106)
+    Note over Hook: a Discord, Slack or Instagram call that names its chat by a bare id is refused and told to pass the name (a person, a group, or #quot;#lt;server#gt; ##lt;channel#gt;#quot;), so the owner sees where every call goes (rule 154)
+    Note over Hook: a log-cli run that would hide its lines (piped through tail or head) is refused before it starts#59; a long one off a Monitor is told to start one (rule 26)#59; any log action run by hand from a shell is refused and pointed at its MCP tool (rule 163)
     alt a log run piped through tail/head
       Hook-->>Agent: refused (exit 2), run it live
     else
@@ -40,7 +40,7 @@ sequenceDiagram
     end
   end
   Agent->>Hook: Stop
-  Note over Hook: the turn does not end while a browser sits on a state log-cli can resolve (rule 54)
+  Note over Hook: the turn does not end while a browser sits on a state log-cli can resolve (rule 35)
   alt a browser sits on a state log-cli clears
     Hook-->>Agent: decision block, with the state's resolver
   else nothing to clear, or a person's state

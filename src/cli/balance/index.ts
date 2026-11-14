@@ -1,6 +1,6 @@
 import { checkBalances, needsMoney, PROVIDER_INFO, PROVIDERS } from "../../billing/index.ts";
 import type { Provider, ProviderBalance } from "../../billing/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";
+import { JSON_FLAG, parseArgs, parserSpecOf, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
 
 export const BALANCE_USAGE = [
@@ -43,7 +43,7 @@ export const balanceCommand: Command = {
   args: "[--provider <name>] [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(BALANCE_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log balance: ${parsed.error}\n${BALANCE_USAGE}` };
+    if (!parsed.ok) return refuseInput("balance", parsed.error, BALANCE_USAGE);
     const only = typeof parsed.flags["provider"] === "string" ? [parsed.flags["provider"] as Provider] : [...PROVIDERS];
     context.err(`log balance: reading ${only.map((p) => PROVIDER_INFO[p].label).join(", ")}`);
     const balances = await checkBalances(only);

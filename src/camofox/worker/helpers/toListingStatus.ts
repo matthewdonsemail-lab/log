@@ -1,4 +1,4 @@
-import type { ListingStatus, RemovalProvenance } from "../../../marketplace/listing/index.ts";
+import type { ListingStatus, RemovalProvenance } from "../../../facebook/marketplace/listing/index.ts";
 import type { DashboardHealth } from "../types.ts";
 
 export function toListingStatus(health: DashboardHealth): { status: ListingStatus; removedBy?: RemovalProvenance } {

@@ -14,6 +14,7 @@ export type ErrorLayer =
   | 'group'
   | 'warmup'
   | 'twitter'
+  | 'tool'
 
 export type PublishEnd = 'failed' | 'blocked' | 'needsPerson' | 'unconfirmedId'
 
@@ -38,7 +39,7 @@ export interface ErrorEntry {
 }
 
 const reconnect = 'Run `log facebook connect --account <id>` and log in by hand.'
-const tellMatt = "Tell matt. Don't retry the account until it's looked at."
+const tellOwner = "Tell the owner. Don't retry the account until it's looked at."
 
 export const ERROR_CATALOG = {
   neverConnected: {
@@ -54,7 +55,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'The account was disconnected on purpose.',
     retryable: false,
-    raisedIn: ['marketplace/account'],
+    raisedIn: ['platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
     action: reconnect
@@ -63,7 +64,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'The account has not been checked for too long to trust its state.',
     retryable: true,
-    raisedIn: ['marketplace/account'],
+    raisedIn: ['platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Run `log facebook scan --account <id>`.'
@@ -72,7 +73,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'Facebook sent the session to the login page.',
     retryable: false,
-    raisedIn: ['worker', 'publish.openingForm', 'marketplace/account'],
+    raisedIn: ['worker', 'publish.openingForm', 'platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
     action: reconnect
@@ -81,7 +82,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'The session was invalidated, usually by a password change.',
     retryable: false,
-    raisedIn: ['marketplace/account'],
+    raisedIn: ['platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
     action: reconnect
@@ -90,7 +91,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'Facebook put the account on a checkpoint (verify identity, SMS code, ID).',
     retryable: false,
-    raisedIn: ['worker', 'publish.openingForm', 'marketplace/account'],
+    raisedIn: ['worker', 'publish.openingForm', 'platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Log in by hand and clear the checkpoint, then `log facebook connect`. No solver can do it.'
@@ -165,7 +166,7 @@ export const ERROR_CATALOG = {
     raisedIn: ['cli/slack'],
     publish: 'blocked',
     monitor: 'blocked',
-    action: tellMatt
+    action: tellOwner
   },
   twitterCookiesWrongAccount: {
     layer: 'account',
@@ -209,14 +210,14 @@ export const ERROR_CATALOG = {
     meaning: "A dm queue check couldn't read the account's X Chat inbox, so it can't tell who is already in a conversation.",
     retryable: true,
     raisedIn: ['cli/twitter/queue'],
-    action: 'Check the X session (log twitter session check), then run the check again; --skipXChatCheck bypasses it only when matt asked.'
+    action: 'Check the X session (log twitter session check), then run the check again; --skipXChatCheck bypasses it only when the owner asked.'
   },
   limitInvalid: {
-    layer: 'twitter',
-    meaning: 'The --limit given to log twitter dms is not a whole number from 1 to 200.',
+    layer: 'tool',
+    meaning: "The --limit given isn't a whole number inside the command's range (the refusal says the range).",
     retryable: false,
     raisedIn: ['cli/twitter/dms', 'cli/twitter/followers', 'cli/twitter/notifications'],
-    action: 'Give --limit as a whole number from 1 to 200, or leave it out for 20.'
+    action: 'Give --limit as a whole number inside the range the refusal names, or leave it out for the default.'
   },
   notificationQueryInvalid: {
     layer: 'twitter',
@@ -227,7 +228,7 @@ export const ERROR_CATALOG = {
   },
   voiceGuideMissing: {
     layer: 'twitter',
-    meaning: "matt's writing guide (GUIDES/MATT_WRITING_STYLE.md) isn't where log voice looks, so a draft can't be gated against it.",
+    meaning: "The owner's writing guide (GUIDES/MATT_WRITING_STYLE.md) isn't where log voice looks, so a draft can't be gated against it.",
     retryable: false,
     raisedIn: ['cli/twitter/voice', 'cli/voice'],
     action: 'Put the guide back in the Buzz workspace GUIDES folder, or point LOG_VOICE_GUIDE at it.'
@@ -272,13 +273,13 @@ export const ERROR_CATALOG = {
     meaning: "Discord didn't take the delete: it refused it or didn't answer.",
     retryable: false,
     raisedIn: ['cli/discord'],
-    action: "Nothing is retried (rule 94). Tell matt Discord's answer and wait for him."
+    action: "Nothing is retried (rule 94). Tell the owner Discord's answer and wait for them."
   },
   secondsInvalid: {
-    layer: 'twitter',
-    meaning: 'The --seconds given to log twitter chat watch is not a number of seconds of at least 5.',
+    layer: 'tool',
+    meaning: "The --seconds given to a watch isn't a number of seconds of at least 5.",
     retryable: false,
-    raisedIn: ['cli/twitter/chat'],
+    raisedIn: ['cli/twitter/chat', 'cli/discord', 'cli/slack', 'cli/instagram'],
     action: 'Give --seconds as a number of seconds, at least 5, or leave it out to watch until stopped.'
   },
   conversationInvalid: {
@@ -300,21 +301,21 @@ export const ERROR_CATALOG = {
     meaning: 'A send on X was asked for with --live but without who approved it (rule 8: nothing is sent without a named approver).',
     retryable: false,
     raisedIn: ['twitter/post/send'],
-    action: 'Add --approvedBy <who approved it>; only send what matt approved.'
+    action: 'Add --approvedBy <who approved it>; only send what the owner approved.'
   },
   styleFailed: {
     layer: 'twitter',
     meaning: 'The copy breaks the house style: lowercase only, no commas, semicolons, full stops, em or en dashes (urls are exempt).',
     retryable: false,
     raisedIn: ['twitter/post/send', 'twitter/queue/plan'],
-    action: 'Rewrite the copy in house style, or pass --skipStyleCheck when matt asked for it.'
+    action: 'Rewrite the copy in house style, or pass --skipStyleCheck when the owner asked for it.'
   },
   providerOutOfCredit: {
     layer: 'runtime',
     meaning: 'A paid provider log calls (SubQ, Jina, Inworld, Fish Audio, AssemblyAI) answered that it is out of credit (402, or words like insufficient credit). The call failed for want of money, not a bug.',
     retryable: false,
     raisedIn: ['subq/decisions', 'voice/aiTells', 'extensions/inworld', 'extensions/fishAudio', 'media/voiceNotes'],
-    action: 'Run log balance (MCP balance) to see every provider, then tell matt which one needs topping up and where. Never top up from log (rule 41).'
+    action: 'Run log balance (MCP balance) to see every provider, then tell the owner which one needs topping up and where. Never top up from log (rule 41).'
   },
   jinaKeyMissing: {
     layer: 'twitter',
@@ -328,14 +329,14 @@ export const ERROR_CATALOG = {
     meaning: 'The copy carries what AI chat interfaces leave in text and nobody types: zero-width or other hidden characters, unusual Unicode spaces, or pasted Claude HTML classes and data attributes (vendor/claudeArtifactDetector). The statistical watermark itself cannot be checked (no public detector).',
     retryable: false,
     raisedIn: ['twitter/post/send', 'twitter/queue/plan', 'cli/discord'],
-    action: 'Retype the copy as plain text so only what matt would type is in it, then send again.'
+    action: 'Retype the copy as plain text so only what the owner would type is in it, then send again.'
   },
   mediaInvalid: {
-    layer: 'twitter',
-    meaning: "A post's --media can't go on X: a file that isn't there or is empty, a type X doesn't take, one over X's size (5 MB an image, 15 MB a gif, 512 MB a video), a video or gif beside other files, more than 4 images, or media on something that isn't a post.",
+    layer: 'tool',
+    meaning: "The media given can't be used: a file or media item that isn't there or is empty, a type the platform doesn't take, one over the platform's size, too many files, or media on something that takes none. The detail names which.",
     retryable: false,
-    raisedIn: ['twitter/post/send'],
-    action: 'Give one .mp4/.mov video or one .gif, or up to 4 .jpg/.png/.webp images, as --media <file>[,<file>].'
+    raisedIn: ['twitter/post/send', 'cli/media'],
+    action: "Read the detail, then give media the platform takes (its limits are in the platform's guide), or a media item that exists (log media status)."
   },
   queueInvalid: {
     layer: 'twitter',
@@ -415,7 +416,7 @@ export const ERROR_CATALOG = {
     raisedIn: ['connect.routing'],
     publish: 'blocked',
     monitor: 'blocked',
-    action: "A person records the selfie in the Camoufox window (or on the account owner's phone), then `log facebook connect` again. Tell matt."
+    action: "A person records the selfie in the Camoufox window (or on the account owner's phone), then `log facebook connect` again. Tell the owner."
   },
   signInNotFinished: {
     layer: 'account',
@@ -430,7 +431,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'The account has not confirmed its email or phone.',
     retryable: false,
-    raisedIn: ['marketplace/account'],
+    raisedIn: ['platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Confirm the email or phone on Facebook by hand.'
@@ -439,7 +440,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'The saved cookies are not accepted.',
     retryable: false,
-    raisedIn: ['marketplace/account'],
+    raisedIn: ['platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
     action: reconnect
@@ -451,40 +452,40 @@ export const ERROR_CATALOG = {
     raisedIn: ['marketplace/check', 'flow.marketplaceListingPublish'],
     publish: 'blocked',
     monitor: 'blocked',
-    action: tellMatt
+    action: tellOwner
   },
   suspended: {
     layer: 'account',
     meaning: 'Marketplace is restricted or the account is disabled ("can\'t buy or sell").',
     retryable: false,
-    raisedIn: ['worker', 'publish.openingForm', 'marketplace/account'],
+    raisedIn: ['worker', 'publish.openingForm', 'platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
-    action: tellMatt
+    action: tellOwner
   },
   readOnlyLimited: {
     layer: 'account',
     meaning: 'The account can read but Facebook refuses its writes ("something went wrong").',
     retryable: false,
-    raisedIn: ['marketplace/account'],
+    raisedIn: ['platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
-    action: tellMatt
+    action: tellOwner
   },
   automatedFlagged: {
     layer: 'account',
     meaning: 'Facebook flagged the account as automated.',
     retryable: false,
-    raisedIn: ['marketplace/account'],
+    raisedIn: ['platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
-    action: tellMatt
+    action: tellOwner
   },
   rateLimited: {
     layer: 'account',
     meaning: 'Facebook says the account hit a limit ("limit reached", "daily listing limit").',
     retryable: true,
-    raisedIn: ['worker', 'publish.openingForm', 'publish.reviewing', 'marketplace/account'],
+    raisedIn: ['worker', 'publish.openingForm', 'publish.reviewing', 'platformKit/account'],
     publish: 'blocked',
     monitor: 'resting',
     action: 'Wait 24h. The monitor rests by itself; publish again tomorrow.'
@@ -493,7 +494,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'The proxy, not Facebook, is rate limiting.',
     retryable: true,
-    raisedIn: ['marketplace/account'],
+    raisedIn: ['platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Wait, or move the account to another proxy.'
@@ -502,7 +503,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'An interstitial challenge page stands in front of the content.',
     retryable: false,
-    raisedIn: ['marketplace/account'],
+    raisedIn: ['platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Open the account by hand and clear the page.'
@@ -511,34 +512,34 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'The IP or the account is blocked.',
     retryable: false,
-    raisedIn: ['marketplace/account'],
+    raisedIn: ['platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
-    action: tellMatt
+    action: tellOwner
   },
   restrictedPolicy: {
     layer: 'account',
     meaning: 'A policy restriction applies to the account.',
     retryable: false,
-    raisedIn: ['marketplace/account'],
+    raisedIn: ['platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
-    action: tellMatt
+    action: tellOwner
   },
   permissionDenied: {
     layer: 'account',
     meaning: 'The account lacks permission for this action.',
     retryable: false,
-    raisedIn: ['marketplace/account'],
+    raisedIn: ['platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
-    action: tellMatt
+    action: tellOwner
   },
   joinGate: {
     layer: 'account',
     meaning: 'A group asks the account to join first.',
     retryable: false,
-    raisedIn: ['marketplace/account'],
+    raisedIn: ['platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Join the group by hand.'
@@ -547,16 +548,16 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'The account was removed from a group.',
     retryable: false,
-    raisedIn: ['marketplace/account'],
+    raisedIn: ['platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
-    action: tellMatt
+    action: tellOwner
   },
   proxyUnreachable: {
     layer: 'account',
     meaning: "No exit IP through the account's proxy: it is down or refusing connections. No browser was opened.",
     retryable: true,
-    raisedIn: ['proxyGate', 'publish.openingForm', 'worker', 'marketplace/account'],
+    raisedIn: ['proxyGate', 'publish.openingForm', 'worker', 'platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Check the proxy is up, then `log proxy check --account <id>`.'
@@ -574,7 +575,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'The proxy answered 407: it refused the username or password. No browser was opened.',
     retryable: false,
-    raisedIn: ['proxyGate', 'publish.openingForm', 'worker', 'marketplace/account'],
+    raisedIn: ['proxyGate', 'publish.openingForm', 'worker', 'platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Fix the username and password in the socialAccount proxy in Twenty.'
@@ -583,7 +584,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: "The account's proxy can't be read: it needs scheme://user:pass@host:port.",
     retryable: false,
-    raisedIn: ['proxyGate', 'marketplace/socialAccount', 'publish.openingForm', 'worker', 'marketplace/account'],
+    raisedIn: ['proxyGate', 'platformKit/socialAccount', 'publish.openingForm', 'worker', 'platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Fix the socialAccount proxy in Twenty.'
@@ -592,7 +593,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'The socialAccount is not platform FACEBOOK. log-cli only runs Facebook accounts.',
     retryable: false,
-    raisedIn: ['marketplace/socialAccount'],
+    raisedIn: ['platformKit/socialAccount'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Pick a FACEBOOK account, or fix its platform in Twenty.'
@@ -606,11 +607,45 @@ export const ERROR_CATALOG = {
     monitor: 'blocked',
     action: "Set the account's platform (FACEBOOK, TWITTER, REDDIT, DISCORD, LINKEDIN, SLACK or INSTAGRAM) on its row."
   },
+  accountPlatformMismatch: {
+    layer: 'account',
+    meaning: 'The account named is kept under another platform than the one given. Nothing was contacted.',
+    retryable: false,
+    raisedIn: ['platformKit/capability'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: 'Leave the platform out so the account decides it, or name the account kept on that platform. The detail says where it was found.'
+  },
+  platformAmbiguous: {
+    layer: 'account',
+    meaning: 'More than one platform keeps an account by that name, and no platform was given. Nothing was contacted.',
+    retryable: false,
+    raisedIn: ['platformKit/capability'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: 'Call again with the platform: the detail lists the platforms that keep it.'
+  },
+  capabilityMissing: {
+    layer: 'account',
+    meaning: "The account's platform has no command for this capability, so log can't do it there. Nothing was contacted.",
+    retryable: false,
+    raisedIn: ['platformKit/capability'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: 'The detail lists the platforms that have it. Use an account on one of those, or the platform-specific tool if one does something close.'
+  },
+  inputUnsupported: {
+    layer: 'form',
+    meaning: "An input was given that the resolved platform's command doesn't take for this capability. Nothing was contacted.",
+    retryable: false,
+    raisedIn: ['platformKit/capability'],
+    action: 'Call again without that input. The detail names the input and the platform.'
+  },
   accountNotUsable: {
     layer: 'account',
     meaning: "The account's accountStatus doesn't allow this run (only ACTIVE and WARMING post; connect also takes NEEDS_LOGIN and CHECKPOINT). An empty status counts as not usable.",
     retryable: false,
-    raisedIn: ['marketplace/socialAccount'],
+    raisedIn: ['platformKit/socialAccount'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Set accountStatus in Twenty (log facebook account status), or use another account.'
@@ -619,7 +654,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: "The account has no homeCountry (ISO, e.g. IE), so its proxy and listings can't be checked. Nothing runs without it.",
     retryable: false,
-    raisedIn: ['marketplace/socialAccount'],
+    raisedIn: ['platformKit/socialAccount'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Set homeCountry (and homeCity) on the socialAccount in Twenty.'
@@ -628,7 +663,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'Facebook says the account is disabled or locked.',
     retryable: false,
-    raisedIn: ['worker', 'publish.openingForm', 'marketplace/account'],
+    raisedIn: ['worker', 'publish.openingForm', 'platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'The account becomes BANNED and its campaign listings get replacement accounts. Keep the record.'
@@ -637,7 +672,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: "The account already published its dailyListingCap listings today (3 when empty).",
     retryable: true,
-    raisedIn: ['cli/publish', 'marketplace/replacement'],
+    raisedIn: ['cli/publish', 'facebook/marketplace/replacement'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Wait until tomorrow, or raise dailyListingCap in Twenty.'
@@ -646,7 +681,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'The account has no proxy in Twenty, and no browser opens for an account without one (rule 12), not for a dry run and not for signing in.',
     retryable: false,
-    raisedIn: ['proxyGate', 'marketplace/socialAccount', 'publish.openingForm', 'worker'],
+    raisedIn: ['proxyGate', 'platformKit/socialAccount', 'publish.openingForm', 'worker'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Set the socialAccount proxy in Twenty (scheme://user:pass@host:port), then `log proxy check --account <name>`.'
@@ -734,12 +769,12 @@ export const ERROR_CATALOG = {
   },
   voiceGateFailed: {
     layer: 'account',
-    meaning: "The voice gate read the draft right before it went out (rule 137) and it failed one of its checks: SubQ's read of matt's voice, the AI tells index, matt's own phrasing, the watermark checker or the scrambler. Nothing was sent.",
+    meaning: "The voice gate read the draft right before it went out (rule 137) and it failed one of its checks: SubQ's read of the owner's voice, the AI tells index, the owner's own phrasing, the watermark checker or the scrambler. Nothing was sent.",
     retryable: true,
     raisedIn: ['voice/gate'],
     publish: 'blocked',
     monitor: 'blocked',
-    action: "Rewrite the draft in matt's words from what the refusal names, then send it again. In the X queue the item is held: put the rewrite back with `twitterQueueEdit`."
+    action: "Rewrite the draft in the owner's words from what the refusal names, then send it again. In the X queue the item is held: put the rewrite back with `twitterQueueEdit`."
   },
   sameAsSent: {
     layer: 'account',
@@ -757,7 +792,7 @@ export const ERROR_CATALOG = {
     raisedIn: ['inbox/catchUp'],
     publish: 'blocked',
     monitor: 'blocked',
-    action: "Wait for the owner's catch-up (its watch log says when it has caught up), then send again. If the catch-up was refused (a 429 or another refusal), nothing resumes on the account until matt says so (rule 94)."
+    action: "Wait for the owner's catch-up (its watch log says when it has caught up), then send again. If the catch-up was refused (a 429 or another refusal), nothing resumes on the account until the owner says so (rule 94)."
   },
   watcherAlreadyRunning: {
     layer: 'account',
@@ -790,19 +825,19 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: "log-cli has no browser locale for the account's homeCountry, so it can't pin one. Nothing opened.",
     retryable: false,
-    raisedIn: ['marketplace/home', 'browser/run'],
+    raisedIn: ['platformKit/home', 'browser/run'],
     publish: 'blocked',
     monitor: 'blocked',
-    action: 'Add the country to HOME_COUNTRIES in src/marketplace/home/types.ts, or fix homeCountry in Twenty.'
+    action: 'Add the country to HOME_COUNTRIES in src/platformKit/home/types.ts, or fix homeCountry in Twenty.'
   },
   noHomeTimezone: {
     layer: 'account',
     meaning: "The account's homeCountry has several timezones and its homeCity isn't in the city table, so its local time is unknown. Nothing opened.",
     retryable: false,
-    raisedIn: ['marketplace/home', 'browser/run'],
+    raisedIn: ['platformKit/home', 'browser/run'],
     publish: 'blocked',
     monitor: 'blocked',
-    action: 'Add the city to CITY_TIMEZONES in src/marketplace/home/types.ts, or fix homeCity in Twenty.'
+    action: 'Add the city to CITY_TIMEZONES in src/platformKit/home/types.ts, or fix homeCity in Twenty.'
   },
   deviceProfileInvalid: {
     layer: 'account',
@@ -811,7 +846,7 @@ export const ERROR_CATALOG = {
     raisedIn: ['browser/run', 'proxyGate', 'publish.openingForm', 'worker'],
     publish: 'blocked',
     monitor: 'blocked',
-    action: "Tell matt. Don't clear deviceProfile unless he decides the account may get a new device."
+    action: "Tell the owner. Don't clear deviceProfile unless they decide the account may get a new device."
   },
   browserTimezoneMismatch: {
     layer: 'account',
@@ -820,7 +855,7 @@ export const ERROR_CATALOG = {
     raisedIn: ['proxyGate', 'publish.openingForm', 'worker'],
     publish: 'blocked',
     monitor: 'blocked',
-    action: 'Tell matt: the timezone forcing is broken (often after a Camoufox upgrade). Re-run the leak tests before any run.'
+    action: 'Tell the owner: the timezone forcing is broken (often after a Camoufox upgrade). Re-run the leak tests before any run.'
   },
   browserLocaleMismatch: {
     layer: 'account',
@@ -829,7 +864,7 @@ export const ERROR_CATALOG = {
     raisedIn: ['proxyGate', 'publish.openingForm', 'worker'],
     publish: 'blocked',
     monitor: 'blocked',
-    action: 'Tell matt: the locale pinning is broken (often after a Camoufox upgrade). Re-run the leak tests before any run.'
+    action: 'Tell the owner: the locale pinning is broken (often after a Camoufox upgrade). Re-run the leak tests before any run.'
   },
   browserExitIpMismatch: {
     layer: 'account',
@@ -838,7 +873,7 @@ export const ERROR_CATALOG = {
     raisedIn: ['proxyGate', 'publish.openingForm', 'worker'],
     publish: 'blocked',
     monitor: 'blocked',
-    action: 'Run it again. If it repeats, `log proxy check --account <id>` and tell matt.'
+    action: 'Run it again. If it repeats, `log proxy check --account <id>` and tell the owner.'
   },
   selfCheckFailed: {
     layer: 'account',
@@ -847,7 +882,7 @@ export const ERROR_CATALOG = {
     raisedIn: ['proxyGate', 'publish.openingForm', 'worker'],
     publish: 'blocked',
     monitor: 'blocked',
-    action: 'Run it again. If it repeats, check the proxy (`log proxy check`) and tell matt.'
+    action: 'Run it again. If it repeats, check the proxy (`log proxy check`) and tell the owner.'
   },
   listingCountryMismatch: {
     layer: 'account',
@@ -862,7 +897,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'The page loaded but shows a login wall instead of content.',
     retryable: false,
-    raisedIn: ['worker', 'marketplace/account'],
+    raisedIn: ['worker', 'platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
     action: reconnect
@@ -871,7 +906,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'The page loaded but shows a captcha instead of content.',
     retryable: false,
-    raisedIn: ['marketplace/account'],
+    raisedIn: ['platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Open the account by hand. `log facebook publish` routes captchas itself; `scan` does not.'
@@ -880,7 +915,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'The account belongs to a platform log-cli does not know.',
     retryable: false,
-    raisedIn: ['marketplace/account'],
+    raisedIn: ['platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Facebook only (AGENTS.md rule 3).'
@@ -889,7 +924,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'The client saw an account failure it could not map.',
     retryable: false,
-    raisedIn: ['marketplace/account'],
+    raisedIn: ['platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Look at the raw signal and add a code for it here.'
@@ -1052,7 +1087,7 @@ export const ERROR_CATALOG = {
     retryable: false,
     raisedIn: ['cli/flow', 'cli/warmup'],
     publish: 'blocked',
-    action: 'Publish nothing from this account; matt decides. Read the create page\'s answer again on a later day.'
+    action: 'Publish nothing from this account; the owner decides. Read the create page\'s answer again on a later day.'
   },
   marketplaceLocationWrong: {
     layer: 'account',
@@ -1434,11 +1469,11 @@ export const ERROR_CATALOG = {
     raisedIn: ['proxyGate', 'worker', 'publish.openingForm'],
     publish: 'failed',
     monitor: 'failed',
-    action: 'Tell matt. Every launch goes through python/browser/proxyGate.py apply(); find the caller in the detail.'
+    action: 'Tell the owner. Every launch goes through python/browser/proxyGate.py apply(); find the caller in the detail.'
   },
   crashed: {
     layer: 'runtime',
-    meaning: 'A step threw before Publish was clicked. Nothing was posted.',
+    meaning: "A step threw an error the command didn't expect, so nothing after it ran (a publish that throws after its Publish click is crashedAfterPublish instead).",
     retryable: true,
     raisedIn: [
       'worker',
@@ -1485,7 +1520,7 @@ export const ERROR_CATALOG = {
     layer: 'listing',
     meaning: 'No agencyListing with that id in Twenty.',
     retryable: false,
-    raisedIn: ['marketplace/agencyListing'],
+    raisedIn: ['facebook/marketplace/agencyListing'],
     action: 'Check the id (log facebook listings shows them).'
   },
   listingNotRemovable: {
@@ -1499,7 +1534,7 @@ export const ERROR_CATALOG = {
     layer: 'listing',
     meaning: 'The agencyListing has no socialAccount, so nothing knows which account posts it.',
     retryable: false,
-    raisedIn: ['marketplace/agencyListing'],
+    raisedIn: ['facebook/marketplace/agencyListing'],
     action: 'Set its Social account in Twenty, or fill the campaign with log facebook campaign fill.'
   },
   listingNotPublishable: {
@@ -1527,7 +1562,7 @@ export const ERROR_CATALOG = {
     layer: 'listing',
     meaning: "No FACEBOOK account in the listing's country is ACTIVE, proxied, under its cap and not already in the campaign. The listing stays ACCOUNT_LOST.",
     retryable: true,
-    raisedIn: ['marketplace/replacement'],
+    raisedIn: ['facebook/marketplace/replacement'],
     action: 'Add or activate an account in that country (with a proxy there), then run log facebook campaign heal.'
   },
 
@@ -1570,7 +1605,7 @@ export const ERROR_CATALOG = {
     layer: 'twenty',
     meaning: 'No socialAccount with that accountName or id in Twenty.',
     retryable: false,
-    raisedIn: ['marketplace/socialAccount'],
+    raisedIn: ['platformKit/socialAccount'],
     action: 'Check the accountName in Twenty (log facebook accounts lists the Facebook ones). An inbox watcher for an account gone from Twenty is not restarted.'
   },
 
@@ -1806,7 +1841,7 @@ export const ERROR_CATALOG = {
     raisedIn: ['cli/preflight', 'host.setLocation'],
     publish: 'blocked',
     monitor: 'blocked',
-    action: 'Add the city with its state or province code to CITY_REGIONS in src/marketplace/home/types.ts.'
+    action: 'Add the city with its state or province code to CITY_REGIONS in src/platformKit/home/types.ts.'
   },
   twoStepNoAuthApp: {
     layer: 'account',
@@ -1815,7 +1850,7 @@ export const ERROR_CATALOG = {
     raisedIn: ['host.signIn'],
     publish: 'blocked',
     monitor: 'blocked',
-    action: tellMatt
+    action: tellOwner
   },
   overlayNotCleared: {
     layer: 'browser',
@@ -1868,14 +1903,14 @@ export const ERROR_CATALOG = {
     meaning: "The host already opened the account's browser the most times allowed today (rule 35).",
     retryable: true,
     raisedIn: ['lifecycle.opening', 'cli/preflight'],
-    action: 'It opens again tomorrow, local time. Only matt resets it: log facebook account resetOpens <a> (rule 37).'
+    action: 'It opens again tomorrow, local time. Only the owner resets it: log facebook account resetOpens <a> (rule 37).'
   },
   assemblyAiKeyMissing: {
     layer: 'runtime',
     meaning: 'ASSEMBLYAI_API_KEY is not set, so no voice note can be transcribed. Nothing was read from a platform and nothing was sent to AssemblyAI.',
     retryable: false,
     raisedIn: ['cli/transcribe', 'media/voiceNotes'],
-    action: 'Tell matt: the AssemblyAI key goes in ~/.buzz/.env.local (or the repo .env.local) as ASSEMBLYAI_API_KEY; ~/filmcraft/.env.local ASSEMBLY_AI_KEY is read too. Never print it.'
+    action: 'Tell the owner: the AssemblyAI key goes in ~/.buzz/.env.local (or the repo .env.local) as ASSEMBLYAI_API_KEY; ~/filmcraft/.env.local ASSEMBLY_AI_KEY is read too. Never print it.'
   },
   transcriptionFailed: {
     layer: 'runtime',
@@ -1896,7 +1931,7 @@ export const ERROR_CATALOG = {
     meaning: "The platform answered the reaction with a refusal (X's errors or no data, Discord's non-204, Instagram's error). Nothing was retried.",
     retryable: false,
     raisedIn: ['python/twitterApi', 'python/discordApi', 'python/instagramApi'],
-    action: "Read the platform's answer in the detail. On X a message only X Chat holds may not take the old DM reaction. Nothing more goes out on that account until matt says so (rule 94)."
+    action: "Read the platform's answer in the detail. On X a message only X Chat holds may not take the old DM reaction. Nothing more goes out on that account until the owner says so (rule 94)."
   },
   listInvalid: {
     layer: 'runtime',
@@ -1910,7 +1945,7 @@ export const ERROR_CATALOG = {
     meaning: "X answered a list change with no list: the list wasn't made, or the person wasn't added. Nothing was retried.",
     retryable: false,
     raisedIn: ['python/twitterApi'],
-    action: "Read X's answer in the detail. Nothing more goes out on that account until matt says so (rule 94)."
+    action: "Read X's answer in the detail. Nothing more goes out on that account until the owner says so (rule 94)."
   },
   reactFailed: {
     layer: 'runtime',
@@ -1931,7 +1966,7 @@ export const ERROR_CATALOG = {
     meaning: "The voice provider answered a clone or a text to speech with a refusal (its status and message are in the detail). Nothing was retried.",
     retryable: false,
     raisedIn: ['cli/clone', 'cli/voiceNote', 'extensions/voiceClone', 'extensions/inworld', 'extensions/voiceClone'],
-    action: "Read the provider's answer in the detail. A 402, or a 403 saying a limit is reached, means the account needs credit: only matt decides whether to spend (rule 41). Another provider can be picked with --provider or LOG_VOICE_PROVIDER."
+    action: "Read the provider's answer in the detail. A 402, or a 403 saying a limit is reached, means the account needs credit: only the owner decides whether to spend (rule 41). Another provider can be picked with --provider or LOG_VOICE_PROVIDER."
   },
   voiceProviderUnknown: {
     layer: 'runtime',
@@ -1942,17 +1977,17 @@ export const ERROR_CATALOG = {
   },
   voiceCloneMissing: {
     layer: 'runtime',
-    meaning: "There is no clone of matt's voice on that provider yet (~/.logCli/voice/clone.json), so no voice note can be made.",
+    meaning: "There is no clone of the owner's voice on that provider yet (~/.logCli/voice/clone.json), so no voice note can be made.",
     retryable: false,
     raisedIn: ['cli/clone', 'cli/voiceNote', 'extensions/voiceClone'],
     action: 'Run `log clone voice` to see the recordings it would use, then `log clone voice --apply` once (per provider).'
   },
   voiceRecordingsMissing: {
     layer: 'runtime',
-    meaning: "Too few of matt's own voice notes (fromMe, at least 5 s each, within the provider's limit) were found to clone his voice: the provider needs its least (Inworld 3 s, Fish 10 s). Nothing was sent to the provider.",
+    meaning: "Too few of the owner's own voice notes (fromMe, at least 5 s each, within the provider's limit) were found to clone their voice: the provider needs its least (Inworld 3 s, Fish 10 s). Nothing was sent to the provider.",
     retryable: false,
     raisedIn: ['cli/clone', 'extensions/voiceClone'],
-    action: 'Read his chats so the engines keep his voice notes (log discord read, log instagram dms), then run log clone voice again. Never clone anyone else\'s voice.'
+    action: 'Read their chats so the engines keep their voice notes (log discord read, log instagram dms), then run log clone voice again. Never clone anyone else\'s voice.'
   },
   callTimingMissing: {
     layer: 'runtime',
@@ -1994,14 +2029,14 @@ export const ERROR_CATALOG = {
     meaning: "X Chat couldn't be opened to send, because the X account has no X Chat PIN saved. Sending in X Chat needs the conversation key, which only the PIN unlocks. Nothing was sent.",
     retryable: false,
     raisedIn: ['cli/voiceNote', 'python/twitterApi'],
-    action: 'matt saves the PIN once in a terminal with log twitter chat pin --account <a>; then send again.'
+    action: 'The owner saves the PIN once in a terminal with log twitter chat pin --account <a>; then send again.'
   },
   voiceNoteInvalid: {
     layer: 'runtime',
-    meaning: "A voice note was given no text, too much text, or an audio file instead of text; or an engine was handed audio log didn't make itself. A voice note is only ever made from words, in matt's cloned voice.",
+    meaning: "A voice note was given no text, too much text, or an audio file instead of text; or an engine was handed audio log didn't make itself. A voice note is only ever made from words, in the owner's cloned voice.",
     retryable: false,
     raisedIn: ['cli/voiceNote', 'extensions/voiceClone', 'python/discordApi', 'python/instagramApi', 'python/slackApi', 'python/twitterApi'],
-    action: 'Give --text with what matt says, in his words. Never pass an audio file: log makes the voice note itself.'
+    action: 'Give --text with what the owner says, in their words. Never pass an audio file: log makes the voice note itself.'
   },
   voiceNoteConvertFailed: {
     layer: 'runtime',
@@ -2012,10 +2047,10 @@ export const ERROR_CATALOG = {
   },
   pronunciationUnknown: {
     layer: 'runtime',
-    meaning: "The voice note's text has an acronym that isn't in the spoken lexicon (SPOKEN_LEXICON), so whether matt says it as a word or as letters isn't known. Nothing was spoken or sent.",
+    meaning: "The voice note's text has an acronym that isn't in the spoken lexicon (SPOKEN_LEXICON), so whether the owner says it as a word or as letters isn't known. Nothing was spoken or sent.",
     retryable: false,
     raisedIn: ['cli/voiceNote', 'cli/clone', 'extensions/voiceClone'],
-    action: 'Write the word out the way matt says it, or add it to SPOKEN_LEXICON with how he says it (a word or letters) once he has said, then send it again.'
+    action: 'Write the word out the way the owner says it, or add it to SPOKEN_LEXICON with how they say it (a word or letters) once they have said, then send it again.'
   },
   spokenMismatch: {
     layer: 'runtime',
@@ -2033,7 +2068,7 @@ export const ERROR_CATALOG = {
   },
   voiceProcessingFailed: {
     layer: 'runtime',
-    meaning: "ffmpeg couldn't read or write the spoken audio while shaping it like matt's own voice notes (his room tone, phone squash, mic drift and saturation). Nothing was sent.",
+    meaning: "ffmpeg couldn't read or write the spoken audio while shaping it like the owner's own voice notes (their room tone, phone squash, mic drift and saturation). Nothing was sent.",
     retryable: false,
     raisedIn: ['cli/voiceNote', 'cli/clone', 'extensions/voiceClone'],
     action: 'Check ffmpeg runs (ffmpeg -version) and the detail, then send it again.'
@@ -2043,7 +2078,7 @@ export const ERROR_CATALOG = {
     meaning: "The platform refused the voice note's upload or its message (its answer is in the detail). Nothing was retried.",
     retryable: false,
     raisedIn: ['python/discordApi', 'python/instagramApi', 'python/slackApi'],
-    action: "Read the platform's answer in the detail. Nothing more goes out on that account until matt says so (rule 94)."
+    action: "Read the platform's answer in the detail. Nothing more goes out on that account until the owner says so (rule 94)."
   },
   voiceNoteFailed: {
     layer: 'runtime',
@@ -2068,6 +2103,62 @@ export const ERROR_CATALOG = {
     monitor: 'blocked',
     action: 'Read what they said (it is in the refusal), redraft to answer it, gate it and send again.'
   },
+  inputInvalid: {
+    layer: 'tool',
+    meaning: "An input isn't one the command takes: an unknown or repeated field, a missing required one, a value of the wrong kind or out of its range, or a group of inputs given wrongly. The refusal names the input.",
+    retryable: false,
+    raisedIn: ['cli/runner', 'mcp/server'],
+    action: "Read the input's kind and range in the tool's schema (logGet), fix that input, and call again."
+  },
+  commandFailed: {
+    layer: 'tool',
+    meaning: "The command ended without success and gave no catalog code of its own; its reason is in stderr (or stdout).",
+    retryable: false,
+    raisedIn: ['cli/runner'],
+    action: 'Read stderr for the reason. Nothing is retried through a platform refusal (rule 94).'
+  },
+  toolUnknown: {
+    layer: 'tool',
+    meaning: 'No tool or command has that name.',
+    retryable: false,
+    raisedIn: ['mcp/server', 'cli/runner'],
+    action: 'Find the tool for the job with logSearch, then call the name it gives.'
+  },
+  terminalOnly: {
+    layer: 'tool',
+    meaning: 'That command only runs in a terminal: it prompts for a secret or holds a long-lived service.',
+    retryable: false,
+    raisedIn: ['mcp/server'],
+    action: 'The owner runs it in a terminal; the refusal says the command line.'
+  },
+  liveNotConfirmed: {
+    layer: 'tool',
+    meaning: 'A live tool was called without confirmLive: true, so nothing acted.',
+    retryable: false,
+    raisedIn: ['mcp/server'],
+    action: 'Call it again with confirmLive: true only when the owner asked for this live run (rule 8).'
+  },
+  bypassNotConfirmed: {
+    layer: 'tool',
+    meaning: "bypass (a run outside the account's waking hours) was given without confirmBypass: true, so nothing ran.",
+    retryable: false,
+    raisedIn: ['mcp/server'],
+    action: 'Pass confirmBypass: true only when the owner asked for a run outside the hours (rule 86).'
+  },
+  playMissing: {
+    layer: 'tool',
+    meaning: 'A tool that sends as the owner was called with no play loaded for the caller, so nothing was sent.',
+    retryable: false,
+    raisedIn: ['mcp/server'],
+    action: 'Load the play that fits with getGuide({ useCase }), the refusal lists them, then call again.'
+  },
+  playNotCovering: {
+    layer: 'tool',
+    meaning: 'A tool that sends as the owner was called under a play that neither names it nor is filed under its platform, so nothing was sent.',
+    retryable: false,
+    raisedIn: ['mcp/server'],
+    action: 'End the play with getGuide({ clearPlay: true }) or load the play that fits, then call again.'
+  },
   chatClaimLost: {
     layer: 'account',
     meaning: 'The claim on this chat was lost (expired, taken over, or another send took it) before the first part went out. Nothing was sent.',
@@ -2076,6 +2167,154 @@ export const ERROR_CATALOG = {
     publish: 'blocked',
     monitor: 'blocked',
     action: "Check `log inbox actions --chat <id>` for who holds it now; claim it again only if nobody else is answering, then send."
+  },
+  accountCheckBusy: {
+    layer: 'account',
+    meaning: 'Another check or sign-in of this account is running, held by a live process. Nothing was sent.',
+    retryable: true,
+    raisedIn: ['platformKit/sessionCheck', 'platformKit/signIn'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: 'Wait for the running check to finish, then check again.'
+  },
+  accountCheckStopped: {
+    layer: 'account',
+    meaning: "The account is held stopped: its status, its session or its last check was a platform refusal, so it isn't checked or signed in again (rule 94). Nothing was sent.",
+    retryable: false,
+    raisedIn: ['platformKit/sessionCheck'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: 'The owner looks at the stop first; it lifts once a newer session check or sign-in is recorded.'
+  },
+  sessionPlatformInvalid: {
+    layer: 'tool',
+    meaning: "The platform given isn't one log knows.",
+    retryable: false,
+    raisedIn: ['platformKit/sessionCheck'],
+    action: 'Give one of the platforms log lists in its usage, or leave the platform out to check every account.'
+  },
+  signInRouteUnavailable: {
+    layer: 'account',
+    meaning: "The platform doesn't sign in by that route: browser needs a platform with a browser, cookies a platform with a cookie prompt. Nothing was opened.",
+    retryable: false,
+    raisedIn: ['platformKit/signIn'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: 'Sign in by the route the refusal names (X: cookies).'
+  },
+  sessionSaveUnconfirmed: {
+    layer: 'browser',
+    meaning: 'The browser closed but no save of its session was recorded, so the sign-in is not known to have saved anything. The stored session was left as it was.',
+    retryable: true,
+    raisedIn: ['platformKit/signIn'],
+    action: 'Check the account again; sign in again if it still needs it.'
+  },
+  browserOperationRefused: {
+    layer: 'browser',
+    meaning: 'log refused a browser step of the sign-in (opening or closing the account browser). Nothing was retried.',
+    retryable: false,
+    raisedIn: ['platformKit/signIn', 'console/browserCheck'],
+    action: 'Read the refusal it quotes (an account gate, a missing browser profile), fix that, then sign in again.'
+  },
+  accountNotConfigured: {
+    layer: 'account',
+    meaning: "No account by that name is set up in this workspace (on that platform, when one was given), so there is nothing to sign in. The answer carries the platform and the step that adds it.",
+    retryable: false,
+    raisedIn: ['platformKit/signIn', 'platformKit/sessionCheck'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: "Add the account (the console's Connections page, or log localAccount add), then sign it in."
+  },
+  signInLinkInvalid: {
+    layer: 'tool',
+    meaning: 'The sign-in link is unknown, already used or more than ten minutes old. A link works once and grants nothing by itself.',
+    retryable: false,
+    raisedIn: ['platformKit/signInLink'],
+    action: 'Ask for sign-in again (sessionsSignIn) to get a new link.'
+  },
+  signInLinkNotYours: {
+    layer: 'tool',
+    meaning: 'The sign-in link was made for another person. It was not used up; only the person who asked for the sign-in can open it.',
+    retryable: false,
+    raisedIn: ['platformKit/signInLink'],
+    action: 'The person who asked for the sign-in opens the link, signed in to the console as themself.'
+  },
+  credentialInputInvalid: {
+    layer: 'auth',
+    meaning: "The provider is not one log keeps keys for, a value is missing, holds a quote or a line break, or doesn't fit its field (a country list, a local API URL). Nothing was saved.",
+    retryable: false,
+    raisedIn: ['auth/credentials', 'console/credentials'],
+    action: 'Give a known provider and every field it needs, each on one line.'
+  },
+  credentialRejected: {
+    layer: 'auth',
+    meaning: 'The provider refused the key when log checked it. Nothing was saved.',
+    retryable: false,
+    raisedIn: ['auth/credentials'],
+    action: "Copy the key again from the provider's dashboard and save it again."
+  },
+  credentialRateLimited: {
+    layer: 'auth',
+    meaning: 'The provider answered 429 while log checked the key. Nothing was saved.',
+    retryable: true,
+    raisedIn: ['auth/credentials'],
+    action: 'Save it again in a minute.'
+  },
+  credentialValidationUnavailable: {
+    layer: 'auth',
+    meaning: "The provider didn't answer the key check, or answered in a shape log doesn't know. Nothing was saved.",
+    retryable: true,
+    raisedIn: ['auth/credentials'],
+    action: "Check the network and the provider's status, then save it again."
+  },
+  credentialSaveUnconfirmed: {
+    layer: 'auth',
+    meaning: 'The key passed its check, but reading the settings file back did not show it saved.',
+    retryable: true,
+    raisedIn: ['auth/credentials', 'console/credentials'],
+    action: 'Check the settings file (LOG_USER_ENV) is writable, then save it again.'
+  },
+  browserProviderUnavailable: {
+    layer: 'adsPower',
+    meaning: "The browser provider's local API didn't answer at the address given. Nothing was saved.",
+    retryable: true,
+    raisedIn: ['auth/credentials'],
+    action: 'Start the browser provider on this machine, check its local API URL, then save it again.'
+  },
+  signInInputInvalid: {
+    layer: 'tool',
+    meaning: 'The sign-in input is missing a field, names no known platform or method, or a value is empty, too long or holds a line break. Nothing was saved.',
+    retryable: false,
+    raisedIn: ['console/signIn'],
+    action: 'Give the platform, the account and each value on one line.'
+  },
+  passwordSignInUnavailable: {
+    layer: 'tool',
+    meaning: "The platform doesn't sign in from a saved email and password. Nothing was saved.",
+    retryable: false,
+    raisedIn: ['console/signIn'],
+    action: 'Sign the account in by its own route (sessionsSignIn names it).'
+  },
+  reportFieldInvalid: {
+    layer: 'tool',
+    meaning: "A report's input doesn't fit its source's fields: a field is missing, of the wrong kind, or one the source doesn't take. Nothing was read.",
+    retryable: false,
+    raisedIn: ['mcp/apps/report', 'cli/report'],
+    action: 'Fix the fields the refusal names and ask again.'
+  },
+  reportSourceNoData: {
+    layer: 'tool',
+    meaning: 'log.db holds no conversations on that platform, so there is nothing to count.',
+    retryable: false,
+    raisedIn: ['inbox/senders'],
+    action: "Read that platform's inbox first, or ask about a platform that has chats."
+  },
+  identityProfileMissing: {
+    layer: 'tool',
+    meaning: 'log.db holds no stored profile for that person on that platform. No platform was asked.',
+    retryable: false,
+    raisedIn: ['inbox/profiles'],
+    action: 'Profiles are kept when a session check or a followers read sees the person; ask after one has.'
   },
 } as const satisfies Record<string, ErrorEntry>
 

@@ -1,4 +1,4 @@
-import type { AttachmentKind, AttachmentRow, ChatKind, ChatRow, EventInput, ExtenderContext, IdentityRow, InteractionRow, MessageRow, PlatformExtender } from '../types'
+import type { AttachmentKind, AttachmentRow, ChatKind, ChatRow, EventInput, ExtenderContext, IdentityProfileRow, IdentityRow, InteractionRow, MessageRow, PlatformExtender } from '../types'
 import { MESSAGE_TYPES } from '../types'
 import { chatIdOf, handleIdOf, isBareId, isOwnerLabel, selfIdOf, textOf } from './ids'
 import { messageKeyOf, messageTimeOf, platformMessageIdOf } from './time'
@@ -22,6 +22,7 @@ export interface BaseOptions {
   ownerIdOf?(event: EventInput, context: ExtenderContext): string | null
   toInteraction?(event: EventInput): InteractionRow | null
   toIdentities?(event: EventInput, context: ExtenderContext): IdentityRow[]
+  toProfile?(event: EventInput): IdentityProfileRow | null
 }
 
 function payloadSenderId(event: EventInput): string | null {
@@ -94,6 +95,9 @@ export function makeExtender(options: BaseOptions): PlatformExtender {
     },
     toInteraction(event) {
       return options.toInteraction?.(event) ?? null
+    },
+    toProfile(event) {
+      return options.toProfile?.(event) ?? null
     },
   }
 }

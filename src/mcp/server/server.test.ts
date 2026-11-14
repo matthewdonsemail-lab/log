@@ -29,7 +29,7 @@ describe("toolsFromCommands", () => {
     const entries = commandTools(COMMANDS);
     for (const command of COMMANDS) expect(entries.some((t) => t.command === command)).toBe(!(command.name in TERMINAL_ONLY));
     const names = toolsFromCommands(COMMANDS).map((tool) => tool.name);
-    expect(names).toEqual(expect.arrayContaining(["facebookPublish", "facebookPublishLive", "facebookConnect", "inspectStart", "inspectDo", "inspectDoLive", "facebookHostStartLive", "facebookJoinLive", "warmupLive", "facebookAccountShow", "runsPrune", "facebookListing", "facebookListingCreate"]));
+    expect(names).toEqual(expect.arrayContaining(["facebookPublish", "facebookPublishLive", "facebookConnect", "inspectStart", "inspectDo", "inspectDoLive", "facebookHostStartLive", "facebookJoinGroupLive", "warmupLive", "facebookAccountShow", "runsPrune", "facebookListing", "facebookListingCreate"]));
     expect(names).not.toContain("facebookAccountsLive");
     expect(names).not.toContain("accounts");
     expect(names).not.toContain("check");
@@ -106,7 +106,7 @@ describe("annotations and live tools", () => {
 
 describe("guardCall", () => {
   test("live needs confirmLive, on typed and args tools alike", () => {
-    expect(guardCall("facebookPublish", { listing: "a", live: true }, COMMANDS)).toEqual({ ok: false, message: "facebookPublish never acts on Facebook: live is `facebookPublishLive`, only when matt asked (rule 8)" });
+    expect(guardCall("facebookPublish", { listing: "a", live: true }, COMMANDS)).toEqual({ ok: false, code: "inputInvalid", message: "facebookPublish never acts on Facebook: live is `facebookPublishLive`, only when the owner asked (rule 8)" });
     expect(guardCall("facebookPublishLive", { listing: "a" }, COMMANDS).ok).toBe(false);
     expect(guardCall("facebookCampaign", { args: ["run", "--campaign", "c", "--live=true"] }, COMMANDS).ok).toBe(false);
     expect(guardCall("facebookPublishLive", { listing: "a", confirmLive: true }, COMMANDS)).toEqual({ ok: true, argv: ["facebook", "publish", "--listing=a", "--live"] });
@@ -116,7 +116,7 @@ describe("guardCall", () => {
     expect(guardCall("facebookHostStartLive", { account: "a", likes: true, confirmLive: true }, COMMANDS)).toEqual({ ok: true, argv: ["facebook", "host", "start", "--account=a", "--likes"] });
     expect(guardCall("warmup", { args: ["facebook", "reel", "run", "--account", "a", "--likes"] }, COMMANDS).ok).toBe(false);
     expect(guardCall("warmupLive", { args: ["facebook", "reel", "run", "--account", "a"], confirmLive: true }, COMMANDS).ok).toBe(false);
-    expect(guardCall("warmupLive", { args: ["facebook", "reel", "run", "--account", "a", "--likes"], confirmLive: true }, COMMANDS)).toEqual({ ok: true, argv: ["facebook", "warmup", "reel", "run", "--account", "a", "--likes"] });
+    expect(guardCall("warmupLive", { args: ["facebook", "reel", "run", "--account", "a", "--likes"], confirmLive: true }, COMMANDS)).toMatchObject({ ok: true, argv: ["facebook", "warmup", "reel", "run", "--account", "a", "--likes"] });
   });
 
   test("bypass needs confirmBypass", () => {
@@ -135,17 +135,19 @@ describe("guardCall", () => {
   });
 
   test("a typed call with a missing, unknown or wrong field never runs", () => {
-    expect(guardCall("facebookCheck", {}, COMMANDS)).toEqual({ ok: false, message: "facebookCheck: account is needed" });
-    expect(guardCall("facebookCheck", { account: "a", bogus: 1 }, COMMANDS)).toEqual({ ok: false, message: 'facebookCheck: unknown field "bogus"' });
+    expect(guardCall("facebookCheck", {}, COMMANDS)).toEqual({ ok: false, code: "inputInvalid", message: "facebookCheck: account is needed" });
+    expect(guardCall("facebookCheck", { account: "a", bogus: 1 }, COMMANDS)).toEqual({ ok: false, code: "inputInvalid", message: 'facebookCheck: unknown field "bogus"' });
     expect(guardCall("facebookAccountStatus", { account: "a", status: "NOPE" }, COMMANDS).ok).toBe(false);
     expect(guardCall("inspectDo", { action: "teleport" }, COMMANDS).ok).toBe(false);
-    expect(guardCall("facebookHostStart", { account: "a", gapSeconds: "5" }, COMMANDS).ok).toBe(false);
+    expect(guardCall("facebookHostStart", { account: "a", gapSeconds: "five" }, COMMANDS).ok).toBe(false);
     expect(guardCall("facebookListings", { args: ["--json"] }, COMMANDS).ok).toBe(false);
   });
 
   test("connect always runs --noPrompt, so it never reads the MCP channel", () => {
-    expect(guardCall("facebookConnect", { args: ["--account", "x"] }, COMMANDS)).toEqual({ ok: true, argv: ["facebook", "connect", "--account", "x", "--noPrompt"] });
-    expect(guardCall("facebookConnect", { args: ["--account", "x", "--noPrompt"] }, COMMANDS)).toEqual({ ok: true, argv: ["facebook", "connect", "--account", "x", "--noPrompt"] });
+    expect(guardCall("facebookConnect", { args: ["--account", "x"] }, COMMANDS)).toMatchObject({ ok: true, argv: ["facebook", "connect", "--account", "x", "--noPrompt"] });
+    expect(guardCall("facebookConnect", { account: "x" }, COMMANDS)).toEqual({ ok: true, argv: ["facebook", "connect", "--account=x", "--noPrompt"] });
+    expect(guardCall("facebookConnect", { account: "x", noPrompt: true }, COMMANDS)).toEqual({ ok: true, argv: ["facebook", "connect", "--account=x", "--noPrompt"] });
+    expect(guardCall("facebookConnect", { args: ["--account", "x", "--noPrompt"] }, COMMANDS)).toMatchObject({ ok: true, argv: ["facebook", "connect", "--account", "x", "--noPrompt"] });
   });
 
   test("terminal-only, unknown and malformed calls are refused", () => {

@@ -6,13 +6,15 @@ import { fileSize, mediaKindOf, planSend } from "../../../twitter/post/send/inde
 import { watermarkLine } from "../../../twitter/copy/watermark/index.ts";
 import type { SendAction } from "../../../twitter/post/send/index.ts";
 import type { TwitterSessionAnswer } from "../../../twitter/account/session/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../../runner/helpers/index.ts";
+import { JSON_FLAG, listOf, parseArgs, parserSpecOf, refuse, refuseGated, refuseError } from "../../runner/helpers/index.ts";
 import type { Command, CommandInput, FlagSpec } from "../../runner/types.ts";
 import { ONE_INBOX_NOTE } from "../../../twitter/dm/person/index.ts";
-import type { TwitterEngineSpec } from "../../../twitter/account/session/index.ts";
+import type { TwitterEngineRun, TwitterEngineSpec } from "../../../twitter/account/session/index.ts";
+import { confirmAnswer, confirmParts, errorText, passGate, rethrowFailure, runAction } from "../../../platformKit/action/index.ts";
 import { readProfiles, splitPlan } from "../../../voice/pairs/index.ts";
 import { incomingSince, interruptedLines } from "../../../inbox/watch/index.ts";
 import { guardSend } from "../../../inbox/claims/index.ts";
+import type { SendGuard } from "../../../inbox/claims/index.ts";
 import { latestSeq } from "../../../inbox/store/index.ts";
 import { waitCaughtUp } from "../../../inbox/catchUp/index.ts";
 import { gateDeps } from "./voice.ts";
@@ -23,9 +25,10 @@ import { governorLine, openTwitterAccount } from "./account.ts";
 import type { Engine } from "./account.ts";
 
 const ACCOUNT: FlagSpec = { name: "account", kind: "string", required: true, description: "The TWITTER socialAccount's accountName (its handle) that sends it" };
-const TWEET: FlagSpec = { name: "tweet", kind: "string", required: true, description: "The post's url (https://x.com/<handle>/status/<id>), from treg research" };
-const USER_ID: FlagSpec = { name: "userId", kind: "string", required: true, description: "The recipient's numeric X user id, from treg research" };
-const MEDIA: FlagSpec = { name: "media", kind: "string", description: "Files to attach, comma separated: one video (.mp4 .mov) or gif, or up to 4 images (.jpg .png .webp) on a post or a reply, one file on a dm (it goes on the first message); a file path or an https url, which is downloaded first; uploaded to X before it is sent" };
+const TWEET: FlagSpec = { name: "tweet", kind: "string", required: true, pattern: "^https?://(?:www\\.)?(?:x|twitter)\\.com/[A-Za-z0-9_]+/status/\\d+", takes: "an x.com post url (https://x.com/<handle>/status/<id>)", refusal: "tweetUrlInvalid", description: "The post's url (https://x.com/<handle>/status/<id>), from treg research" };
+const USER_ID: FlagSpec = { name: "userId", kind: "string", required: true, pattern: "^\\d+$", takes: "an X user id (digits only)", refusal: "userIdInvalid", description: "The recipient's numeric X user id, from treg research" };
+const DM_USER_ID: FlagSpec = { ...USER_ID, pattern: "^(?:\\d+|g\\d+)$", takes: "an X user id (digits only) or an X Chat group id (g and digits)" };
+const MEDIA: FlagSpec = { name: "media", kind: "list", description: "Files to attach, comma separated: one video (.mp4 .mov) or gif, or up to 4 images (.jpg .png .webp) on a post or a reply, one file on a dm (it goes on the first message); a file path or an https url, which is downloaded first; uploaded to X before it is sent" };
 
 export async function localMedia(entries: readonly string[] | undefined, fetcher: typeof fetch = fetch): Promise<string[] | undefined> {
   if (!entries?.length) return entries as string[] | undefined;
@@ -46,12 +49,12 @@ export async function localMedia(entries: readonly string[] | undefined, fetcher
   return out;
 }
 const TEXT: FlagSpec = { name: "text", kind: "string", required: true, description: "The approved copy, in house style (lowercase, no commas, full stops or dashes; urls exempt)" };
-const APPROVED_BY: FlagSpec = { name: "approvedBy", kind: "string", description: "Who approved it: needed with --live (rule 8)" };
-const SKIP_STYLE: FlagSpec = { name: "skipStyleCheck", kind: "boolean", description: "Skip the account's copy style check (copyStyle, empty: house), only when matt asked" };
-export const FORCE: FlagSpec = { name: "force", kind: "boolean", description: "Go past the account's governor (its pause, hourly, daily and write caps) for this call, only when matt asked (rule 86)" };
-const AS_ONE: FlagSpec = { name: "asOne", kind: "boolean", description: "Send the dm as one message, never split, only when matt asked (rule 90)" };
-const OVER_GATE: FlagSpec = { name: "overGate", kind: "boolean", description: "matt said to send this exact dm over the voice gate's refusal: its SubQ read is skipped, the AI artifact check still runs; only when he said so for this message (rule 152)" };
-const LIVE: FlagSpec = { name: "live", kind: "boolean", live: true, description: "Send it on X, only when matt asked (rule 8); without it a dry run checks it and contacts nothing" };
+const APPROVED_BY: FlagSpec = { name: "approvedBy", kind: "string", approval: true, description: "Who approved it: needed with --live (rule 8)" };
+const SKIP_STYLE: FlagSpec = { name: "skipStyleCheck", kind: "boolean", description: "Skip the account's copy style check (copyStyle, empty: house), only when the owner asked" };
+export const FORCE: FlagSpec = { name: "force", kind: "boolean", description: "Go past the account's governor (its pause, hourly, daily and write caps) for this call, only when the owner asked (rule 86)" };
+const AS_ONE: FlagSpec = { name: "asOne", kind: "boolean", description: "Send the dm as one message, never split, only when the owner asked (rule 90)" };
+const OVER_GATE: FlagSpec = { name: "overGate", kind: "boolean", description: "the owner said to send this exact dm over the voice gate's refusal: its SubQ read is skipped, the AI artifact check still runs; only when he said so for this message (rule 152)" };
+const LIVE: FlagSpec = { name: "live", kind: "boolean", live: true, description: "Send it on X, only when the owner asked (rule 8); without it a dry run checks it and contacts nothing" };
 
 interface SendShape {
   action: SendAction;
@@ -85,7 +88,7 @@ function usageOf(shape: SendShape): string {
 }
 
 function inputOf(shape: SendShape): CommandInput {
-  const flags: FlagSpec[] = [ACCOUNT, ...(shape.target === "tweet" ? [TWEET] : shape.target === "userId" ? [USER_ID] : []), ...(shape.text ? [TEXT, SKIP_STYLE] : []), ...(shape.action === "post" || shape.action === "reply" || shape.action === "dm" ? [MEDIA] : []), ...(shape.action === "dm" ? [AS_ONE, OVER_GATE] : []), APPROVED_BY, FORCE, LIVE, JSON_FLAG];
+  const flags: FlagSpec[] = [ACCOUNT, ...(shape.target === "tweet" ? [TWEET] : shape.target === "userId" ? [shape.action === "dm" ? DM_USER_ID : USER_ID] : []), ...(shape.text ? [TEXT, SKIP_STYLE] : []), ...(shape.action === "post" || shape.action === "reply" || shape.action === "dm" ? [MEDIA] : []), ...(shape.action === "dm" ? [AS_ONE, OVER_GATE] : []), APPROVED_BY, FORCE, LIVE, JSON_FLAG];
   return { forms: [{ words: [], effect: "write", summary: shape.summary, positionals: [], flags }] };
 }
 
@@ -121,6 +124,10 @@ export function dmSplit(text: string, userId: string, asOne: boolean): SplitPlan
 export function splitLine(plan: SplitPlan): string {
   return `${plan.parts.length === 1 ? "as one message" : `as ${plan.parts.length} messages, ${plan.gapSeconds} s apart`} (${plan.why})`;
 }
+
+type HeldGuard = Extract<SendGuard, { ok: true }>;
+
+type DmParts = Awaited<ReturnType<typeof sendDmParts>>;
 
 export interface PartGuard {
   part: (n: number, text: string) => "go" | "lost" | "alreadySent" | "movedOn";
@@ -175,14 +182,14 @@ function sendCommand(shape: SendShape): Command {
     async run(context, argv) {
       const parsed = parseArgs(argv, parserSpecOf(input));
       if (!parsed.ok) return { code: 1, stderr: `log ${label}: ${parsed.error}\n${usage}` };
-      if (parsed.positionals.length) return { code: 1, stderr: `log ${label}: takes no words, only flags\n${usage}` };
+      if (parsed.positionals.length) return { code: 1, error: "inputInvalid", stderr: `log ${label}: takes no words, only flags\n${usage}` };
       const ref = parsed.flags["account"];
-      if (typeof ref !== "string") return { code: 1, stderr: `log ${label}: --account is needed\n${usage}` };
+      if (typeof ref !== "string") return { code: 1, error: "inputInvalid", stderr: `log ${label}: --account is needed\n${usage}` };
       const str = (name: string) => (typeof parsed.flags[name] === "string" ? (parsed.flags[name] as string) : undefined);
       const live = parsed.flags["live"] === true;
       let media: string[] | undefined;
       try {
-        media = await localMedia(str("media")?.split(",").map((m) => m.trim()).filter(Boolean));
+        media = await localMedia(listOf(parsed, "media"));
       } catch (error) {
         return refuseError(label, error);
       }
@@ -216,28 +223,32 @@ function sendCommand(shape: SendShape): Command {
           const groupPin = group ? String((await context.twenty.loginSecrets(account.id).catch(() => null))?.messengerPin ?? "") : "";
           if (group && !groupPin) return refuse(label, "xchatPinMissing", `${account.accountName} has no X Chat PIN saved, so the X Chat group ${plan.target} can't be opened to send: matt saves it once with log twitter chat pin --account ${account.accountName}`);
           const spec = { ...(parsed.flags["force"] === true ? { ...plan.spec, force: true } : plan.spec), ...(groupPin ? { chatPin: groupPin } : {}) };
-          const caught = await waitCaughtUp("twitter", account.accountName);
-          if (!caught.ok) return refuse(label, "accountBehind", caught.refused);
-          let readUpTo = latestSeq();
-          if (parsed.flags["overGate"] === true) {
-            const same = gateDeps.same({ platform: "twitter", account: account.accountName, to: plan.target, text: plan.spec.text ?? "" });
-            if (!same.ok) return refuse(label, "sameAsSent", same.refused);
-            context.err(`${account.accountName}: --overGate: matt said to send this dm over the voice gate, so its read is skipped; the AI artifact check passed (rule 152)`);
-          } else {
-            readUpTo = latestSeq();
-            const voiced = await gateDeps.gate(context, { platform: "twitter", account: account.accountName, to: plan.target, text: plan.spec.text ?? "", userId: plan.target });
-            if (!voiced.ok) return refuse(label, "voiceGateFailed", voiced.refused);
-            context.err(voiced.line);
-          }
-          const guard = guardSend({ platform: "twitter", account: account.accountName, conversationId: plan.target }, undefined, { readUpTo });
-          if (!guard.ok) return refuse(label, "chatClaimedElsewhere", guard.refused);
-          let parts: Awaited<ReturnType<typeof sendDmParts>>;
-          try {
-            parts = await sendDmParts(context, engine, spec, split, { account: account.accountName, userId: plan.target }, guard);
-          } catch (error) {
-            guard.done("failed", error instanceof Error ? error.message : String(error));
-            throw error;
-          }
+          const acted = await runAction<HeldGuard, DmParts>({
+            gate: async () => {
+              const caught = await waitCaughtUp("twitter", account.accountName);
+              if (!caught.ok) return { ok: false, code: "accountBehind", detail: caught.refused };
+              let readUpTo = latestSeq();
+              if (parsed.flags["overGate"] === true) {
+                const same = gateDeps.same({ platform: "twitter", account: account.accountName, to: plan.target, text: plan.spec.text ?? "" });
+                if (!same.ok) return { ok: false, code: "sameAsSent", detail: same.refused };
+                context.err(`${account.accountName}: --overGate: matt said to send this dm over the voice gate, so its read is skipped; the AI artifact check passed (rule 152)`);
+              } else {
+                readUpTo = latestSeq();
+                const voiced = await gateDeps.gate(context, { platform: "twitter", account: account.accountName, to: plan.target, text: plan.spec.text ?? "", userId: plan.target });
+                if (!voiced.ok) return { ok: false, code: "voiceGateFailed", detail: voiced.refused };
+                context.err(voiced.line);
+              }
+              const guard = guardSend({ platform: "twitter", account: account.accountName, conversationId: plan.target }, undefined, { readUpTo });
+              return guard.ok ? { ok: true, held: guard } : { ok: false, code: "chatClaimedElsewhere", detail: guard.refused };
+            },
+            act: (guard) => sendDmParts(context, engine, spec, split, { account: account.accountName, userId: plan.target }, guard),
+            confirm: (sent) => confirmParts({ sent: sent.answers.filter((a) => a.ok && a.event === "sent").length, total: split.parts.length, interrupted: sent.interrupted.length > 0, movedOn: !!sent.movedOn?.length, lost: !!sent.lost || !sent.last, last: sent.last?.answer }),
+          });
+          if (acted.outcome === "uncertain") acted.held?.done("failed", errorText(acted.error));
+          rethrowFailure(acted);
+          if (!acted.held || !acted.answer) return refuseGated(label, acted, "chatClaimedElsewhere");
+          const guard = acted.held;
+          const parts = acted.answer;
           const { answers, last, interrupted } = parts;
           const okParts = answers.filter((a) => a.ok && a.event === "sent").length;
           guard.done(interrupted.length ? "interrupted" : okParts === split.parts.length ? "sent" : "failed", `${okParts} of ${split.parts.length}${parts.lost ? ", then the claim on this chat was lost, so the rest was held" : ""}: ${split.parts.slice(0, okParts).join(" / ").slice(0, 300)}`);
@@ -252,7 +263,13 @@ function sendCommand(shape: SendShape): Command {
           const head = split.parts.length === 1 ? renderSent(label, account.accountName, last.answer) : code === 0 ? `log ${label}: ${account.accountName} sent the dm as ${done} messages, ${split.gapSeconds} s apart (conversation ${last.answer.conversationId}): delivered, it shows in their X Chat too, so it is never resent.` : `log ${label}: ${account.accountName}: ${done} of ${split.parts.length} sent, then ${failed}. What was sent stays sent; nothing is retried.`;
           return { code, stdout: [head, ...(governor ? [governor] : [])].join("\n") };
         }
-        const run = await engine(parsed.flags["force"] === true ? { ...plan.spec, force: true } : plan.spec);
+        const acted = await runAction<null, TwitterEngineRun>({
+          gate: passGate,
+          act: () => engine(parsed.flags["force"] === true ? { ...plan.spec, force: true } : plan.spec),
+          confirm: (sent) => confirmAnswer({ ok: sent.answer.ok === true && sent.answer.event === "sent", code: sent.answer.code ?? sent.answer.event, detail: sent.answer.detail }),
+        });
+        rethrowFailure(acted);
+        const run = acted.answer!;
         const code = run.answer.ok && run.answer.event === "sent" ? 0 : 1;
         if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", library: "twikit", account: account.accountName, action: shape.action, target: plan.target, approvedBy: plan.spec.approvedBy, ...run.answer }, null, 2) };
         const governor = governorLine(run);

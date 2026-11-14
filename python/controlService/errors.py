@@ -39,12 +39,12 @@ STATUS = {
     "accountCheckStopped": 409,
     "accountDeactivated": 409,
     "browserCheckRequired": 409,
-    "accountCheckUnavailable": 503,
     "signInInputInvalid": 400,
     "cookieSignInUnavailable": 409,
     "passwordSignInUnavailable": 409,
     "cookiesIncomplete": 400,
-    "signInBusy": 409,
+    "signInRouteUnavailable": 409,
+    "sessionSaveUnconfirmed": 503,
     "usageRangeInvalid": 400,
     "browserMissing": 404,
     "browserViewerUnavailable": 503,
@@ -56,6 +56,8 @@ STATUS = {
     "browserInputFailed": 409,
     "browserCheckUnresolved": 409,
     "browserOperationRefused": 409,
+    "signInLinkInvalid": 410,
+    "signInLinkNotYours": 403,
 }
 
 

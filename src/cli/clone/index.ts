@@ -3,11 +3,11 @@ import { basename } from "node:path";
 import { CLONE_TITLE, clonePath, mattsRecordings, pickReferences, providerOf, readClone, replacedClone, secondsOf, SPEAK_FORMATS, speakToFile, VOICE_PROVIDERS, voiceProvider, voiceSettingsOf, wavOf, writeClone } from "../../extensions/voiceClone/index.ts";
 import { hashOf, readTranscript } from "../../media/voiceNotes/index.ts";
 import type { ReferenceAudio, Recording, SpeakFormat, VoiceProvider, VoiceProviderClient } from "../../extensions/voiceClone/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf, refuse } from "../runner/helpers/index.ts";
+import { JSON_FLAG, listOf, parseArgs, parserSpecOf, refuse } from "../runner/helpers/index.ts";
 import type { Command, CommandInput, FlagSpec } from "../runner/types.ts";
 
 export const CLONE_USAGE = [
-  "Usage: log clone voice [--provider inworld|fishAudio] [--from <file>[,<file>]] [--apply] [--replace] [--json]   (matt's voice, cloned once per provider from his own voice notes, or from recordings of his own he names with --from, each one's words read from a .txt beside it; without --apply it lists the recordings it would use; --replace makes it again and keeps the old voice id under previous)",
+  "Usage: log clone voice [--provider inworld|fishAudio] [--from <file>[,<file>]] [--apply] [--replace] [--json]   (the owner's voice, cloned once per provider from their own voice notes, or from recordings of their own they name with --from, each one's words read from a .txt beside it; without --apply it lists the recordings it would use; --replace makes it again and keeps the old voice id under previous)",
   '       log clone speak --text "<words>" [--provider inworld|fishAudio] [--model <model>] [--format mp3|wav] [--json]   (the words in his cloned voice, to a file under ~/.logCli/voiceNotes; nothing is played or sent)',
   "Voice cloning is provider-agnostic (docs/extensions/voiceClone.md): the provider is --provider, else LOG_VOICE_PROVIDER in .env.local, else inworld. Each provider is an extension of its own (src/extensions/inworld, src/extensions/fishAudio) behind one interface (src/extensions/voiceClone). The clone is made only from the voice notes matt sent himself (fromMe in the conversation store or his ownMessage in the .db), the shortest first, within the provider's limit (Inworld 3 to 30 s, Fish 10 to 60 s). Each provider's voice id is kept in log.db. A clone speaks with the provider's preferred model (Inworld inworld-tts-2, which takes emotion tags), else its cheapest, unless --model says otherwise, at LOG_VOICE_SPEED (default 1.15). The clone is made in matt's accent: LOG_VOICE_ACCENT (default Irish) as its description and LOG_VOICE_LANGUAGE (default en-IE, en-GB when Inworld refuses it) as its language, with each sample's AssemblyAI transcript when ~/.logCli/transcripts has one; no accent instruction is sent with the text. Every spoken file is shaped like matt's own voice notes (his room tone from his notes, phone squash, mic drift, saturation; breaths on inworld-tts-2) and listened back with AssemblyAI: a lexicon word said wrong is refused spokenMismatch, an acronym not in the lexicon pronunciationUnknown. A voice note goes out only when matt asks for one: log discord voice, log instagram voice or log slack voice (rules 142, 143, 145, 146, 147).",
 ].join("\n");
@@ -18,13 +18,13 @@ export const CLONE_INPUT: CommandInput = {
   forms: [
     {
       words: ["voice"],
-      summary: "matt's voice cloned once on the voice provider from his own voice notes; without --apply it lists the recordings it would use",
+      summary: "the owner's voice cloned once on the voice provider from their own voice notes; without --apply it lists the recordings it would use",
       positionals: [],
-      flags: [PROVIDER, { name: "from", kind: "string", description: "matt's own recordings to clone from instead of his voice notes (his voiceovers, comma separated), each one's exact words in a .txt of the same name beside it when there is one (rule 146)" }, { name: "apply", kind: "boolean", description: "Make the clone on the provider from the recordings listed" }, { name: "replace", kind: "boolean", description: "Make the clone again though one exists; the old voice id is kept in the clone file under previous, never deleted (rule 145)" }, JSON_FLAG],
+      flags: [PROVIDER, { name: "from", kind: "list", description: "the owner's own recordings to clone from instead of his voice notes (his voiceovers, comma separated), each one's exact words in a .txt of the same name beside it when there is one (rule 146)" }, { name: "apply", kind: "boolean", description: "Make the clone on the provider from the recordings listed" }, { name: "replace", kind: "boolean", description: "Make the clone again though one exists; the old voice id is kept in the clone file under previous, never deleted (rule 145)" }, JSON_FLAG],
     },
     {
       words: ["speak"],
-      summary: "Say words in matt's cloned voice, to a local audio file under ~/.logCli/voiceNotes; plays and sends nothing",
+      summary: "Say words in the owner's cloned voice, to a local audio file under ~/.logCli/voiceNotes; plays and sends nothing",
       positionals: [],
       flags: [
         { name: "text", kind: "string", required: true, description: "The words to say, as text; never an audio file" },
@@ -90,7 +90,7 @@ export const cloneCommand: Command = {
   name: "clone",
   effect: "read",
   input: CLONE_INPUT,
-  summary: "matt's voice, cloned once per provider (Inworld or Fish Audio) from his own voice notes, and words said in it to a local file",
+  summary: "the owner's voice, cloned once per provider (Inworld or Fish Audio) from their own voice notes, and words said in it to a local file",
   args: 'voice [--provider <p>] [--apply] [--replace] | speak --text "<words>" [--provider <p>] [--model <m>] [--format mp3|wav] [--json]',
   async run(context, argv) {
     const sub = SUBS.find((s) => s === argv[0]);
@@ -98,7 +98,7 @@ export const cloneCommand: Command = {
     const form = CLONE_INPUT.forms[SUBS.indexOf(sub)];
     const parsed = parseArgs(argv.slice(1), parserSpecOf({ forms: [{ ...form, words: [] }] }));
     if (!parsed.ok) return { code: 1, stderr: `log clone ${sub}: ${parsed.error}\n${CLONE_USAGE}` };
-    if (parsed.positionals.length) return { code: 1, stderr: `log clone ${sub}: takes no words, only flags\n${CLONE_USAGE}` };
+    if (parsed.positionals.length) return { code: 1, error: "inputInvalid", stderr: `log clone ${sub}: takes no words, only flags\n${CLONE_USAGE}` };
     const label = `clone ${sub}`;
     const chosen = providerOf(parsed.flags["provider"]);
     if (!chosen.ok) return refuse(label, "voiceProviderUnknown", chosen.detail);
@@ -113,7 +113,7 @@ export const cloneCommand: Command = {
         if (json) return { code: 0, stdout: JSON.stringify({ exists: true, clonePath: clonePath(), ...existing }, null, 2) };
         return { code: 0, stdout: [`log clone voice: matt's voice is already cloned on ${provider} (its voice id kept in log.db, made ${existing.createdAt}, speaking with ${existing.model}), from:`, ...existing.references.map(recordingLine), `It is made once per provider; nothing was sent to ${provider}.`].join("\n") };
       }
-      const named = typeof parsed.flags["from"] === "string" ? String(parsed.flags["from"]).split(",").map((p) => p.trim()).filter(Boolean) : [];
+      const named = listOf(parsed, "from") ?? [];
       context.err(`clone: ${provider} (${chosen.from}): ${named.length ? `${named.length} recording(s) of matt's own named with --from` : "finding the voice notes matt sent himself"}`);
       const fromFiles = named.length ? namedRecordings(named, cloneDeps.seconds) : null;
       if (typeof fromFiles === "string") return refuse(label, "voiceRecordingsMissing", fromFiles);
@@ -140,7 +140,7 @@ export const cloneCommand: Command = {
     const model = typeof parsed.flags["model"] === "string" && parsed.flags["model"].trim() ? parsed.flags["model"].trim() : null;
     if (model && !client.models.includes(model)) return refuse(label, "voiceProviderUnknown", `${provider}'s speech models are ${client.models.join(", ")}`);
     const format = typeof parsed.flags["format"] === "string" ? (parsed.flags["format"] as SpeakFormat) : "mp3";
-    context.err(`clone: ${provider}: saying ${text.trim().length} characters in matt's cloned voice`);
+    context.err(`clone: ${provider}: saying ${text.trim().length} characters in the owner's cloned voice`);
     const spoken = await speakToFile(client, text, format, model);
     if (!spoken.ok) return refuse(label, spoken.code, spoken.detail);
     if (spoken.model !== spoken.clone.model) writeClone({ ...spoken.clone, model: spoken.model });

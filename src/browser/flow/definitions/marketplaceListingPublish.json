@@ -1,6 +1,8 @@
 {
   "name": "marketplaceListingPublish",
+  "platform": "facebook",
   "summary": "Publish one Marketplace listing in the account's open AdsPower browser: set the Marketplace location (City, State written out), open Create, two photos, title, price, category Miscellaneous, condition New, description, Next, Publish, close the Boost offer. Recorded on Bethlehem 2026-10-22 (listing 1425935622848350, held for review).",
+  "effect": "write",
   "params": [
     {
       "name": "location",

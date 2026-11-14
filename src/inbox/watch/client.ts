@@ -222,7 +222,7 @@ export function claimWatcher(platform: string, account: string, pid: number = pr
     const fromAt = row?.heartbeat ?? lastEventAt(platform, account, handle)
     if (fromAt) openGap(platform, account, fromAt, row ? 'ownerRestarted' : 'noOwner', now, handle)
     const generation = (row?.generation ?? 0) + 1
-    handle.prepare(`INSERT INTO owners (platform, account, pid, hostname, startedAt, heartbeat, status, generation, pidStartedAt, staleSeenAt) VALUES (?, ?, ?, ?, ?, ?, 'connecting', ?, ?, NULL) ON CONFLICT(platform, account) DO UPDATE SET pid = excluded.pid, hostname = excluded.hostname, startedAt = excluded.startedAt, heartbeat = excluded.heartbeat, status = 'connecting', port = 0, token = '', subscribers = 0, generation = excluded.generation, pidStartedAt = excluded.pidStartedAt, staleSeenAt = NULL`).run(platform, account, pid, hostname(), stamp, stamp, generation, pid === process.pid ? ownStartedAt() : null)
+    handle.prepare(`INSERT INTO owners (platform, account, pid, hostname, startedAt, heartbeat, status, generation, pidStartedAt, staleSeenAt) VALUES (?, ?, ?, ?, ?, ?, 'starting', ?, ?, NULL) ON CONFLICT(platform, account) DO UPDATE SET pid = excluded.pid, hostname = excluded.hostname, startedAt = excluded.startedAt, heartbeat = excluded.heartbeat, status = 'starting', port = 0, token = '', subscribers = 0, generation = excluded.generation, pidStartedAt = excluded.pidStartedAt, staleSeenAt = NULL`).run(platform, account, pid, hostname(), stamp, stamp, generation, pid === process.pid ? ownStartedAt() : null)
     return { ok: true as const, generation }
   })
   if (claimed.ok && pid === process.pid) holdFence(platform, account, claimed.generation)
@@ -334,32 +334,6 @@ export function clearDeadQueueLocks(_root: string = join(homedir(), '.logCli', '
   return clearDeadQueueLockRows(alive)
 }
 
-export function startTwitterWatch(account: string, repo: string): number | null {
-  const dir = join(inboxRoot(), 'twitter', account)
-  mkdirSync(dir, { recursive: true })
-  const log = openSync(join(dir, 'watch.log'), 'a')
-  try {
-    const child = spawn('bun', [join(repo, 'bin', 'log.ts'), 'twitter', 'chat', 'watch', '--account', account, '--inbox'], { cwd: repo, detached: true, stdio: ['ignore', log, log], windowsHide: true, env: process.env })
-    child.unref()
-    return child.pid ?? null
-  } finally {
-    closeSync(log)
-  }
-}
-
-export function startDiscordWatch(account: string, repo: string): number | null {
-  const dir = join(inboxRoot(), 'discord', account)
-  mkdirSync(dir, { recursive: true })
-  const log = openSync(join(dir, 'watch.log'), 'a')
-  try {
-    const child = spawn('bun', [join(repo, 'bin', 'log.ts'), 'discord', 'watch', '--account', account, '--inbox'], { cwd: repo, detached: true, stdio: ['ignore', log, log], windowsHide: true, env: process.env })
-    child.unref()
-    return child.pid ?? null
-  } finally {
-    closeSync(log)
-  }
-}
-
 export function describerEnv(env: NodeJS.ProcessEnv = process.env): NodeJS.ProcessEnv {
   const key = Object.keys(env).find((k) => k.toLowerCase() === 'path') ?? 'PATH'
   const separator = process.platform === 'win32' ? ';' : ':'
@@ -373,32 +347,6 @@ export function startDescriber(repo: string): number | null {
   const log = openSync(join(dir, 'watch.log'), 'a')
   try {
     const child = spawn('bun', [join(repo, 'scripts', 'media', 'describer.ts')], { cwd: repo, detached: true, stdio: ['ignore', log, log], windowsHide: true, env: describerEnv() })
-    child.unref()
-    return child.pid ?? null
-  } finally {
-    closeSync(log)
-  }
-}
-
-export function startSlackWatch(account: string, repo: string): number | null {
-  const dir = join(inboxRoot(), 'slack', account)
-  mkdirSync(dir, { recursive: true })
-  const log = openSync(join(dir, 'watch.log'), 'a')
-  try {
-    const child = spawn('bun', [join(repo, 'bin', 'log.ts'), 'slack', 'watch', '--account', account, '--inbox'], { cwd: repo, detached: true, stdio: ['ignore', log, log], windowsHide: true, env: process.env })
-    child.unref()
-    return child.pid ?? null
-  } finally {
-    closeSync(log)
-  }
-}
-
-export function startInstagramWatch(account: string, repo: string): number | null {
-  const dir = join(inboxRoot(), 'instagram', account)
-  mkdirSync(dir, { recursive: true })
-  const log = openSync(join(dir, 'watch.log'), 'a')
-  try {
-    const child = spawn('bun', [join(repo, 'bin', 'log.ts'), 'instagram', 'watch', '--account', account, '--inbox'], { cwd: repo, detached: true, stdio: ['ignore', log, log], windowsHide: true, env: process.env })
     child.unref()
     return child.pid ?? null
   } finally {
@@ -422,7 +370,7 @@ function discordContext(messages: readonly InboxMessage[]): string {
   const { account } = messages[0]
   return [
     `>>> NEW DISCORD MESSAGE${messages.length === 1 ? '' : 'S'} (${messages.length}): pushed by Discord's gateway the moment it landed. Tell matt now, with what they said and what the conversation is about. Then, for each one:`,
-    `  1. Read the chat around it: \`discordRead\` { account: "${account}", channel: "<channel>", limit: "20" }.`,
+    `  1. Read the chat around it: \`discordRead\` { account: "${account}", channel: "<channel>", limit: 20 }.`,
     '  2. Before writing a word, pull how matt really writes in that chat: `voice` { to: "<who>", with: "<channel>", context: "<what they said>" } (no text): his latest messages there and his real replies to things like it. Draft from those, in his words and his length, using only facts matt has said, answering what they actually asked. Never from the twitter guide alone.',
     '  3. Gate it against the same chat: `voice` { to, with, context, text: "<draft>" }. Rewrite until it passes.',
     `  4. ${SEND_RULE} (\`discordSendLive\` { account: "${account}", channel: "<channel>", text: "<draft>", approvedBy: "matt", confirmLive: true }).`,
@@ -435,7 +383,7 @@ function slackContext(messages: readonly InboxMessage[]): string {
   const { account } = messages[0]
   return [
     `>>> NEW SLACK MESSAGE${messages.length === 1 ? '' : 'S'} (${messages.length}): pushed by the workspace's websocket the moment it landed. Tell matt now, with what they said and what the conversation is about. Then, for each one:`,
-    `  1. Read the chat around it: \`slackRead\` { account: "${account}", workspace: "<workspace>", chat: "<chat>", limit: "20" }.`,
+    `  1. Read the chat around it: \`slackRead\` { account: "${account}", workspace: "<workspace>", chat: "<chat>", limit: 20 }.`,
     '  2. Before writing a word, pull how matt really writes to them: `voice` { to: "<who>", with: "<chat>", context: "<what they said>" } (no text): his messages to them first, then his whole history. Draft from those, in his words and his length, using only facts matt has said, answering what they actually asked.',
     '  3. Gate it against the same chat: `voice` { to, with, context, text: "<draft>" }. Rewrite until it passes.',
     `  4. ${SEND_RULE} (\`slackSendLive\` { account: "${account}", workspace: "<workspace>", chat: "<chat>", text: "<draft>", approvedBy: "matt", confirmLive: true }).`,
@@ -448,7 +396,7 @@ function instagramContext(messages: readonly InboxMessage[]): string {
   const { account } = messages[0]
   return [
     `>>> NEW INSTAGRAM MESSAGE${messages.length === 1 ? '' : 'S'} (${messages.length}): pushed by Instagram's realtime connection the moment it landed. Tell matt now, with what they said and what the conversation is about. Then, for each one (never through the browser):`,
-    `  1. Read the thread around it: \`instagramDms\` { account: "${account}", with: "<handle or thread>", limit: "20" }.`,
+    `  1. Read the thread around it: \`instagramDms\` { account: "${account}", with: "<handle or thread>", limit: 20 }.`,
     '  2. Before writing a word, pull how matt really writes to them: `voice` { to: "<handle>", with: "<who>", context: "<what they said>" } (no text). Draft from those, in his words and his length, using only facts matt has said, answering what they actually asked.',
     '  3. Gate it: `voice` { to, with, context, text: "<draft>" }. Rewrite until it passes.',
     `  4. ${SEND_RULE} (\`instagramSendLive\` { account: "${account}", with: "<handle or thread>", text: "<draft>", approvedBy: "matt", confirmLive: true }; a meme or picture goes as photo: "<file>").`,

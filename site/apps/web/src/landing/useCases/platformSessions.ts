@@ -9,7 +9,7 @@ const SLACK: SessionEvent[] = [
   {
     kind: 'tool',
     name: 'slackRead',
-    args: '{ account: "you", workspace: "growth-co", chat: "Priya", limit: "20" }',
+    args: '{ account: "you", workspace: "growth-co", chat: "Priya", limit: 20 }',
     result: ['Priya 4:12 PM: did the outreach sheet work for you?', 'Priya 4:12 PM: we got 9 calls booked off it this week'],
   },
   { kind: 'assistant', text: 'Priya asked if the outreach sheet worked for you, and said it booked her 9 calls this week. Drafting from how you write to her.' },
@@ -43,12 +43,12 @@ const INSTAGRAM: SessionEvent[] = [
 const DISCORD: SessionEvent[] = [
   { kind: 'user', text: 'who in growth-mates #help asked for help with ads today? answer them' },
   { kind: 'tool', name: 'getGuide', args: '{ useCase: "discord/channelReply" }', result: ['channelReply: read the chat → draft → gate → send'] },
-  { kind: 'tool', name: 'discordRead', args: '{ account: "you", channel: "growth-mates #help", limit: "50" }', result: ['50 messages back to 9:12 AM', 'mila 1:58 PM: our ads stopped working overnight, anyone here fix this for money?', 'deano 2:01 PM: turn it off and on again lol'] },
+  { kind: 'tool', name: 'discordRead', args: '{ account: "you", channel: "growth-mates #help", limit: 50 }', result: ['50 messages back to 9:12 AM', 'mila 1:58 PM: our ads stopped working overnight, anyone here fix this for money?', 'deano 2:01 PM: turn it off and on again lol'] },
   { kind: 'assistant', text: 'mila’s ads stopped overnight and she’ll pay for a fix. The only answer is a joke. Drafting the real one.' },
   { kind: 'tool', name: 'voice', args: '{ to: "#help", with: "growth-mates #help", context: "mila: ads stopped overnight", text: "the pixel probably dropped after the update…" }', result: ['#help PASS: fits the room 0.95 · answers them 0.97'] },
   { kind: 'tool', name: 'discordSendLive', args: '{ account: "you", channel: "growth-mates #help", approvedBy: "you", confirmLive: true }', result: ['sent, Discord answered with its id'] },
   { kind: 'user', text: 'she dmed me, book her in' },
-  { kind: 'tool', name: 'discordRead', args: '{ account: "you", channel: "mila", limit: "20" }', result: ['mila: that was it lol. can you look at the rest of our setup?'] },
+  { kind: 'tool', name: 'discordRead', args: '{ account: "you", channel: "mila", limit: 20 }', result: ['mila: that was it lol. can you look at the rest of our setup?'] },
   { kind: 'tool', name: 'voice', args: '{ to: "mila", with: "mila", text: "yeah course, thursday work for a quick call?" }', result: ['mila PASS: voice 0.96 · answers them 0.98'] },
   { kind: 'tool', name: 'discordSendLive', args: '{ account: "you", channel: "mila", approvedBy: "you", confirmLive: true }', result: ['sent', 'mila: thursday works'] },
   { kind: 'assistant', text: 'Answered mila first in #help, and she’s booked for Thursday. That’s a client from a server you were already in.' },
@@ -57,7 +57,7 @@ const DISCORD: SessionEvent[] = [
 const REDDIT: SessionEvent[] = [
   { kind: 'user', text: 'find who on r/smallbusiness is asking for a booking website this week and answer them' },
   { kind: 'tool', name: 'redditReadSubreddits', args: '{ account: "you", query: "small business owners" }', result: ['r/smallbusiness, r/Entrepreneur, r/sweatystartup', 'each with its members and what it is about'] },
-  { kind: 'tool', name: 'redditReadPosts', args: '{ account: "you", subreddit: "smallbusiness", days: "7" }', result: ['this week’s posts, 3 asking for a booking website', 'u/sparkleclean: Need a website that takes bookings. Where do I even start?'] },
+  { kind: 'tool', name: 'redditReadPosts', args: '{ account: "you", subreddit: "smallbusiness", days: 7 }', result: ['this week’s posts, 3 asking for a booking website', 'u/sparkleclean: Need a website that takes bookings. Where do I even start?'] },
   { kind: 'tool', name: 'redditReadPost', args: '{ account: "you", post: "1oq…k2" }', result: ['2 vans, losing jobs because people can’t book online', 'u/vanlife_dan: just use wix lol'] },
   { kind: 'assistant', text: 'u/sparkleclean runs a cleaning business with 2 vans and is losing jobs because people can’t book online. The only answer so far is "just use wix". Drafting what nobody has said yet.' },
   { kind: 'tool', name: 'voice', args: '{ to: "sparkleclean", context: "losing jobs, no online booking", text: "wix will do it but the booking bit is where you lose people…" }', result: ['sparkleclean PASS: voice 0.95 · answers them 0.96'] },

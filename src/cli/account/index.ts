@@ -1,11 +1,11 @@
-import { ACCOUNT_STATUSES, findAccount, fromTwentyEnum, listFacebookAccounts, toTwentyEnum } from "../../marketplace/socialAccount/index.ts";
-import type { AccountStatus } from "../../marketplace/socialAccount/index.ts";
-import { setStatusAndReplace } from "../../marketplace/replacement/index.ts";
+import { ACCOUNT_STATUSES, findAccount, fromTwentyEnum, listFacebookAccounts, toTwentyEnum } from "../../platformKit/socialAccount/index.ts";
+import type { AccountStatus } from "../../platformKit/socialAccount/index.ts";
+import { setStatusAndReplace } from "../../facebook/marketplace/replacement/index.ts";
 import { isErrorCode } from "../../errors/catalog/index.ts";
 import { createAdsPowerClient, syncProfiles } from "../../browser/adsPower/index.ts";
 import { openInspects } from "../../browser/inspect/index.ts";
 import { renderLoss } from "../live/helpers/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf, refuseError } from "../runner/helpers/index.ts";
+import { JSON_FLAG, parseArgs, parserSpecOf, refuseError, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
 import { renderAccountDetail, renderAccountsTable, resaveKeptRun, resetAccountOpens, safeAccount } from "./helpers/index.ts";
 
@@ -44,8 +44,8 @@ export const accountsCommand: Command = {
   args: "[--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(ACCOUNTS_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log facebook accounts: ${parsed.error}\n${ACCOUNTS_USAGE}` };
-    if (parsed.positionals.length > 0) return { code: 1, stderr: `log facebook accounts: unexpected argument "${parsed.positionals[0]}"\n${ACCOUNTS_USAGE}` };
+    if (!parsed.ok) return refuseInput("facebook accounts", parsed.error, ACCOUNTS_USAGE);
+    if (parsed.positionals.length > 0) return { code: 1, error: "inputInvalid", stderr: `log facebook accounts: unexpected argument "${parsed.positionals[0]}"\n${ACCOUNTS_USAGE}` };
     try {
       const accounts = await listFacebookAccounts(context.twenty);
       if (parsed.flags["json"]) {
@@ -65,7 +65,7 @@ export const ACCOUNT_INPUT: CommandInput = {
   forms: [
     { words: ["show"], summary: "One account's record", positionals: [ACCOUNT_NAME], flags: [JSON_FLAG] },
     { words: ["resave"], effect: "write", summary: "Save a run's device and session that Twenty didn't take", positionals: [ACCOUNT_NAME], flags: [{ name: "from", kind: "string", required: true, description: "The kept run folder (~/.logCli/runs/unsaved/...)" }] },
-    { words: ["resetOpens"], effect: "write", summary: "Restart today's count of launches and host opens, only when matt asks (rule 37)", positionals: [{ ...ACCOUNT_NAME, description: "The account, or all" }], flags: [{ name: "reason", kind: "string", description: "Why, written to the reset log" }] },
+    { words: ["resetOpens"], effect: "write", summary: "Restart today's count of launches and host opens, only when the owner asks (rule 35)", positionals: [{ ...ACCOUNT_NAME, description: "The account, or all" }], flags: [{ name: "reason", kind: "string", description: "Why, written to the reset log" }] },
     {
       words: ["status"], effect: "write",
       summary: "Set an account's status (a lost account gets its listings replaced)",
@@ -85,9 +85,9 @@ export const accountCommand: Command = {
   args: "<show|status|resave|resetOpens> <name> [STATUS] [--reason <code>]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(ACCOUNT_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log facebook account: ${parsed.error}\n${ACCOUNT_USAGE}` };
+    if (!parsed.ok) return refuseInput("facebook account", parsed.error, ACCOUNT_USAGE);
     const [action, ref, value, extra] = parsed.positionals;
-    if (!ref || extra !== undefined || !["show", "status", "resave", "resetOpens"].includes(action ?? "")) return { code: 1, stderr: `log facebook account: pick show, status, resave or resetOpens\n${ACCOUNT_USAGE}` };
+    if (!ref || extra !== undefined || !["show", "status", "resave", "resetOpens"].includes(action ?? "")) return { code: 1, error: "inputInvalid", stderr: `log facebook account: pick show, status, resave or resetOpens\n${ACCOUNT_USAGE}` };
     try {
       if (action === "resetOpens") {
         const reason = typeof parsed.flags["reason"] === "string" ? parsed.flags["reason"] : "reset by matt";
@@ -111,7 +111,7 @@ export const accountCommand: Command = {
       const status = value ? fromTwentyEnum(value) : "";
       if (!(ACCOUNT_STATUSES as readonly string[]).includes(status)) return { code: 1, stderr: `log facebook account status: give a status\n${ACCOUNT_USAGE}` };
       const reason = typeof parsed.flags["reason"] === "string" ? parsed.flags["reason"] : "setByHand";
-      if (reason !== "setByHand" && !isErrorCode(reason)) return { code: 1, stderr: `log facebook account status: --reason must be an error code (log errors --layer account)` };
+      if (reason !== "setByHand" && !isErrorCode(reason)) return { code: 1, error: "inputInvalid", stderr: `log facebook account status: --reason must be an error code (log errors --layer account)` };
       const detail = typeof parsed.flags["detail"] === "string" ? parsed.flags["detail"] : null;
       const loss = await setStatusAndReplace(context.twenty, account, status as AccountStatus, reason, detail);
       const lines = [renderLoss(loss)];

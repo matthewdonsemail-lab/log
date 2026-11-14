@@ -21,6 +21,17 @@ export function signInRouteOf(platform: Platform): SignInRoute {
   return { kind: "browser" };
 }
 
+export const SIGN_IN_ROUTE_NAMES = ["browser", "cookies"] as const;
+export type SignInRouteName = (typeof SIGN_IN_ROUTE_NAMES)[number];
+
+export const SIGN_IN_ROUTES: Readonly<Record<Platform, readonly SignInRouteName[]>> = Object.fromEntries(
+  PLATFORMS.map((platform) => [platform, SIGN_IN_ROUTE_NAMES.filter((route) => (route === "browser" ? PLATFORM_SITES[platform].browser : Boolean(COOKIE_HINTS[platform])))]),
+) as unknown as Record<Platform, readonly SignInRouteName[]>;
+
+export function signInRoutesOf(platform: Platform): readonly SignInRouteName[] {
+  return SIGN_IN_ROUTES[platform];
+}
+
 export function platformOfTwenty(value: unknown): Platform | null {
   const twenty = String(value ?? "").toUpperCase();
   return PLATFORMS.find((p) => PLATFORM_SITES[p].twenty === twenty) ?? null;

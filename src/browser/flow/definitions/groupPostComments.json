@@ -1,5 +1,6 @@
 {
   "name": "groupPostComments",
+  "platform": "facebook",
   "summary": "On a group's Open questions tab, open a post's comments, switch the sort to All comments and scroll them; read-only",
   "params": [
     {

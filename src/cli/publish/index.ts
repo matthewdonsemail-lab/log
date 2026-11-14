@@ -7,11 +7,11 @@ import { prepareRun } from "../../browser/run/index.ts";
 import { settleInBackground } from "../../rea/capture/index.ts";
 import type { PublishSession } from "../../camofox/session/index.ts";
 import type { ErrorCode } from "../../errors/catalog/index.ts";
-import { countryMismatch, getListing, listListingsWhere, PUBLISHABLE_STATUSES, recordRun, setListingStatus, toPublishListing } from "../../marketplace/agencyListing/index.ts";
-import type { AgencyListing } from "../../marketplace/agencyListing/index.ts";
-import { publishMachine } from "../../marketplace/publish/index.ts";
-import { connectMachine } from "../../marketplace/connect/index.ts";
-import type { ActOutput, ConnectActorInputs, ReadOutput, SaveOutput, SolveOutput as ConnectSolveOutput } from "../../marketplace/connect/index.ts";
+import { countryMismatch, getListing, listListingsWhere, PUBLISHABLE_STATUSES, recordRun, setListingStatus, toPublishListing } from "../../facebook/marketplace/agencyListing/index.ts";
+import type { AgencyListing } from "../../facebook/marketplace/agencyListing/index.ts";
+import { publishMachine } from "../../facebook/marketplace/publish/index.ts";
+import { connectMachine } from "../../platformKit/connect/index.ts";
+import type { ActOutput, ConnectActorInputs, ReadOutput, SaveOutput, SolveOutput as ConnectSolveOutput } from "../../platformKit/connect/index.ts";
 import type { LoginSecrets } from "../../twenty/graphql/index.ts";
 import type {
   CaptureOutput,
@@ -26,16 +26,16 @@ import type {
   SolveOutput,
   StepOutput,
   UploadOutput,
-} from "../../marketplace/publish/index.ts";
-import { countPostedToday, recordAccountIssue } from "../../marketplace/replacement/index.ts";
-import { homeOf } from "../../marketplace/home/index.ts";
-import { fetchProxyUrl, findAccount, markPosted, recordProxyCheck } from "../../marketplace/socialAccount/index.ts";
-import type { FacebookAccount } from "../../marketplace/socialAccount/index.ts";
+} from "../../facebook/marketplace/publish/index.ts";
+import { countPostedToday, recordAccountIssue } from "../../facebook/marketplace/replacement/index.ts";
+import { homeOf } from "../../platformKit/home/index.ts";
+import { fetchProxyUrl, findAccount, markPosted, recordProxyCheck } from "../../platformKit/socialAccount/index.ts";
+import type { FacebookAccount } from "../../platformKit/socialAccount/index.ts";
 import { preparePhotos } from "../../media/photo/index.ts";
 import { createInspector, formatTraceLine } from "../../observability/trace/index.ts";
 import { renderLoss } from "../live/helpers/index.ts";
 import { keepNewDevice, keepSession } from "../live/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf, PROXY_MS_FLAG, refuse, refuseError } from "../runner/helpers/index.ts";
+import { JSON_FLAG, parseArgs, parserSpecOf, PROXY_MS_FLAG, refuse, refuseError, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandContext, CommandInput, CommandResult } from "../runner/types.ts";
 import { renderPublishOutput, summarizePublish } from "./helpers/index.ts";
 
@@ -105,9 +105,9 @@ export const PUBLISH_INPUT: CommandInput = {
       positionals: [],
       flags: [
         { name: "listing", kind: "string", required: true, description: "The agencyListing id" },
-        { name: "live", kind: "boolean", live: true, description: "Click Publish, only when matt asked (rule 10)" },
+        { name: "live", kind: "boolean", live: true, description: "Click Publish, only when the owner asked (rule 10)" },
         { name: "formUrl", kind: "string", description: "Fill a saved form instead (file://...), not counted as a launch" },
-        { name: "bypass", kind: "boolean", bypass: true, description: "Outside the account's waking hours, only when matt asked (rule 20)" },
+        { name: "bypass", kind: "boolean", bypass: true, description: "Outside the account's waking hours, only when the owner asked (rule 20)" },
         { name: "now", kind: "boolean", description: "Skip the 10-minute launch gap only (rule 24)" },
         JSON_FLAG,
         PROXY_MS_FLAG,
@@ -126,10 +126,10 @@ export const publishCommand: Command = {
   args: "--listing <id> [--live] [--json] [--bypass] [--now]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(PUBLISH_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log facebook publish: ${parsed.error}\n${PUBLISH_USAGE}` };
-    if (parsed.positionals.length > 0) return { code: 1, stderr: `log facebook publish: unexpected argument "${parsed.positionals[0]}"\n${PUBLISH_USAGE}` };
+    if (!parsed.ok) return refuseInput("facebook publish", parsed.error, PUBLISH_USAGE);
+    if (parsed.positionals.length > 0) return { code: 1, error: "inputInvalid", stderr: `log facebook publish: unexpected argument "${parsed.positionals[0]}"\n${PUBLISH_USAGE}` };
     const listingId = parsed.flags.listing;
-    if (typeof listingId !== "string") return { code: 1, stderr: `log facebook publish: --listing is required (an agencyListing id)\n${PUBLISH_USAGE}` };
+    if (typeof listingId !== "string") return { code: 1, error: "inputInvalid", stderr: `log facebook publish: --listing is required (an agencyListing id)\n${PUBLISH_USAGE}` };
     const dryRun = !parsed.flags.live;
     const json = Boolean(parsed.flags.json);
 

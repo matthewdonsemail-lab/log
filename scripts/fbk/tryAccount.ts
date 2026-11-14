@@ -3,7 +3,7 @@ import { mkdtempSync, writeFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { createTwentyClient } from '../../src/twenty/graphql/client.ts'
-import { findAccount } from '../../src/marketplace/socialAccount/client.ts'
+import { findAccount } from '../../src/platformKit/socialAccount/client.ts'
 
 async function main(): Promise<number> {
   const name = process.argv[2]

@@ -1,6 +1,6 @@
 ---
 name: conversations
-description: Store and manage buyers' Marketplace conversations in Twenty (rule 34) - agencyConversations tied to their agencyListing and socialAccount, agencyMessages tied to their conversation. Use when matt asks about buyers, leads, messages, inbox, replies, "who wrote about this listing", or to record a scanned thread.
+description: Store and manage buyers' Marketplace conversations in Twenty - agencyConversations tied to their agencyListing and socialAccount, agencyMessages tied to their conversation. Use when the owner asks about buyers, leads, messages, inbox, replies, "who wrote about this listing", or to record a scanned thread.
 ---
 
 # conversations
@@ -13,10 +13,10 @@ and where each field came from, is in
 ## Hard boundaries
 
 1. **Twenty only.** These commands never open a browser and never write to
-   Facebook (rule 8). Replying waits for matt.
-2. **Additive** (rule 13). A field is only ever added through
+   Facebook (rule 8). Replying waits for the owner.
+2. **Additive**. A field is only ever added through
    `scripts/twenty/twentySetup.mjs`, then the client is regenerated
-   (`bun run twenty:client`, rule 14). blaster's SMS fields are never
+   (`bun run twenty:client`). blaster's SMS fields are never
    renamed or retyped.
 3. **Never guess the listing.** A thread is tied to a listing by the
    Facebook listing id, or by a title only one listing on the account has.

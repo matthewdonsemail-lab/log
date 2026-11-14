@@ -4,13 +4,13 @@ import type { GroupRef } from "../../facebook/group/join/index.ts";
 import type { Group } from "../../facebook/group/join/index.ts";
 import { parseWorkerRequest, recordsOf, scrollsFor, WORKER_DEFAULT_LIMIT, workerCodeOf } from "../../facebook/group/read/index.ts";
 import type { WorkerAnswer, WorkerRecord } from "../../facebook/group/read/index.ts";
-import { checkRunnable, findAccount } from "../../marketplace/socialAccount/index.ts";
-import type { FacebookAccount } from "../../marketplace/socialAccount/index.ts";
+import { checkRunnable, findAccount } from "../../platformKit/socialAccount/index.ts";
+import type { FacebookAccount } from "../../platformKit/socialAccount/index.ts";
 import { TwentyError } from "../../twenty/graphql/index.ts";
 import { readInBrowser } from "../read/index.ts";
-import { refuse, refuseError } from "../runner/helpers/index.ts";
+import { refuse, refuseError, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandContext, CommandResult } from "../runner/types.ts";
-import { parsePollArgs } from "./helpers/index.ts";
+import { parsePollArgs, POLL_INPUT } from "./helpers/index.ts";
 
 export * from "./helpers/index.ts";
 
@@ -89,7 +89,7 @@ async function pollRequest(context: CommandContext, text: string): Promise<Comma
 
 export async function runPoll(context: CommandContext, argv: string[]): Promise<CommandResult> {
   const parsed = parsePollArgs(argv);
-  if (!parsed.ok) return { code: 1, stderr: `log facebook poll: ${parsed.error}\n${POLL_USAGE}` };
+  if (!parsed.ok) return refuseInput("facebook poll", parsed.error, POLL_USAGE);
   if (parsed.mode === "request") return await pollRequest(context, parsed.request);
 
   try {
@@ -127,6 +127,7 @@ export const pollCommand: Command = {
   platform: "facebook",
   name: "poll",
   effect: "browser",
+  input: POLL_INPUT,
   summary: "Poll a Facebook group from one account, in its open browser, for a time or once: each poll's posts as one JSON line, OpenMagpie's records; --request answers OpenMagpie's facebook_group worker (#27, rule 63)",
   args: "<group> <account> [<how long to poll>] [--bypass] | --request <json>",
   run: runPoll,

@@ -6,16 +6,15 @@ import { sessionIdOf } from '../sessionOffsets/index'
 import { hookReply, parseMemory } from '../pageState/index'
 import { readOpenBrowsers } from '../../browser/inspect/index'
 import { diskFree, runsBytes, storageVerdict } from '../../browser/runStore/index'
-import { engineContext, fbkStateRoot, platformStateRoot, twitterStateRoot } from '../../directApi/engine/index'
+import { engineContext, fbkStateRoot } from '../../directApi/engine/index'
 import { codeStampWatcher, localChangesLine, staleServerLine, uncommittedFiles } from '../../mcp/freshness/index'
 import type { StampWatcher } from '../../mcp/freshness/index'
 import { kbConfig } from '../../knowledge/base/index'
 import { newQueueEvents, queueContext } from '../../twitter/queue/events/index'
 import { newLiveEvents, xLiveContext } from '../../twitter/live/feed/index'
-import { inboxTextWithVoiceNotes } from '../../media/voiceNotes/index'
-import { replaceHungOwners } from '../../inbox/relay/index'
-import { claimContext } from '../../inbox/claims/index'
-import { clearDeadQueueLocks, codeStamp, coolingDown, ensureLiveWatchers, hookReaderOf, inboxContext, startDescriber, startDiscordWatch, startInstagramWatch, startSlackWatch, startTwitterWatch, stopStaleWatchers, storedInboxContext, takeAlerts, takePending, twitterAccounts } from '../../inbox/watch/index'
+import { clearDeadQueueLocks, ensureLiveWatchers, hookReaderOf, startDescriber } from '../../inbox/watch/index'
+import { readPending } from '../../inbox/pending/index'
+import { superviseLocalWatchers } from '../../platformKit/watcher/index'
 import { hookAnswer } from '../../contextLayer/hook/index'
 import type { HookInput } from '../../contextLayer/hook/index'
 import { REFUSING_HOOKS } from './types'
@@ -93,7 +92,7 @@ export async function knowledgeAnswer(): Promise<HookAnswer> {
   const config = kbConfig()
   const count = 'missing' in config ? null : await chunkCount(config.redisUrl)
   const reach = 'missing' in config ? `not set up on this machine (${config.missing})` : count === null ? 'not reachable right now (the KB_TWENTY_URL host)' : `${count} indexed chunks`
-  return { context: `log-cli knowledge base (rule 93): every AGENTS.md rule, skill, doc, infra note, Claude memory file, page state, account and agent note, in ListeningKit's Twenty and searched through Redis, ${reach}. Before guessing how something works, where a login lives or what an earlier session found, run \`log kb search "<query>"\` (MCP kbSearch) and \`log kb show <key>\`; save what this session learns with \`log kb remember "<text>"\`, never a secret.` }
+  return { context: `log-cli knowledge base: every AGENTS.md rule, skill, doc, infra note, memory file, page state, account and agent note, kept in Twenty and searched through Redis, ${reach}. The MCP tools read it: \`kbSearch\` { query } finds what an earlier session found or how something works, \`kbShow\` { key } reads one entry, and \`kbRemember\` { text } saves what this session learns, never a secret.` }
 }
 
 export function queueAnswer(raw: string): HookAnswer {
@@ -120,20 +119,10 @@ export function pageStateAnswer(event: HookEvent, raw: string): HookAnswer {
 }
 
 export function inboxAnswer(event: HookEvent, raw: string, repo: string): HookAnswer {
-  replaceHungOwners('twitter', twitterAccounts())
-  for (const platform of ['discord', 'slack', 'instagram']) replaceHungOwners(platform, twitterAccounts(platformStateRoot(platform)))
-  stopStaleWatchers('twitter', twitterAccounts(), codeStamp(repo, 'twitter'))
-  for (const platform of ['discord', 'slack', 'instagram']) stopStaleWatchers(platform, twitterAccounts(platformStateRoot(platform)), codeStamp(repo, platform))
+  superviseLocalWatchers(repo)
   clearDeadQueueLocks()
-  ensureLiveWatchers('twitter', twitterAccounts().filter((a) => !coolingDown(twitterStateRoot(), a)), (account) => startTwitterWatch(account, repo))
-  ensureLiveWatchers('discord', twitterAccounts(platformStateRoot('discord')).filter((a) => !coolingDown(platformStateRoot('discord'), a)), (account) => startDiscordWatch(account, repo))
-  ensureLiveWatchers('slack', twitterAccounts(platformStateRoot('slack')).filter((a) => !coolingDown(platformStateRoot('slack'), a)), (account) => startSlackWatch(account, repo))
-  ensureLiveWatchers('instagram', twitterAccounts(platformStateRoot('instagram')).filter((a) => !coolingDown(platformStateRoot('instagram'), a)), (account) => startInstagramWatch(account, repo))
   ensureLiveWatchers('model', ['describer'], () => startDescriber(repo))
-  const alerts = takeAlerts(hookReaderOf(raw))
-  const loud = alerts.length ? ['>>> ONE PROCESS PER ACCOUNT, NEVER TWO (rule 131): a second watcher tried to start and was refused. Every Claude session shares the one watcher per account through the inbox; never start another. Tell matt now.', ...alerts].join('\n') : ''
-  const fresh = takePending(hookReaderOf(raw)).map((m) => ({ ...m, text: inboxTextWithVoiceNotes(m) }))
-  const text = [loud, inboxContext(fresh), claimContext(fresh), event === 'SessionStart' ? storedInboxContext(twitterAccounts()) : null].filter(Boolean).join('\n\n')
+  const { text } = readPending(hookReaderOf(raw), { stored: event === 'SessionStart' })
   return text ? { context: text } : {}
 }
 

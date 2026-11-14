@@ -4,12 +4,11 @@ import asyncio
 import hashlib
 import json
 import os
-import re
 import secrets
 from pathlib import Path
 from typing import Any
 from browser import streamSurface
-from login.autoLogin import classify
+from browser.viewerState import CODE_FIELD_SELECTOR, viewer_state
 
 class BrowserViewer:
     def __init__(self, owner: Any) -> None:
@@ -40,11 +39,11 @@ class BrowserViewer:
 
     async def state(self) -> dict[str, Any]:
         page = self.owner.page
-        signals = await page.evaluate("""() => ({url: location.href, heading: document.querySelector('h1,h2,[role=heading]')?.textContent || '', text: (document.body?.innerText || '').slice(0, 64000), password: [...document.querySelectorAll('input[type=password]')].some(e => e.getBoundingClientRect().height > 0), code: [...document.querySelectorAll('input[autocomplete=one-time-code],input[name=approvals_code]')].some(e => e.getBoundingClientRect().height > 0), width: innerWidth, height: innerHeight, historyLength: history.length})""")
-        state = classify(signals["url"], signals["heading"], signals["text"], password_field=signals["password"], code_field=signals["code"], login_markers=False, session_cookies=False, captcha=False)
-        blocked = bool(re.search(r"/checkpoint|/account/disabled", signals["url"], re.I)) or state in {"disabled", "checkpoint", "videoSelfie", "automatedBehaviour", "captcha"}
+        signals = await page.evaluate("""(codeSelector) => ({url: location.href, heading: document.querySelector('h1,h2,[role=heading]')?.textContent || '', text: (document.body?.innerText || '').slice(0, 64000), password: [...document.querySelectorAll('input[type=password]')].some(e => e.getBoundingClientRect().height > 0), code: [...document.querySelectorAll(codeSelector)].some(e => e.getBoundingClientRect().height > 0), width: innerWidth, height: innerHeight, historyLength: history.length})""", CODE_FIELD_SELECTOR)
+        seen = viewer_state(signals)
+        state = seen["state"]
         revision = hashlib.sha256(json.dumps([signals["url"], signals["text"], self.owner.index, self.inputRevision, self.owner.recorder.seen()], ensure_ascii=True).encode()).hexdigest()
-        return {"generation": self.generation, "revision": revision, "state": state, "url": signals["url"], "historyLength": signals["historyLength"], "blocked": blocked, "inputAllowed": not blocked and state in {"loginForm", "wrongPassword", "findAccount", "twoStepCode", "twoStepMethod", "trustDevice", "saveLogin", "continueAs"}, "width": signals["width"], "height": signals["height"], "busy": self.owner.controlLock.locked(), "stream": await streamSurface.surface(self.owner)}
+        return {"generation": self.generation, "revision": revision, "state": state, "url": signals["url"], "historyLength": signals["historyLength"], "blocked": seen["blocked"], "inputAllowed": seen["inputAllowed"], "width": signals["width"], "height": signals["height"], "busy": self.owner.controlLock.locked(), "stream": await streamSurface.surface(self.owner)}
 
     async def input(self, data: dict[str, Any]) -> dict[str, Any]:
         if self.owner.controlLock.locked():

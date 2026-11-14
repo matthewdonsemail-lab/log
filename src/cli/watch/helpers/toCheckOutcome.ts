@@ -1,8 +1,8 @@
 import type { ScanResult, WorkerFailure } from "../../../camofox/worker/index.ts";
 import { ERROR_CATALOG } from "../../../errors/catalog/index.ts";
-import { classifySignal } from "../../../marketplace/account/index.ts";
-import type { AccountIssue } from "../../../marketplace/account/index.ts";
-import type { CheckOutcome } from "../../../marketplace/monitor/index.ts";
+import { classifySignal } from "../../../platformKit/account/index.ts";
+import type { AccountIssue } from "../../../platformKit/account/index.ts";
+import type { CheckOutcome } from "../../../facebook/marketplace/monitor/index.ts";
 
 export function toCheckOutcome(result: ScanResult | WorkerFailure): CheckOutcome {
   if (result.ok) {

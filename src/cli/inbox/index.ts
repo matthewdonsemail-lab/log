@@ -3,20 +3,23 @@ import { behindOf, resumeGap } from "../../inbox/store/index.ts";
 import type { ActionRecord, ChatClaim } from "../../inbox/claims/index.ts";
 import { lastWordOf, waitingOf } from "../../inbox/lastWord/index.ts";
 import type { LastWord } from "../../inbox/lastWord/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf, refuse } from "../runner/helpers/index.ts";
+import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuse, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandInput, FlagSpec } from "../runner/types.ts";
+import { readPending, READER_PATTERN } from "../../inbox/pending/index.ts";
 
 export const INBOX_USAGE = [
   "Usage: log inbox claim --platform <twitter|discord|slack|instagram> --account <a> --chat <conversationId|handle> [--event <eventId>] [--json]",
   "       log inbox release --platform <p> --account <a> --chat <conversationId|handle> [--json]",
   "       log inbox claims [--json]",
-  "       log inbox resume --platform <p> --account <a> --by matt [--json]",
+  "       log inbox resume --platform <p> --account <a> --by <who> [--json]",
   "       log inbox actions [--platform <p>] [--account <a>] [--chat <conversationId|handle>] [--limit <n>] [--json]",
   "       log inbox waiting [--platform <p>] [--account <a>] [--limit <n>] [--oldest] [--json]",
-  "Only the session that claims a chat acts on it (rule 133). Every message the push channels bring in has an event id (shown in >>> NEW MESSAGE). claim takes the chat for this session for 10 minutes before you draft or send; a second session is refused (chatClaimedElsewhere). Every send claims the chat itself and releases it once it is sent, interrupted or failed, so two sessions never answer the same chat. A claim held by a session that ended frees itself. resume is matt's go-ahead after a refused catch-up (rule 94): the account's gap opens again and its owner catches up through its own session within 30 s; only when matt says so. claims lists who holds what; actions is the log of every claim, refusal, send and release, oldest first, to search what was already done in a chat before acting. waiting is who wrote last on every platform, read from log.db and nothing else: each chat's messages in time order (never the order they were stored in, since a backfill stores older messages later), one person's chats judged together (an X user's old DM and X Chat), a message mirrored into the other side counted once as whoever sent it first, reactions, read markers and call notices never counted as the last word. It lists the people waiting on a reply, then apart the ones who reacted to your last message (a follow-up), newest first unless --oldest.",
+  "       log inbox pending --reader <name> [--json]",
+  "pending is what the account watchers heard since this reader last asked, with what to do next for each message: the one delivery every harness reads, the prompt hook's included. A reader is one name per session or harness; a new one starts from now.",
+  "Only the session that claims a chat acts on it (rule 133). Every message the push channels bring in has an event id (shown in >>> NEW MESSAGE). claim takes the chat for this session for 10 minutes before you draft or send; a second session is refused (chatClaimedElsewhere). Every send claims the chat itself and releases it once it is sent, interrupted or failed, so two sessions never answer the same chat. A claim held by a session that ended frees itself. resume is matt's go-ahead after a refused catch-up (rule 94): the account's gap opens again and its owner catches up through its own session within 30 s; only when the owner says so. claims lists who holds what; actions is the log of every claim, refusal, send and release, oldest first, to search what was already done in a chat before acting. waiting is who wrote last on every platform, read from log.db and nothing else: each chat's messages in time order (never the order they were stored in, since a backfill stores older messages later), one person's chats judged together (an X user's old DM and X Chat), a message mirrored into the other side counted once as whoever sent it first, reactions, read markers and call notices never counted as the last word. It lists the people waiting on a reply, then apart the ones who reacted to your last message (a follow-up), newest first unless --oldest.",
 ].join("\n");
 
-const PLATFORM: FlagSpec = { name: "platform", kind: "string", required: true, description: "The platform: twitter, discord, slack or instagram" };
+const PLATFORM: FlagSpec = { name: "platform", kind: "enum", values: ["twitter", "discord", "slack", "instagram"], required: true, description: "The platform: twitter, discord, slack or instagram" };
 const ACCOUNT: FlagSpec = { name: "account", kind: "string", required: true, description: "The account's accountName" };
 const CHAT: FlagSpec = { name: "chat", kind: "string", required: true, description: "The chat: its conversation id (an X user id or pair, a Discord channel, a Slack chat, an Instagram thread) or the person's handle" };
 
@@ -24,17 +27,22 @@ export const INBOX_INPUT: CommandInput = {
   forms: [
     { words: ["claim"], effect: "write", summary: "Claim a chat for this session before drafting or sending in it, so no other session acts on it", positionals: [], flags: [PLATFORM, ACCOUNT, CHAT, { name: "event", kind: "string", description: "The event id from >>> NEW MESSAGE that this claim answers" }, JSON_FLAG] },
     { words: ["release"], effect: "write", summary: "Release this session's claim on a chat when it is done with it", positionals: [], flags: [PLATFORM, ACCOUNT, CHAT, JSON_FLAG] },
-    { words: ["resume"], effect: "write", summary: "matt's go-ahead after a refused catch-up: the account catches up again through its own session (rule 94), only when matt says so", positionals: [], flags: [PLATFORM, ACCOUNT, { name: "by", kind: "string", required: true, description: "Who said to resume: matt" }, JSON_FLAG] },
+    { words: ["resume"], effect: "write", summary: "The owner's go-ahead after a refused catch-up: the account catches up again through its own session (rule 94), only when the owner says so", positionals: [], flags: [PLATFORM, ACCOUNT, { name: "by", kind: "string", required: true, description: "Who said to resume: the owner" }, JSON_FLAG] },
     {
       words: ["waiting"], summary: "Who wrote last on every platform, from log.db in time order: the people waiting on a reply, and apart the ones who reacted to your last message",
       positionals: [],
       flags: [
-        { name: "platform", kind: "string", description: "Only this platform: twitter, discord, slack or instagram" },
+        { name: "platform", kind: "enum", values: ["twitter", "discord", "slack", "instagram"], description: "Only this platform: twitter, discord, slack or instagram" },
         { name: "account", kind: "string", description: "Only this account" },
-        { name: "limit", kind: "string", description: "How many per list, default 50, at most 1000" },
+        { name: "limit", kind: "integer", min: 1, max: 1000, description: "How many per list, default 50, at most 1000" },
         { name: "oldest", kind: "boolean", description: "Oldest first instead of newest first" },
         JSON_FLAG,
       ],
+    },
+    {
+      words: ["pending"], effect: "read", summary: "What the account watchers heard since this reader last asked, with what to do next: the same delivery the prompt hook gives, for any harness",
+      positionals: [],
+      flags: [{ name: "reader", kind: "string", required: true, pattern: READER_PATTERN.source, takes: "a reader name: letters, digits, _ and -, up to 80", description: "Who is reading: one name per session or harness. A new reader starts from now; each read moves only its own place" }, JSON_FLAG],
     },
     { words: ["claims"], summary: "Every live claim: which session holds which chat, and until when", positionals: [], flags: [JSON_FLAG] },
     {
@@ -44,7 +52,7 @@ export const INBOX_INPUT: CommandInput = {
         { name: "platform", kind: "string", description: "Only this platform" },
         { name: "account", kind: "string", description: "Only this account" },
         { name: "chat", kind: "string", description: "Only this chat (its id or the person's handle)" },
-        { name: "limit", kind: "string", description: "How many of the newest, default 50" },
+        { name: "limit", kind: "integer", min: 1, max: 1000, description: "How many of the newest, default 50, at most 1000" },
         JSON_FLAG,
       ],
     },
@@ -73,33 +81,37 @@ export const inboxCommand: Command = {
   name: "inbox",
   effect: "write",
   input: INBOX_INPUT,
-  summary: "Claim a chat before acting on it, release it, list the live claims, and read the log of every action taken in a chat",
-  args: "claim|release|claims|actions|resume|waiting [--by <who>] [--platform <p>] [--account <a>] [--chat <id|handle>] [--event <id>] [--limit <n>] [--oldest]",
+  summary: "Claim a chat before acting on it, release it, list the live claims, read the log of every action taken in a chat, and read what the watchers heard",
+  args: "claim|release|claims|actions|resume|waiting|pending [--reader <name>] [--by <who>] [--platform <p>] [--account <a>] [--chat <id|handle>] [--event <id>] [--limit <n>] [--oldest]",
   async run(_context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(INBOX_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log inbox: ${parsed.error}\n${INBOX_USAGE}` };
+    if (!parsed.ok) return refuseInput("inbox", parsed.error, INBOX_USAGE);
     const [sub = "claims", ...rest] = parsed.positionals;
-    if (rest.length) return { code: 1, stderr: `log inbox: unexpected argument "${rest[0]}"\n${INBOX_USAGE}` };
+    if (rest.length) return { code: 1, error: "inputInvalid", stderr: `log inbox: unexpected argument "${rest[0]}"\n${INBOX_USAGE}` };
     const json = parsed.flags["json"] === true;
     const str = (name: string) => (typeof parsed.flags[name] === "string" ? String(parsed.flags[name]).trim() : "");
+    if (sub === "pending") {
+      const reader = str("reader");
+      if (!READER_PATTERN.test(reader)) return { code: 1, error: "inputInvalid", stderr: `log inbox pending: --reader is letters, digits, _ and -, up to 80\n${INBOX_USAGE}` };
+      const read = readPending(reader);
+      if (json) return { code: 0, stdout: JSON.stringify({ reader, messages: read.messages, alerts: read.alerts, context: read.text }, null, 2) };
+      return { code: 0, stdout: read.text ?? `log inbox pending: nothing new for ${reader} since it last asked.` };
+    }
     if (sub === "claims") {
       const claims = liveClaims();
       if (json) return { code: 0, stdout: JSON.stringify({ claims }, null, 2) };
       return { code: 0, stdout: claims.length ? [`log inbox claims: ${claims.length} live claim(s):`, ...claims.map(claimLine)].join("\n") : "log inbox claims: no chat is claimed by any session right now." };
     }
     if (sub === "actions") {
-      const limit = str("limit") ? Number(str("limit")) : 50;
-      if (!Number.isInteger(limit) || limit < 1 || limit > 1000) return { code: 1, stderr: `log inbox actions: --limit must be 1 to 1000\n${INBOX_USAGE}` };
+      const limit = numberOf(parsed, "limit") ?? 50;
       const rows = readActions({ platform: str("platform") || undefined, account: str("account") || undefined, chat: str("chat") || undefined, limit });
       if (json) return { code: 0, stdout: JSON.stringify({ actions: rows }, null, 2) };
       return { code: 0, stdout: rows.length ? [`log inbox actions: the ${rows.length} newest, oldest first:`, ...rows.map(actionLine)].join("\n") : "log inbox actions: nothing has been done in that chat yet." };
     }
     if (sub === "waiting") {
-      const limit = str("limit") ? Number(str("limit")) : 50;
-      if (!Number.isInteger(limit) || limit < 1 || limit > 1000) return { code: 1, stderr: `log inbox waiting: --limit must be 1 to 1000
-${INBOX_USAGE}` };
+      const limit = numberOf(parsed, "limit") ?? 50;
       const platform = str("platform");
-      if (platform && !PLATFORMS.includes(platform)) return { code: 1, stderr: `log inbox waiting: --platform is one of ${PLATFORMS.join(", ")}
+      if (platform && !PLATFORMS.includes(platform)) return { code: 1, error: "inputInvalid", stderr: `log inbox waiting: --platform is one of ${PLATFORMS.join(", ")}
 ${INBOX_USAGE}` };
       const oldest = parsed.flags["oldest"] === true;
       const order = (list: LastWord[]) => (oldest ? [...list].reverse() : list).slice(0, limit);
@@ -119,7 +131,7 @@ ${INBOX_USAGE}` };
       const platform = str("platform");
       const account = str("account");
       const by = str("by");
-      if (!PLATFORMS.includes(platform) || !account || !by) return { code: 1, stderr: `log inbox resume: --platform (${PLATFORMS.join(", ")}), --account and --by are needed
+      if (!PLATFORMS.includes(platform) || !account || !by) return { code: 1, error: "inputInvalid", stderr: `log inbox resume: --platform (${PLATFORMS.join(", ")}), --account and --by are needed
 ${INBOX_USAGE}` };
       const gap = behindOf(platform, account);
       const resumed = resumeGap(platform, account, by);
@@ -129,7 +141,7 @@ ${INBOX_USAGE}` };
     }
     if (sub !== "claim" && sub !== "release") return { code: 1, stderr: `log inbox: unknown subcommand "${sub}"\n${INBOX_USAGE}` };
     const platform = str("platform");
-    if (!PLATFORMS.includes(platform)) return { code: 1, stderr: `log inbox ${sub}: --platform is one of ${PLATFORMS.join(", ")}\n${INBOX_USAGE}` };
+    if (!PLATFORMS.includes(platform)) return { code: 1, error: "inputInvalid", stderr: `log inbox ${sub}: --platform is one of ${PLATFORMS.join(", ")}\n${INBOX_USAGE}` };
     const ref = { platform, account: str("account"), conversationId: str("chat").replace(/^@/, ""), ...(/^\d+([-:]\d+)?$|^[CDG][A-Z0-9]+$/.test(str("chat")) ? {} : { with: str("chat").replace(/^@/, "") }), ...(str("event") ? { eventId: str("event") } : {}) };
     if (!ref.account || !ref.conversationId) return { code: 1, stderr: `log inbox ${sub}: --account and --chat can't be empty\n${INBOX_USAGE}` };
     if (sub === "release") {

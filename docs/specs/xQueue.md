@@ -26,6 +26,8 @@ Checked by: code and SubQ
 
 The run takes the next event in time order, waits for its time, sends it and waits for X's answer before it takes the next one. It never sends two items at once.
 
+The run is `queueRunMachine` (`src/twitter/queue/run/machine.ts`), built with `setup()`, named guards and actions, and `onError` on every invoke; `runQueue` starts it and sends `BEGIN`. The machine drives the run: in `waiting` it takes the next event (`taking`, `choosing`), and its waits and checks are invoked actors (`waitDue` for the poll until the event is due, `pause` for a nudge's 20 to 60 s, `awaitAdded` while `--keepOpen` waits for more, `checkContext` for the read right before a reply); the send is the `sendItem` actor in `liking` or `replying`, and X's answer picks the next state (`waiting`, `retrying` for a network drop, or `halted`). A cancel ends in `stopped`, a throw from any actor ends in `crashed` and `runQueue` throws it as before. The pacing, the order, the gates, the governor use, the queue log lines and the saves are the same as the loop it replaced: `src/twitter/queue/run/runRecord.test.ts` and `src/cli/twitter/queueRun.test.ts` record them and were written against the loop first.
+
 Checked by: code and SubQ
 
 ### REQ-QUEUE-04: Two sends are never closer than minGap

@@ -9,7 +9,7 @@ const overlays = 'src/browser/flow/helpers/overlays.ts'
 const answers = 'src/browser/flow/helpers/answers.ts'
 const match = 'python/browser/controlMatch.py'
 const inspectPy = 'python/session/inspectSession.py'
-const docsGate = 'scripts/checks/checkFacebookClientDocs.mjs'
+const docsGate = 'scripts/checks/checkClientDocs.mjs'
 
 export const flows = {
   description: 'A recording becomes a flow, a control is one scored match, every step waits for and checks the call it must cause',
@@ -23,7 +23,7 @@ export const flows = {
     'src/cli/flow/index.ts',
     'src/cli/flow/helpers/flowSession.ts',
     'src/mcp/server/helpers/toolsFromFlows.ts',
-    'scripts/checks/checkFacebookClientDocs.mjs',
+    'scripts/checks/checkClientDocs.mjs',
     'python/browser/controlMatch.py',
     'python/session/inspectSession.py',
   ],
@@ -49,7 +49,8 @@ export const flows = {
     'REQ-FLOW-08': [
       { kind: 'value', file: 'src/mcp/server/helpers/toolAnnotations.ts', name: 'LIVE_SUFFIX', equals: 'Live' },
       { kind: 'symbol', file: 'src/mcp/server/helpers/toolsFromFlows.ts', name: 'toolsFromFlows' },
-      { kind: 'symbol', file: 'src/browser/flow/helpers/renderFlowDoc.ts', name: 'toolName' },
+      { kind: 'symbol', file: 'src/browser/flow/helpers/flowPlatform.ts', name: 'flowToolName' },
+      { kind: 'symbol', file: 'src/browser/flow/helpers/flowPlatform.ts', name: 'flowPlatform' },
     ],
     'REQ-FLOW-09': [
       { kind: 'symbol', file: match, name: 'pick' },
@@ -81,10 +82,10 @@ export const flows = {
     'REQ-FLOW-02': noul('For a step that clicks or fills a ref, does flowFromRecording take the role and name of the element from readScreen of the snapshot of the previous command, and set within from dialogOf on that same snapshot?'),
     'REQ-FLOW-03': noul('Does confirmingRequest pick a 200 POST whose name ends in Mutation first, then a plain endpoint path, then a name ending in DialogQuery, and does flowFromRecording store it as the expect of the step?'),
     'REQ-FLOW-04': noul('Does flowFromRecording store the reaEvidenceId of each recorded command in the recorded field of its step?'),
-    'REQ-FLOW-05': noul('Does writeFlowDoc write <name>.md into the flow docs folder, and does checkFacebookClientDocs report a problem for every JSON file in the flow definitions folder that has no matching doc in the flows docs folder?'),
+    'REQ-FLOW-05': noul('Does writeFlowDoc write <name>.md into the flow docs folder, and does checkClientDocs report a problem for every JSON file in the flow definitions folder that has no matching doc in the flows docs folder?'),
     'REQ-FLOW-06': noul('Does createFlowMachine make one state per flow step, in order, where a step whose output is not ok, or whose actor throws, goes to the final state failed and records failedAt?'),
     'REQ-FLOW-07': noul('Does runFlow return the list of steps without opening any browser when the live flag is not set, and only open the account and run the flow in its session when it is set?'),
-    'REQ-FLOW-08': noul('Does toolsFromFlows make two MCP tools for every saved flow, one named toolName(flow.name) that is a dry run and one with LIVE_SUFFIX added that runs it?'),
+    'REQ-FLOW-08': noul('Does toolsFromFlows make two MCP tools for every saved flow, one named flowToolName(flow), its platform from the definition followed by Flow and the flow name (facebookFlowPostComment), that is a dry run, and one with LIVE_SUFFIX added that runs it; and does RENAMED_FLOW_TOOLS keep each old flow<Name> name as an unlisted alias?'),
     'REQ-FLOW-09': noul('Does pick match a candidate only when its role equals the role of the step and one of aria, label, text or placeholder equals the name of the step, both compared after norm collapses whitespace and casefolds?'),
     'REQ-FLOW-10': noul('When within is given, does pick keep only candidates whose dialog equals within, and when within is not given and some match has a dialog, does it keep only the matches inside a dialog?'),
     'REQ-FLOW-11': noul('After narrowing by exact accessible name, enabled, not aria-hidden and hit, does pick return code controlAmbiguous when more than one candidate is left, rather than taking the first?'),

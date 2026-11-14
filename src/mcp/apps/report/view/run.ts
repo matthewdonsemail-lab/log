@@ -6,9 +6,11 @@ export type ViewComponent = React.ComponentType<{ data: Record<string, unknown>;
 
 const MODULES: Record<string, unknown> = { react: React, "react/jsx-runtime": jsxRuntime, log: kit };
 
-export function moduleRequire(name: string): unknown {
-  const found = MODULES[name];
-  if (!found) throw new Error(`a view can import only from "log" and "react", not "${name}"`);
+export const VIEW_MODULES: readonly string[] = Object.keys(MODULES);
+
+export function moduleRequire(name: unknown): unknown {
+  const found = typeof name === "string" && Object.prototype.hasOwnProperty.call(MODULES, name) ? MODULES[name] : undefined;
+  if (!found) throw new Error(`viewImportRefused: a view can import only from "log" and "react", not "${String(name)}", and never with import()`);
   return found;
 }
 

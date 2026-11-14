@@ -3,13 +3,13 @@ import { adsPowerHomes, createAdsPowerClient, ensureKernel, homesOf, profileKern
 import { readCurrentInspect } from "../../browser/inspect/index.ts";
 import { slowFacebookMs } from "../../browser/proxy/index.ts";
 import { listLaunches, prepareRun } from "../../browser/run/index.ts";
-import { readProgress } from "../../marketplace/host/index.ts";
-import { preflightOf, renderPreflight } from "../../marketplace/preflight/index.ts";
-import type { KernelFact, PreflightFacts, ProxyFact } from "../../marketplace/preflight/index.ts";
-import { findAccount, listFacebookAccounts } from "../../marketplace/socialAccount/index.ts";
-import type { FacebookAccount } from "../../marketplace/socialAccount/index.ts";
-import { parseArgs, refuseError } from "../runner/helpers/index.ts";
-import type { Command, CommandContext } from "../runner/types.ts";
+import { readProgress } from "../../facebook/marketplace/host/index.ts";
+import { preflightOf, renderPreflight } from "../../platformKit/preflight/index.ts";
+import type { KernelFact, PreflightFacts, ProxyFact } from "../../platformKit/preflight/index.ts";
+import { findAccount, listFacebookAccounts } from "../../platformKit/socialAccount/index.ts";
+import type { FacebookAccount } from "../../platformKit/socialAccount/index.ts";
+import { JSON_FLAG, parseArgs, parserSpecOf, refuseError, refuseInput } from "../runner/helpers/index.ts";
+import type { Command, CommandContext, CommandInput } from "../runner/types.ts";
 
 export const PREFLIGHT_USAGE = [
   "Usage: log facebook preflight [--account <accountName>] [--homes <US,CA>] [--noProxy] [--apply] [--json]",
@@ -58,16 +58,34 @@ export async function kernelFacts(context: CommandContext, profileIds: string[],
 
 const onDisk = (path: string | null): boolean | null => (!path || /^https?:\/\//i.test(path) ? null : existsSync(path));
 
+export const PREFLIGHT_INPUT: CommandInput = {
+  forms: [
+    {
+      words: [],
+      summary: "Before any browser opens, check each Facebook account will get through: home timezone, hours, proxy, browser kernel, launches, open sessions and its picture",
+      positionals: [],
+      flags: [
+        { name: "account", kind: "string", description: "Only this account" },
+        { name: "homes", kind: "list", pattern: "^[A-Za-z]{2}$", takes: "two-letter country codes", description: "Only accounts whose home country is one of these (default LOG_ADSPOWER_HOMES)" },
+        { name: "noProxy", kind: "boolean", description: "Skip measuring each proxy" },
+        { name: "apply", kind: "boolean", description: "Download a missing browser kernel and wait for it; nothing opens on the platform" },
+        JSON_FLAG,
+      ],
+    },
+  ],
+};
+
 export const preflightCommand: Command = {
   usage: PREFLIGHT_USAGE,
   platform: "facebook",
   name: "preflight",
   effect: "read",
+  input: PREFLIGHT_INPUT,
   summary: "Before any browser opens, check each account will get through: home timezone, hours, proxy speed and country, the account's browser and its kernel, launches and host opens left, no session left open, its picture on disk",
   args: "[--account <a>] [--homes <US,CA>] [--noProxy] [--apply] [--json]",
   async run(context, argv) {
-    const parsed = parseArgs(argv, { boolean: ["json", "apply", "noProxy"], valued: ["account", "homes"] });
-    if (!parsed.ok) return { code: 1, stderr: `log facebook preflight: ${parsed.error}\n${PREFLIGHT_USAGE}` };
+    const parsed = parseArgs(argv, parserSpecOf(PREFLIGHT_INPUT));
+    if (!parsed.ok) return refuseInput("facebook preflight", parsed.error, PREFLIGHT_USAGE);
     try {
       const homes = typeof parsed.flags["homes"] === "string" ? homesOf(parsed.flags["homes"]) : adsPowerHomes();
       const accounts = typeof parsed.flags["account"] === "string"

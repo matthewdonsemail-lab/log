@@ -1,4 +1,27 @@
-import { parseArgs } from "../../runner/helpers/index.ts";
+import { parseArgs, parserSpecOf } from "../../runner/helpers/index.ts";
+import type { CommandInput } from "../../runner/types.ts";
+
+export const POLL_INPUT: CommandInput = {
+  forms: [
+    {
+      words: [],
+      summary: "Poll a Facebook group from one account in its open browser, once or for a time; or answer OpenMagpie's facebook_group worker with request",
+      positionals: [
+        { name: "group", kind: "string", description: "The group's url or id" },
+        { name: "account", kind: "string", description: "The account whose open browser reads it (needed with group)" },
+        { name: "howLong", kind: "string", description: "How long to poll, a number and s, m or h up to 24h (30m, 2h); left out, one poll" },
+      ],
+      flags: [
+        { name: "request", kind: "string", format: "jsonObject", description: "OpenMagpie's whole facebook_group request, as JSON: its groups come from it, and it never skips the hours" },
+        { name: "bypass", kind: "boolean", bypass: true, description: "Outside the account's waking hours, only when the owner asked (rule 86)" },
+      ],
+      groups: [
+        { rule: "atLeastOne", names: ["group", "request"] },
+        { rule: "atMostOne", names: ["group", "request"] },
+      ],
+    },
+  ],
+};
 
 export const POLL_TARGETS = ["group"] as const;
 
@@ -17,7 +40,7 @@ export function durationMs(text: string): number | null {
 }
 
 export function parsePollArgs(argv: string[]): ParsePollArgsResult {
-  const parsed = parseArgs(argv, { boolean: ["bypass"], valued: ["request"] });
+  const parsed = parseArgs(argv, parserSpecOf(POLL_INPUT));
   if (!parsed.ok) return parsed;
   if (typeof parsed.flags.request === "string") {
     if (parsed.positionals.length || parsed.flags.bypass) return { ok: false, error: "--request is OpenMagpie's whole call: its groups come from the request, and it never skips the hours" };

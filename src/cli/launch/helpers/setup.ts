@@ -1,5 +1,7 @@
 import { PLATFORM_SITES } from "../../runner/helpers/platforms.ts";
 import type { Platform } from "../../runner/helpers/platforms.ts";
+import { HARNESSES } from "../../../agentHooks/harness/types.ts";
+import type { HarnessId } from "../../../agentHooks/harness/types.ts";
 
 export type ExtensionId = "treg" | "memelord" | "inworld" | "fishAudio";
 
@@ -54,15 +56,18 @@ export const ADSPOWER_SETUP = {
   keyHint: "AdsPower, API, the Local API key (leave empty if the Local API has no key)",
 } as const;
 
-export const SETUP_HARNESSES = [
-  {
-    id: "opencode",
-    label: "OpenCode",
-    adds: "log's tools as native tools (never Code Mode) and the hooks running, in ~/.config/opencode",
-  },
-] as const;
+const SETUP_ADDS: Readonly<Partial<Record<HarnessId, string>>> = {
+  opencode: "log's tools as native tools (never Code Mode) and the hooks running, in ~/.config/opencode",
+  hermes: "the native logHooks plugin in ~/.hermes/plugins: its pre_llm_call hook puts the play, pending messages and browser states before each model call (then: hermes plugins enable logHooks)",
+};
 
-export type SetupHarness = (typeof SETUP_HARNESSES)[number];
+export interface SetupHarness {
+  id: HarnessId;
+  label: string;
+  adds: string;
+}
+
+export const SETUP_HARNESSES: readonly SetupHarness[] = HARNESSES.filter((h) => h.installedBy === "launchSetup").map((h) => ({ id: h.id, label: h.label, adds: SETUP_ADDS[h.id] ?? `log's hooks for ${h.label}` }));
 
 export function needsBrowser(platforms: readonly Platform[]): boolean {
   return platforms.some((platform) => PLATFORM_SITES[platform].browser);

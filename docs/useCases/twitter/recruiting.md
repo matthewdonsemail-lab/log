@@ -4,6 +4,8 @@ Find people who just posted that they want work, or who already do the job. Repl
 
 Recruiting is public replies only. DMs are a different job: [dmInbox.md](dmInbox.md) and [engagerDms.md](engagerDms.md).
 
+How the owner asks for it: "recruit for the <role> role on x", "find people looking for work on twitter and reply with the job link", "hire a <role> through tweet replies".
+
 ## Run it from a fresh context
 
 Say: **"go on docs/useCases/twitter/recruiting.md for the <role> role"**. The agent then:
@@ -37,7 +39,7 @@ flowchart TD
   s3["3. Qualify them with the five checks<br/><i>by hand, or a model scoring fit, region…</i>"]
   s4["4. Write one line per person, in their language, opening on their…<br/><i>house style</i>"]
   s5["5. Show the owner the table: handle, location, why, post url, the…<br/><i>wherever the owner reads</i>"]
-  s6["6. Queue it: each target carries its own text, build, check, appro…<br/><i>the README's queue steps</i>"]
+  s6["6. Queue it: each target carries its own text, build, check, appro…<br/><i>twitterQueueBuild, twitterQueueRunLive</i>"]
   s7["7. Log and report every reply url, or X's event<br/><i>the queue file, a send log</i>"]
   s8["8. Check applicants<br/><i>wherever the job page sends applications</i>"]
   s0 --> s1
@@ -59,7 +61,7 @@ flowchart TD
 | 3 | Qualify them with the five checks | by hand, or a model scoring fit, region and real person | a keep list, plus a "no location" hold list |
 | 4 | Write one line per person, in their language, opening on their own post, ending with the link | house style | every line passes `twitterQueueCheck` |
 | 5 | Show the owner the table: handle, location, why, post url, the line | wherever the owner reads | the owner says yes |
-| 6 | Queue it: each target carries its own `text`, build, check, approve, plan with likes, dry run, live run | the README's queue steps | the run is `finished` |
+| 6 | Queue it: each target carries its own `text`, build, check, approve, plan with likes, dry run, live run | the README's queue steps: `twitterQueueBuild`, `twitterQueueRunLive` | the run is `finished` |
 | 7 | Log and report every reply url, or X's event | the queue file, a send log | every item says sent, skipped or blocked |
 | 8 | Check applicants | wherever the job page sends applications | new applicants reported |
 

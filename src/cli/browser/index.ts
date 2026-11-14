@@ -1,7 +1,7 @@
 import { viewerState } from "../../browser/viewer/index.ts";
 import type { ViewerView } from "../../browser/viewer/index.ts";
 import { readLocalAccounts } from "../../twenty/graphql/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";
+import { JSON_FLAG, parseArgs, parserSpecOf, refuseInput } from "../runner/helpers/index.ts";
 import { knownPlatformOfAccount, PLATFORM_LABELS } from "../runner/helpers/platforms.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
 
@@ -40,7 +40,7 @@ export function platformNameOf(account: string): string {
 }
 
 const REMOTE: Record<ViewerView["phase"], string> = {
-  browserMissing: "No browser is open for this account. Open one with inspectStart (log inspect start --account <name> --detach), then call browserView again.",
+  browserMissing: "No browser is open for this account. Open it for sign-in with sessionsSignIn { account }, on the local and the hosted server alike, then call browserView again.",
   viewerUnavailable: "The account's browser is open but its viewer could not be reached, so it cannot be shown. Nothing was sent to the page.",
   signInRequired: "The page asks for sign-in. The person signs in inside the browser view; their clicks and keys go to the page only while it still asks for sign-in, each one a recorded step. Wait for them, then call browserView again before carrying on.",
   needsAttention: "The page needs a person and is a stop (rule 94): input is off. Tell the person what the page shows; do not continue this account until they clear it.",
@@ -57,7 +57,7 @@ function localText(view: ViewerView, platform: string): string {
 export function browserViewText(view: ViewerView, location: BrowserViewLocation = browserViewLocation(), platform = platformNameOf(view.account)): string {
   const head = `${view.account}: ${view.phase}${view.pageState ? ` (page state ${view.pageState})` : ""}${view.address ? ` on ${view.address}` : ""}`;
   if (location === "local") return [head, localText(view, platform)].join("\n");
-  return [head, REMOTE[view.phase], ...(view.needsHuman ? ["Without an inline view (a host without MCP Apps), the person opens it in an MCP Apps host (Claude, ChatGPT, Cursor), or runs log console --web on the runtime's machine and uses the account's live browser button on Connections."] : [])].join("\n");
+  return [head, REMOTE[view.phase], ...(view.needsHuman ? ["Without an inline view (a host without MCP Apps), sessionsSignIn answers with a console link that works once, for ten minutes, for the person who asked; the console's Connections page shows the same live browser."] : [])].join("\n");
 }
 
 export type BrowserViewJson = Omit<ViewerView, "stream"> & { location: BrowserViewLocation; streamKind: "voxl" | "frames" | "none" };
@@ -80,10 +80,10 @@ export const browserCommand: Command = {
   args: "view --account <accountName> [--json]",
   async run(_context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(BROWSER_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log browser: ${parsed.error}\n${BROWSER_USAGE}` };
+    if (!parsed.ok) return refuseInput("browser", parsed.error, BROWSER_USAGE);
     if (parsed.positionals[0] !== "view" || parsed.positionals.length > 1) return { code: 1, stderr: `log browser: say view\n${BROWSER_USAGE}` };
     const account = parsed.flags["account"];
-    if (typeof account !== "string" || !account) return { code: 1, stderr: `log browser view: --account is required\n${BROWSER_USAGE}` };
+    if (typeof account !== "string" || !account) return { code: 1, error: "inputInvalid", stderr: `log browser view: --account is required\n${BROWSER_USAGE}` };
     const view = await browserDeps.state(account);
     return { code: 0, stdout: parsed.flags["json"] ? JSON.stringify(browserViewJson(view), null, 2) : browserViewText(view) };
   },

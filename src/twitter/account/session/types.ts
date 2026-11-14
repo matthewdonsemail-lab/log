@@ -148,6 +148,7 @@ export interface TwitterFollower {
   canDm: boolean
   protected: boolean
   createdAt?: string | null
+  pictureUrl?: string | null
 }
 
 export interface TwitterSessionAnswer {

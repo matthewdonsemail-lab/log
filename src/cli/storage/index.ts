@@ -1,7 +1,7 @@
 import { openDatabase } from "../../storage/schema/index.ts";
 import { countsOf, rebuildDerived, verifyDerived } from "../../storage/platform/index.ts";
 import type { VerifyResult } from "../../storage/platform/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";
+import { JSON_FLAG, parseArgs, parserSpecOf, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
 
 export const STORAGE_USAGE = [
@@ -38,7 +38,7 @@ export const storageCommand: Command = {
   args: "verify|rebuild [--apply] [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(STORAGE_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log storage: ${parsed.error}\n${STORAGE_USAGE}` };
+    if (!parsed.ok) return refuseInput("storage", parsed.error, STORAGE_USAGE);
     const [sub, ...rest] = parsed.positionals;
     if (!sub || rest.length || !["verify", "rebuild"].includes(sub)) return { code: 1, stderr: `log storage: say verify or rebuild\n${STORAGE_USAGE}` };
     const handle = openDatabase();

@@ -53,7 +53,7 @@ flowchart TD
 | --- | --- | --- | --- |
 | 5 | Each manager's recent original posts | treg `treg.x.user.posts` { username } | a post per manager worth replying to |
 | 6 | A reply in the owner's voice about their post, with a meme picked to his taste for that moment, uploaded as media. Gate every reply | `memelordSearch`, `voice` { to, context, text } | every reply passes |
-| 7 | Into the account's one queue as replies, spread over the days, a few minutes apart (rules 104, 107). Each reply likes the post and follows them first | `twitterQueueBuild` { action: "reply" }, `twitterQueueCheck`, `twitterQueueApprove`, `twitterQueuePlan`, `twitterQueueRunLive` | X's answer is `sent` |
+| 7 | Into the account's one queue as replies, spread over the days, a few minutes apart (rule 105). Each reply likes the post and follows them first | `twitterQueueBuild` { action: "reply" }, `twitterQueueCheck`, `twitterQueueApprove`, `twitterQueuePlan`, `twitterQueueRunLive` | X's answer is `sent` |
 
 ### Who engaged, then the DM
 
@@ -73,8 +73,8 @@ flowchart TD
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
 | 8 | Who engaged back: liked or replied to a reply, followed the owner, or messaged him | `twitterNotifications` { account }, `twitterFollows`, `twitterDms` { account, with } | the managers who engaged |
-| 9 | To each one who engaged, the cold DM the network-maxing way: one of their own tweets forwarded first, then one line about it. The opener only, never the ask (rule 98) | `voice` { to, context, text }, then `twitterQueueBuild` { action: "dm" } | every opener passes |
-| 10 | Then a brief voice note in the owner's cloned voice, once the openers have gone: one spoken question that goes a step further on their tweet (rule 156) | `voice` { to, context, text, spoken: true }, then `twitterQueueAdd` { action: "voice" } | X's answer is `sent` for each voice note |
+| 9 | To each one who engaged, the cold DM the network-maxing way: one of their own tweets forwarded first, then one line about it. The opener only, never the ask | `voice` { to, context, text }, then `twitterQueueBuild` { action: "dm" } | every opener passes |
+| 10 | Then a brief voice note in the owner's cloned voice, once the openers have gone: one spoken question that goes a step further on their tweet | `voice` { to, context, text, spoken: true }, then `twitterQueueAdd` { action: "voice" } | X's answer is `sent` for each voice note |
 | 11 | When they answer, the opening message: get to know them and the streamers they run, then, in the conversation, log: Clavicular's X as the example, Claude Code explaining sponsor deals with tracked links, more sign-ups, more affiliate money | `twitterDms` { account, with }, `voice`, `twitterDmLive` | the conversation is going |
 
 ## What to know
@@ -82,9 +82,9 @@ flowchart TD
 - **The ICP is the manager, not the streamer.** A streamer only matters here as the way to their manager.
 - **Never guess a manager.** Only a bio that names the role at the agency counts. Searching X posts for "<streamer> manager" or "<agency> talent manager" brings up jokes, fans and recruiters (on 2026-11-05 both did), and X's people search matches names, not bios; the agency's own following list is what finds its staff.
 - **Reply guy first, for a few days,** then the DM only to the ones who engaged. Someone who never engaged isn't DMed yet.
-- **The opener is never the ask** (rule 98). log, Clavicular's X and the affiliate money come up once they're talking.
-- Replies go to authors with 1500 followers or fewer (rule 121); a bigger manager needs the owner to name them.
-- Every send goes through the account's one queue, gated against his voice, and a refusal from X stops the run (rules 94, 104, 118).
+- **The opener is never the ask**. log, Clavicular's X and the affiliate money come up once they're talking.
+- Replies go to authors with 1500 followers or fewer; a bigger manager needs the owner to name them.
+- Every send goes through the account's one queue, gated against his voice, and a refusal from X stops the run (rules 94, 105).
 
 ## Next
 

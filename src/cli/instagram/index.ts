@@ -1,6 +1,6 @@
 import { findInstagramAccount, recordInstagramSession, instagramGate } from "../../instagram/account/session/index.ts";
 import type { PlatformAccount, PlatformAnswer } from "../../platformKit/session/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../runner/helpers/index.ts";
+import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuse, refuseGated, refuseError, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandInput, CommandResult } from "../runner/types.ts";
 import { watermarkLine, watermarkReadingOf } from "../../twitter/copy/watermark/index.ts";
 import { addPending, interruptedLines } from "../../inbox/watch/index.ts";
@@ -10,7 +10,12 @@ import { gateDeps } from "../twitter/helpers/voice.ts";
 import { latestSeq, recordPosition } from "../../inbox/store/index.ts";
 import { instagramCatchUp, storeRead, waitCaughtUp } from "../../inbox/catchUp/index.ts";
 import { guardSend } from "../../inbox/claims/index.ts";
+import type { PartStep, SendGuard } from "../../inbox/claims/index.ts";
+import type { PlatformEngineRun } from "../../platformKit/session/index.ts";
+import { confirmAnswer, errorText, rethrowFailure, runAction } from "../../platformKit/action/index.ts";
 import type { InboxMessage } from "../../inbox/watch/index.ts";
+
+type HeldGuard = Extract<SendGuard, { ok: true }>;
 import { saveConversations } from "../../search/conversations/index.ts";
 import type { Conversation } from "../../search/conversations/index.ts";
 import { twitterDmsDeps } from "../twitter/helpers/dms.ts";
@@ -50,10 +55,10 @@ export const instagramSessionCommand: Command = {
   args: "check --account <a> [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(INSTAGRAM_SESSION_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log instagram session: ${parsed.error}\n${INSTAGRAM_SESSION_USAGE}` };
+    if (!parsed.ok) return refuseInput("instagram session", parsed.error, INSTAGRAM_SESSION_USAGE);
     if (parsed.positionals[0] !== "check" || parsed.positionals.length > 1) return { code: 1, stderr: `log instagram session: give check\n${INSTAGRAM_SESSION_USAGE}` };
     const ref = parsed.flags["account"];
-    if (typeof ref !== "string") return { code: 1, stderr: `log instagram session check: --account is needed\n${INSTAGRAM_SESSION_USAGE}` };
+    if (typeof ref !== "string") return { code: 1, error: "inputInvalid", stderr: `log instagram session check: --account is needed\n${INSTAGRAM_SESSION_USAGE}` };
     try {
       const account = await findInstagramAccount(context.twenty, ref);
       const gate = instagramGate(account);
@@ -86,7 +91,7 @@ export const INSTAGRAM_DMS_INPUT: CommandInput = {
       flags: [
         { name: "account", kind: "string", required: true, description: "The INSTAGRAM socialAccount's accountName (its handle)" },
         { name: "with", kind: "string", description: "Read one thread: who it is with (their handle), its name, or its id" },
-        { name: "limit", kind: "string", description: "Threads to list (default 20, at most 100), or messages to read with --with (default 30, at most 200)" },
+        { name: "limit", kind: "integer", min: 1, max: 200, description: "Threads to list (default 20, at most 100), or messages to read with --with (default 30, at most 200)" },
         JSON_FLAG,
       ],
     },
@@ -150,12 +155,12 @@ export const instagramDmsCommand: Command = {
   args: "--account <a> [--with <handle|id>] [--limit <n>] [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(INSTAGRAM_DMS_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log instagram dms: ${parsed.error}\n${INSTAGRAM_DMS_USAGE}` };
-    if (parsed.positionals.length) return { code: 1, stderr: `log instagram dms: takes no words, only flags\n${INSTAGRAM_DMS_USAGE}` };
+    if (!parsed.ok) return refuseInput("instagram dms", parsed.error, INSTAGRAM_DMS_USAGE);
+    if (parsed.positionals.length) return { code: 1, error: "inputInvalid", stderr: `log instagram dms: takes no words, only flags\n${INSTAGRAM_DMS_USAGE}` };
     const said = typeof parsed.flags["with"] === "string" ? parsed.flags["with"].trim() : "";
     const most = said ? 200 : 100;
-    const limit = parsed.flags["limit"] === undefined ? (said ? 30 : 20) : Number(parsed.flags["limit"]);
-    if (!Number.isInteger(limit) || limit < 1 || limit > most) return { code: 1, stderr: `log instagram dms: --limit must be 1 to ${most}\n${INSTAGRAM_DMS_USAGE}` };
+    const limit = numberOf(parsed, "limit") ?? (said ? 30 : 20);
+    if (limit > most) return { code: 1, error: "inputInvalid", stderr: `log instagram dms: --limit must be 1 to ${most}\n${INSTAGRAM_DMS_USAGE}` };
     try {
       const account = await findInstagramAccount(context.twenty, String(parsed.flags["account"]));
       const gate = instagramGate(account);
@@ -206,13 +211,14 @@ export const INSTAGRAM_SEND_INPUT: CommandInput = {
       flags: [
         { name: "account", kind: "string", required: true, description: "The INSTAGRAM socialAccount's accountName (its handle)" },
         { name: "with", kind: "string", required: true, description: "Who it goes to: their handle, a thread's name, or its id" },
-        { name: "text", kind: "string", description: "The message, as matt gave it; one message per line" },
+        { name: "text", kind: "string", description: "The message, as the owner gave it; one message per line" },
         { name: "photo", kind: "string", description: "A picture to send first (a meme, a screenshot): the file's path" },
         { name: "asOne", kind: "boolean", description: "Send the text as one message, never split" },
-        { name: "approvedBy", kind: "string", description: "Who approved it: needed with --live (rule 8)" },
-        { name: "live", kind: "boolean", live: true, description: "Send it on Instagram, only when matt asked (rule 8); without it a dry run contacts nothing" },
+        { name: "approvedBy", kind: "string", approval: true, description: "Who approved it: needed with --live (rule 8)" },
+        { name: "live", kind: "boolean", live: true, description: "Send it on Instagram, only when the owner asked (rule 8); without it a dry run contacts nothing" },
         JSON_FLAG,
       ],
+      groups: [{ rule: "atLeastOne", names: ["text", "photo"] }],
     },
   ],
 };
@@ -227,8 +233,8 @@ export const instagramSendCommand: Command = {
   args: '--account <a> --with <handle|id> [--text "<message>"] [--photo <file>] [--asOne] [--approvedBy <who>] [--live] [--json]',
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(INSTAGRAM_SEND_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log instagram send: ${parsed.error}\n${INSTAGRAM_SEND_USAGE}` };
-    if (parsed.positionals.length) return { code: 1, stderr: `log instagram send: takes no words, only flags\n${INSTAGRAM_SEND_USAGE}` };
+    if (!parsed.ok) return refuseInput("instagram send", parsed.error, INSTAGRAM_SEND_USAGE);
+    if (parsed.positionals.length) return { code: 1, error: "inputInvalid", stderr: `log instagram send: takes no words, only flags\n${INSTAGRAM_SEND_USAGE}` };
     const said = String(parsed.flags["with"]).trim();
     const text = typeof parsed.flags["text"] === "string" ? parsed.flags["text"] : "";
     const photo = typeof parsed.flags["photo"] === "string" ? parsed.flags["photo"].trim() : "";
@@ -251,31 +257,45 @@ export const instagramSendCommand: Command = {
       if (!live && parsed.flags["json"]) return { code: 0, stdout: JSON.stringify({ engine: "directApi", platform: "instagram", account: account.accountName, ok: true, dryRun: true, with: said, plan, watermark }, null, 2) };
       if (!live) return { code: 0, stdout: [`log instagram send: dry run: ${account.accountName} would send to ${said}, ${plan.length} message(s):`, ...plan.map((p, i) => `  ${i + 1}. ${p}`), "Nothing was sent. --live --approvedBy <who> sends it (rule 8); --asOne sends the text as one message."].join("\n") };
       context.err(`${account.accountName}: send to ${said}, ${plan.length} message(s), on the direct-API engine (instagrapi), approved by ${approvedBy}`);
-      const caught = await waitCaughtUp("instagram", account.accountName);
-      if (!caught.ok) return refuse("instagram send", "accountBehind", caught.refused);
-      const readUpTo = latestSeq();
-      if (text.trim()) {
-        const voiced = await gateDeps.gate(context, { platform: "instagram", account: account.accountName, to: said, text, handle: said });
-        if (!voiced.ok) return refuse("instagram send", "voiceGateFailed", voiced.refused);
-        context.err(voiced.line);
-      }
-      const guard = guardSend({ platform: "instagram", account: account.accountName, conversationId: said, with: said }, undefined, { readUpTo });
-      if (!guard.ok) return refuse("instagram send", "chatClaimedElsewhere", guard.refused);
+      const direct = context.directInstagram;
       const whole = text.trim() || "(photo)";
-      const step = guard.part(0, whole);
-      if (step !== "go") {
+      const acted = await runAction<HeldGuard, { step: PartStep; run?: PlatformEngineRun }>({
+        gate: async () => {
+          const caught = await waitCaughtUp("instagram", account.accountName);
+          if (!caught.ok) return { ok: false, code: "accountBehind", detail: caught.refused };
+          const readUpTo = latestSeq();
+          if (text.trim()) {
+            const voiced = await gateDeps.gate(context, { platform: "instagram", account: account.accountName, to: said, text, handle: said });
+            if (!voiced.ok) return { ok: false, code: "voiceGateFailed", detail: voiced.refused };
+            context.err(voiced.line);
+          }
+          const guard = guardSend({ platform: "instagram", account: account.accountName, conversationId: said, with: said }, undefined, { readUpTo });
+          return guard.ok ? { ok: true, held: guard } : { ok: false, code: "chatClaimedElsewhere", detail: guard.refused };
+        },
+        act: async (guard) => {
+          const step = guard.part(0, whole);
+          if (step !== "go") return { step };
+          return { step, run: direct(account, { action: "send", with: said, text, ...(photo ? { photo } : {}), asOne, live: true, approvedBy }) };
+        },
+        confirm: ({ step, run }) => {
+          if (step === "alreadySent") return { ok: true };
+          if (!run) return { ok: false, code: step === "movedOn" ? "chatMovedOn" : "chatClaimLost", detail: "nothing was sent" };
+          const heard = ((run.answer.interrupted as unknown[] | undefined) ?? []).length;
+          return heard ? { ok: false, code: "chatMovedOn", detail: "they wrote while it was being sent" } : confirmAnswer(run.answer);
+        },
+      });
+      if (acted.outcome === "uncertain") acted.held?.done("failed", errorText(acted.error));
+      rethrowFailure(acted);
+      if (!acted.held || !acted.answer) return refuseGated("instagram send", acted, "chatClaimedElsewhere");
+      const guard = acted.held;
+      const { step } = acted.answer;
+      if (step !== "go" || !acted.answer.run) {
         guard.done("failed", step === "alreadySent" ? "it had already gone out before" : step === "movedOn" ? "they wrote after the gate read the chat" : "the claim on this chat was lost");
         if (step === "movedOn") return refuse("instagram send", "chatMovedOn", `>>> THEY WROTE AFTER THE GATE READ THE CHAT: nothing was sent, so answer what they said first.\n${guard.heard().map((m) => `  ${m}`).join("\n")}`);
         if (step === "alreadySent") return { code: 0, stdout: `log instagram send: ${account.accountName}: this message already went out to ${said} before (its echo is in the chat), so it was not sent again.` };
         return refuse("instagram send", "chatClaimLost", "the claim on this chat was lost before anything was sent, so nothing went out");
       }
-      let run: ReturnType<NonNullable<typeof context.directInstagram>>;
-      try {
-        run = context.directInstagram(account, { action: "send", with: said, text, ...(photo ? { photo } : {}), asOne, live: true, approvedBy });
-      } catch (error) {
-        guard.done("failed", error instanceof Error ? error.message : String(error));
-        throw error;
-      }
+      const run = acted.answer.run;
       const sent = (run.answer.sent as { id: string; kind: string; text?: string }[] | undefined) ?? [];
       if (run.answer.ok && sent.length) guard.partSent(0, whole, sent.map((s) => s.id).join(","));
       guard.done(((run.answer.interrupted as unknown[] | undefined) ?? []).length ? "interrupted" : run.answer.ok ? "sent" : "failed", `${sent.length} of ${plan.length}: ${sent.map((s) => s.text ?? s.kind).join(" / ").slice(0, 300)}`);
@@ -304,7 +324,7 @@ export const INSTAGRAM_WATCH_INPUT: CommandInput = {
       positionals: [],
       flags: [
         { name: "account", kind: "string", required: true, description: "The INSTAGRAM socialAccount's accountName (its handle)" },
-        { name: "seconds", kind: "string", description: "Stop after this many seconds (at least 5); default: until stopped" },
+        { name: "seconds", kind: "number", min: 0, refusal: "secondsInvalid", description: "Stop after this many seconds (at least 5); default: until stopped" },
         { name: "inbox", kind: "boolean", description: "Hand each new message from someone else to the inbox hook" },
         JSON_FLAG,
       ],
@@ -331,10 +351,10 @@ export const instagramWatchCommand: Command = {
   args: "--account <a> [--seconds <s>] [--inbox] [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(INSTAGRAM_WATCH_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log instagram watch: ${parsed.error}\n${INSTAGRAM_WATCH_USAGE}` };
-    if (parsed.positionals.length) return { code: 1, stderr: `log instagram watch: takes no words, only flags\n${INSTAGRAM_WATCH_USAGE}` };
-    const seconds = parsed.flags["seconds"] === undefined ? 0 : Number(parsed.flags["seconds"]);
-    if (!Number.isFinite(seconds) || (seconds !== 0 && seconds < 5)) return refuse("instagram watch", "secondsInvalid", "--seconds must be at least 5");
+    if (!parsed.ok) return refuseInput("instagram watch", parsed.error, INSTAGRAM_WATCH_USAGE);
+    if (parsed.positionals.length) return { code: 1, error: "inputInvalid", stderr: `log instagram watch: takes no words, only flags\n${INSTAGRAM_WATCH_USAGE}` };
+    const seconds = numberOf(parsed, "seconds") ?? 0;
+    if (seconds !== 0 && seconds < 5) return refuse("instagram watch", "secondsInvalid", "--seconds must be at least 5");
     try {
       const account = await findInstagramAccount(context.twenty, String(parsed.flags["account"]));
       const gate = instagramGate(account);

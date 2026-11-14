@@ -1,6 +1,8 @@
 {
   "name": "marketplaceListingDelete",
+  "platform": "facebook",
   "summary": "Delete one Marketplace listing from the Selling page: its More options menu, Delete listing, Delete, then \"No, haven't sold\" on Facebook's survey. Recorded on Bethlehem, 2026-10-23 (listing 1425935622848350).",
+  "effect": "delete",
   "params": [
     {
       "name": "listingTitle",

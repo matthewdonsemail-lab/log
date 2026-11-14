@@ -4,7 +4,7 @@ title: "Runs and rea"
 
 # Runs and rea
 
-Every browser action records a raw HAR of everything it did, and rea reads it. What each platform's client does is written up as one doc per request, by platform and then domain, built from the runs by `log facebook capture --docs` with rea reading each request's code. A run is deleted once it is analysed, and what it taught is kept. Rules 22, 27, 48, 66 and 85, with rule 73 (a step's exchanges are kept past the prune).
+Every browser action records a raw HAR of everything it did, and rea reads it. What each platform's client does is written up as one doc per request, by platform and then domain, built from the runs by `log capture docs` (shared: it reads every platform's runs) with rea reading each request's code. A run is deleted once it is analysed, and what it taught is kept. Rules 22, 27, 48, 66 and 85, with rule 73 (a step's exchanges are kept past the prune).
 
 ## Recording
 
@@ -22,7 +22,7 @@ Checked by: code and SubQ
 
 ### REQ-RUNS-03: rea settles every run's capture
 
-When a run ends, rea reads its capture in the background (`log facebook capture --settle`), and the run gets its `settle.json`.
+When a run ends, rea reads its capture in the background (`log capture settle`), and the run gets its `settle.json`.
 
 Checked by: code and SubQ
 
@@ -36,7 +36,7 @@ Checked by: code and SubQ
 
 ### REQ-RUNS-05: Facebook's requests are documented by domain
 
-`log facebook capture --docs` writes one doc per Facebook request at `docs/platforms/facebook/<domain>/<request>.md`, the domain taken from the request's name (`groups`, `reels`, `login` and the others), and lists them in `operations.json`. Every doc goes through `redactDoc` (`src/privacy/redact`) before it is written: tokens, cookies, csrf values and passwords, emails, phones, IPs, user/actor/account ids, names, usernames and message text become typed placeholders (`<slackToken>`, `<email>`, `<userId:1>`, `<messageText>`), numbered the same way across one doc. The raw captures in `~/.logCli/runs/` and the facts store are not touched.
+`log capture docs` writes one doc per Facebook request at `docs/platforms/facebook/<domain>/<request>.md`, the domain taken from the request's name (`groups`, `reels`, `login` and the others), and lists them in `operations.json`. Every doc goes through `redactDoc` (`src/privacy/redact`) before it is written: tokens, cookies, csrf values and passwords, emails, phones, IPs, user/actor/account ids, names, usernames and message text become typed placeholders (`<slackToken>`, `<email>`, `<userId:1>`, `<messageText>`), numbered the same way across one doc. The raw captures in `~/.logCli/runs/` and the facts store are not touched.
 
 Checked by: code and SubQ
 
@@ -60,7 +60,7 @@ Checked by: code and SubQ
 
 ### REQ-RUNS-09: The docs gate refuses undocumented or unread requests
 
-lefthook's pre-push runs the docs gate (`check:facebookClientDocs`). It refuses a listed doc that is missing, a doc rea has not read, a doc whose reasoning is not written, a doc not in `operations.json`, a Facebook request named in the code with no doc, and a run recorded after the docs were built.
+lefthook's pre-push runs the docs gate (`check:clientDocs`). It refuses a listed doc that is missing, a doc rea has not read, a doc whose reasoning is not written, a doc not in `operations.json`, a Facebook request named in the code with no doc, and a run recorded after the docs were built.
 
 Checked by: code and SubQ
 
@@ -92,6 +92,12 @@ Checked by: code and SubQ
 
 ### REQ-RUNS-14: The storage hook warns before the disk fills
 
-An agent hook says so, with `log runs prune`, when `~/.logCli/runs` passes 2 GB or the disk has under 5 GB free.
+An agent hook says so, naming the MCP tools `runsList` and `runsPrune` { apply: true }, when `~/.logCli/runs` passes 2 GB or the disk has under 5 GB free.
+
+Checked by: code and SubQ
+
+### REQ-RUNS-15: A request doc names its own platform and machines
+
+A new request doc asks for its reasoning with prompts built by `requestDocPrompts` from the platform's name (`PLATFORM_LABELS`) and its own machines: every `machine.ts` under `src/<platform>/`, found by `platformMachines`, so nothing restates them. Facebook's say "its definition"; every other platform's say "rea's reading of the code that sends it". A doc built with no template names no platform. The facts block starts with `<!-- facts:start` (`FACTS_START_MARK`), whatever the rest of that line says, so a doc written under the older line naming `log facebook capture --docs` keeps its reasoning and its facts and gets the new line on its next build.
 
 Checked by: code and SubQ

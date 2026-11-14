@@ -7,7 +7,7 @@ import { afterGap, appendEvent, eventIdOf, recordPosition } from "../../../inbox
 import { enqueueAttachments } from "../../../media/describer/index.ts";
 import { recordTwitterSession } from "../../../twitter/account/session/index.ts";
 import type { XChatLiveEvent } from "../../../twitter/account/session/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf, refuse } from "../../runner/helpers/index.ts";
+import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuse, refuseInput } from "../../runner/helpers/index.ts";
 import type { Command, CommandContext, CommandInput, CommandResult } from "../../runner/types.ts";
 import { openTwitterAccount } from "./account.ts";
 import type { Engine } from "./account.ts";
@@ -44,11 +44,12 @@ export const CHAT_INPUT: CommandInput = {
     },
     {
       words: ["watch"],
+      effect: "read",
       summary: "Watch the account's X Chat live over X's own socket: each message the moment X pushes it, nothing polled",
       positionals: [],
       flags: [
         { name: "account", kind: "string", required: true, description: "The TWITTER socialAccount's accountName (its handle)" },
-        { name: "seconds", kind: "string", description: "Stop after this many seconds (default: watch until stopped)" },
+        { name: "seconds", kind: "number", min: 5, refusal: "secondsInvalid", description: "Stop after this many seconds (default: watch until stopped)" },
         { name: "inbox", kind: "boolean", description: "Hand each new message from someone else to the inbox hook" },
         JSON_FLAG,
       ],
@@ -72,9 +73,9 @@ export const chatCommand: Command = {
     if (argv[0] === "watch") return watchChat(context, argv.slice(1));
     if (argv[0] !== "pin") return { code: 1, stderr: `log twitter chat: pin or watch\n${CHAT_USAGE}` };
     const parsed = parseArgs(argv.slice(1), parserSpecOf({ forms: [{ ...CHAT_INPUT.forms[0], words: [] }] }));
-    if (!parsed.ok) return { code: 1, stderr: `log twitter chat: ${parsed.error}\n${CHAT_USAGE}` };
+    if (!parsed.ok) return refuseInput("twitter chat", parsed.error, CHAT_USAGE);
     const ref = parsed.flags["account"];
-    if (typeof ref !== "string") return { code: 1, stderr: `log twitter chat pin: --account is needed\n${CHAT_USAGE}` };
+    if (typeof ref !== "string") return { code: 1, error: "inputInvalid", stderr: `log twitter chat pin: --account is needed\n${CHAT_USAGE}` };
     const opened = await openTwitterAccount(context, "twitter chat pin", ref);
     if (!opened.ok) return opened.result;
     const account = opened.account;
@@ -130,12 +131,10 @@ export function inboxMessageOf(account: string, event: XChatLiveEvent, now: Date
 
 async function watchChat(context: CommandContext, argv: string[]): Promise<CommandResult> {
   const parsed = parseArgs(argv, parserSpecOf({ forms: [{ ...CHAT_INPUT.forms[1], words: [] }] }));
-  if (!parsed.ok) return { code: 1, stderr: `log twitter chat watch: ${parsed.error}\n${CHAT_USAGE}` };
+  if (!parsed.ok) return refuseInput("twitter chat watch", parsed.error, CHAT_USAGE);
   const ref = parsed.flags["account"];
-  if (typeof ref !== "string") return { code: 1, stderr: `log twitter chat watch: --account is needed\n${CHAT_USAGE}` };
-  const rawSeconds = parsed.flags["seconds"];
-  const seconds = typeof rawSeconds === "string" ? Number(rawSeconds) : undefined;
-  if (seconds !== undefined && (!Number.isFinite(seconds) || seconds < 5)) return refuse("twitter chat watch", "secondsInvalid", "--seconds is a number of seconds, at least 5");
+  if (typeof ref !== "string") return { code: 1, error: "inputInvalid", stderr: `log twitter chat watch: --account is needed\n${CHAT_USAGE}` };
+  const seconds = numberOf(parsed, "seconds");
   const opened = await openTwitterAccount(context, "twitter chat watch", ref);
   if (!opened.ok) return opened.result;
   const live = context.directTwitterLive;

@@ -5,7 +5,7 @@ import { join } from 'node:path'
 import { toolsFromCommands } from '../../mcp/server/helpers/toolsFromCommands'
 import { COMMANDS } from '../../cli/runner/index'
 import { commandEngine, directGate, engineContext, engineLine, localEngineStates, outcomeOf, writeLocalSession, writesPerDayOf } from './index'
-import type { FacebookAccount } from '../../marketplace/socialAccount/index'
+import type { FacebookAccount } from '../../platformKit/socialAccount/index'
 
 const account = {
   accountName: 'a1',

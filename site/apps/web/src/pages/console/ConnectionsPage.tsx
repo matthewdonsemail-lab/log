@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDiscord, faFacebook, faInstagram, faLinkedin, faRedditAlien, faSlack, faXTwitter } from '@fortawesome/free-brands-svg-icons'
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core'
@@ -16,7 +16,7 @@ import { ConnectionPlatformFilter } from './ConnectionPlatformFilter'
 import { PlatformSignInDialog } from './PlatformSignInDialog'
 import { PlatformConnectionTongue } from './PlatformConnectionTongue'
 import { BrowserCheckDialog } from './BrowserCheckDialog'
-import { checkConnection, loadConnections, saveConnectionKeys, type LocalConnections } from './connectionsData'
+import { checkConnection, loadConnections, openSignInLink, saveConnectionKeys, type LocalConnections } from './connectionsData'
 import { targetKey } from './consoleClient'
 import { useConsoleTarget } from './useConsoleTarget'
 
@@ -70,7 +70,7 @@ export function ConnectionsPage() {
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([])
   const [page, setPage] = useState(0)
   const [keyDialog, setKeyDialog] = useState<{ open: boolean; provider: KeyProvider | null }>({ open: false, provider: null })
-  const connections = useQuery({ queryKey, queryFn: ({ signal }) => loadConnections(target!, signal), enabled: Boolean(target), retry: false, refetchOnWindowFocus: true, refetchInterval: (state) => state.state.data?.accounts.some((account) => account.lastCheck?.state === 'running') ? 2000 : false })
+  const connections = useQuery({ queryKey, queryFn: ({ signal }) => loadConnections(target!, signal), enabled: Boolean(target), retry: false, refetchOnWindowFocus: true, refetchInterval: (state) => state.state.data?.accounts.some((account) => account.lastCheck?.state === 'checking') ? 2000 : false })
   useErrorToast(connections.isError, connections.error, localConsole ? 'Local connections could not be read' : 'Your workspace’s connections could not be read')
   const connected = connections.data?.accounts ?? []
   const now = Math.max(statusTime, Date.now())
@@ -85,6 +85,17 @@ export function ConnectionsPage() {
   const running = Boolean(target && connections.data)
   const browserCheckAccount = connected.find((account) => account.id === browserCheckAccountId)
   const keep = (data: LocalConnections) => queryClient.setQueryData(queryKey, data)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const signInToken = searchParams.get('signIn')
+  const openedLink = useRef<string | null>(null)
+  useEffect(() => {
+    if (!target || !signInToken || openedLink.current === signInToken) return
+    openedLink.current = signInToken
+    setSearchParams((params) => { params.delete('signIn'); return params }, { replace: true })
+    openSignInLink(target, signInToken)
+      .then((opened) => { keep(opened.connections); openBrowserCheck(opened.accountId) })
+      .catch((error) => toast.error('The sign-in link could not be opened', errorText(error)))
+  }, [target, signInToken])
 
   async function checkStatus(accountId: string) {
     if (checkingId || !target) return
@@ -99,17 +110,18 @@ export function ConnectionsPage() {
     const nativeLabels: Partial<Record<typeof account.status, string>> = { deactivated: 'Deactivated', banned: 'Banned', dead: 'Unavailable', restricted: 'Restricted', checkpoint: 'Checkpoint', paused: 'Paused', limited: 'Limited', warming: 'Warming up', needsLogin: 'Sign-in required' }
     const accountStopped = ['deactivated', 'banned', 'dead', 'restricted', 'checkpoint'].includes(account.status)
     const needsAttention = ['checkpoint', 'restricted', 'shadowSuspect', 'accountWarning'].includes(account.state)
-    const pending = checkingId === account.id || account.lastCheck?.state === 'running'
+    const pending = checkingId === account.id || account.lastCheck?.state === 'checking'
     const launch = account.lastCheck?.launchOutcome
     const launchCurrent = Boolean(account.lastCheck && (!account.checkedAt || Date.parse(account.lastCheck.checkedAt) >= Date.parse(account.checkedAt)))
     const cooldown = Boolean(launchCurrent && launch?.phase === 'launchCooldown' && launch.code === 'launchTooSoon' && launch.retryAt && Date.parse(launch.retryAt) > now)
-    const stopped = Boolean(launch?.phase !== 'launchCooldown' && account.lastCheck && ['stopped', 'unknown'].includes(account.lastCheck.state) && (!account.checkedAt || Date.parse(account.checkedAt) <= Date.parse(account.lastCheck.checkedAt)))
-    const browserVerified = account.platform === 'facebook' && account.lastCheck?.state === 'succeeded' && (!account.checkedAt || Date.parse(account.lastCheck.checkedAt) >= Date.parse(account.checkedAt))
+    const stopped = Boolean(launch?.phase !== 'launchCooldown' && account.lastCheck && account.lastCheck.state === 'stopped' && (!account.checkedAt || Date.parse(account.checkedAt) <= Date.parse(account.lastCheck.checkedAt)))
+    const browserVerified = account.platform === 'facebook' && account.lastCheck?.state === 'signedIn' && (!account.checkedAt || Date.parse(account.lastCheck.checkedAt) >= Date.parse(account.checkedAt))
     const browserCheckRequired = account.platform === 'facebook' && !browserVerified
-    const status = accountStopped ? nativeLabels[account.status]! : account.state === 'restricted' ? 'Restricted' : account.state === 'checkpoint' ? 'Checkpoint' : needsAttention ? 'Needs attention' : pending ? 'Checking…' : cooldown ? 'Cooling down' : stopped ? (account.lastCheck?.state === 'unknown' ? 'Check interrupted' : 'Check stopped') : nativeLabels[account.status] ? nativeLabels[account.status]! : browserCheckRequired ? 'Browser check required' : browserVerified ? 'Signed in' : account.state === 'loggedIn' ? 'Signed in' : account.state === 'loggedOut' ? 'Signed out' : 'Not checked'
+    const status = accountStopped ? nativeLabels[account.status]! : account.state === 'restricted' ? 'Restricted' : account.state === 'checkpoint' ? 'Checkpoint' : needsAttention ? 'Needs attention' : pending ? 'Checking…' : cooldown ? 'Cooling down' : stopped ? 'Check stopped' : nativeLabels[account.status] ? nativeLabels[account.status]! : browserCheckRequired ? 'Browser check required' : browserVerified ? 'Signed in' : account.state === 'loggedIn' ? 'Signed in' : account.state === 'loggedOut' ? 'Signed out' : 'Not checked'
     const tone = needsAttention || accountStopped ? 'error' : status === 'Cooling down' ? 'warning' : stopped || (!browserCheckRequired && account.state === 'loggedOut') ? 'error' : !browserCheckRequired && (account.state === 'loggedIn' || browserVerified) && !pending ? 'active' : 'neutral'
     const reviewBrowserCheck = account.platform === 'facebook'
-    const checkNote = status === 'Cooling down' && launch?.retryAt ? `Available at ${new Intl.DateTimeFormat(undefined, { hour: '2-digit', minute: '2-digit', second: '2-digit', timeZoneName: 'short' }).format(new Date(launch.retryAt))}` : !browserCheckRequired && account.lastCheck?.state === 'unavailable' ? 'Check service unavailable' : null
+    const hasBrowser = account.platform !== 'twitter'
+    const checkNote = status === 'Cooling down' && launch?.retryAt ? `Available at ${new Intl.DateTimeFormat(undefined, { hour: '2-digit', minute: '2-digit', second: '2-digit', timeZoneName: 'short' }).format(new Date(launch.retryAt))}` : !browserCheckRequired && account.lastCheck?.state === 'unknown' ? 'The last check got no answer' : null
     return {
       id: account.id, name: account.name, subtitle: platform?.label ?? account.platform, status, tone,
       icon: <FontAwesomeIcon icon={platform?.icon ?? faPlug} className="size-7" />,
@@ -122,6 +134,11 @@ export function ConnectionsPage() {
         reason: account.status === 'deactivated' ? 'This account is deactivated' : stopped || needsAttention ? 'Resolve the recorded stop in Log before checking again' : pending ? 'A status check is running' : checkingId ? 'Another account check is running' : 'Check the saved session through Log',
         pending, onClick: () => { if (reviewBrowserCheck) openBrowserCheck(account.id); else void checkStatus(account.id) },
       },
+      browserAction: hasBrowser && !reviewBrowserCheck ? {
+        kind: 'browserCheck', label: 'Browser check', accessibleLabel: `Browser check for ${account.name} on ${platform?.label ?? account.platform}`,
+        disabled: accountStopped, reason: accountStopped ? 'Resolve the recorded stop in Log before opening its browser' : 'Open the account’s own browser and sign in there',
+        pending: false, onClick: () => openBrowserCheck(account.id),
+      } : undefined,
     }
   })
   const shownPlatforms = PLATFORMS.filter((platform) => `${platform.label} ${platform.service}`.toLowerCase().includes(platformQuery.trim().toLowerCase()))

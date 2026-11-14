@@ -20,12 +20,18 @@ import {
 } from "../../auth/session/index.ts";
 import type { SessionRecord } from "../../auth/session/index.ts";
 import { twentyReady } from "../launch/helpers/index.ts";
-import { parseArgs } from "../runner/helpers/index.ts";
-import type { Command, CommandContext, CommandResult } from "../runner/types.ts";
+import { JSON_FLAG, parseArgs, parserSpecOf, refuseInput } from "../runner/helpers/index.ts";
+import type { Command, CommandContext, CommandInput, CommandResult } from "../runner/types.ts";
 
 export const LOGIN_USAGE = "Usage: log login [--webUrl <url>] [--apiUrl <url>] [--token <accessToken>] [--json]";
 export const LOGOUT_USAGE = "Usage: log logout [--apiUrl <url>] [--json]";
 export const WHOAMI_USAGE = "Usage: log whoami [--apiUrl <url>] [--json]";
+
+const API_URL = { name: "apiUrl", kind: "string", description: "The Twenty API this session is for, when more than one is stored" } as const;
+
+export const LOGOUT_INPUT: CommandInput = { forms: [{ words: [], summary: "Forget the stored Twenty session", positionals: [], flags: [API_URL, JSON_FLAG] }] };
+
+export const WHOAMI_INPUT: CommandInput = { forms: [{ words: [], summary: "Show who is signed in to Twenty, refreshing the session if it expired", positionals: [], flags: [API_URL, JSON_FLAG] }] };
 
 export const authDeps: {
   fetch: typeof fetch;
@@ -102,7 +108,7 @@ export const loginCommand: Command = {
   args: "[--webUrl <url>] [--apiUrl <url>] [--token <t>] [--json]",
   async run(context, argv): Promise<CommandResult> {
     const parsed = parseArgs(argv, { boolean: ["json"], valued: ["webUrl", "apiUrl", "token"] });
-    if (!parsed.ok) return { code: 1, stderr: `log login: ${parsed.error}\n${LOGIN_USAGE}` };
+    if (!parsed.ok) return refuseInput("login", parsed.error, LOGIN_USAGE);
     for (const name of ["webUrl", "apiUrl"] as const) {
       const value = parsed.flags[name];
       const issue = typeof value === "string" ? validateHttpUrl(value) : undefined;
@@ -149,7 +155,7 @@ function pickSession(name: string, usage: string, apiUrl: string | undefined): S
   const record = apiUrl ? home.sessions[apiUrl] : stored.length === 1 ? stored[0] : undefined;
   if (record) return record;
   if (stored.length === 0) return { code: 1, stderr: `log ${name}: not signed in. Run \`log login\`.` };
-  return { code: 1, stderr: `log ${name}: signed in to ${stored.map((s) => s.apiUrl).join(", ")}. Pass --apiUrl to pick one.\n${usage}` };
+  return { code: 1, error: "inputInvalid", stderr: `log ${name}: signed in to ${stored.map((s) => s.apiUrl).join(", ")}. Pass --apiUrl to pick one.\n${usage}` };
 }
 
 export const logoutCommand: Command = {
@@ -157,11 +163,12 @@ export const logoutCommand: Command = {
   platform: "any",
   name: "logout",
   effect: "write",
+  input: LOGOUT_INPUT,
   summary: "Forget the stored Twenty session",
   args: "[--apiUrl <url>] [--json]",
   run(_context, argv) {
-    const parsed = parseArgs(argv, { boolean: ["json"], valued: ["apiUrl"] });
-    if (!parsed.ok) return { code: 1, stderr: `log logout: ${parsed.error}\n${LOGOUT_USAGE}` };
+    const parsed = parseArgs(argv, parserSpecOf(LOGOUT_INPUT));
+    if (!parsed.ok) return refuseInput("logout", parsed.error, LOGOUT_USAGE);
     const record = pickSession("logout", LOGOUT_USAGE, parsed.flags["apiUrl"] as string | undefined);
     if (!("accessToken" in record)) return record;
     removeSessionRecord(record.apiUrl, authDeps.dir);
@@ -175,11 +182,12 @@ export const whoamiCommand: Command = {
   platform: "any",
   name: "whoami",
   effect: "read",
+  input: WHOAMI_INPUT,
   summary: "Show who is signed in, refreshing the session if it expired",
   args: "[--apiUrl <url>] [--json]",
   async run(_context, argv) {
-    const parsed = parseArgs(argv, { boolean: ["json"], valued: ["apiUrl"] });
-    if (!parsed.ok) return { code: 1, stderr: `log whoami: ${parsed.error}\n${WHOAMI_USAGE}` };
+    const parsed = parseArgs(argv, parserSpecOf(WHOAMI_INPUT));
+    if (!parsed.ok) return refuseInput("whoami", parsed.error, WHOAMI_USAGE);
     const record = pickSession("whoami", WHOAMI_USAGE, parsed.flags["apiUrl"] as string | undefined);
     if (!("accessToken" in record)) return record;
     const live = await liveSession(record, authDeps.fetch, authDeps.dir);

@@ -3,7 +3,7 @@ import type { ConsoleDatabase, ConsoleEvent, ConsoleEventPage } from '../types'
 const eventKinds: Record<string, string> = {
   message: 'Message received', ownMessage: 'Message sent', messageEdited: 'Message edited', messageDeleted: 'Message deleted',
   reaction: 'Reaction', reactionAdded: 'Reaction added', reactionRemoved: 'Reaction removed',
-  conversationSeen: 'Conversation observed', attachmentsSeen: 'Attachment observed', identityLearned: 'Identity observed', accountIdentified: 'Account identified',
+  conversationSeen: 'Conversation observed', attachmentsSeen: 'Attachment observed', identityLearned: 'Identity observed', accountIdentified: 'Account identified', profileSeen: 'Profile observed',
   typing: 'Typing', presence: 'Presence changed', read: 'Read receipt', receipt: 'Delivery receipt',
 }
 

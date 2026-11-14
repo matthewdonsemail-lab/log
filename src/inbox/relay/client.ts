@@ -7,6 +7,8 @@ import { addAlert, claimWatcher, killTree, processAlive, processStartedAt, relea
 import { appendEvent, asOwner, behindOf, db, lastEventAt, markGap, markStage, openGap, OwnerFencedError } from '../store/index'
 import { CHAT_ACCESS_REFUSAL, HEARTBEAT_MS, HEARTBEAT_RETRIES, HEARTBEAT_RETRY_MS, MAX_BUFFERED_BYTES, NETWORK_FAILURE, OWN_FAILURE, PLATFORM_REFUSAL, STALE_CONFIRM_MS, STALE_MS } from './types'
 import type { AttachResult, CatchUp, Relay, RelaySession, RelayStatus } from './types'
+import { recordWatcherEnd, startAccountWatcher, watchEndOf } from '../../platformKit/watcher/client.ts'
+import type { WatcherEnd, WatcherEvent, WatcherState } from '../../platformKit/watcher/types.ts'
 
 export function readSession(platform: string, account: string): RelaySession | null {
   const row = db().prepare('SELECT * FROM owners WHERE platform = ? AND account = ?').get(platform, account) as (Omit<RelaySession, 'lastHeartbeat'> & { heartbeat: string }) | null
@@ -23,7 +25,7 @@ export async function openRelay(platform: string, account: string, now: () => Da
   const token = randomBytes(24).toString('base64url')
   const clients = new Set<Socket>()
   const startedAt = now().toISOString()
-  let status: RelayStatus = 'connecting'
+  let status: RelayStatus = 'starting'
   let port = 0
   db().prepare('INSERT OR IGNORE INTO owners (platform, account, pid, hostname, startedAt, heartbeat, status) VALUES (?, ?, ?, ?, ?, ?, ?)').run(platform, account, process.pid, hostname(), startedAt, startedAt, status)
   const record = (tries = 0) => {
@@ -132,57 +134,98 @@ export const RECHECK_GAP_MS = 30_000
 
 export type OwnOrAttach<R> = { owner: true; result: R } | { owner: false; attached: AttachResult } | { owner: false; refused: string }
 
-export async function ownOrAttach<R>(platform: string, account: string, options: { inbox: boolean; seconds?: number; run: (emit: (event: Record<string, unknown>) => void) => Promise<R>; onAttached: (event: Record<string, unknown>) => void; catchUp?: CatchUp; log?: (line: string) => void }): Promise<OwnOrAttach<R>> {
-  const claim = claimWatcher(platform, account)
-  if (!claim.ok) {
-    if (options.inbox) return { owner: false, refused: `>>> ONE PROCESS PER ACCOUNT: pid ${claim.holder} already owns ${account}'s ${platform} connection and writes its inbox, so this one stopped before opening anything` }
-    const session = readSession(platform, account)
-    if (!session || !sessionLive(session) || session.pid !== claim.holder) return { owner: false, refused: `pid ${claim.holder} owns ${account}'s ${platform} connection but has no live relay to attach to (it runs code from before the relay); what it pushes reaches you through the inbox, ~/.logCli/inbox/pending.jsonl` }
-    return { owner: false, attached: await attachRelay(session, options.onAttached, options.seconds) }
-  }
-  const relay = await openRelay(platform, account)
+export type OwnOrAttachOptions<R> = { inbox: boolean; seconds?: number; run: (emit: (event: Record<string, unknown>) => void) => Promise<R>; onAttached: (event: Record<string, unknown>) => void; catchUp?: CatchUp; log?: (line: string) => void; decode?: (event: Record<string, unknown>) => WatcherEvent | null; endOf?: (result: R) => { end: WatcherEnd; code: string | null }; onState?: (state: WatcherState) => void }
+
+export function socketEventOf(event: Record<string, unknown>): WatcherEvent | null {
+  const change = socketChange(event)
+  if (change === 'dropped') return { type: 'dropped' }
+  if (change === 'open') return { type: 'opened' }
+  return { type: 'heard' }
+}
+
+export function needsCatchUp(platform: string, account: string): boolean {
+  const gap = behindOf(platform, account)
+  return !!gap && (gap.status !== 'refused' || notThePlatform(gap.detail))
+}
+
+export async function ownOrAttach<R>(platform: string, account: string, options: OwnOrAttachOptions<R>): Promise<OwnOrAttach<R>> {
+  let relay: Relay | null = null
+  let current: WatcherState = 'starting'
+  let fenced = false
+  let recheck: ReturnType<typeof setInterval> | null = null
   const catching = catchUpRunner(platform, account, options.catchUp, options.log)
   const catchUpAsOwner = () => asOwner(platform, account, () => catching.run()).catch((error: unknown) => {
     if (!(error instanceof OwnerFencedError)) throw error
     fenced = true
   })
-  let fenced = false
-  void catchUpAsOwner()
-  const recheck = setInterval(() => {
-    void catchUpAsOwner()
-    try {
-      sweepUntyped(db())
-    } catch {}
-  }, RECHECK_GAP_MS)
-  try {
-    const result = await options.run((event) => {
-      if (fenced) return
-      try {
-        asOwner(platform, account, () => ownerEmit(event))
-      } catch (error) {
-        if (!(error instanceof OwnerFencedError)) throw error
-        fenced = true
-        addAlert({ platform, account, kind: 'ownerFenced', detail: error.message })
-        options.log?.(`${platform} ${account}: ${error.message}; it writes nothing more`)
-      }
-    })
-    return { owner: true, result }
-  } finally {
-    clearInterval(recheck)
-    await catching.settled()
-    await relay.close()
-    releaseWatcher(platform, account)
+  const decode = options.decode ?? socketEventOf
+  const watcher = startAccountWatcher<R>(
+    {
+      claim: () => claimWatcher(platform, account),
+      connect: async () => {
+        relay = await openRelay(platform, account)
+        relay.setStatus(current)
+        recheck = setInterval(() => {
+          watcher.send({ type: 'recheck' })
+          try {
+            sweepUntyped(db())
+          } catch {}
+        }, RECHECK_GAP_MS)
+        return options.run(ownerEmit)
+      },
+      catchUp: () => catchUpAsOwner(),
+      release: async (end, code) => {
+        if (recheck) clearInterval(recheck)
+        await catching.settled()
+        const open = relay
+        relay = null
+        if (open) await open.close()
+        releaseWatcher(platform, account)
+        recordWatcherEnd(platform, account, end, code)
+      },
+      endOf: options.endOf ?? watchEndOf,
+      behind: () => needsCatchUp(platform, account),
+    },
+    {
+      onState: (state) => {
+        current = state
+        relay?.setStatus(state)
+        options.onState?.(state)
+      },
+    },
+  )
+  const ran = await watcher.done
+  if (ran.state === 'busy') {
+    const holder = ran.holder ?? 0
+    if (options.inbox) return { owner: false, refused: `>>> ONE PROCESS PER ACCOUNT: pid ${holder} already owns ${account}'s ${platform} connection and writes its inbox, so this one stopped before opening anything` }
+    const session = readSession(platform, account)
+    if (!session || !sessionLive(session) || session.pid !== holder) return { owner: false, refused: `pid ${holder} owns ${account}'s ${platform} connection but has no live relay to attach to (it runs code from before the relay); what it pushes reaches you through the inbox, ~/.logCli/inbox/pending.jsonl` }
+    return { owner: false, attached: await attachRelay(session, options.onAttached, options.seconds) }
   }
+  if (ran.error !== undefined) throw ran.error
+  return { owner: true, result: ran.result as R }
 
   function ownerEmit(event: Record<string, unknown>): void {
-      relay.setStatus('streaming')
-      const drop = socketChange(event)
-      if (drop === 'dropped') openGap(platform, account, lastEventAt(platform, account) ?? new Date().toISOString(), 'socketDropped')
-      if (drop === 'open') void catchUpAsOwner()
-      const type = pushedTypeOf(event)
-      const stored = type === 'message' ? null : appendEvent({ platform, account, with: String(event.handle ?? event.from ?? ''), conversationId: String(event.conversationId ?? event.channelId ?? event.channel ?? event.thread ?? ''), type, payload: event, sourceAt: String(event.at ?? event.time ?? ''), eventId: pushedEventId(platform, account, type, event, new Date().toISOString()) })
-      relay.broadcast(stored ? { ...event, seq: stored.seq } : event)
-      if (stored) markStage(stored.eventId, 'relayed')
+    if (fenced) return
+    try {
+      asOwner(platform, account, () => stored(event))
+    } catch (error) {
+      if (!(error instanceof OwnerFencedError)) throw error
+      fenced = true
+      addAlert({ platform, account, kind: 'ownerFenced', detail: error.message })
+      options.log?.(`${platform} ${account}: ${error.message}; it writes nothing more`)
+    }
+    const change = decode(event)
+    if (change) watcher.send(change)
+  }
+
+  function stored(event: Record<string, unknown>): void {
+    if (!relay) return
+    if (socketChange(event) === 'dropped') openGap(platform, account, lastEventAt(platform, account) ?? new Date().toISOString(), 'socketDropped')
+    const type = pushedTypeOf(event)
+    const kept = type === 'message' ? null : appendEvent({ platform, account, with: String(event.handle ?? event.from ?? ''), conversationId: String(event.conversationId ?? event.channelId ?? event.channel ?? event.thread ?? ''), type, payload: event, sourceAt: String(event.at ?? event.time ?? ''), eventId: pushedEventId(platform, account, type, event, new Date().toISOString()) })
+    relay.broadcast(kept ? { ...event, seq: kept.seq } : event)
+    if (kept) markStage(kept.eventId, 'relayed')
   }
 }
 

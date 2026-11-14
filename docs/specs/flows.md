@@ -54,7 +54,7 @@ Checked by: code and SubQ
 
 ### REQ-FLOW-08: Every saved flow is an MCP tool of its own
 
-Every saved flow is an MCP tool named after it (`flow<Name>`), a dry run, and a live twin (`flow<Name>Live`) that runs it on the platform.
+Every saved flow is an MCP tool named after its platform and itself (`flowToolName` in `src/browser/flow/helpers/flowPlatform.ts`: `facebookFlowPostComment`; a flow whose name already starts with its platform drops it, so `facebookLanguageEnglish` is `facebookFlowLanguageEnglish`), a dry run, and a live twin (`…Live`) that runs it on that platform. The platform is the definition's `platform` field; `log flow fromInspect` writes it from the recording's first page (`flowPlatform`). A flow with no platform keeps the bare `flow<Name>` and fails `check:platformNeutral`. The old `flow<Name>` names stay as unlisted aliases for one release (`RENAMED_FLOW_TOOLS` in `src/mcp/server/helpers/toolAliases.ts`).
 
 Checked by: code and SubQ
 

@@ -2,7 +2,7 @@
 
 Warm-up feedBrowse: recorded on <userId:1> 2026-10-22 (rule 35).
 
-Built by `log flow fromInspect` from the recording `~\.logCli\runs\warmup\20261022T091121_<userId:1>` (account <userId:1>). Run it on any account with `log flow run warmupFeedBrowse --account <a> --live`, or over MCP as the tool `flowWarmupFeedBrowse` (rule 31).
+Built by `log flow fromInspect` from the recording `~\.logCli\runs\warmup\20261022T091121_<userId:1>` (account <userId:1>). Run it on any account with `log flow run warmupFeedBrowse --account <a> --live`, or over MCP as the tool `facebookFlowWarmupFeedBrowse` (rule 31).
 
 ## Params
 

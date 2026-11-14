@@ -33,12 +33,12 @@ flowchart TD
 
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
-| 1 | Who wrote last, message requests included; anyone who opened the owner's message without replying is listed apart, for "Everyone who opened it" | `twitterDms` { account, waiting: true, limit: "50" } | the list, newest first |
+| 1 | Who wrote last, message requests included; anyone who opened the owner's message without replying is listed apart, for "Everyone who opened it" | `twitterDms` { account, waiting: true, limit: 50 } | the list, newest first |
 | 2 | Read each in full, old DM thread and X Chat merged. Drop spam, pitches and bots: a real person who said something real stays | `twitterDms` { account, with: "<handle>" } | what each one said, and whether they're real |
 | 3 | How the owner writes to this person | `voice` { to, with, context: "<what they said>" } | the owner's own lines to draft from |
 | 4 | Draft something nice that keeps it going and asks for nothing: answer what they said, say something true about them or their work, and get to know them (what they're doing, how it's going). Leave the door open. Never a pitch, never "let's hop on a call". Every draft reads differently | the agent | one draft per person |
 | 5 | Gate each draft, rewrite until it passes | `voice` { to, with, context, text } | the gate passes |
-| 6 | Send them, one message per line. One person: dry run, then live. Two or more go into the account's one queue, never a loop of sends (rule 104): `twitterQueueAdd` { queue, targets, action: "dm", by } adds them, even while it runs, at least minGap apart; if no run is going, `twitterQueueRunLive` { queue, keepOpen: true, confirmLive: true } starts it. Right before each send the queue reads that person again and holds the item when anything changed (rule 109) | `twitterDm`, then `twitterDmLive` { userId, text, approvedBy, confirmLive: true }, or `twitterQueueAdd` and `twitterQueueRunLive` | X's answer is `sent` for every part |
+| 6 | Send them, one message per line. One person: dry run, then live. Two or more go into the account's one queue, never a loop of sends (rule 105): `twitterQueueAdd` { queue, targets, action: "dm", by } adds them, even while it runs, at least minGap apart; if no run is going, `twitterQueueRunLive` { queue, keepOpen: true, confirmLive: true } starts it. Right before each send the queue reads that person again and holds the item when anything changed (rule 109) | `twitterDm`, then `twitterDmLive` { userId, text, approvedBy, confirmLive: true }, or `twitterQueueAdd` and `twitterQueueRunLive` | X's answer is `sent` for every part |
 
 ### Everyone who opened it
 
@@ -57,9 +57,9 @@ flowchart TD
 
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
-| 6a | Who opened it: `twitterDms` { waiting: true, limit: "200" } lists them apart, after the people waiting on a reply (the default 20 only looks at the newest threads) | `twitterDms` { account, waiting: true, limit: "200" } | the opened list |
+| 6a | Who opened it: `twitterDms` { waiting: true, limit: 200 } lists them apart, after the people waiting on a reply (the default 20 only looks at the newest threads) | `twitterDms` { account, waiting: true, limit: 200 } | the opened list |
 | 6b | Read the thread and what they've posted lately, then follow up about them and what they're doing: pick up where it left off, never repeat the opener, never the ask | `twitterDms` { with }, [treg](https://treg.to/?ref=matthewdonse-aebsh)'s posts read, `voice` | the gate passes |
-| 6c | Send them the same way as step 6: one person directly, two or more through the account's one queue (rules 104, 107) | `twitterDmLive`, or `twitterQueueAdd` and `twitterQueueRunLive` | X's answer is `sent` |
+| 6c | Send them the same way as step 6: one person directly, two or more through the account's one queue (rule 105) | `twitterDmLive`, or `twitterQueueAdd` and `twitterQueueRunLive` | X's answer is `sent` |
 
 ### New people in the mixer
 
@@ -80,11 +80,11 @@ flowchart TD
 
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
-| 7 | Who: from the niche map first, the people in the owner's niche he hasn't talked to yet. Real roles only (founders, agency owners, operators, creators; never `bot_or_spam`), 1500 followers or fewer (bigger accounts aren't worth it yet, rule 121), the closest first: they follow him, then one hop from his creators, then strong ties. Or another source the owner named (people who engaged with his post, a topic search) | the niche map, then [engagerDms.md](engagerDms.md) steps 2 to 4 | a short list, each with a user id and one recent post of theirs to open on |
+| 7 | Who: from the niche map first, the people in the owner's niche he hasn't talked to yet. Real roles only (founders, agency owners, operators, creators; never `bot_or_spam`), 1500 followers or fewer (bigger accounts aren't worth it yet), the closest first: they follow him, then one hop from his creators, then strong ties. Or another source the owner named (people who engaged with his post, a topic search) | the niche map, then [engagerDms.md](engagerDms.md) steps 2 to 4 | a short list, each with a user id and one recent post of theirs to open on |
 | 8 | Follow them first. Never send a cold message to someone the owner doesn't follow | `twitterFollow`, then `twitterFollowLive` { userId, approvedBy, confirmLive: true } | X's answer is `sent` (or already followed) |
 | 9 | Like the tweet the message is about, before the message | `twitterLike`, then `twitterLikeLive` { tweet, approvedBy, confirmLive: true } | X's answer is `sent` |
 | 10 | Then the message: their tweet forwarded first, then one informal line about it, the cold DM way in [engagerDms.md](engagerDms.md). The opener only, always relevant to them, never an ask (no pitch, no "you using `<tool>`"). Gated like every send, and sent the same way as step 6: two or more people through the account's one queue | `voice`, then `twitterDmLive`, or `twitterQueueAdd` and `twitterQueueRunLive` | X's answer is `sent` |
-| 11 | Then a brief voice note in the owner's cloned voice, a few minutes after the opener: one spoken question that goes a step further on what they posted, never the ask (rule 156). Gate it as speech, then add it to the same queue once the openers have gone, so it lands after its own opener | `voice` { to, context, text, spoken: true }, then `twitterQueueAdd` { queue, targets, action: "voice", by } | X's answer is `sent` for the voice note |
+| 11 | Then a brief voice note in the owner's cloned voice, a few minutes after the opener: one spoken question that goes a step further on what they posted, never the ask. Gate it as speech, then add it to the same queue once the openers have gone, so it lands after its own opener | `voice` { to, context, text, spoken: true }, then `twitterQueueAdd` { queue, targets, action: "voice", by } | X's answer is `sent` for the voice note |
 
 ## What to know
 

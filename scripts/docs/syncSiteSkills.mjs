@@ -11,6 +11,7 @@ const sourceDir = join(root, "skills", "published");
 const useCasesDir = join(root, "docs", "useCases");
 const outDir = join(root, "site", "apps", "web", "public", ".well-known", "skills");
 const repoSkillsDir = join(root, ".claude", "skills");
+const hermesSkillsDir = join(root, "hermesPlugin", "skills");
 const check = process.argv.includes("--check");
 const problems = [];
 const LISTING_MAX = 1500;
@@ -166,6 +167,11 @@ function compare(dir, label, wanted) {
 if (check) {
   compare(outDir, "site/apps/web/public/.well-known/skills", files);
   compare(repoSkillsDir, ".claude/skills", repoFiles);
+  compare(hermesSkillsDir, "hermesPlugin/skills", repoFiles);
+  if (existsSync(hermesSkillsDir)) {
+    const wanted = new Set([...repoFiles.keys()].map((p) => p.split(/[\\/]/)[0]));
+    for (const entry of readdirSync(hermesSkillsDir)) if (!wanted.has(entry)) problems.push(`hermesPlugin/skills/${entry} isn't a generated play skill: run bun run skills:build`);
+  }
   if (existsSync(repoSkillsDir)) {
     const wanted = new Set([...repoFiles.keys()].map((p) => p.split(/[\\/]/)[0]));
     for (const entry of readdirSync(repoSkillsDir)) if (entry.startsWith(PLAY_PREFIX) && !wanted.has(entry)) problems.push(`.claude/skills/${entry} has no use case any more: run bun run skills:build`);
@@ -181,6 +187,11 @@ if (check) {
     mkdirSync(dirname(join(repoSkillsDir, path)), { recursive: true });
     writeFileSync(join(repoSkillsDir, path), text);
   }
+  rmSync(hermesSkillsDir, { recursive: true, force: true });
+  for (const [path, text] of repoFiles) {
+    mkdirSync(dirname(join(hermesSkillsDir, path)), { recursive: true });
+    writeFileSync(join(hermesSkillsDir, path), text);
+  }
 }
 
 if (problems.length) {
@@ -188,4 +199,4 @@ if (problems.length) {
   for (const problem of problems) console.error(`  - ${problem}`);
   process.exit(1);
 }
-console.log(`${check ? "check:siteSkills OK" : "skills:build wrote"} ${index.skills.length} skill(s), ${repoFiles.size} of them use-case plays also in .claude/skills: ${index.skills.map((skill) => skill.name).join(", ")}`);
+console.log(`${check ? "check:siteSkills OK" : "skills:build wrote"} ${index.skills.length} skill(s), ${repoFiles.size} of them use-case plays also in .claude/skills and hermesPlugin/skills: ${index.skills.map((skill) => skill.name).join(", ")}`);

@@ -30,17 +30,17 @@ import { buildPhraseIndex, openPhraseIndex, phrasesLine, readPhrases, writePhras
 import type { PhraseReading } from "../../../voice/phrases/index.ts";
 import { scramblerLine, scramblerReadingOf } from "../../../twitter/copy/scrambler/index.ts";
 import type { ScramblerReading } from "../../../twitter/copy/scrambler/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../../runner/helpers/index.ts";
+import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError, refuseInput } from "../../runner/helpers/index.ts";
 import type { Command, CommandContext, CommandInput, CommandResult } from "../../runner/types.ts";
 
 
 export const VOICE_USAGE = [
   "Usage: log voice --to <handle> [--text \"<draft>\"] [--context \"<what they said>\"] [--with <person or chat>] [--spoken] [--json]",
-  "       log voice aiIndex [--json]   (builds the AI tells index: every literal phrase in vendor/aiTells, tbhb/vale-ai-tells first and then the other lists, embedded with Jina (JINA_API_KEY), with matt's own replies from the voice index measured against it for his p50 and p99 closeness, and the vale rules he uses himself muted; the gate builds it itself when it is missing or older than the voice index; rule 112)",
-  "       log voice index [--json]   (builds matt's voice from every conversation log search already saved, reading nothing new: each of his replies paired with what was said just before it, embedded with log search's own model, and a profile per chat, person and platform counted from his own messages)",
-  "Gates a draft before anything is sent as matt (his rule, 2026-10-27): SubQ reads it against matt's own writing guide (GUIDES/MATT_WRITING_STYLE.md, built from 256 of his tweets) and the dms he wrote himself, and answers whether it sounds like he typed it (voice, 0.8 to pass), whether it answers what they said (--context) or something specific about them, whether it reads like a mate texting, and, to someone matt has never talked with, whether it is only a relevant opener with no ask or pitch (openerOnly, matt 2026-10-31). A phrase matt never says (hit home, big swing, spot on, felt that…) fails it outright. Sends nothing.",
-  "--with names the chat or person the way matt says it (\"the log group\", \"jinny\", a handle): log finds matt's real replies to things like --context, from that chat first, then that person, then that platform, then anywhere, and how he writes there (length, case, punctuation, his words). Without --text it shows them to draft from; with --text the gate also asks whether the draft reads like his real replies there (toThem, 0.7 to pass). Every gate also reads his nearest real replies, closest wording and style across all his conversations, every platform, beside the chat's own, never the writing guide alone.",
-  "--spoken gates a voice note: it is graded as said out loud, so its length and punctuation never count against it, and it must build on what they are talking about across the whole chat, adding to it, never repeating what matt already told them (buildsOn, 0.7 to pass, rule 149). Every voice note send is gated this way.",
+  "       log voice aiIndex [--json]   (builds the AI tells index: every literal phrase in vendor/aiTells, tbhb/vale-ai-tells first and then the other lists, embedded with Jina (JINA_API_KEY), with the owner's own replies from the voice index measured against it for their p50 and p99 closeness, and the vale rules they use themselves muted; the gate builds it itself when it is missing or older than the voice index; rule 137)",
+  "       log voice index [--json]   (builds the owner's voice from every conversation log search already saved, reading nothing new: each of the owner's replies paired with what was said just before it, embedded with log search's own model, and a profile per chat, person and platform counted from the owner's own messages)",
+  "Gates a draft before anything is sent as the owner: SubQ reads it against the owner's own writing guide (the owner's writing style file, built from their own posts) and the dms they wrote themselves, and answers whether it sounds like they typed it (voice, 0.8 to pass), whether it answers what they said (--context) or something specific about them, whether it reads like a mate texting, and, to someone the owner has never talked with, whether it is only a relevant opener with no ask or pitch (openerOnly). A phrase the owner never says (hit home, big swing, spot on, felt that…) fails it outright. Sends nothing.",
+  "--with names the chat or person the way the owner says it (\"the log group\", a first name, a handle): log finds the owner's real replies to things like --context, from that chat first, then that person, then that platform, then anywhere, and how they write there (length, case, punctuation, their words). Without --text it shows them to draft from; with --text the gate also asks whether the draft reads like their real replies there (toThem, 0.7 to pass). Every gate also reads their nearest real replies, closest wording and style across all their conversations, every platform, beside the chat's own, never the writing guide alone.",
+  "--spoken gates a voice note: it is graded as said out loud, so its length and punctuation never count against it, and it must build on what they are talking about across the whole chat, adding to it, never repeating what the owner already told them (buildsOn, 0.7 to pass, rule 137). Every voice note send is gated this way.",
   "Exit 0 when it passes, 1 when it doesn't: rewrite and gate again.",
 ].join("\n");
 
@@ -48,26 +48,27 @@ export const VOICE_INPUT: CommandInput = {
   forms: [
     {
       words: [],
-      summary: "Gate a draft against matt's own writing guide with SubQ before it is sent, sending nothing",
+      summary: "Gate a draft against the owner's own writing guide with SubQ before it is sent, sending nothing",
       positionals: [],
       flags: [
         { name: "to", kind: "string", required: true, description: "Who the draft is for (their handle)" },
-        { name: "text", kind: "string", description: "The draft (leave it out with --with to see matt's real replies there first)" },
+        { name: "text", kind: "string", description: "The draft (leave it out with --with to see the owner's real replies there first)" },
         { name: "context", kind: "string", description: "What they said, that the draft answers" },
-        { name: "with", kind: "string", description: "The chat or person as matt says it, to write and gate it the way he writes there" },
-        { name: "spoken", kind: "boolean", description: "The draft is a voice note: graded as said out loud, its length never counted against it, and it must build on what they are talking about across the whole chat instead of repeating what matt already said (rule 149)" },
+        { name: "with", kind: "string", description: "The chat or person as the owner says it, to write and gate it the way he writes there" },
+        { name: "spoken", kind: "boolean", description: "The draft is a voice note: graded as said out loud, its length never counted against it, and it must build on what they are talking about across the whole chat instead of repeating what the owner already said (rule 149)" },
         JSON_FLAG,
       ],
+      groups: [{ rule: "atLeastOne", names: ["text", "with"], refusal: "textMissing" }],
     },
     {
       words: ["aiIndex"],
-      summary: "Build the AI tells index with Jina and measure matt's own messages against it",
+      summary: "Build the AI tells index with Jina and measure the owner's own messages against it",
       positionals: [],
       flags: [JSON_FLAG],
     },
     {
       words: ["index"],
-      summary: "Build matt's voice per chat and person from the conversations log search saved",
+      summary: "Build the owner's voice per chat and person from the conversations log search saved",
       positionals: [],
       flags: [JSON_FLAG],
     },
@@ -202,12 +203,12 @@ export const voiceCommand: Command = {
   name: "voice",
   effect: "read",
   input: VOICE_INPUT,
-  summary: "Gate a draft against matt's own writing guide with SubQ before anything is sent as him, sending nothing",
+  summary: "Gate a draft against the owner's own writing guide with SubQ before anything is sent as the owner, sending nothing",
   args: "--to <handle> [--text \"<draft>\"] [--context \"<what they said>\"] [--with <chat>] [--json] | index | aiIndex",
   async run(context, argv) {
     if (argv[0] === "aiIndex") {
       const parsed = parseArgs(argv.slice(1), parserSpecOf({ forms: [{ ...VOICE_INPUT.forms[1], words: [] }] }));
-      if (!parsed.ok) return { code: 1, stderr: `log voice aiIndex: ${parsed.error}\n${VOICE_USAGE}` };
+      if (!parsed.ok) return refuseInput("voice aiIndex", parsed.error, VOICE_USAGE);
       try {
         const pairsFile = join(voiceDir(), "pairs.json");
         const replies = existsSync(pairsFile) ? (JSON.parse(readFileSync(pairsFile, "utf8")) as VoicePair[]).map((p) => p.reply) : [];
@@ -222,7 +223,7 @@ export const voiceCommand: Command = {
     }
     if (argv[0] === "index") {
       const parsed = parseArgs(argv.slice(1), parserSpecOf({ forms: [{ ...VOICE_INPUT.forms[2], words: [] }] }));
-      if (!parsed.ok) return { code: 1, stderr: `log voice index: ${parsed.error}\n${VOICE_USAGE}` };
+      if (!parsed.ok) return refuseInput("voice index", parsed.error, VOICE_USAGE);
       try {
         const conversations = loadConversations();
         const embedder = voiceDeps.embedder();
@@ -231,14 +232,14 @@ export const voiceCommand: Command = {
         embedder.stop?.();
         const line = built.current
           ? `log voice index: already current, so nothing was re-paired: ${built.pairs} messages indexed across every chat matt has written in, ${built.profiles} profiles, at ${voiceDir()}`
-          : `log voice index: ${built.pairs} messages indexed across every chat matt has written in, each of his replies paired with what was said before it, ${built.profiles} profiles (chat, person, platform), in ${(built.ms / 1000).toFixed(1)} s at ${voiceDir()}`;
+          : `log voice index: ${built.pairs} messages indexed across every chat matt has written in, each of the owner's replies paired with what was said before it, ${built.profiles} profiles (chat, person, platform), in ${(built.ms / 1000).toFixed(1)} s at ${voiceDir()}`;
         return { code: 0, stdout: parsed.flags["json"] ? JSON.stringify(built, null, 2) : line };
       } catch (error) {
         return refuseError("voice index", error);
       }
     }
     const parsed = parseArgs(argv, parserSpecOf({ forms: [VOICE_INPUT.forms[0]] }));
-    if (!parsed.ok) return { code: 1, stderr: `log voice: ${parsed.error}\n${VOICE_USAGE}` };
+    if (!parsed.ok) return refuseInput("voice", parsed.error, VOICE_USAGE);
     const to = parsed.flags["to"];
     const text = typeof parsed.flags["text"] === "string" ? parsed.flags["text"] : "";
     const said = typeof parsed.flags["context"] === "string" ? parsed.flags["context"].trim() : "";

@@ -4,13 +4,17 @@ import type { DiscordChat } from "../../discord/chat/match/index.ts";
 import { findInstagramAccount, instagramGate } from "../../instagram/account/session/index.ts";
 import { guardSend } from "../../inbox/claims/index.ts";
 import { findInChatList } from "../../inbox/dbRead/index.ts";
+import type { SendGuard } from "../../inbox/claims/index.ts";
+import { confirmAnswer, rethrowFailure, runAction } from "../../platformKit/action/index.ts";
 import type { PlatformAnswer } from "../../platformKit/session/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../runner/helpers/index.ts";
 import type { Command, CommandContext, CommandInput, CommandResult, FlagSpec } from "../runner/types.ts";
 import { openAccount as openSlackAccount, chatIdOf as slackChatIdOf, inWorkspace } from "../slack/index.ts";
 import { openTwitterAccount } from "../twitter/helpers/account.ts";
 
-type ReactPlatform = "twitter" | "discord" | "slack" | "instagram";
+type HeldGuard = Extract<SendGuard, { ok: true }>;
+
+type ReactPlatform ="twitter" | "discord" | "slack" | "instagram";
 
 interface Reaction {
   message: string;
@@ -33,7 +37,7 @@ interface ReactShape {
 
 const EMOJI: FlagSpec = { name: "emoji", kind: "string", required: true, description: "The reaction: an emoji (😂) or its name (joy, :fire:)" };
 const REMOVE: FlagSpec = { name: "remove", kind: "boolean", description: "Take the account's own reaction off instead of adding it" };
-const APPROVED_BY: FlagSpec = { name: "approvedBy", kind: "string", description: "Who approved it: needed with --live (rule 8)" };
+const APPROVED_BY: FlagSpec = { name: "approvedBy", kind: "string", approval: true, description: "Who approved it: needed with --live (rule 8)" };
 
 function usageOf(shape: ReactShape): string {
   return [
@@ -45,7 +49,7 @@ function usageOf(shape: ReactShape): string {
 
 function inputOf(shape: ReactShape): CommandInput {
   const summary = `React to a ${shape.platform === "twitter" ? "X" : shape.platform[0].toUpperCase() + shape.platform.slice(1)} message with an emoji, on the direct-API engine; a dry run unless --live`;
-  return { forms: [{ words: [], effect: "write", summary, positionals: [], flags: [{ name: "account", kind: "string", required: true, description: `The ${shape.platform.toUpperCase()} socialAccount's accountName (its handle)` }, shape.chat, shape.message, EMOJI, ...shape.extra, REMOVE, APPROVED_BY, { name: "live", kind: "boolean", live: true, description: "React on the platform, only when matt asked (rule 8); without it a dry run contacts nothing" }, JSON_FLAG] }] };
+  return { forms: [{ words: [], effect: "write", summary, positionals: [], flags: [{ name: "account", kind: "string", required: true, description: `The ${shape.platform.toUpperCase()} socialAccount's accountName (its handle)` }, shape.chat, shape.message, EMOJI, ...shape.extra, REMOVE, APPROVED_BY, { name: "live", kind: "boolean", live: true, description: "React on the platform, only when the owner asked (rule 8); without it a dry run contacts nothing" }, JSON_FLAG] }] };
 }
 
 export function reactCommandOf(shape: ReactShape): Command {
@@ -63,7 +67,7 @@ export function reactCommandOf(shape: ReactShape): Command {
     async run(context, argv) {
       const parsed = parseArgs(argv, parserSpecOf(input));
       if (!parsed.ok) return { code: 1, stderr: `log ${label}: ${parsed.error}\n${usage}` };
-      if (parsed.positionals.length) return { code: 1, stderr: `log ${label}: takes no words, only flags\n${usage}` };
+      if (parsed.positionals.length) return { code: 1, error: "inputInvalid", stderr: `log ${label}: takes no words, only flags\n${usage}` };
       const message = String(parsed.flags[shape.message.name] ?? "").trim();
       const emoji = String(parsed.flags["emoji"] ?? "").trim();
       const remove = parsed.flags["remove"] === true;
@@ -80,17 +84,22 @@ export function reactCommandOf(shape: ReactShape): Command {
           if (parsed.flags["json"]) return { code: 0, stdout: JSON.stringify({ engine: "directApi", ok: true, dryRun: true, ...where }, null, 2) };
           return { code: 0, stdout: `log ${label}: dry run: ${resolved.account} would ${verb} message ${message} in ${resolved.label}. Nothing was contacted. --live --approvedBy <who> does it (rule 8).` };
         }
-        const guard = guardSend({ platform: shape.platform, account: resolved.account, conversationId: resolved.chatId });
-        if (!guard.ok) return refuse(label, "chatClaimedElsewhere", guard.refused);
-        context.err(`${resolved.account}: ${verb} message ${message} in ${resolved.label} on the direct-API engine, approved by ${approvedBy}`);
-        let answer: PlatformAnswer;
-        try {
-          answer = await resolved.send({ message, emoji, remove, approvedBy });
-        } catch (error) {
-          guard.done("failed", error instanceof Error ? error.message : String(error));
-          throw error;
-        }
-        guard.done(answer.ok ? "sent" : "failed", `${remove ? "reaction taken off" : "reacted"} ${emoji} on ${message}${answer.ok ? "" : `: ${answer.code}`}`);
+        const acted = await runAction<HeldGuard, PlatformAnswer>({
+          gate: async () => {
+            const guard = guardSend({ platform: shape.platform, account: resolved.account, conversationId: resolved.chatId });
+            return guard.ok ? { ok: true, held: guard } : { ok: false, code: "chatClaimedElsewhere", detail: guard.refused };
+          },
+          act: async () => {
+            context.err(`${resolved.account}: ${verb} message ${message} in ${resolved.label} on the direct-API engine, approved by ${approvedBy}`);
+            return resolved.send({ message, emoji, remove, approvedBy });
+          },
+          confirm: confirmAnswer,
+        });
+        if (acted.outcome === "uncertain") acted.held?.done("failed", acted.error instanceof Error ? acted.error.message : String(acted.error));
+        rethrowFailure(acted);
+        if (!acted.held || !acted.answer) return refuse(label, "chatClaimedElsewhere", acted.detail);
+        const answer = acted.answer;
+        acted.held.done(answer.ok ? "sent" : "failed", `${remove ? "reaction taken off" : "reacted"} ${emoji} on ${message}${answer.ok ? "" : `: ${answer.code}`}`);
         const code = answer.ok ? 0 : 1;
         if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", approvedBy, ...where, ...answer }, null, 2) };
         if (answer.ok) return { code, stdout: `log ${label}: ${resolved.account} ${remove ? `took ${emoji} off` : `reacted ${emoji} to`} message ${message} in ${resolved.label}${answer.already ? " (it already was)" : ""}.` };
@@ -119,7 +128,7 @@ export const twitterReactCommand = reactCommandOf({
 
 export const discordReactCommand = reactCommandOf({
   platform: "discord",
-  chat: { name: "channel", kind: "string", required: true, description: "The chat as matt says it, matched to one DM or group; or a channel id" },
+  chat: { name: "channel", kind: "string", required: true, description: "The chat as the owner says it, matched to one DM or group; or a channel id" },
   message: { name: "message", kind: "string", required: true, description: "The message's id, from log discord read" },
   extra: [],
   emoji: "Discord takes any emoji, a name (joy, fire, eyes) turned into it, or a server's own emoji as name:id.",
@@ -150,7 +159,7 @@ export const discordReactCommand = reactCommandOf({
 
 export const slackReactCommand = reactCommandOf({
   platform: "slack",
-  chat: { name: "chat", kind: "string", required: true, description: "The chat as matt says it, matched to one DM or group; or its id (D…, G…, C…)" },
+  chat: { name: "chat", kind: "string", required: true, description: "The chat as the owner says it, matched to one DM or group; or its id (D…, G…, C…)" },
   message: { name: "message", kind: "string", required: true, description: "The message's ts, from log slack read" },
   extra: [{ name: "workspace", kind: "string", description: "The workspace's domain; needed when the session is signed in to more than one" }],
   emoji: "Slack reacts by name (joy, fire, eyes, or a workspace's own); the common emoji are turned into their names, and one it doesn't know is refused with reactInvalid, so give its name. Already reacted counts as done.",

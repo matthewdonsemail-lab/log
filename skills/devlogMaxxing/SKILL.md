@@ -39,7 +39,7 @@ The worked example is `/devlog/xreacher-alternative`:
   - the Step 1/2/3 cards (`ThreeSteps`)
   - the phone stepper (`PlatformScroll`)
   - the "More plays to run" cards
-- **Through log only** for anything sent or read on an account (rule 106).
+- **Through log only** for anything sent or read on an account (rule 163).
   Research uses treg's TinyFish (free) and the BHW MCP. Nothing paid
   without matt (rule 41).
 

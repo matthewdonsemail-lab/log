@@ -1,4 +1,4 @@
-import type { MonitorContext, MonitorOutput } from "../../../marketplace/monitor/index.ts";
+import type { MonitorContext, MonitorOutput } from "../../../facebook/marketplace/monitor/index.ts";
 import { renderTable } from "../../runner/helpers/index.ts";
 
 export function summarizeMonitor(context: unknown): Record<string, unknown> {

@@ -19,6 +19,7 @@ export const reactions = {
     ],
     'REQ-REACT-02': [
       { kind: 'string', file: REACT, includes: 'chatClaimedElsewhere' },
+      { kind: 'uses', file: REACT, name: 'runAction' },
     ],
     'REQ-REACT-03': [
       { kind: 'symbol', file: 'python/twitterApi/engine.py', name: 'react' },

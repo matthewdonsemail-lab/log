@@ -1,12 +1,13 @@
-import { identifyAccount } from '../../../inbox/store/index'
+import { identifyAccount, rememberProfiles } from '../../../inbox/store/index'
+import { sessionProfileOf } from '../../../storage/platform/index'
 import { spawn, spawnSync } from 'node:child_process'
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { TwentyError, accountStore } from '../../../twenty/graphql/index'
 import type { TwentyClient } from '../../../twenty/graphql/index'
-import { SOCIAL_ACCOUNTS, toFacebookAccount } from '../../../marketplace/socialAccount/index'
-import type { FacebookAccount, SocialAccountRow } from '../../../marketplace/socialAccount/index'
+import { SOCIAL_ACCOUNTS, toFacebookAccount } from '../../../platformKit/socialAccount/index'
+import type { FacebookAccount, SocialAccountRow } from '../../../platformKit/socialAccount/index'
 import { twitterStateRoot, writeLocalSession, writesPerDayOf } from '../../../directApi/engine/index'
 import { timedEngine } from '../../../observability/timing/index'
 import type { EngineTrace } from '../../../observability/timing/index'
@@ -218,6 +219,7 @@ export async function recordTwitterSession(twenty: TwentyClient, account: Twitte
   const fresh = state === account.sessionState && !cookiesChanged && Number.isFinite(checkedAt) && now.getTime() - checkedAt < SESSION_REWRITE_MS
   writeLocalSession(account.accountName, state, now, twitterStateRoot(), { accountId: account.id })
   if (run.answer.ok && state === 'loggedIn' && run.answer.userId) identifyAccount('twitter', account.accountName, String(run.answer.userId), now)
+  if (run.answer.ok && state === 'loggedIn') rememberProfiles('twitter', account.accountName, [sessionProfileOf('twitter', run.answer as unknown as Record<string, unknown>)], now)
   if (fresh) return []
   account.sessionState = state
   account.sessionCheckedAt = now.toISOString()

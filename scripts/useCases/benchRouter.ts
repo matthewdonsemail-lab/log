@@ -6,7 +6,7 @@ import { localEmbedder } from '../../src/search/conversations/helpers/embed.ts'
 import { EMBED_MODEL } from '../../src/search/conversations/types.ts'
 import { FALSE_FIRE_CAP } from '../../src/useCases/router/index'
 import { labelledPath } from '../../src/contextLayer/service/index'
-import { buildRouteIndex, matchPlays, routePrompt } from '../../src/useCases/router/index'
+import { buildRouteIndex, route, routePrompt } from '../../src/useCases/router/index'
 import type { Utterance } from '../../src/useCases/router/index'
 
 type Labelled = { prompt: string; play: string; also?: string[] }
@@ -46,7 +46,7 @@ for (let fold = 0; fold < FOLDS; fold++) {
   const index = await buildRouteIndex(useCases, embed, MODEL, train, useCases.map((u) => u.text).join(' '))
   for (const label of labelled.filter((l) => l.fold === fold)) {
     const decision = await routePrompt(label.prompt, index, embed, { default: 0 })
-    outcomes.push({ label, top: decision.matches[0]?.id ?? 'none', score: decision.matches[0]?.score ?? 0, ms: decision.ms.total, ranked: decision.ranked.map((r) => ({ id: r.id, score: r.score })) })
+    outcomes.push({ label, top: decision.ranked[0]?.id ?? 'none', score: decision.ranked[0]?.score ?? 0, ms: decision.ms.total, ranked: decision.ranked.map((r) => ({ id: r.id, score: r.score })) })
   }
   process.stderr.write(`fold ${fold + 1}/${FOLDS} done (${Math.round((performance.now() - started) / 1000)} s)\n`)
 }
@@ -62,14 +62,14 @@ function menu(outcomes: Outcome[], floor: number) {
   return { floor, playInTop3: plays.filter(inMenu).length / plays.length, menuShownOnNone: none.filter((o) => shown(o).length > 0).length / none.length }
 }
 const menus = Array.from({ length: 25 }, (_, i) => 0.4 + i * 0.0125).map((f) => menu(outcomes, f))
-const baseline = labelled.map((l) => ({ label: l, top: matchPlays(l.prompt, useCases)[0]?.id ?? 'none', score: 1, ms: 0 }))
+const baseline = labelled.map((l) => ({ label: l, top: route(l.prompt, { useCases }).play?.id ?? 'none', score: 1, ms: 0 }))
 const ms = outcomes.map((o) => o.ms)
 const report = {
   model: MODEL,
   prompts: labelled.length,
   plays: labelled.filter((l) => l.play !== 'none').length,
   none: labelled.filter((l) => l.play === 'none').length,
-  oldWordMatcher: score(baseline, 0.5),
+  wordRouter: score(baseline, 0.5),
   router: best,
   top3Menu: menus.filter((_, i) => i % 3 === 0),
   latencyMs: { p50: pct(ms, 50), p95: pct(ms, 95), p99: pct(ms, 99), max: Math.max(...ms) },

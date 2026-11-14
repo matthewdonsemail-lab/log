@@ -8,22 +8,22 @@ description: Take one Facebook account from imported (NEEDSLOGIN) to ACTIVE and 
 Every step is an `mcp__log__*` tool (the `log` MCP server, `bun run mcp`).
 The same thing works in a terminal as `log <command> <args>`.
 Nothing here posts to Facebook. Going live is the last step, and only when
-matt says so.
+the owner says so.
 
 ## Hard boundaries
 
-1. **Waking hours (rule 18).** Steps 3 to 6 open the browser, so they only run
+1. **Waking hours (rule 35).** Steps 3 to 6 open the browser, so they only run
    between 08:00 and 22:00 in the account's home timezone. For Pennsylvania
    that's 12:00-02:00 GMT (EDT, until 1 Nov) or 19:00-09:00 in Vietnam. Outside
-   that, every step returns `outsideActiveHours`. When matt asks for a run
-   outside those hours, add `"--bypass"` to the args (rule 20). It skips only
+   that, every step returns `outsideActiveHours`. When the owner asks for a run
+   outside those hours, add `"--bypass"` to the args. It skips only
    the hours; the proxy gate and self-check still run.
-2. **No browser without the proxy (rule 12).** Step 1 must pass first.
-3. **Someone watches the window (rule 11).** Camoufox is always visible. If
-   the cookies don't hold, matt signs in in that window during step 3.
-4. **`checkpointed` or `suspended`: stop.** Tell matt and don't retry.
+2. **No browser without the proxy (rule 35).** Step 1 must pass first.
+3. **Someone watches the window (rule 35).** Camoufox is always visible. If
+   the cookies don't hold, the owner signs in in that window during step 3.
+4. **`checkpointed` or `suspended`: stop.** Tell the owner and don't retry.
 5. **Dry run only.** `facebookPublish` without `--live` stops before the Publish
-   button. Live is its own tool, `facebookPublishLive`, with `confirmLive: true` and matt's go (rule 10).
+   button. Live is its own tool, `facebookPublishLive`, with `confirmLive: true` and the owner's go (rule 8).
 
 ## The steps
 
@@ -54,15 +54,15 @@ mcp__log__facebookConnect   args ["--account", "<a>"]
 
 The tool always runs `--noPrompt`. Camoufox opens through the proxy on the
 account's device. If the vendor cookies are still logged in, it saves them
-and ends within seconds. If not, it **signs in by itself** (rule 21): it types
+and ends within seconds. If not, it **signs in by itself**: it types
 the Twenty email and password, then on the two-step page the current code
 from `totpSecret` (switching to "Authentication app" if Facebook offers
 another method first), and trusts the device. This is the connect machine
-(`marketplace/connect/machine.ts`): each page is printed as its kind and
-state; nothing secret is. Every page takes the proven path (rule 23): the
+(`platformKit/connect/machine.ts`): each page is printed as its kind and
+state; nothing secret is. Every page takes the proven path: the
 cookie banner is accepted, "We suspect automated behaviour" dismissed, login
 captchas solved (CaptchaKraken, then 2Captcha). Only an identity, photo, video
-or SMS checkpoint is never clicked: it waits for matt in the window. It reads for up to 600 s
+or SMS checkpoint is never clicked: it waits for the owner in the window. It reads for up to 600 s
 (`--wait <s>` to change it). Signed in: the session is saved to Twenty and
 the account set **ACTIVE**. It can also end `checkpointed` (status
 CHECKPOINT), `wrongPassword`, `disabled` (BANNED) or `signInNotFinished`
@@ -132,17 +132,17 @@ suggestion Facebook names as that place > Apply,
 run never changes it. A zip, a number or an abbreviation ("Reading, PA") is
 never typed: it is refused with `locationAbbreviated` before the run, because
 "Bethlehem, PA" was offered only as the West Bank and a bare zip offered
-Granada, Spain (rule 72). A login wall or checkpoint on the form is signed
-through in the same browser (rule 24).
+Granada, Spain. A login wall or checkpoint on the form is signed
+through in the same browser (rule 35).
 
-**Rule 24: launches cost.** Each account opens on Facebook at most 8 times
+**Rule 35: launches cost.** Each account opens on Facebook at most 8 times
 per local day, 10 minutes apart, dry runs counted (`launchTooSoon`,
 `launchBudgetSpent`). The fixture-form run doesn't count. Fix what a run
 reports before running it again; don't loop dry runs. On 2026-10-19 one
 account opened 14 times in 90 minutes and went to a video-selfie checkpoint
 (`RESEARCH/LOG_CLI_RUN_CAPTURES_2026_10_19.md`).
 
-### 7. Live (only on matt's go)
+### 7. Live (only on the owner's go)
 
 A new account's listing is published but **held for review**: Facebook's
 Selling page carries `integrity_status_indicator: "This listing is being
@@ -160,4 +160,4 @@ mcp__log__facebookPublishLive   { listing: "<listingId>", confirmLive: true }
 mcp__log__facebookScan      args ["--account", "<a>"]
 ```
 
-Once Publish is clicked nothing is retried (rule 10).
+Once Publish is clicked nothing is retried.

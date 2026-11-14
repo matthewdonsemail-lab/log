@@ -5,16 +5,32 @@ import { localAccountsPath, readLocalAccounts } from "../../twenty/graphql/index
 import { credentialValue } from "../connections/index.ts";
 import type { ConnectionAccount } from "../connections/index.ts";
 import { recordCheck } from "../accountCheck/index.ts";
+import { PLATFORM_SITES } from "../../cli/runner/helpers/platforms.ts";
+import { sessionGate } from "../../platformKit/sessionCheck/index.ts";
+import { db } from "../../inbox/store/index.ts";
+import { deleteState, getState, putState } from "../../storage/state/index.ts";
 import { BROWSER_ACTIONS, VERIFIED_FOR_MS } from "./types.ts";
 import type { BrowserAction, BrowserCheckFrame, BrowserCheckPhase, BrowserCheckView, BrowserToolCaller } from "./types.ts";
 
 type Env = Record<string, string | undefined>;
 type Proof = { generation: string; revision: string; at: number };
 
-const proofs = new Map<string, Proof>();
+const PROOF_SCOPE = "browserCheckProof" as const;
+
+function proofOf(accountId: string): Proof | null {
+  return getState<Proof>(PROOF_SCOPE, accountId, {}, db())?.body ?? null;
+}
+
+function keepProof(accountId: string, proof: Proof): void {
+  putState(PROOF_SCOPE, accountId, proof, proof.at, db());
+}
+
+function dropProof(accountId: string): void {
+  deleteState(PROOF_SCOPE, accountId, db());
+}
 const GOAL = "Check the account's browser from the console and sign it in where the page asks";
 
-export const browserCheckDeps: { state: typeof viewerState; frame: typeof viewerFrame; input: typeof viewerInput; now: () => number; record: (accountId: string, state: "succeeded") => void } = {
+export const browserCheckDeps: { state: typeof viewerState; frame: typeof viewerFrame; input: typeof viewerInput; now: () => number; record: (accountId: string, state: "signedIn") => void } = {
   state: viewerState,
   frame: viewerFrame,
   input: viewerInput,
@@ -31,7 +47,7 @@ function hasLogin(row: Record<string, unknown> | null): boolean {
 }
 
 function missingPhase(account: ConnectionAccount, env: Env): { phase: BrowserCheckPhase; reason: { code: string; message: string } | null } {
-  if (account.platform !== "facebook") return { phase: "browserMissing", reason: null };
+  if (!PLATFORM_SITES[account.platform].browser) return { phase: "browserMissing", reason: null };
   const row = rowOf(account, env);
   const driver = String(row?.browserDriver ?? "").trim();
   const adsPower = driver === "adsPower" || (!driver && Boolean(row?.adsPowerProfileId)) || (!driver && (env.LOG_BROWSER_DRIVER ?? "") === "adsPower");
@@ -72,7 +88,7 @@ export async function browserCheckView(account: ConnectionAccount, env: Env = pr
   if (viewer.phase === "needsAttention") return { ...view, phase: "needsAttention", canNavigate: true, canGoBack: true, reason: { code: "needsPerson", message: "This page needs a person. Input stays off and the run is stopped." } };
   const navigable = { canNavigate: true, canGoBack: true };
   if (viewer.phase === "signInRequired") return { ...view, ...navigable, phase: "signInRequired", canInteract: true, canResolve: hasLogin(rowOf(account, env)) };
-  const proof = proofs.get(account.id);
+  const proof = proofOf(account.id);
   if (proof && proof.generation === viewer.generation && proof.revision === viewer.revision && browserCheckDeps.now() - proof.at < VERIFIED_FOR_MS) return { ...view, ...navigable, phase: "verified", canComplete: true };
   return { ...view, ...navigable, phase: "ready" };
 }
@@ -83,8 +99,8 @@ function confirmed(answer: { isError?: boolean; structuredContent?: unknown }): 
 }
 
 export async function openBrowser(account: ConnectionAccount, callTool: BrowserToolCaller, env: Env = process.env): Promise<BrowserCheckView> {
-  if (account.status === "deactivated") throw new Error("accountDeactivated");
-  if (["banned", "dead", "restricted", "checkpoint"].includes(account.status)) throw new Error("accountCheckStopped");
+  const gate = sessionGate(account, { openedByOwner: true });
+  if (!gate.ok) throw new Error(gate.code);
   const before = await browserCheckView(account, env);
   if (before.phase !== "browserMissing") return before;
   confirmed(await callTool("inspectStart", { account: account.name, detach: true, goal: GOAL, waitMs: 50000, ...(account.platform === "facebook" ? { url: "https://www.facebook.com/" } : {}) }));
@@ -122,7 +138,7 @@ export async function actOnBrowser(account: ConnectionAccount, action: unknown, 
   confirmed(await callTool("inspectDo", { account: account.name, action: "snapshot", goal: GOAL, json: true, waitMs: 50000 }));
   const after = await browserCheckView(account, env);
   if (after.phase === "ready" && after.generation && after.revision) {
-    proofs.set(account.id, { generation: after.generation, revision: after.revision, at: browserCheckDeps.now() });
+    keepProof(account.id, { generation: after.generation, revision: after.revision, at: browserCheckDeps.now() });
     return browserCheckView(account, env);
   }
   return after;
@@ -133,8 +149,8 @@ export async function saveBrowserState(account: ConnectionAccount, input: { gene
   sameView(before, input);
   if (before.phase !== "verified" || !before.canComplete) throw new Error("browserCheckUnresolved");
   confirmed(await callTool("inspectDo", { account: account.name, action: "saveState", goal: GOAL, json: true, waitMs: 50000 }));
-  browserCheckDeps.record(account.id, "succeeded");
-  proofs.delete(account.id);
+  browserCheckDeps.record(account.id, "signedIn");
+  dropProof(account.id);
   return { ...(await browserCheckView(account, env)), phase: "verified", canComplete: true };
 }
 
@@ -142,7 +158,7 @@ export async function closeBrowser(account: ConnectionAccount, callTool: Browser
   const before = await browserCheckView(account, env);
   if (!before.generation) return before;
   confirmed(await callTool("inspectDo", { account: account.name, action: "stop", goal: GOAL, json: true, waitMs: 50000 }));
-  proofs.delete(account.id);
+  dropProof(account.id);
   return browserCheckView(account, env);
 }
 

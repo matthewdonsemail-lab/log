@@ -10,7 +10,8 @@ import type { ConsoleWebOptions, ConsoleWebServer } from "../../console/web/inde
 import { authDeps } from "../auth/index.ts";
 import { shouldPrompt } from "../launch/helpers/shouldPrompt.ts";
 import type { LaunchTTY } from "../launch/helpers/shouldPrompt.ts";
-import { JSON_FLAG, parseArgs, PLATFORMS } from "../runner/helpers/index.ts";
+import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, PLATFORMS } from "../runner/helpers/index.ts";
+import type { FlagValue } from "../runner/helpers/index.ts";
 import type { Command, CommandContext, CommandInput, CommandResult } from "../runner/types.ts";
 import {
   loadConsoleAiClients,
@@ -50,6 +51,19 @@ export const CONSOLE_USAGE = [
 
 export const CONSOLE_INPUT: CommandInput = {
   forms: [
+    {
+      words: [],
+      effect: "read",
+      terminalOnly: "serves the web console on loopback until it is stopped, or opens the interactive console: run it in a terminal",
+      summary: "Serve the web console on 127.0.0.1 in local mode and open /console/start, or without --web open the interactive console",
+      positionals: [],
+      flags: [
+        { name: "web", kind: "boolean", description: "Serve the web console on loopback (127.0.0.1)" },
+        { name: "port", kind: "integer", min: 0, max: 65535, description: "The port to serve it on" },
+        { name: "noOpen", kind: "boolean", description: "Serve it without opening a browser" },
+        JSON_FLAG,
+      ],
+    },
     { words: ["start"], effect: "read", summary: "Whether log.db is here and the MCP is running, how many accounts there are and when the last event came in", positionals: [], flags: [JSON_FLAG] },
     { words: ["connections"], effect: "read", summary: "Local accounts by platform with their session state", positionals: [], flags: [{ name: "platform", kind: "enum", values: PLATFORMS, description: "Only this platform's accounts" }, JSON_FLAG] },
     { words: ["usage"], effect: "read", summary: "Calls by kind over 1, 7 or 30 days, from platform reads and actions to decisions and media", positionals: [], flags: [{ name: "days", kind: "enum", values: USAGE_DAYS.map(String), description: "How many days back (default 7)" }, JSON_FLAG] },
@@ -61,8 +75,8 @@ export const CONSOLE_INPUT: CommandInput = {
       flags: [
         { name: "kind", kind: "string", description: "Only this kind, e.g. Message received or Inference call" },
         { name: "status", kind: "enum", values: EVENT_STATUSES, description: "Only this status" },
-        { name: "page", kind: "integer", description: "Which page, from 0" },
-        { name: "pageSize", kind: "integer", description: "Events per page (default 12, at most 1000)" },
+        { name: "page", kind: "integer", min: 0, description: "Which page, from 0" },
+        { name: "pageSize", kind: "integer", min: 1, description: "Events per page (default 12, at most 1000)" },
         JSON_FLAG,
       ],
     },
@@ -107,13 +121,8 @@ function json(value: unknown): CommandResult {
   return { code: 0, stdout: JSON.stringify(value, null, 2) };
 }
 
-function integerFlag(value: string | true | undefined): number | undefined | null {
-  if (value === undefined) return undefined;
-  const n = Number(value);
-  return typeof value === "string" && Number.isInteger(n) && n >= 0 ? n : null;
-}
-
-export function runScreenCommand(domain: ConsoleDomain, flags: Record<string, string | true>): CommandResult {
+export function runScreenCommand(domain: ConsoleDomain, parsed: { flags: Record<string, string | true>; values: Record<string, FlagValue> }): CommandResult {
+  const { flags } = parsed;
   const asJson = flags["json"] === true;
   const text = (name: string) => (typeof flags[name] === "string" ? String(flags[name]).trim() : undefined);
   if (domain === "start") {
@@ -135,9 +144,8 @@ export function runScreenCommand(domain: ConsoleDomain, flags: Record<string, st
   if (domain === "events") {
     const status = text("status");
     if (status && !(EVENT_STATUSES as readonly string[]).includes(status)) return { code: 1, stderr: `log console events: --status is one of ${EVENT_STATUSES.join(", ")}` };
-    const page = integerFlag(flags["page"]);
-    const pageSize = integerFlag(flags["pageSize"]);
-    if (page === null || pageSize === null || pageSize === 0) return { code: 1, stderr: "log console events: --page is a whole number from 0, --pageSize from 1" };
+    const page = numberOf(parsed, "page");
+    const pageSize = numberOf(parsed, "pageSize");
     const filter = { kind: text("kind"), status: status as EventStatus | undefined, page, pageSize };
     const data = loadConsoleEvents(filter);
     return asJson ? json(data) : { code: 0, stdout: renderEvents(data, filter) };
@@ -210,7 +218,7 @@ export async function runConsoleMenu(context: CommandContext): Promise<CommandRe
 }
 
 export async function runConsole(context: CommandContext, argv: string[]): Promise<CommandResult> {
-  const parsed = parseArgs(argv, { boolean: ["json", "web", "noOpen"], valued: ["platform", "days", "kind", "status", "page", "pageSize", "client", "port"] });
+  const parsed = parseArgs(argv, parserSpecOf(CONSOLE_INPUT));
   if (!parsed.ok) return { code: 1, stderr: `log console: ${parsed.error}\n${CONSOLE_USAGE}` };
   const [sub, ...rest] = parsed.positionals;
   if (rest.length) return { code: 1, stderr: `log console: unexpected argument "${rest[0]}"\n${CONSOLE_USAGE}` };
@@ -218,14 +226,13 @@ export async function runConsole(context: CommandContext, argv: string[]): Promi
     if (!(SUBCOMMANDS as readonly string[]).includes(sub)) return { code: 1, stderr: `log console: pick one of ${SUBCOMMANDS.join(", ")}\n${CONSOLE_USAGE}` };
     if (parsed.flags["web"]) return { code: 1, stderr: `log console: --web goes on its own: log console --web\n${CONSOLE_USAGE}` };
     try {
-      return runScreenCommand(sub as ConsoleDomain, parsed.flags);
+      return runScreenCommand(sub as ConsoleDomain, parsed);
     } catch (error) {
       return { code: 2, stderr: `log console ${sub}: ${error instanceof Error ? error.message : String(error)}` };
     }
   }
   if (parsed.flags["web"]) {
-    const port = integerFlag(parsed.flags["port"]);
-    if (port === null || (port !== undefined && port > 65535)) return { code: 1, stderr: `log console --web: --port is a port number\n${CONSOLE_USAGE}` };
+    const port = numberOf(parsed, "port");
     return runConsoleWeb(context, { port, open: parsed.flags["noOpen"] !== true });
   }
   if (parsed.flags["json"]) return json({ ok: true, interactive: false, screens: CONSOLE_SCREENS, hint: "Run `log console <screen> --json` for a screen's data, or `log console` in a terminal." });

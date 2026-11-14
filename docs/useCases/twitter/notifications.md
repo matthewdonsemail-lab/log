@@ -2,6 +2,8 @@
 
 After a post goes out, people like it, repost it, reply, quote it and follow you. This page pulls all of that from the account's X notifications, new and back through the history, keeps it on this machine, and gives the agent a list of who did what on which post. It sends nothing.
 
+How the owner asks for it: "check my x notifications", "who liked my tweet", "who engaged with my post since <date>", "pull my twitter notifications".
+
 ## Run it from a fresh context
 
 Say: **"go on docs/useCases/twitter/notifications.md for <account>"**, or "who liked <post url>", or "who engaged since <date>". The agent then reads this page and [README.md](README.md) and runs the steps.
@@ -35,7 +37,7 @@ Each row is one person doing one thing: `kind` (like, repost, reply, quote, foll
 
 ## What to know
 
-- **One read, many pages, one session.** The read goes through the account's one X session, its engine host, never a session of its own (rule 105), and is one call on the account, so the queue's sends wait for it and it waits for them (rule 104). Pages are 40 notifications, 4 to 11 s apart, each through the account's governor. A 429 or a governor stop ends the read and keeps what came; nothing reads again until the owner says so (rule 94). Another run sending on the same account shares the same governor.
+- **One read, many pages, one session.** The read goes through the account's one X session, its engine host, never a session of its own (rule 105), and is one call on the account, so the queue's sends wait for it and it waits for them. Pages are 40 notifications, 4 to 11 s apart, each through the account's governor. A 429 or a governor stop ends the read and keeps what came; nothing reads again until the owner says so (rule 94). Another run sending on the same account shares the same governor.
 - **X decides how far back.** `--full` goes on from where the last one stopped, 25 pages a run by default (`pages`), until X gives no more.
 - **Aggregated notifications are opened up.** "@a and 12 others liked your post" is kept as one row per person, and the account's own actions are never kept.
 - **Kept, not synced anywhere.** The rows live in `~/.logCli/twitter/<account>/notifications.json`, never in Twenty.

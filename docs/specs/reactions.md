@@ -16,7 +16,7 @@ Checked by: code and SubQ
 
 ### REQ-REACT-02: The chat is claimed first and released after
 
-A live reaction claims the chat with `guardSend` before the engine is called, refuses with `chatClaimedElsewhere` when another session holds it, and releases it as sent or failed once the platform answers, or as failed when the call throws. Rule 133.
+A live reaction claims the chat with `guardSend` before the engine is called, refuses with `chatClaimedElsewhere` when another session holds it, and releases it as sent or failed once the platform answers, or as failed when the call throws. The claim, the engine call and the platform's answer are the gating, acting and confirming stages of the shared action machine ([platformActions](platformActions.md)). Rule 133.
 
 Checked by: code and SubQ
 

@@ -4,7 +4,7 @@
 
 ## How it moves between states
 
-The monitor is an XState v5 machine in `src/marketplace/monitor/machine.ts`:
+The monitor is an XState v5 machine in `src/facebook/marketplace/monitor/machine.ts`:
 
 ```text
 checking --ok-----------> evaluating --> waiting --after poll--> checking

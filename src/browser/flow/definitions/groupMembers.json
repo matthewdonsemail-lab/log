@@ -1,5 +1,6 @@
 {
   "name": "groupMembers",
+  "platform": "facebook",
   "summary": "Open a group's People tab and scroll it read-only so Facebook loads the member list (bio line, page category) for extraction",
   "params": [],
   "steps": [

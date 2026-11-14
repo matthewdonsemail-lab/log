@@ -9,10 +9,13 @@ import type { Authority, Binding } from "../../runtime/bridge/index.ts";
 import { migrate } from "../../storage/schema/index.ts";
 import { consoleOperation, isolationRefusal } from "../../cli/runtime/index.ts";
 import { CREDENTIAL_MASK } from "../../auth/credentials/index.ts";
-import { checkStateOf, checkStateOfVerdict, createAccountChecker } from "../accountCheck/index.ts";
+import { claimCheck } from "../../platformKit/sessionCheck/index.ts";
+import type { SessionReport } from "../../platformKit/sessionCheck/index.ts";
+import type { SignInAccount, SignInActors } from "../../platformKit/signIn/index.ts";
+import { db } from "../../inbox/store/index.ts";
 import { connectionIdOf } from "../connections/index.ts";
 import type { ConnectionsView } from "../connections/index.ts";
-import { parseCookies, signInDeps } from "../signIn/index.ts";
+import { parseCookies } from "../signIn/index.ts";
 import { consoleMutationAnswer } from "../web/index.ts";
 import { consoleErrorCode, redactConsoleArgs, runConsoleOperation } from "./index.ts";
 
@@ -104,49 +107,77 @@ describe("console operations on the runtime", () => {
     const id = connectionIdOf("twitter", "fakeBird");
     const answer = (await runConsoleOperation("accountCheck", { accountId: id }, { callTool: async (name, input) => { calls.push(`${name} ${JSON.stringify(input)}`); return { structuredContent: { ok: true } }; } })) as { state: string; connections: { accounts: { id: string; lastCheck: { state: string } | null }[] } };
     expect(calls).toEqual(['twitterSessionCheck {"account":"fakeBird","json":true}']);
-    expect(answer.state).toBe("succeeded");
-    expect(answer.connections.accounts.find((account) => account.id === id)?.lastCheck?.state).toBe("succeeded");
+    expect(answer.state).toBe("signedIn");
+    expect(answer.connections.accounts.find((account) => account.id === id)?.lastCheck?.state).toBe("signedIn");
     await expect(runConsoleOperation("accountCheck", { accountId: connectionIdOf("facebook", "fakeSeller") })).rejects.toThrow("browserCheckRequired");
     await expect(runConsoleOperation("accountCheck", { accountId: "0".repeat(24) })).rejects.toThrow("accountNotFound");
   });
 
-  test("the checker runs one check at a time and reads an error with no platform answer as unknown", async () => {
-    let release: () => void = () => {};
-    const recorded: string[] = [];
-    const checker = createAccountChecker(() => new Promise((resolve) => { release = () => resolve({ isError: true }); }), (id, state) => recorded.push(`${id}:${state}`));
-    const first = checker.check({ id: "a", name: "fakeBird", platform: "twitter" });
-    await expect(checker.check({ id: "b", name: "other", platform: "reddit" })).rejects.toThrow("accountCheckBusy");
-    expect(checker.activeAccountId()).toBe("a");
-    release();
-    expect(await first).toMatchObject({ state: "unknown", session: { account: "fakeBird", verdict: "unknown" } });
-    expect(recorded).toEqual(["a:running", "a:unknown"]);
-    expect(checkStateOf({ structuredContent: { job: { id: "j" } } })).toBe("unknown");
-    expect(checkStateOfVerdict("signInNeeded")).toBe("signInNeeded");
-    expect(checkStateOfVerdict("stopped")).toBe("stopped");
-    checker.stop();
+  test("a check held by a live process is busy; one whose process died reads back as unknown", async () => {
+    const id = connectionIdOf("twitter", "fakeBird");
+    expect(claimCheck(id, process.pid, new Date(), db())).toEqual({ claimed: true });
+    await expect(runConsoleOperation("accountCheck", { accountId: id }, { callTool: async () => ({ structuredContent: { ok: true } }) })).rejects.toThrow("accountCheckBusy");
+    expect(claimCheck(id, 999999, new Date(), db(), () => false)).toEqual({ claimed: true });
+    const view = (await runConsoleOperation("connectionsList", {})) as ConnectionsView;
+    expect(view.accounts.find((account) => account.id === id)?.lastCheck?.state).toBe("unknown");
+    const answer = (await runConsoleOperation("accountCheck", { accountId: id }, { callTool: async () => ({ isError: true }) })) as { state: string; session: { verdict: string } };
+    expect(answer).toMatchObject({ state: "unknown", session: { verdict: "unknown" } });
   });
 
-  test("accountSignIn pastes cookies into the platform's own cookie save, and refuses platforms without one", async () => {
-    const held = signInDeps.route;
+  test("accountSignIn by cookies runs the sign-in machine: the pasted cookies reach the cookie prompt through the context, then it checks again", async () => {
     const asked: string[] = [];
-    const deps = { prompts: { intro() {}, outro() {}, cancel() {}, password: async (_option: { message: string }) => "" as unknown }, tty: () => ({ stdinTTY: false as boolean | undefined, stdoutTTY: false as boolean | undefined }) };
-    const command = { name: "cookies", platform: "twitter", usage: "", summary: "", args: "", async run(_context: unknown, argv: string[]) {
-      for (const message of ["auth_token", "ct0", "twid"]) asked.push(String(await deps.prompts.password({ message })));
-      return argv[2] === "fakeBird" && deps.tty().stdinTTY ? { code: 0, stdout: "saved" } : { code: 1, stderr: "twitterCookiesRefused: notLoggedIn" };
-    } };
-    signInDeps.route = (async (platform: string) => (platform === "twitter" ? { deps, command } : null)) as unknown as typeof held;
-    try {
-      const cookies = JSON.stringify([{ name: "auth_token", value: "a".repeat(40) }, { name: "ct0", value: "c".repeat(40) }, { name: "twid", value: "u%3D123456789" }, { name: "other", value: "x" }]);
-      const result = (await runConsoleOperation("accountSignIn", { platform: "twitter", method: "cookies", account: "fakeBird", cookies })) as Record<string, unknown>;
-      expect(result).toMatchObject({ signedIn: true, accountId: connectionIdOf("twitter", "fakeBird") });
-      expect(asked).toEqual(["a".repeat(40), "c".repeat(40), "u%3D123456789"]);
-      expect(JSON.stringify(result)).not.toContain("a".repeat(40));
-      await expect(runConsoleOperation("accountSignIn", { platform: "discord", method: "cookies", account: "fakeGuild", cookies })).rejects.toThrow("cookieSignInUnavailable");
-      await expect(runConsoleOperation("accountSignIn", { platform: "twitter", method: "cookies", account: "fakeBird", cookies: "ct0=only" })).rejects.toThrow("cookiesIncomplete");
-      await expect(runConsoleOperation("accountSignIn", { platform: "twitter", method: "password", account: "fakeBird", username: "u", password: "p" })).rejects.toThrow("passwordSignInUnavailable");
-    } finally {
-      signInDeps.route = held;
-    }
+    const report = (account: SignInAccount, verdict: SessionReport["verdict"]): SessionReport => ({ id: account.id, platform: account.platform, account: account.name, verdict, code: null, detail: null, httpStatus: null, checkedAt: new Date().toISOString(), next: null });
+    let checks = 0;
+    const signInActors = (route: string, cookieContext: () => Promise<{ cookiePrompts?: { password(option: { message: string }): Promise<unknown> } }>): SignInActors => ({
+      check: async (account) => { checks += 1; return report(account, "signInNeeded"); },
+      recheck: async (account) => { checks += 1; return report(account, "signedIn"); },
+      open: async () => { throw new Error("not opened on the cookie route"); },
+      waitForOwner: async () => ({ finished: true }),
+      save: async () => {
+        expect(route).toBe("cookies");
+        const context = await cookieContext();
+        for (const message of ["auth_token", "ct0", "twid"]) asked.push(String(await context.cookiePrompts!.password({ message })));
+        return { saved: true, code: null, detail: "saved", at: new Date().toISOString() };
+      },
+    });
+    const cookies = JSON.stringify([{ name: "auth_token", value: "a".repeat(40) }, { name: "ct0", value: "c".repeat(40) }, { name: "twid", value: "u%3D123456789" }, { name: "other", value: "x" }]);
+    const result = (await runConsoleOperation("accountSignIn", { platform: "twitter", method: "cookies", account: "fakeBird", cookies }, { signInActors: signInActors as never, callTool: async () => ({}) })) as Record<string, unknown>;
+    expect(result).toMatchObject({ signedIn: true, state: "signedIn", accountId: connectionIdOf("twitter", "fakeBird") });
+    expect(asked).toEqual(["a".repeat(40), "c".repeat(40), "u%3D123456789"]);
+    expect(checks).toBe(2);
+    expect(JSON.stringify(result)).not.toContain("a".repeat(40));
+    await expect(runConsoleOperation("accountSignIn", { platform: "discord", method: "cookies", account: "fakeGuild", cookies })).rejects.toThrow("cookieSignInUnavailable");
+    await expect(runConsoleOperation("accountSignIn", { platform: "twitter", method: "cookies", account: "fakeBird", cookies: "ct0=only" })).rejects.toThrow("cookiesIncomplete");
+    await expect(runConsoleOperation("accountSignIn", { platform: "twitter", method: "password", account: "fakeBird", username: "u", password: "p" })).rejects.toThrow("passwordSignInUnavailable");
+  });
+
+  test("accountSignIn by browser opens the account's own browser on any platform with one and leaves it waiting for the owner", async () => {
+    const opened: string[] = [];
+    const signInActors = (): SignInActors => ({
+      check: async (account) => ({ id: account.id, platform: account.platform, account: account.name, verdict: "signInNeeded", code: "sessionDead", detail: null, httpStatus: 401, checkedAt: new Date().toISOString(), next: null }),
+      recheck: async () => { throw new Error("not rechecked yet"); },
+      open: async (account) => { opened.push(`${account.platform} ${account.name}`); },
+      waitForOwner: async () => ({ finished: false }),
+      save: async () => { throw new Error("not saved yet"); },
+    });
+    const result = (await runConsoleOperation("accountSignIn", { platform: "discord", method: "browser", account: "fakeGuild" }, { signInActors: signInActors as never, callTool: async () => ({}) })) as Record<string, unknown>;
+    expect(result).toMatchObject({ signedIn: false, next: "browserCheck", state: "waitingForOwner", detail: "browserOpened" });
+    expect(opened).toEqual(["discord fakeGuild"]);
+    await expect(runConsoleOperation("accountSignIn", { platform: "twitter", method: "browser", account: "fakeBird" }, { signInActors: signInActors as never, callTool: async () => ({}) })).rejects.toThrow("signInRouteUnavailable");
+  });
+
+  test("closing the browser of a waiting sign-in finishes it through the same machine: saved from the browser, then checked again", async () => {
+    const steps: string[] = [];
+    const signInActors = (): SignInActors => ({
+      check: async () => { throw new Error("not checked first again"); },
+      open: async () => { throw new Error("not opened again"); },
+      waitForOwner: async (_, finish) => (steps.push(`wait ${finish}`), { finished: finish }),
+      save: async (_, since) => (steps.push("save"), { saved: true, code: null, detail: "saved", at: since }),
+      recheck: async (account) => (steps.push("recheck"), { id: account.id, platform: account.platform, account: account.name, verdict: "signedIn", code: null, detail: null, httpStatus: null, checkedAt: new Date().toISOString(), next: null }),
+    });
+    const closed = (await runConsoleOperation("browserClose", { accountId: connectionIdOf("discord", "fakeGuild") }, { signInActors: signInActors as never, callTool: async () => ({}) })) as { signIn: { state: string } };
+    expect(closed.signIn.state).toBe("signedIn");
+    expect(steps).toEqual(["wait true", "save", "recheck"]);
   });
 
   test("a Facebook password is saved where facebook connect reads it, then the browser check signs in", async () => {

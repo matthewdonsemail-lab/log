@@ -1,6 +1,8 @@
 {
   "name": "postComment",
+  "platform": "facebook",
   "summary": "Comment on the newest post on the account's own profile: type in its Write a comment box, Post comment (useCometUFICreateCommentMutation). Writes on Facebook (--live).",
+  "effect": "write",
   "params": [
     {
       "name": "comment",

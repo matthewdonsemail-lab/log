@@ -98,6 +98,7 @@ export function searchCatalog(entries: readonly CatalogEntry[], query: string, l
       } else missed.push(term);
     }
     if (platforms.includes(doc.platform)) score += 2;
+    if (doc.entry.recorded) score /= 2;
     return { entry: doc.entry, score, matched, missed };
   });
   const onPlatform = (h: SearchHit) => !platforms.length || platforms.includes(h.entry.platform) || h.entry.platform === "any" || h.entry.platform === "byArgument";

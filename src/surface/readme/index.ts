@@ -20,7 +20,7 @@ const platformText = (p: CommandEntry["platform"]) => (p === "any" ? "any (none)
 
 const anchorOf = (words: string) => `log-${words}`.toLowerCase().replace(/[^a-z0-9 -]/g, "").replace(/ /g, "-");
 
-const flagText = (f: Flag) => `\`--${f.name}${f.value ? ` <${f.value}>` : ""}\``;
+const flagText = (f: Flag) => (f.typed && !f.required ? `\`[--${f.name}${f.value ? ` <${f.value}>` : ""}]\`` : `\`--${f.name}${f.value ? ` <${f.value}>` : ""}\``);
 
 function diagramBlock(d: Diagram): string[] {
   return [`### ${d.title}`, "", d.about, "", "```mermaid", d.mermaid, "```", "", `Source: [\`docs/diagrams/${d.name}.mmd\`](docs/diagrams/${d.name}.mmd).`, ""];

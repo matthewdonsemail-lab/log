@@ -1,6 +1,6 @@
 import { backfillAll, diskFree, listRuns, pruneRuns, runsBytes, storageVerdict } from "../../browser/runStore/index.ts";
 import type { RunEntry } from "../../browser/runStore/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";
+import { JSON_FLAG, parseArgs, parserSpecOf, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
 
 export const RUNS_USAGE = [
@@ -29,7 +29,7 @@ export const RUNS_INPUT: CommandInput = {
       words: ["prune"], effect: "delete",
       summary: "Delete each analysed run after taking out its steps' exchanges, keeping its findings, exchanges, readings and goal findings; a dry run unless apply",
       positionals: [],
-      flags: [{ name: "before", kind: "string", description: "Only runs started before this day, YYYY-MM-DD" }, { name: "apply", kind: "boolean", description: "Delete them (without it, it only lists what would go)" }],
+      flags: [{ name: "before", kind: "string", format: "date", description: "Only runs started before this day, YYYY-MM-DD" }, { name: "apply", kind: "boolean", description: "Delete them (without it, it only lists what would go)" }],
     },
     { words: ["space"], summary: "The size of the runs folder and the disk's free space", positionals: [], flags: [] },
   ],
@@ -45,9 +45,9 @@ export const runsCommand: Command = {
   args: "[list|exchanges|prune|space] [--before <day>] [--apply]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(RUNS_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log runs: ${parsed.error}\n${RUNS_USAGE}` };
+    if (!parsed.ok) return refuseInput("runs", parsed.error, RUNS_USAGE);
     const [sub = "list", ...rest] = parsed.positionals;
-    if (rest.length) return { code: 1, stderr: `log runs: unexpected argument "${rest[0]}"\n${RUNS_USAGE}` };
+    if (rest.length) return { code: 1, error: "inputInvalid", stderr: `log runs: unexpected argument "${rest[0]}"\n${RUNS_USAGE}` };
     const before = parsed.flags["before"];
     if (before !== undefined && (typeof before !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(before))) return { code: 1, stderr: `log runs: --before takes a day, YYYY-MM-DD\n${RUNS_USAGE}` };
     if (sub === "space") {

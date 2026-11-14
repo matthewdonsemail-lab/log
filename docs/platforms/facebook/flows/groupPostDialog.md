@@ -2,7 +2,7 @@
 
 On a group's Discussion feed, open a post in its dialog with Leave a comment (the comment box takes focus, nothing is typed) and close it
 
-Built by `log flow fromInspect` from the recording `~/.logCli/runs/inspect/20261020T153648_<userId:1>/sequences/groupPostDialog` (account groupPostDialog). Run it on any account with `log flow run groupPostDialog --account <a> --live`, or over MCP as the tool `flowGroupPostDialog` (rule 31).
+Built by `log flow fromInspect` from the recording `~/.logCli/runs/inspect/20261020T153648_<userId:1>/sequences/groupPostDialog` (account groupPostDialog). Run it on any account with `log flow run groupPostDialog --account <a> --live`, or over MCP as the tool `facebookFlowGroupPostDialog` (rule 31).
 
 ## Params
 

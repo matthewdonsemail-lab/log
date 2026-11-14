@@ -5,6 +5,10 @@ READ_TOOLS = frozenset({
     "discordSessionCheck",
     "linkedinSessionCheck",
     "redditSessionCheck",
+    "instagramSessionCheck",
+    "slackSessionCheck",
+    "sessionsCheck",
+    "sessionsSignIn",
     "twitterDms",
     "twitterFollowers",
     "discordChats",
@@ -57,6 +61,7 @@ CONSOLE_TOOLS = {
     "credentialsRead": "providerAdmin",
     "credentialsSave": "providerAdmin",
     "accountSignIn": "browserAdmin",
+    "signInLinkOpen": "browserAdmin",
 }
 
 

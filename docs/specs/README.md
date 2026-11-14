@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 44 domains, 507 requirements. Each one's anchors are proved against its code by the syntax tree on every commit, push and pull request (`bun run check:specs`). SubQ reads a requirement against its code only when asked (`bun run check:specs --subq`, rule 170). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 49 domains, 557 requirements. Each one's anchors are proved against its code by the syntax tree on every commit, push and pull request (`bun run check:specs`). SubQ reads a requirement against its code only when asked (`bun run check:specs --subq`, rule 170). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -24,6 +24,14 @@ Every log command has one shape: a command that acts on one platform starts with
 - **REQ-COMMAND-12** The docs check refuses anything out of date
 - **REQ-COMMAND-13** Every diagram parses as Mermaid
 - **REQ-COMMAND-14** A command summary doesn't name one browser
+- **REQ-COMMAND-15** A flag says its kind, range and shape
+- **REQ-COMMAND-16** The CLI parses once into typed values
+- **REQ-COMMAND-17** The tool schema says what run enforces
+- **REQ-COMMAND-18** approvedBy is required on a live tool whose command needs it
+- **REQ-COMMAND-19** Every form tool is driven through its command's own run
+- **REQ-COMMAND-20** The reference lists typed flags from the input forms
+- **REQ-COMMAND-21** Every tool has named inputs
+- **REQ-COMMAND-22** Every console operation has a command twin
 
 ## [MCP server](./mcpServer.md)
 
@@ -45,11 +53,70 @@ The log MCP server is how every agent works with log-cli: it carries matt's rule
 - **REQ-MCP-14** They are said at session start and whenever they change
 - **REQ-MCP-18** Any command is found and run with logSearch, logGet and logCall
 - **REQ-MCP-21** Every platform's tools carry the platform's name, and renamed tools still answer for one release
-- **REQ-MCP-17** One warm context layer routes matt's prompts and puts the play back after compaction
-- **REQ-MCP-16** The prompt is matched to a play, and every play is a skill
-- **REQ-MCP-15** The loaded use case is the session's play, and sends need one
+- **REQ-MCP-17** One warm context layer routes the owner's prompts and puts the play back after compaction
+- **REQ-MCP-16** One router for the ask path and the prompt hook, and every play is a skill
+- **REQ-MCP-15** The loaded use case is the caller's play, kept under a handle, and a send needs a play that names it
 - **REQ-MCP-19** browserView shows an account's live browser where the person is, and only their own gated input reaches it
 - **REQ-MCP-20** report draws a report from log's block catalog in every host, inline where the host can and as markdown where it can't
+- **REQ-MCP-22** Guides are scoped by capability and platform, fit every host, and say "the owner"
+- **REQ-MCP-23** Every result carries its code, platform and capability
+- **REQ-MCP-24** Both servers serve revision 2026-07-28 statelessly beside the older revisions
+
+## [The platform-neutral scorecard](./agnosticScorecard.md)
+
+`bun run check:agnostic` measures, from the code alone, how far log is from one platform-neutral capability set ([platformNeutralSurfaces.md](../proposals/platformNeutralSurfaces.md)), and fails a commit that makes any number worse than the committed baseline. Each slice of that plan lowers its numbers and lowers the baseline in the same change. Nothing is read from the network or from this machine's state: only the commands, the tool definitions, the committed flows, use cases, guides, skills, AGENTS.md and the source files.
+
+- **REQ-AGNOSTIC-01** Every number is computed from the code
+- **REQ-AGNOSTIC-02** A number worse than its baseline fails, and says which
+- **REQ-AGNOSTIC-03** The baseline only moves down without an explicit flag
+- **REQ-AGNOSTIC-04** It runs on every commit and in CI
+- **REQ-AGNOSTIC-05** The measuring functions are tested over fixtures
+
+## [Capabilities](./capabilities.md)
+
+A capability is one thing log does on any platform, with one name and one input shape: `chatsList` lists an account's chats, `messagesRead` reads one chat, `messagesWatch` listens to an account's messages for a set time. The platform is an input, taken from the account when it isn't given, never a default. Each platform's own command stays the implementation. The design is [capabilitySchema.md](../proposals/capabilitySchema.md), slice 7 of [platformNeutralSurfaces.md](../proposals/platformNeutralSurfaces.md).
+
+- **REQ-CAP-01** One capability table, bound to the commands that exist
+- **REQ-CAP-02** The platform comes from the account
+- **REQ-CAP-03** Canonical inputs become that platform's flags, or a refusal that contacts nothing
+- **REQ-CAP-04** Each noun is one shared command, and its tools are generated like any other
+
+## [Platform actions](./platformActions.md)
+
+An acting command (a send, a reaction, a voice note) runs through one shared machine with the same stages on every platform. Platforms supply what each stage does; the states, and what an outcome means, are the same everywhere. Slice 8 of [platformNeutralSurfaces.md](../proposals/platformNeutralSurfaces.md). Rule 6.
+
+- **REQ-ACTION-01** One machine: gating, acting, confirming, then done, refused or uncertain
+- **REQ-ACTION-02** The platform's answer decides, and a throw is never read as success
+- **REQ-ACTION-03** Which commands run through it
+
+## [Sessions: check and sign-in](./sessions.md)
+
+Whether an account is signed in, and signing it back in, is one capability with one state, one gate and one machine on every surface: the CLI (`log sessions check`, `log sessions signIn`), the MCP tools (`sessionsCheck`, `sessionsSignIn`), the console's Connections page and the hosted relay. Slices 3 and 4 of [platformNeutralSurfaces.md](../proposals/platformNeutralSurfaces.md). Rules 6, 25 and 94.
+
+- **REQ-SESSIONS-01** One check state for every surface
+- **REQ-SESSIONS-02** One gate decides which accounts may be checked
+- **REQ-SESSIONS-03** The check machine owns "checking", and a crash leaves no stuck row
+- **REQ-SESSIONS-04** One sign-in machine
+- **REQ-SESSIONS-05** Routes per platform, from one table
+- **REQ-SESSIONS-06** A signed-out browser never overwrites a session
+- **REQ-SESSIONS-07** Every surface calls the same machine
+- **REQ-SESSIONS-08** A login page off facebook.com is the owner's
+- **REQ-SESSIONS-09** A missing account is a structured `accountNotConfigured`
+- **REQ-SESSIONS-10** What the owner sees is decided from what the host declares
+- **REQ-SESSIONS-11** Page states are classified per platform
+- **REQ-SESSIONS-12** The live view's polling writes no hosted journal row
+
+## [Account watchers](./watchers.md)
+
+Each signed-in account on a platform with a push channel has one watcher: one process that owns the account's socket, writes what it hears to log.db and relays it to every subscriber (rule 105). Its lifecycle is one XState machine with the same states on every platform; each platform supplies only how it connects and how its events read. Any harness starts the watchers through one command, and reads what they heard through one reader. Slice 10 of [platformNeutralSurfaces.md](../proposals/platformNeutralSurfaces.md). Rules 6, 105 and 123.
+
+- **REQ-WATCH-01** One machine per account watcher
+- **REQ-WATCH-02** How a watch ended decides its end state
+- **REQ-WATCH-03** The watch commands run through it
+- **REQ-WATCH-04** The state is kept in log.db and reconciled
+- **REQ-WATCH-05** One start, called by every harness
+- **REQ-WATCH-06** log watchers status, start and stop
+- **REQ-WATCH-07** One reader for what was heard
 
 ## [Agent hooks](./agentHooks.md)
 
@@ -78,6 +145,11 @@ The agent hooks put log-cli's state in front of the agent (Claude Code or Codex)
 - **REQ-HOOKS-21** Claude Code's hooks reach log through the warm service, and only the refusals start a process
 - **REQ-HOOKS-22** The hook service moves itself onto new code
 - **REQ-HOOKS-23** Only the platform's refusal stops a catch-up
+- **REQ-HOOKS-24** One harness table, one hook file per hook host
+- **REQ-HOOKS-25** Each adapter answers in its harness's shape, cut to its limit
+- **REQ-HOOKS-26** The prompt hook names the play when the service is down
+- **REQ-HOOKS-27** The check runs every hook on scratch state, starting nothing
+- **REQ-HOOKS-28** Setup installs the hooks for each harness it finds
 
 ## [Inspect rule one](./inspectRuleOne.md)
 
@@ -149,7 +221,7 @@ A procedure recorded with `log inspect` becomes the whole pipeline, not a one-of
 
 ## [Runs and rea](./runsAndRea.md)
 
-Every browser action records a raw HAR of everything it did, and rea reads it. What each platform's client does is written up as one doc per request, by platform and then domain, built from the runs by `log facebook capture --docs` with rea reading each request's code. A run is deleted once it is analysed, and what it taught is kept. Rules 22, 27, 48, 66 and 85, with rule 73 (a step's exchanges are kept past the prune).
+Every browser action records a raw HAR of everything it did, and rea reads it. What each platform's client does is written up as one doc per request, by platform and then domain, built from the runs by `log capture docs` (shared: it reads every platform's runs) with rea reading each request's code. A run is deleted once it is analysed, and what it taught is kept. Rules 22, 27, 48, 66 and 85, with rule 73 (a step's exchanges are kept past the prune).
 
 - **REQ-RUNS-01** Every browser context records a raw HAR
 - **REQ-RUNS-02** A browser without a capture folder is refused
@@ -165,6 +237,7 @@ Every browser action records a raw HAR of everything it did, and rea reads it. W
 - **REQ-RUNS-12** Every step's exchanges are taken out before a run goes
 - **REQ-RUNS-13** What a run taught is kept
 - **REQ-RUNS-14** The storage hook warns before the disk fills
+- **REQ-RUNS-15** A request doc names its own platform and machines
 
 ## [Browser gate](./browserGate.md)
 
@@ -520,12 +593,13 @@ The knowledge base holds everything an agent should look up before it guesses: A
 
 ## [Local accounts](./localAccounts.md)
 
-Accounts can live in a local file instead of Twenty, on every platform, so log can run everything locally. `log localAccount pull|add|list` (MCP `localAccount`) fills and reads the file, and `LOG_ACCOUNTS=local` leaves Twenty out of accounts entirely. Listings, groups and conversations stay in Twenty. Rule 97, which narrows rule 13 for accounts only.
+Accounts can live in a local file instead of Twenty, on every platform, so log can run everything locally. `log localAccount pull|add|list|login` (MCP `localAccountPull`, `localAccountAdd`, `localAccountList`; `login` is terminal-only) fills and reads the file, and `LOG_ACCOUNTS=local` leaves Twenty out of accounts entirely. Listings, groups and conversations stay in Twenty. Rule 97, which narrows rule 13 for accounts only.
 
 - **REQ-LOCAL-01** Accounts live in one local file
 - **REQ-LOCAL-02** Pull copies every Twenty account in, keeping its Twenty id
 - **REQ-LOCAL-03** Add makes an account Twenty never had
 - **REQ-LOCAL-04** List shows the local accounts
+- **REQ-LOCAL-10** Login saves an account's email and password from masked prompts
 - **REQ-LOCAL-05** A local row wins over Twenty's of the same name
 - **REQ-LOCAL-06** LOG_ACCOUNTS=local leaves Twenty out of accounts
 - **REQ-LOCAL-07** A session a run saves goes back to the file
@@ -722,6 +796,7 @@ How log keeps what it reads and does: one SQLite database, `~/.logCli/log.db`, w
 - **REQ-STORAGE-05** Nothing a replay needs is cut or looked up again
 - **REQ-STORAGE-06** The typed tables can be rebuilt and verified from the events
 - **REQ-STORAGE-07** People and accounts have stable ids, and names live in one place
+- **REQ-STORAGE-18** Profile fields the engines already return are kept once, per person, and rebuilt from events
 - **REQ-STORAGE-08** A replaced owner's writes are refused by the database, not by its own good behaviour
 - **REQ-STORAGE-09** A gap is never closed over a newer drop
 - **REQ-STORAGE-10** Each part of a send is fenced by its claim

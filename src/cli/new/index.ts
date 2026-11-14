@@ -1,7 +1,7 @@
 import { spawnSync } from "node:child_process";
 import { join } from "node:path";
 import { applyPlan, planNewPlatform } from "../../scaffold/platform/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";
+import { JSON_FLAG, listOf, parseArgs, parserSpecOf, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
 
 const REPO = join(import.meta.dir, "..", "..", "..");
@@ -23,9 +23,9 @@ export const NEW_INPUT: CommandInput = {
         { name: "label", kind: "string", description: "How it is shown (default: the name capitalised)" },
         { name: "twentyPlatform", kind: "string", description: "Its socialAccounts.platform value in Twenty (default: the name in capitals)" },
         { name: "library", kind: "string", description: "Its vendored client's folder, vendor/<folder>" },
-        { name: "sessionCookies", kind: "string", description: "The cookies a logged-in session must have, comma-separated" },
+        { name: "sessionCookies", kind: "list", description: "The cookies a logged-in session must have, comma-separated" },
         { name: "cookieDomain", kind: "string", description: "The domain its cookies are saved under (default: . and its first host)" },
-        { name: "hosts", kind: "string", description: "Its hosts, comma-separated (default <name>.com): log inspect may go to them" },
+        { name: "hosts", kind: "list", description: "Its hosts, comma-separated (default <name>.com): log inspect may go to them" },
         { name: "home", kind: "string", description: "The page its browser opens on (default https://www.<first host>/)" },
         { name: "noProxy", kind: "boolean", description: "Its accounts open with no proxy, like X (default: a proxy in the home country is required)" },
         { name: "noBrowser", kind: "boolean", description: "It has no browser path, only the direct-API engine (default: the account's AdsPower browser)" },
@@ -46,13 +46,13 @@ export const newCommand: Command = {
   args: "platform <name> [--library <vendor/folder>] [--apply]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(NEW_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log new: ${parsed.error}\n${NEW_USAGE}` };
+    if (!parsed.ok) return refuseInput("new", parsed.error, NEW_USAGE);
     const [what, name, ...rest] = parsed.positionals;
     if (what !== "platform" || !name || rest.length) return { code: 1, stderr: `log new: give platform <name>\n${NEW_USAGE}` };
     const str = (flag: string) => (typeof parsed.flags[flag] === "string" ? (parsed.flags[flag] as string) : undefined);
     let plan;
     try {
-      plan = planNewPlatform(REPO, { name, label: str("label"), twentyPlatform: str("twentyPlatform"), library: str("library"), cookieDomain: str("cookieDomain"), hosts: str("hosts")?.split(",").map((h) => h.trim()).filter(Boolean), home: str("home"), noProxy: parsed.flags["noProxy"] === true, noBrowser: parsed.flags["noBrowser"] === true, sessionCookies: str("sessionCookies")?.split(",").map((c) => c.trim()).filter(Boolean) });
+      plan = planNewPlatform(REPO, { name, label: str("label"), twentyPlatform: str("twentyPlatform"), library: str("library"), cookieDomain: str("cookieDomain"), hosts: listOf(parsed, "hosts"), home: str("home"), noProxy: parsed.flags["noProxy"] === true, noBrowser: parsed.flags["noBrowser"] === true, sessionCookies: listOf(parsed, "sessionCookies") });
     } catch (error) {
       return { code: 1, stderr: `log new platform: ${error instanceof Error ? error.message : String(error)}` };
     }
