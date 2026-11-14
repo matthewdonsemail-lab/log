@@ -69,7 +69,7 @@ flowchart LR
   anyB --> b_linkedin
   anyB --> b_slack
   anyB --> b_instagram
-  anyN["Any platform, no browser: launch, console, credentials, adsPower, localAccount, accounts, proxy, errors, graph, capture, runs, storage, timing, inbox, media, browsers, browser, report, job, mcp, login, logout, whoami, voice, search, kb, runtime, memelord, treg, balance, governor, sessions, chats, messages, watchers, voiceNotes, clone, transcribe, new"]
+  anyN["Any platform, no browser: launch, console, credentials, adsPower, localAccount, accounts, proxy, errors, graph, capture, runs, storage, timing, inbox, media, browsers, browser, report, job, mcp, login, logout, whoami, voice, search, kb, runtime, memelord, treg, balance, governor, sessions, chats, messages, watchers, voiceNotes, clone, transcribe, new, mobile"]
   anyN -.-> twenty
   newP["log new platform name: one more platform, wired whole (rule 83)"] -.-> twenty
   drivers --> api
@@ -105,7 +105,7 @@ Source: [`docs/diagrams/browsers.mmd`](diagrams/browsers.mmd).
 
 - **The account's browser, through the driver:** `facebook host`, `inspect`, `flow`, `<platform> warmup`, `facebook join`, `facebook read`, `facebook poll`, `facebook check`, `reddit read`, `discord read`, `slack read`. They run on whichever browser the account uses: AdsPower when it has a linked profile (`socialAccounts.adsPowerProfileId`), Camoufox otherwise, or what `socialAccounts.browserDriver` says.
 - **Camoufox only, not on the driver yet:** `facebook doctor`, `facebook connect`, `facebook profile`, `facebook scan`, `facebook status`, `facebook watch`, `facebook publish`, `facebook campaign`, `discord watch`, `slack watch`, `instagram watch`. They launch Camoufox themselves (facebook-camofox-client's worker, or the publish, connect and profile sessions), so on an AdsPower account they don't open its AdsPower profile. Moving one onto the driver is moving it into `OPENER_ACTIONS` (`src/browser/run`).
-- **No browser:** `launch`, `console`, `credentials`, `facebook listings`, `facebook listing`, `facebook accounts`, `facebook account`, `adsPower`, `localAccount`, `accounts`, `facebook lifecycle`, `facebook preflight`, `proxy`, `facebook conversations`, `facebook conversation`, `facebook messenger`, `errors`, `graph`, `capture`, `runs`, `storage`, `timing`, `inbox`, `media`, `browsers`, `browser`, `report`, `job`, `mcp`, `login`, `logout`, `whoami`, `twitter session`, `twitter follows`, `twitter dms`, `twitter chat`, `twitter cookies`, `voice`, `search`, `kb`, `runtime`, `memelord`, `treg`, `balance`, `governor`, `sessions`, `chats`, `messages`, `watchers`, `voiceNotes`, `clone`, `transcribe`, `twitter followers`, `twitter notifications`, `twitter reply`, `twitter quote`, `twitter post`, `twitter like`, `twitter list`, `twitter repost`, `twitter follow`, `twitter dm`, `twitter react`, `twitter queue`, `new`, `reddit session`, `reddit post`, `reddit reply`, `reddit vote`, `discord session`, `discord chats`, `discord servers`, `discord channels`, `discord posts`, `discord search`, `discord send`, `discord delete`, `discord react`, `discord voice`, `linkedin session`, `linkedin cookies`, `slack session`, `slack workspaces`, `slack chats`, `slack send`, `slack cookies`, `slack react`, `slack voice`, `instagram session`, `instagram dms`, `instagram send`, `instagram react`, `instagram voice`, `twitter voice`.
+- **No browser:** `launch`, `console`, `credentials`, `facebook listings`, `facebook listing`, `facebook accounts`, `facebook account`, `adsPower`, `localAccount`, `accounts`, `facebook lifecycle`, `facebook preflight`, `proxy`, `facebook conversations`, `facebook conversation`, `facebook messenger`, `errors`, `graph`, `capture`, `runs`, `storage`, `timing`, `inbox`, `media`, `browsers`, `browser`, `report`, `job`, `mcp`, `login`, `logout`, `whoami`, `twitter session`, `twitter follows`, `twitter dms`, `twitter chat`, `twitter cookies`, `voice`, `search`, `kb`, `runtime`, `memelord`, `treg`, `balance`, `governor`, `sessions`, `chats`, `messages`, `watchers`, `voiceNotes`, `clone`, `transcribe`, `twitter followers`, `twitter notifications`, `twitter reply`, `twitter quote`, `twitter post`, `twitter like`, `twitter list`, `twitter repost`, `twitter follow`, `twitter dm`, `twitter react`, `twitter queue`, `new`, `reddit session`, `reddit post`, `reddit reply`, `reddit vote`, `discord session`, `discord chats`, `discord servers`, `discord channels`, `discord posts`, `discord search`, `discord send`, `discord delete`, `discord react`, `discord voice`, `linkedin session`, `linkedin cookies`, `slack session`, `slack workspaces`, `slack chats`, `slack send`, `slack cookies`, `slack react`, `slack voice`, `instagram session`, `instagram dms`, `instagram send`, `instagram react`, `instagram voice`, `twitter voice`, `mobile`.
 - **No browser path at all:** X. Its accounts run on the direct API only (rule 80).
 
 Each browser's capabilities, built or not: [`docs/browsers.md`](browsers.md) (generated, `bun run check:browsers`). AdsPower's setup: [`docs/adsPower.md`](adsPower.md).
@@ -197,9 +197,9 @@ flowchart LR
   agent["Agent (Claude Code, Codex)"]
   matt["matt, in a terminal"]
   shell["Bash / PowerShell / Monitor"]
-  mcp["MCP server log: 248 command tools + saved flows"]
+  mcp["MCP server log: 258 command tools + saved flows"]
   bin["bin/log.ts"]
-  runCli["runCli: 116 commands (COMMANDS)"]
+  runCli["runCli: 117 commands (COMMANDS)"]
   live[("~/.logCli/mcp/day.log: the live log")]
   engine{"commandEngine: DIRECT_ROUTES"}
   direct["Direct-API engine: fbk, twikit, reverseChud, endcord, openLinkedinApi, gabrielSlack, instagrapi (vendor/), the account's saved session, a governor per account"]
@@ -286,7 +286,7 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | [`log facebook conversations`](#log-facebook-conversations) | List buyers' Marketplace conversations in Twenty, newest first, by account or listing | `facebook` first | `[--account <name>]` `[--listing <agencyListingId>]` `[--json]` | none | none | `facebookConversations` | PreToolUse, PostToolUse · PostToolUse | no | 30, 38, 39, 40, 41 |
 | [`log facebook conversation`](#log-facebook-conversation) | One conversation: show its messages, mark read, set its lead status, link its listing, or store a scanned thread | `facebook` first | `[--json]` `--listing <agencyListingId>` `--account <name>` `--file <threads.json>` | none | none | `facebookConversationShow`, `facebookConversationRead`, `facebookConversationLead`, `facebookConversationLink`, `facebookConversationRecord` | PreToolUse, PostToolUse · PostToolUse | no | 30, 38, 39, 40, 41 |
 | [`log facebook messenger`](#log-facebook-messenger) | Messenger's PIN for the account's encrypted chats: asked in a Clack prompt, kept in Twenty, never printed | `facebook` first | `--account <accountName>` `--show` | none | none | terminal only: asks the owner for the Messenger PIN in a Clack prompt (masked). The owner runs `log facebook messenger pin --account <a>` in a terminal. | PreToolUse, PostToolUse · n/a | no | 8, 35, 29, 30, 38, 39, 40, 41 |
-| [`log errors`](#log-errors) | List every error code: meaning, retryable, where each machine ends up | any (none) | `[--layer <account|listing|photo|form|captcha|runtime|twenty|proxyVendor|auth|profile|tool>]` `[--code <code>]` `[--json]` `[--markdown]` | none | none | `errors` | PreToolUse, PostToolUse · PostToolUse | no | 25, 30, 38, 39, 40, 41 |
+| [`log errors`](#log-errors) | List every error code: meaning, retryable, where each machine ends up | any (none) | `[--layer <account|listing|photo|form|captcha|runtime|twenty|proxyVendor|auth|profile|tool|mobile>]` `[--code <code>]` `[--json]` `[--markdown]` | none | none | `errors` | PreToolUse, PostToolUse · PostToolUse | no | 25, 30, 38, 39, 40, 41 |
 | [`log graph`](#log-graph) | Print a machine's states and transitions as a Mermaid diagram | any (none) | none | none | none | `graph` | PreToolUse, PostToolUse · PostToolUse | no | 25, 30, 38, 39, 40, 41 |
 | [`log capture`](#log-capture) | Read a run's raw HAR and scripts with offline rea (any platform or browser driver), settle a run's capture, or build every platform's client docs. No browser. | any (none) | `[--out <dir>]` `[--noRea]` `[--json]` | none | none | `captureHar`, `captureSettle`, `captureDocs` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 19, 26, 73, 30, 38, 39, 40, 41 |
 | [`log runs`](#log-runs) | The recorded runs on this machine, and pruning the ones rea settled and the request docs hold, keeping each one's findings and domains | any (none) | `[--json]` `[--before <date>]` `[--apply]` | none | none | `runsList`, `runsExchanges`, `runsPrune`, `runsPruneLive`, `runsSpace` | PreToolUse, PostToolUse · PostToolUse | no | 19, 25, 66, 73, 30, 38, 39, 40, 41 |
@@ -370,6 +370,7 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | [`log instagram react`](#log-instagram-react) | React to a Instagram message with an emoji, on the direct-API engine; a dry run unless --live | `instagram` first | `--account <accountName>` `--thread <thread>` `--message <id>` `--emoji <emoji>` `[--remove]` `[--approvedBy <who>]` `[--live]` `[--json]` | direct API only | none | `instagramReact`, `instagramReactLive` | PreToolUse, PostToolUse · PreToolUse, PostToolUse | no | 8, 73, 94, 105, 133, 30, 38, 39, 40, 41 |
 | [`log instagram voice`](#log-instagram-voice) | Send a voice note in the owner's cloned voice as Instagram's own voice note, from text; a dry run unless --live | `instagram` first | `--account <accountName>` `--with <with>` `--text <text>` `[--provider <inworld|fishAudio>]` `[--mattsWords]` `[--translationOf <text>]` `[--language <code>]` `[--approvedBy <who>]` `[--live]` `[--json]` | direct API only | none | `instagramVoice`, `instagramVoiceLive` | PreToolUse, PostToolUse · PreToolUse, PostToolUse | no | 8, 73, 94, 105, 133, 109, 137, 142, 30, 38, 39, 40, 41 |
 | [`log twitter voice`](#log-twitter-voice) | Send a voice note in the owner's cloned voice as Twitter's own voice note, from text; a dry run unless --live | `twitter` first | `--account <accountName>` `--with <with>` `--text <text>` `[--provider <inworld|fishAudio>]` `[--mattsWords]` `[--translationOf <text>]` `[--language <code>]` `[--approvedBy <who>]` `[--live]` `[--json]` | direct API only | none | `twitterVoice`, `twitterVoiceLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 73, 89, 94, 105, 133, 109, 137, 142, 30, 38, 39, 40, 41 |
+| [`log mobile`](#log-mobile) | One phone per account: list the phones, attach one to an account, and read or drive the account's own phone | any (none) | `[--json]` `--account <accountName>` `--serial <serial>` `[--network <label>]` `[--tap <x,y>]` | none | none | `mobileAndroidSnapchatDevices`, `mobileAndroidSnapchatAttach`, `mobileAndroidSnapchatState`, `mobileAndroidSnapchatOpen`, `mobileAndroidSnapchatInspect`, `mobileAppleSnapchatDevices`, `mobileAppleSnapchatAttach`, `mobileAppleSnapchatState`, `mobileAppleSnapchatOpen`, `mobileAppleSnapchatInspect` | PreToolUse, PostToolUse · PostToolUse | no | 25, 26, 29, 94, 30, 38, 39, 40, 41 |
 
 ### Saved flows: MCP tools of their own (rule 31)
 
@@ -447,6 +448,7 @@ flowchart TB
     c_clone["clone"]
     c_transcribe["transcribe"]
     c_new["new"]
+    c_mobile["mobile"]
   end
   subgraph g_byArgument["Platform named first"]
     c_warmup["#lt;platform#gt; warmup"]
@@ -797,6 +799,8 @@ flowchart TB
   mcp --> c_instagramVoice
   cli --> c_twitterVoice
   mcp --> c_twitterVoice
+  cli --> c_mobile
+  mcp --> c_mobile
   f_deletePost["facebookFlowDeletePost: flow run deletePost"]
   mcp --> f_deletePost
   f_deletePost --> c_flow
@@ -1371,7 +1375,7 @@ log facebook messenger pin --account <accountName> [--show]   (a Clack prompt as
 List every error code: meaning, retryable, where each machine ends up MCP tools: `errors`, one per form, with named fields.
 
 ```text
-log errors [--layer <account|listing|photo|form|captcha|runtime|twenty|proxyVendor|auth|profile|tool>] [--code <code>] [--json] [--markdown]
+log errors [--layer <account|listing|photo|form|captcha|runtime|twenty|proxyVendor|auth|profile|tool|mobile>] [--code <code>] [--json] [--markdown]
 ```
 
 #### log graph
@@ -2253,6 +2257,27 @@ Sends a voice note in the owner's cloned voice (the voice provider, log clone vo
 A voice note goes out only when matt asks for one (rule 142). The provider is --provider, else LOG_VOICE_PROVIDER, else inworld; the command only ever calls the shared voice layer (rule 143). Without --live it is a dry run: nothing is generated and nothing is contacted. --live needs --approvedBy (rule 8). It says and converts the note while the account catches up (rule 135) and the text goes through the voice gate every send runs (rule 137), so a note that passes goes out without waiting for it to be made; one the gate refuses is never sent. It then claims the chat (rule 133) and releases it after. The governor counts it as a write, the platform's answer decides (rule 73), and a refusal stops with nothing retried (rule 94).
 --mattsWords says the text is matt's own words, dictated by him for this voice note: the voice gate's read is skipped, since it grades speech as typed text and as a reply, while the AI artifact check still runs and refuses aiArtifacts (rule 144).
 --translationOf "<what it translates>" says the text is a translation, only when matt asked for one: the voice gate grades those original words (his own language, which the gate reads) instead of the translation, which it can't match to his writing; both are read for AI artifacts. --language <code> (zh-CN, es-ES ...) is the language the clone speaks it in, instead of the clone's own, and it is needed with --translationOf (rule 148).
+```
+
+#### log mobile
+
+One phone per account: list the phones, attach one to an account, and read or drive the account's own phone MCP tools: `mobileAndroidSnapchatDevices`, `mobileAndroidSnapchatAttach`, `mobileAndroidSnapchatState`, `mobileAndroidSnapchatOpen`, `mobileAndroidSnapchatInspect`, `mobileAppleSnapchatDevices`, `mobileAppleSnapchatAttach`, `mobileAppleSnapchatState`, `mobileAppleSnapchatOpen`, `mobileAppleSnapchatInspect`, one per form, with named fields.
+
+```text
+log mobile android snapchat devices [--json]
+log mobile android snapchat attach --account <accountName> --serial <serial> [--network <label>] [--json]
+log mobile android snapchat state --account <accountName> [--json]
+log mobile android snapchat open --account <accountName> [--json]
+log mobile android snapchat inspect --account <accountName> [--tap <x,y>] [--json]
+log mobile apple snapchat devices [--json]
+log mobile apple snapchat attach --account <accountName> --serial <serial> [--network <label>] [--json]
+log mobile apple snapchat state --account <accountName> [--json]
+log mobile apple snapchat open --account <accountName> [--json]
+log mobile apple snapchat inspect --account <accountName> [--tap <x,y>] [--json]
+One phone per account. Each account has a phone of its own, with its own app and its own network route, and its serial is kept on the account, the way each account has one browser profile.
+Android is reached over adb, iPhone over Apple's own device tooling, and every call names the phone's own serial, so nothing can land on the wrong phone. The phone is the truth about what the app did: the screen, the UI tree and the app's own network calls are recorded, the way a browser step is.
+Nothing is signed in for you: log in on the phone by hand. No credentials are asked for and none are kept.
+A phone of its own is not a clean slate. It does not clear an account's reputation, it does not stop a platform from restricting the account, and it does not stand in for the platform's rules or for the filters a community puts on a low standing account.
 ```
 
 <!-- surface:end -->

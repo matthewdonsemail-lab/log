@@ -47,6 +47,7 @@ flowchart TB
     c_clone["clone"]
     c_transcribe["transcribe"]
     c_new["new"]
+    c_mobile["mobile"]
   end
   subgraph g_byArgument["Platform named first"]
     c_warmup["#lt;platform#gt; warmup"]
@@ -397,6 +398,8 @@ flowchart TB
   mcp --> c_instagramVoice
   cli --> c_twitterVoice
   mcp --> c_twitterVoice
+  cli --> c_mobile
+  mcp --> c_mobile
   f_deletePost["facebookFlowDeletePost: flow run deletePost"]
   mcp --> f_deletePost
   f_deletePost --> c_flow
