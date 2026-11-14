@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 48 domains, 537 requirements. Each one's anchors are proved against its code by the syntax tree on every commit, push and pull request (`bun run check:specs`). SubQ reads a requirement against its code only when asked (`bun run check:specs --subq`, rule 170). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 49 domains, 544 requirements. Each one's anchors are proved against its code by the syntax tree on every commit, push and pull request (`bun run check:specs`). SubQ reads a requirement against its code only when asked (`bun run check:specs --subq`, rule 170). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -72,7 +72,7 @@ The log MCP server is how every agent works with log-cli: it carries matt's rule
 
 ## [Capabilities](./capabilities.md)
 
-A capability is one thing log does on any platform, with one name and one input shape: `chatsList` lists an account's chats, `messagesRead` reads one chat. The platform is an input, taken from the account when it isn't given, never a default. Each platform's own command stays the implementation. The design is [capabilitySchema.md](../proposals/capabilitySchema.md), slice 7 of [platformNeutralSurfaces.md](../proposals/platformNeutralSurfaces.md).
+A capability is one thing log does on any platform, with one name and one input shape: `chatsList` lists an account's chats, `messagesRead` reads one chat, `messagesWatch` listens to an account's messages for a set time. The platform is an input, taken from the account when it isn't given, never a default. Each platform's own command stays the implementation. The design is [capabilitySchema.md](../proposals/capabilitySchema.md), slice 7 of [platformNeutralSurfaces.md](../proposals/platformNeutralSurfaces.md).
 
 - **REQ-CAP-01** One capability table, bound to the commands that exist
 - **REQ-CAP-02** The platform comes from the account
@@ -99,6 +99,18 @@ Whether an account is signed in, and signing it back in, is one capability with 
 - **REQ-SESSIONS-06** A signed-out browser never overwrites a session
 - **REQ-SESSIONS-07** Every surface calls the same machine
 - **REQ-SESSIONS-08** A login page off facebook.com is the owner's
+
+## [Account watchers](./watchers.md)
+
+Each signed-in account on a platform with a push channel has one watcher: one process that owns the account's socket, writes what it hears to log.db and relays it to every subscriber (rule 105). Its lifecycle is one XState machine with the same states on every platform; each platform supplies only how it connects and how its events read. Any harness starts the watchers through one command, and reads what they heard through one reader. Slice 10 of [platformNeutralSurfaces.md](../proposals/platformNeutralSurfaces.md). Rules 6, 105 and 123.
+
+- **REQ-WATCH-01** One machine per account watcher
+- **REQ-WATCH-02** How a watch ended decides its end state
+- **REQ-WATCH-03** The watch commands run through it
+- **REQ-WATCH-04** The state is kept in log.db and reconciled
+- **REQ-WATCH-05** One start, called by every harness
+- **REQ-WATCH-06** log watchers status, start and stop
+- **REQ-WATCH-07** One reader for what was heard
 
 ## [Agent hooks](./agentHooks.md)
 

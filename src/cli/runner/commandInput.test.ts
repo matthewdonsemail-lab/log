@@ -20,6 +20,7 @@ const SHAPED: Readonly<Record<string, string>> = {
   reels: "8-20",
   watch: "4-25",
   posts: "8-15",
+  reader: "fakeHarness",
 };
 
 function sample(spec: FlagSpec | PositionalSpec): unknown {

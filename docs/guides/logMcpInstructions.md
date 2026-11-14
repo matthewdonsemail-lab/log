@@ -84,7 +84,7 @@ Each tool's description names its guide. Load it with `getGuide({ topic })` befo
 | `accountBrowser` | An account's one browser on any platform: opening it through its gates, inspecting a page step by step, where every open browser is, the live view for signing in, AdsPower profiles and local accounts |
 | `sessions` | Whether each account's saved session still works, from the platform's own answer, with the next step to sign it back in; and log's own sign-in for a team (login, logout, whoami) |
 | `flows` | Recorded flows and the warm-up on any platform: a recording turned into steps that run in the account's open browser, each step checked against the call it must cause |
-| `inbox` | Every platform's chats as one inbox: listing and reading them, who waits on a reply, claiming a chat before acting in it, and every action's log |
+| `inbox` | Every platform's chats as one inbox: listing, reading and watching them, who waits on a reply, claiming a chat before acting in it, and every action's log |
 | `voiceGate` | The voice gate every send as the owner passes on every platform: a draft checked against the owner's own writing before it goes out, and the voice and AI-tells indexes behind it |
 | `facebookBrowser` | A Facebook account's browser for its day: preflight, opening and signing in, the host and its lifecycle, the profile and Messenger PIN, its accounts and the account checks |
 | `facebookFlows` | Facebook's recorded flows and its warm-up, each a facebookFlow tool run as steps in the account's open browser |

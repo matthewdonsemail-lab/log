@@ -26,7 +26,9 @@ export const RUNTIME_INPUT: CommandInput = {
 
 type ToolCaller = (name: string, input: Record<string, unknown>, scope?: PlayScope) => Promise<{ isError?: boolean; structuredContent?: unknown; content?: unknown }>;
 
-export const runtimeDeps: { callTool: () => Promise<ToolCaller>; connect: typeof keepConnected; dbPath: () => string } = {
+export const WATCHERS_EVERY_MS = 60_000;
+
+export const runtimeDeps: { callTool: () => Promise<ToolCaller>; connect: typeof keepConnected; dbPath: () => string; startWatchers: (callTool: ToolCaller) => Promise<unknown> } = {
   callTool: async () => {
     const { runToolCall } = await import("../../mcp/server/index.ts");
     const { settleLocation } = await import("../../mcp/apps/index.ts");
@@ -36,6 +38,7 @@ export const runtimeDeps: { callTool: () => Promise<ToolCaller>; connect: typeof
   },
   connect: keepConnected,
   dbPath: () => defaultDbPath(),
+  startWatchers: (callTool) => callTool("watchersStart", {}),
 };
 
 export function accountsList(args: Record<string, unknown>): ResultPayload {
@@ -173,8 +176,13 @@ export const runtimeCommand: Command = {
     const isolation = isolationRefusal(process.env);
     if (isolation) return { code: 1, stderr: `log runtime connect: ${isolation}` };
     const db = openDatabase(runtimeDeps.dbPath());
-    const runTool = toolRunner(await runtimeDeps.callTool());
+    const callTool = await runtimeDeps.callTool();
+    const runTool = toolRunner(callTool);
     const onLine = (line: string) => context.err?.(line);
+    const superviseWatchers = () => void runtimeDeps.startWatchers(callTool).catch((error: unknown) => onLine(`watchersStart: ${error instanceof Error ? error.message : String(error)}`));
+    superviseWatchers();
+    const watching = setInterval(superviseWatchers, WATCHERS_EVERY_MS);
+    watching.unref?.();
     const closed = await runtimeDeps.connect({
       binding,
       db,
@@ -184,7 +192,7 @@ export const runtimeCommand: Command = {
       redactResult: redactConsoleResult,
       hello: () => ({ runtimeVersion: "log", schemaVersion: SCHEMA_VERSION, capabilities: { persistentStorage: true, browserAvailable: Boolean(process.env.ADSPOWER_API_KEY || process.env.ADSPOWER_HOST), driver: process.env.ADSPOWER_API_KEY || process.env.ADSPOWER_HOST ? "adsPower" : "none", protocolVersion: 1, checkedAt: new Date().toISOString(), status: "passed" } }),
       onLine,
-    });
+    }).finally(() => clearInterval(watching));
     db.close();
     return closed.code === 1000 ? { code: 0, stdout: "log runtime connect: stopped" } : { code: 1, stderr: `log runtime connect: closed ${closed.code} ${closed.reason}` };
   },
