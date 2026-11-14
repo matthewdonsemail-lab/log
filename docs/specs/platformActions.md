@@ -26,6 +26,6 @@ The react factory (`reactCommandOf`, `src/cli/react/index.ts`: X, Discord, Slack
 - The X writes `twitter reply`, `quote`, `like`, `repost`, `follow` and `post` (`send.ts`) and `twitter list create` and `add` (`src/cli/twitter/helpers/list.ts`): nothing is claimed, so the gate passes and X's answer confirms.
 - `discord delete`: each id in turn, 4 s apart, confirmed when every one was deleted.
 
-Their dry runs never reach it, and every gate, governor use, output and exit code is as before. Reddit's post, reply and vote (`src/cli/reddit/index.ts`) and `facebook campaign` (`src/cli/campaign/`) don't yet; `check:agnostic` counts them as `liveCommandsWithoutMachine` (4). The X queue run (`src/twitter/queue/run/`) still walks `queueRunMachine` by sending it events from its loop rather than invoking its stages.
+Their dry runs never reach it, and every gate, governor use, output and exit code is as before. Reddit's post, reply and vote (`src/cli/reddit/index.ts`) and `facebook campaign` (`src/cli/campaign/`) don't yet; `check:agnostic` counts them as `liveCommandsWithoutMachine` (4). The X queue run (`src/twitter/queue/run/`) is its own machine, `queueRunMachine`, which drives the run: its waits, context reads and sends are invoked actors (see the running section of [xQueue.md](xQueue.md)); each send there is one engine call, as before, not a `runAction`.
 
 Checked by: code and SubQ

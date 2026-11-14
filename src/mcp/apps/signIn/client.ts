@@ -9,8 +9,8 @@ import type { AccountNotConfigured, SignInResult } from "../../../platformKit/si
 import { issueSignInLink, localConsoleOrigin, OWNER_REQUESTER } from "../../../platformKit/signInLink/index.ts";
 import type { SignInLink } from "../../../platformKit/signInLink/index.ts";
 import { uiCapable } from "../browserView/client.ts";
-import { SIGN_IN_TOOL } from "./types.ts";
-import type { SignInRung, SignInSurface } from "./types.ts";
+import { PENDING_ELICITATION_FIELD, SIGN_IN_TOOL } from "./types.ts";
+import type { DeferredElicitation, PendingElicitation, SignInRung, SignInSurface } from "./types.ts";
 
 type Answer = { ok?: unknown; signIn?: SignInResult; next?: unknown } & Partial<AccountNotConfigured>;
 
@@ -31,6 +31,28 @@ export function signInRungOf(capabilities: unknown): SignInRung {
 
 export function localSignInSurface(capabilities: unknown, send: (params: ElicitRequestURLParams) => Promise<{ action?: unknown }>, location: BrowserViewLocation = browserViewLocation()): SignInSurface {
   return { rung: signInRungOf(capabilities), location, requester: OWNER_REQUESTER, origin: localConsoleOrigin(), elicit: (url, message, elicitationId) => send({ mode: "url", url, message, elicitationId }) };
+}
+
+export function deferredElicitation(answer: string | null): DeferredElicitation {
+  let asked: PendingElicitation | null = null;
+  return {
+    elicit: async (url, message) => {
+      if (answer !== null) return { action: answer };
+      asked = { url, message };
+      return { action: "pending" };
+    },
+    asked: () => asked,
+  };
+}
+
+export function withPendingElicitation(result: CallToolResult, asked: PendingElicitation | null): CallToolResult {
+  if (!asked) return result;
+  return { ...result, structuredContent: { ...((result.structuredContent ?? {}) as Record<string, unknown>), [PENDING_ELICITATION_FIELD]: asked } };
+}
+
+export function pendingElicitationOf(result: unknown): PendingElicitation | null {
+  const pending = (result as Record<string, unknown> | null | undefined)?.[PENDING_ELICITATION_FIELD] as Partial<PendingElicitation> | undefined;
+  return pending && typeof pending.url === "string" && typeof pending.message === "string" ? { url: pending.url, message: pending.message } : null;
 }
 
 function answerOf(result: CallToolResult): Answer | null {
