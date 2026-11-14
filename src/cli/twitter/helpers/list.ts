@@ -1,6 +1,14 @@
 import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../../runner/helpers/index.ts";
 import type { Command, CommandInput, FlagSpec } from "../../runner/types.ts";
 import { governorLine, openTwitterAccount } from "./account.ts";
+import { confirmAnswer, passGate, rethrowFailure, runAction } from "../../../platformKit/action/index.ts";
+import type { TwitterEngineRun } from "../../../twitter/account/session/index.ts";
+
+async function actOnX(act: () => Promise<TwitterEngineRun>): Promise<TwitterEngineRun> {
+  const acted = await runAction<null, TwitterEngineRun>({ gate: passGate, act, confirm: (run) => confirmAnswer(run.answer) });
+  rethrowFailure(acted);
+  return acted.answer!;
+}
 
 const ACCOUNT: FlagSpec = { name: "account", kind: "string", required: true, description: "The TWITTER socialAccount's accountName (its handle) whose lists these are" };
 const APPROVED_BY: FlagSpec = { name: "approvedBy", kind: "string", approval: true, description: "Who approved it: needed with --live (rule 8)" };
@@ -78,7 +86,7 @@ export const listCommand: Command = {
         const name = str("name");
         const already = lists.find((l) => l.name.toLowerCase() === name.toLowerCase());
         if (!live) return { code: 0, stdout: already ? `log ${label}: dry run: @${account.accountName} already has the list "${already.name}" (${already.id}); nothing would be made.` : `log ${label}: dry run: @${account.accountName} would make the ${parsed.flags["private"] ? "private" : "public"} list "${name}". Nothing was contacted. --live --approvedBy <who> makes it (rule 8).` };
-        const run = await engine({ action: "listCreate", name, ...(str("description") ? { description: str("description") } : {}), private: parsed.flags["private"] === true, live: true, approvedBy });
+        const run = await actOnX(() => engine({ action: "listCreate", name, ...(str("description") ? { description: str("description") } : {}), private: parsed.flags["private"] === true, live: true, approvedBy }));
         const made = (run.answer as unknown as Record<string, unknown>).list as ListRow | undefined;
         const code = run.answer.ok ? 0 : 1;
         if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", library: "twikit", account: account.accountName, approvedBy, ...run.answer }, null, 2) };
@@ -90,7 +98,7 @@ export const listCommand: Command = {
       if (!target) return refuse(label, "listInvalid", `@${account.accountName} has no list "${said}": ${lists.map((l) => l.name).join(", ") || "none yet"}`);
       const who = str("handle") ? `@${str("handle").replace(/^@/, "")}` : str("userId");
       if (!live) return { code: 0, stdout: `log ${label}: dry run: @${account.accountName} would put ${who} on "${target.name}" (${target.id}). Nothing was contacted. --live --approvedBy <who> adds them (rule 8).` };
-      const run = await engine({ action: "listAdd", listId: target.id, ...(str("userId") ? { userId: str("userId") } : { screenName: str("handle").replace(/^@/, "") }), live: true, approvedBy });
+      const run = await actOnX(() => engine({ action: "listAdd", listId: target.id, ...(str("userId") ? { userId: str("userId") } : { screenName: str("handle").replace(/^@/, "") }), live: true, approvedBy }));
       const code = run.answer.ok ? 0 : 1;
       if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", library: "twikit", account: account.accountName, approvedBy, ...run.answer }, null, 2) };
       const governor = governorLine(run);

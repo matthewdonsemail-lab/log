@@ -9,6 +9,10 @@ export function refuse(name: string, code: ErrorCode, detail?: string): CommandR
   return { code: exit, error: code, stderr: `log ${name}: ${code}: ${entry.meaning}${detail ? ` (${detail})` : ""}\n${entry.action}` };
 }
 
+export function refuseGated(name: string, refusal: { code?: string; detail?: string }, fallback: ErrorCode): CommandResult {
+  return refuse(name, isErrorCode(refusal.code) ? refusal.code : fallback, refusal.detail);
+}
+
 export function codeOfText(text: string): ErrorCode {
   const head = /^([a-z][A-Za-z]+):/.exec(text.trim())?.[1];
   return head && isErrorCode(head) ? head : "inputInvalid";

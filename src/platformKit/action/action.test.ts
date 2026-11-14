@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { runAction } from "./index.ts";
+import { confirmParts, runAction } from "./index.ts";
 import type { ActionStage } from "./index.ts";
 
 interface FakeAnswer {
@@ -110,5 +110,16 @@ describe("the shared action machine", () => {
     expect(result.outcome).toBe("uncertain");
     expect(result.stage).toBe("confirming");
     expect(result.answer).toEqual({ ok: true });
+  });
+});
+
+describe("confirmParts: a multi-part send is confirmed only when every part went out", () => {
+  test("all parts sent is done; they wrote, a lost claim or a refused part is not", () => {
+    expect(confirmParts({ sent: 3, total: 3 })).toEqual({ ok: true });
+    expect(confirmParts({ sent: 1, total: 3, interrupted: true })).toMatchObject({ ok: false, code: "chatMovedOn" });
+    expect(confirmParts({ sent: 0, total: 3, movedOn: true })).toMatchObject({ ok: false, code: "chatMovedOn" });
+    expect(confirmParts({ sent: 1, total: 3, lost: true })).toMatchObject({ ok: false, code: "chatClaimLost" });
+    expect(confirmParts({ sent: 1, total: 3, last: { ok: false, code: "rateLimited", detail: "429" } })).toEqual({ ok: false, code: "rateLimited", detail: "429" });
+    expect(confirmParts({ sent: 1, total: 3 })).toMatchObject({ ok: false, code: "platformRefused" });
   });
 });
