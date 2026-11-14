@@ -350,28 +350,6 @@ Its steps load with getGuide({ useCase: "twitter/dmInbox" }).
 - **Gaps are caught up, never guessed.** When a connection drops, the watcher pulls what it missed through the account's own session, paced like a person. Until it has, a send that needs that context waits. If the platform refuses, the run stops and you're told.
 - **Two agents never answer the same chat.** An agent claims a chat before it drafts, and every claim, send and release is written down in `log.db`.
 
-### What happens when someone messages you
-
-```mermaid
-sequenceDiagram
-  participant F as Their app
-  participant W as Your account's watcher
-  participant DB as log.db
-  participant K as Hook
-  participant A as Your agent
-  participant H as Your account's session
-  F->>W: new message, pushed by the platform
-  W->>DB: append the event once, with its id
-  K->>DB: read what is new since this agent last looked
-  K-->>A: NEW MESSAGE, who said what
-  A->>DB: claim the chat, so no other agent answers it
-  A->>DB: read the conversation, about 1 ms
-  A->>H: send the reply through the one session
-  H-->>DB: the platform's answer, recorded with the reply
-```
-
-Two agents can work at the same time. Only the one that claims a chat can answer it, and every claim, send and release is written down in `log.db`.
-
 ### Pictures, voice notes and videos
 
 Every model can read text, even one that can't see images. So every piece of media is turned into text when it arrives and kept in `log.db` with one small preview picture. No media file stays on disk.
