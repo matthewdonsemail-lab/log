@@ -99,6 +99,7 @@ const SOURCE_COMMAND_RULES: Readonly<Record<string, number[]>> = {
   sessions: [25, 73, 94, 163],
   chats: [89, 154, 160, 163],
   messages: [89, 154, 160, 163],
+  watchers: [94, 105, 123, 163],
   console: [47, 55, 134, 163, 168, 172, 177],
   balance: [41, 73, 94, 164],
   clone: [39, 41, 94, 106, 119, 142, 143, 145, 146, 147],

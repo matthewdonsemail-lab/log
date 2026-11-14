@@ -14,6 +14,8 @@ export type StateScope =
   | 'browserCheckProof'
   | 'signIn'
   | 'sessionSave'
+  | 'watcherEnd'
+  | 'watcherHold'
 
 export interface StateRow<T> {
   body: T

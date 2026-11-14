@@ -11,7 +11,7 @@ export const capabilityDeps: { accounts: () => CapabilityAccount[]; commands: ()
 
 const PLATFORM_FLAG: FlagSpec = { name: "platform", kind: "enum", values: PLATFORMS, description: "The platform; left out, it is the one the account is kept under. Given, it must be the account's" };
 
-const flagOf = (input: CapabilityInput): FlagSpec => ({ name: input.name, kind: input.kind, description: input.description, ...(input.required ? { required: true } : {}), ...(input.min !== undefined ? { min: input.min } : {}) });
+const flagOf = (input: CapabilityInput): FlagSpec => ({ name: input.name, kind: input.kind, description: input.description, ...(input.required ? { required: true } : {}), ...(input.min !== undefined ? { min: input.min } : {}), ...(input.max !== undefined ? { max: input.max } : {}) });
 
 const platformsLine = (definition: CapabilityDefinition): string => `Platforms: ${platformsWith(definition).map((p) => PLATFORM_LABELS[p]).join(", ")}.`;
 
@@ -49,11 +49,16 @@ export function capabilityCommandOf(noun: string, definitions: readonly Capabili
       if (!definition || rest.length) return { code: 1, error: "inputInvalid", stderr: `log ${noun}: pick ${definitions.map((d) => d.verb).join(" or ")}\n${usage}` };
       const label = `${noun} ${verb}`;
       const text = (name: string): string | undefined => (typeof parsed.flags[name] === "string" ? String(parsed.flags[name]).trim() || undefined : undefined);
-      const given = Object.fromEntries(definition.inputs.map((spec) => [spec.name, text(spec.name)]));
+      const given = Object.fromEntries(definition.inputs.map((spec) => [spec.name, text(spec.name) ?? (spec.fallback !== undefined ? String(spec.fallback) : undefined)]));
       for (const spec of definition.inputs) if (spec.required && !given[spec.name]) return { code: 1, error: "inputInvalid", stderr: `log ${label}: --${spec.name} is needed\n${usage}` };
       for (const flag of Object.keys(parsed.flags)) if (!["json", "platform", ...definition.inputs.map((s) => s.name)].includes(flag)) return { code: 1, error: "inputInvalid", stderr: `log ${label}: --${flag} isn't one of ${label}'s inputs\n${usage}` };
-      const limit = given["limit"];
-      if (limit !== undefined && !/^[1-9]\d*$/.test(limit)) return { code: 1, error: "inputInvalid", stderr: `log ${label}: --limit must be a whole number above 0\n${usage}` };
+      for (const spec of definition.inputs.filter((s) => s.kind === "integer")) {
+        const value = given[spec.name];
+        if (value === undefined) continue;
+        const number = /^[1-9]\d*$/.test(value) ? Number(value) : NaN;
+        const range = `${spec.min !== undefined ? ` from ${spec.min}` : " above 0"}${spec.max !== undefined ? ` to ${spec.max}` : ""}`;
+        if (!Number.isFinite(number) || (spec.min !== undefined && number < spec.min) || (spec.max !== undefined && number > spec.max)) return { code: 1, error: "inputInvalid", stderr: `log ${label}: --${spec.name} must be a whole number${range}\n${usage}` };
+      }
       const platform = text("platform");
       if (platform !== undefined && !isPlatform(platform)) return { code: 1, error: "inputInvalid", stderr: `log ${label}: --platform must be one of ${PLATFORMS.join(", ")}\n${usage}` };
       const chosen = choosePlatform(capabilityDeps.accounts(), String(given["account"]), platform);

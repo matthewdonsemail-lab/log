@@ -48,7 +48,7 @@ Checked by: code and SubQ
 
 ### REQ-INSTAGRAM-08: New DMs are pushed by Instagram's realtime connection to the inbox hook
 
-`log instagram watch` holds Instagram's own realtime connection open through the vendored instagrapi (MQTT to `edge-mqtt.facebook.com`, subscribed to the DM sync with `direct_subscribe`), pinging it while it waits, and prints each new message the moment it is pushed, nothing polled. With `--inbox` every message from someone else goes to the inbox hook, which starts the watcher for every signed-in Instagram account, restarts it when the engine or instagrapi changes, skips an account cooling off, and puts each message in front of the agent (`>>> NEW INSTAGRAM MESSAGE`) with the steps to answer through `instagramDms`, `voice` and `instagramSendLive`, never the browser (rule 123). A refused or dropped connection ends the watch with `realtimeRefused` or `realtimeDropped`.
+`log instagram watch` holds Instagram's own realtime connection open through the vendored instagrapi (MQTT to `edge-mqtt.facebook.com`, subscribed to the DM sync with `direct_subscribe`), pinging it while it waits, and prints each new message the moment it is pushed, nothing polled. With `--inbox` every message from someone else goes to the inbox hook, which starts the watcher for every signed-in Instagram account (`superviseLocalWatchers`, from the one `WATCH_COMMANDS` table), restarts it when the engine or instagrapi changes, skips an account cooling off, and puts each message in front of the agent (`>>> NEW INSTAGRAM MESSAGE`) with the steps to answer through `instagramDms`, `voice` and `instagramSendLive`, never the browser (rule 123). A refused or dropped connection ends the watch with `realtimeRefused` or `realtimeDropped`.
 
 Checked by: code and SubQ
 

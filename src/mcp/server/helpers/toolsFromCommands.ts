@@ -8,7 +8,7 @@ import { guideLine, guideOfCommand } from "./guides.ts";
 import { annotationsOf, LIVE_SUFFIX, titleOf } from "./toolAnnotations.ts";
 import { ARGS_TOOLS_GIVEN_FORMS } from "./toolAliases.ts";
 
-export const LONG_RUNNING: ReadonlySet<string> = new Set(["inspect", "join", "read", "poll", "check", "connect", "publish", "profile", "scan", "status", "watch", "warmup", "host", "flow", "capture", "doctor", "campaign", "queue", "sessions"]);
+export const LONG_RUNNING: ReadonlySet<string> = new Set(["inspect", "join", "read", "poll", "check", "connect", "publish", "profile", "scan", "status", "watch", "warmup", "host", "flow", "capture", "doctor", "campaign", "queue", "sessions", "messages"]);
 
 export function longRunning(command: Pick<Command, "name">): boolean {
   return LONG_RUNNING.has(command.name);

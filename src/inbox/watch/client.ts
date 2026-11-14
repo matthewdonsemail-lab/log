@@ -222,7 +222,7 @@ export function claimWatcher(platform: string, account: string, pid: number = pr
     const fromAt = row?.heartbeat ?? lastEventAt(platform, account, handle)
     if (fromAt) openGap(platform, account, fromAt, row ? 'ownerRestarted' : 'noOwner', now, handle)
     const generation = (row?.generation ?? 0) + 1
-    handle.prepare(`INSERT INTO owners (platform, account, pid, hostname, startedAt, heartbeat, status, generation, pidStartedAt, staleSeenAt) VALUES (?, ?, ?, ?, ?, ?, 'connecting', ?, ?, NULL) ON CONFLICT(platform, account) DO UPDATE SET pid = excluded.pid, hostname = excluded.hostname, startedAt = excluded.startedAt, heartbeat = excluded.heartbeat, status = 'connecting', port = 0, token = '', subscribers = 0, generation = excluded.generation, pidStartedAt = excluded.pidStartedAt, staleSeenAt = NULL`).run(platform, account, pid, hostname(), stamp, stamp, generation, pid === process.pid ? ownStartedAt() : null)
+    handle.prepare(`INSERT INTO owners (platform, account, pid, hostname, startedAt, heartbeat, status, generation, pidStartedAt, staleSeenAt) VALUES (?, ?, ?, ?, ?, ?, 'starting', ?, ?, NULL) ON CONFLICT(platform, account) DO UPDATE SET pid = excluded.pid, hostname = excluded.hostname, startedAt = excluded.startedAt, heartbeat = excluded.heartbeat, status = 'starting', port = 0, token = '', subscribers = 0, generation = excluded.generation, pidStartedAt = excluded.pidStartedAt, staleSeenAt = NULL`).run(platform, account, pid, hostname(), stamp, stamp, generation, pid === process.pid ? ownStartedAt() : null)
     return { ok: true as const, generation }
   })
   if (claimed.ok && pid === process.pid) holdFence(platform, account, claimed.generation)
@@ -334,32 +334,6 @@ export function clearDeadQueueLocks(_root: string = join(homedir(), '.logCli', '
   return clearDeadQueueLockRows(alive)
 }
 
-export function startTwitterWatch(account: string, repo: string): number | null {
-  const dir = join(inboxRoot(), 'twitter', account)
-  mkdirSync(dir, { recursive: true })
-  const log = openSync(join(dir, 'watch.log'), 'a')
-  try {
-    const child = spawn('bun', [join(repo, 'bin', 'log.ts'), 'twitter', 'chat', 'watch', '--account', account, '--inbox'], { cwd: repo, detached: true, stdio: ['ignore', log, log], windowsHide: true, env: process.env })
-    child.unref()
-    return child.pid ?? null
-  } finally {
-    closeSync(log)
-  }
-}
-
-export function startDiscordWatch(account: string, repo: string): number | null {
-  const dir = join(inboxRoot(), 'discord', account)
-  mkdirSync(dir, { recursive: true })
-  const log = openSync(join(dir, 'watch.log'), 'a')
-  try {
-    const child = spawn('bun', [join(repo, 'bin', 'log.ts'), 'discord', 'watch', '--account', account, '--inbox'], { cwd: repo, detached: true, stdio: ['ignore', log, log], windowsHide: true, env: process.env })
-    child.unref()
-    return child.pid ?? null
-  } finally {
-    closeSync(log)
-  }
-}
-
 export function describerEnv(env: NodeJS.ProcessEnv = process.env): NodeJS.ProcessEnv {
   const key = Object.keys(env).find((k) => k.toLowerCase() === 'path') ?? 'PATH'
   const separator = process.platform === 'win32' ? ';' : ':'
@@ -373,32 +347,6 @@ export function startDescriber(repo: string): number | null {
   const log = openSync(join(dir, 'watch.log'), 'a')
   try {
     const child = spawn('bun', [join(repo, 'scripts', 'media', 'describer.ts')], { cwd: repo, detached: true, stdio: ['ignore', log, log], windowsHide: true, env: describerEnv() })
-    child.unref()
-    return child.pid ?? null
-  } finally {
-    closeSync(log)
-  }
-}
-
-export function startSlackWatch(account: string, repo: string): number | null {
-  const dir = join(inboxRoot(), 'slack', account)
-  mkdirSync(dir, { recursive: true })
-  const log = openSync(join(dir, 'watch.log'), 'a')
-  try {
-    const child = spawn('bun', [join(repo, 'bin', 'log.ts'), 'slack', 'watch', '--account', account, '--inbox'], { cwd: repo, detached: true, stdio: ['ignore', log, log], windowsHide: true, env: process.env })
-    child.unref()
-    return child.pid ?? null
-  } finally {
-    closeSync(log)
-  }
-}
-
-export function startInstagramWatch(account: string, repo: string): number | null {
-  const dir = join(inboxRoot(), 'instagram', account)
-  mkdirSync(dir, { recursive: true })
-  const log = openSync(join(dir, 'watch.log'), 'a')
-  try {
-    const child = spawn('bun', [join(repo, 'bin', 'log.ts'), 'instagram', 'watch', '--account', account, '--inbox'], { cwd: repo, detached: true, stdio: ['ignore', log, log], windowsHide: true, env: process.env })
     child.unref()
     return child.pid ?? null
   } finally {

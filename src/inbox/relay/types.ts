@@ -1,6 +1,7 @@
 import type { GapRow } from '../store/index'
+import type { WatcherState } from '../../platformKit/watcher/types.ts'
 
-export type RelayStatus = 'connecting' | 'streaming' | 'reconnecting' | 'error'
+export type RelayStatus = WatcherState | 'streaming' | 'error'
 
 export interface RelaySession {
   platform: string

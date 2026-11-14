@@ -14,7 +14,7 @@ describe("one owner, every subscriber attached (rule 132)", () => {
   test("the owner records its session and every attached subscriber gets each event", async () => {
     const relay = await openRelay("discord", "acct");
     const session = readSession("discord", "acct")!;
-    expect(session).toMatchObject({ platform: "discord", account: "acct", pid: process.pid, status: "connecting", port: relay.port, subscribers: 0 });
+    expect(session).toMatchObject({ platform: "discord", account: "acct", pid: process.pid, status: "starting", port: relay.port, subscribers: 0 });
     expect(session.token.length).toBeGreaterThan(20);
     const heard: Record<string, unknown>[] = [];
     const attached = attachRelay(session, (event) => heard.push(event));

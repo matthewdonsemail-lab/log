@@ -39,6 +39,7 @@ flowchart TB
     c_sessions["sessions"]
     c_chats["chats"]
     c_messages["messages"]
+    c_watchers["watchers"]
     c_clone["clone"]
     c_transcribe["transcribe"]
     c_new["new"]
@@ -277,6 +278,9 @@ flowchart TB
   mcp --> c_chats
   cli --> c_messages
   mcp --> c_messages
+  c_messages --> live
+  cli --> c_watchers
+  mcp --> c_watchers
   cli --> c_clone
   mcp --> c_clone
   cli --> c_transcribe

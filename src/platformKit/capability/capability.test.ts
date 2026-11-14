@@ -32,7 +32,7 @@ describe("the capability table", () => {
   });
 
   test("tool names are <noun><Verb>, never a platform word", () => {
-    expect(CAPABILITIES.map(capabilityTool)).toEqual(["chatsList", "messagesRead"]);
+    expect(CAPABILITIES.map(capabilityTool)).toEqual(["chatsList", "messagesRead", "messagesWatch"]);
   });
 
   test("each capability is listed as one shared tool, and the per-platform tools stay", () => {
@@ -138,5 +138,29 @@ describe("log chats list and log messages read", () => {
     const noChat = await run(["messages", "read", "--account", "fakeBird"]);
     expect(noChat.err).toContain("--chat is needed");
     expect(calls).toEqual([]);
+  });
+
+  test("messages watch listens through each platform's own watch for the seconds given, and a platform with no push watcher is capabilityMissing", async () => {
+    const calls = stub();
+    capabilityDeps.commands = async () => ["twitterChat", "discordWatch", "slackWatch", "instagramWatch"].map((key) => ({ ...COMMANDS.find((c) => commandKey(c) === key)!, run: (_context: unknown, argv: string[]) => (calls.push({ command: key, argv }), { code: 0, stdout: `${key} ran` }) }) as Command);
+    capabilityDeps.accounts = () => [...ACCOUNTS, { name: "fakeRedditor", platform: "reddit" }];
+    expect((await run(["messages", "watch", "--account", "fakeBird", "--seconds", "30"])).code).toBe(0);
+    expect((await run(["messages", "watch", "--account", "fakeGuild", "--chat", "general", "--seconds", "30"])).code).toBe(0);
+    expect((await run(["messages", "watch", "--account", "fakeTwin", "--platform", "slack", "--space", "fakeTeam", "--seconds", "5"])).code).toBe(0);
+    expect(calls).toEqual([
+      { command: "twitterChat", argv: ["watch", "--account", "fakeBird", "--seconds", "30"] },
+      { command: "discordWatch", argv: ["--account", "fakeGuild", "--channel", "general", "--seconds", "30"] },
+      { command: "slackWatch", argv: ["--account", "fakeTwin", "--workspace", "fakeTeam", "--seconds", "5"] },
+    ]);
+    const reddit = await run(["messages", "watch", "--account", "fakeRedditor", "--seconds", "30"]);
+    expect(reddit.err).toContain("capabilityMissing");
+    expect(reddit.err).toContain("Discord");
+    const instagramChat = await run(["messages", "watch", "--account", "fakeTwin", "--platform", "instagram", "--chat", "fakeFriend", "--seconds", "30"]);
+    expect(instagramChat.err).toContain("inputUnsupported");
+    expect((await run(["messages", "watch", "--account", "fakeBird", "--seconds", "4"])).code).toBe(1);
+    expect((await run(["messages", "watch", "--account", "fakeBird", "--seconds", "3601"])).code).toBe(1);
+    expect(calls.length).toBe(3);
+    expect((await run(["messages", "watch", "--account", "fakeBird"])).code).toBe(0);
+    expect(calls[3]).toEqual({ command: "twitterChat", argv: ["watch", "--account", "fakeBird", "--seconds", "60"] });
   });
 });
