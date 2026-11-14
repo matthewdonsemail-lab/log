@@ -101,7 +101,7 @@ describe("a play unlocks only the sends it covers", () => {
   const flows = savedFlows();
   const pages = listUseCases();
   const acting = actingAsOwnerTools(COMMANDS, flows);
-  const UNNAMED = ["discordDeleteLive", "facebookFlowDeletePostLive", "facebookFlowPostCommentLive", "facebookFlowProfilePhotoPostLive", "facebookFlowProfilePostLive", "facebookPublishLive", "linkedinConnectLive", "linkedinDeleteLive", "linkedinLikeLive", "linkedinPostLive", "redditPostLive", "redditReplyLive", "redditVoteLive", "twitterListAddLive", "twitterListCreateLive", "twitterQuoteLive", "twitterRepostLive", "twitterVoiceLive"];
+  const UNNAMED = ["discordDeleteLive", "facebookFlowDeletePostLive", "facebookFlowPostCommentLive", "facebookFlowProfilePhotoPostLive", "facebookFlowProfilePostLive", "facebookPublishLive", "redditPostLive", "redditReplyLive", "redditVoteLive", "twitterListAddLive", "twitterListCreateLive", "twitterQuoteLive", "twitterRepostLive", "twitterVoiceLive"];
   const gate = (tool: string, play: ActivePlay | null) => {
     const platform = platformOfTool(tool, COMMANDS, flows);
     return playRefusal(tool, { mode: playGateMode(tool, acting, pages, platform), platform, useCases: [], play });

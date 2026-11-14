@@ -1,7 +1,8 @@
 import { recordLinkedinSession } from "../../../linkedin/account/session/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../../runner/helpers/index.ts";
+import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError, refuseInput } from "../../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../../runner/types.ts";
 import { ACCOUNT_FLAG, APPROVED_BY_FLAG, activityOf, failed, liveFlag, openAccount, text } from "./share.ts";
+import { actOnEngine } from "../../../platformKit/action/index.ts";
 
 export const LINKEDIN_LIKE_USAGE = [
   "Usage: log linkedin like --account <accountName> --post <activityId|post url> [--approvedBy <who>] [--live] [--json]",
@@ -36,11 +37,11 @@ export const linkedinLikeCommand: Command = {
   args: "--account <a> --post <id|url> [--approvedBy <who>] [--live] [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(LINKEDIN_LIKE_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log linkedin like: ${parsed.error}\n${LINKEDIN_LIKE_USAGE}` };
-    if (parsed.positionals.length) return { code: 1, stderr: `log linkedin like: takes no words, only flags\n${LINKEDIN_LIKE_USAGE}` };
+    if (!parsed.ok) return refuseInput("linkedin like", `${parsed.error}`, LINKEDIN_LIKE_USAGE);
+    if (parsed.positionals.length) return refuseInput("linkedin like", `takes no words, only flags`, LINKEDIN_LIKE_USAGE);
     const ref = text(parsed.flags, "account");
     const activity = activityOf(text(parsed.flags, "post"));
-    if (!ref || !activity) return { code: 1, stderr: `log linkedin like: --account and --post (an activity id or post URL) are needed\n${LINKEDIN_LIKE_USAGE}` };
+    if (!ref || !activity) return refuseInput("linkedin like", `--account and --post (an activity id or post URL) are needed`, LINKEDIN_LIKE_USAGE);
     const live = parsed.flags["live"] === true;
     const approvedBy = text(parsed.flags, "approvedBy");
     if (live && !approvedBy) return refuse("linkedin like", "notApproved", "--live needs --approvedBy <who> (rule 8)");
@@ -54,7 +55,7 @@ export const linkedinLikeCommand: Command = {
         return { code: 0, stdout: `log linkedin like: dry run: ${account.accountName} would like activity ${activity}. Nothing was sent. --live --approvedBy <who> does it (rule 8).` };
       }
       context.err(`${account.accountName}: like activity ${activity}, approved by ${approvedBy}, on the direct-API engine`);
-      const run = context.directLinkedin!(account, { action: "like", live: true, approvedBy, post: activity });
+      const run = await actOnEngine(() => context.directLinkedin!(account, { action: "like", live: true, approvedBy, post: activity }));
       for (const line of await recordLinkedinSession(context.twenty, account, run, context.now?.() ?? new Date())) context.err(line);
       if (!run.answer.ok) return failed("like", run);
       if (json) return { code: 0, stdout: JSON.stringify({ platform: "linkedin", account: account.accountName, approvedBy, ...run.answer }, null, 2) };

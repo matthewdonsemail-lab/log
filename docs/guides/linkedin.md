@@ -4,6 +4,15 @@ A LinkedIn account: saving its cookies, checking its session, posting or deletin
 
 Written by `bun run docs:build` from the code, the skills and AGENTS.md. Not edited by hand: change the command's usage, its skill or the rule, and rebuild.
 
+## Use cases these tools are part of
+
+When the owner asks for one of these, follow its page step by step.
+
+| Use case | What it is | How the owner asks for it |
+|---|---|---|
+| `getGuide({ useCase: "linkedin/network" })` | Growing a LinkedIn network and reading its inbox | "connect with people on linkedin", "who does linkedin suggest", "read my linkedin messages", "what did <someone> say on linkedin" |
+| `getGuide({ useCase: "linkedin/posts" })` | Posting on LinkedIn, and liking or taking a post down | "post this on linkedin", "put this up on linkedin with the picture", "like <someone>'s post on linkedin", "delete that linkedin post" |
+
 ## The tools in this guide
 
 Each tool's own description carries its full usage, notes, live line and rules; `logGet` gives its exact inputs and a call that works.

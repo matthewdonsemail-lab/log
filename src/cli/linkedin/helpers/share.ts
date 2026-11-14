@@ -3,7 +3,9 @@ import { homedir } from "node:os";
 import { isAbsolute, join, relative, resolve as resolvePath } from "node:path";
 import { findLinkedinAccount, linkedinGate, recordLinkedinSession } from "../../../linkedin/account/session/index.ts";
 import { watermarkReadingOf } from "../../../twitter/copy/watermark/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../../runner/helpers/index.ts";
+import { isErrorCode } from "../../../errors/catalog/index.ts";
+import { actOnEngine } from "../../../platformKit/action/index.ts";
+import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError, refuseInput } from "../../runner/helpers/index.ts";
 import type { Command, CommandContext, CommandInput, CommandResult, FlagSpec } from "../../runner/types.ts";
 import type { PlatformAccount, PlatformEngineRun } from "../../../platformKit/session/index.ts";
 
@@ -42,13 +44,13 @@ export async function openAccount(context: CommandContext, name: string, ref: st
   const account = await findLinkedinAccount(context.twenty, ref);
   const gate = linkedinGate(account);
   if (!gate.ok) return { ok: false, result: refuse(`linkedin ${name}`, gate.code === "accountDeactivated" ? "accountNotUsable" : gate.code, gate.detail) };
-  if (!context.directLinkedin) return { ok: false, result: { code: 1, stderr: `log linkedin ${name}: the direct-API engine isn't wired in this context` } };
+  if (!context.directLinkedin) return { ok: false, result: refuse(`linkedin ${name}`, "engineNotBuilt", "the direct-API engine isn't wired in this context") };
   return { ok: true, account };
 }
 
-export function failed(name: string, run: PlatformEngineRun): { code: number; stderr: string } {
+export function failed(name: string, run: PlatformEngineRun): CommandResult {
   const calls = Array.isArray(run.answer["calls"]) ? (run.answer["calls"] as { call: string; httpStatus: number }[]).map((c) => `${c.call} ${c.httpStatus}`).join(", ") : "";
-  return { code: 1, stderr: `log linkedin ${name}: ${run.answer.code}: ${run.answer.detail ?? ""}${calls ? ` (calls: ${calls})` : ""}. Nothing is retried (rule 94).` };
+  return { code: 1, error: isErrorCode(run.answer.code) ? run.answer.code : "commandFailed", stderr: `log linkedin ${name}: ${run.answer.code}: ${run.answer.detail ?? ""}${calls ? ` (calls: ${calls})` : ""}. Nothing is retried (rule 94).` };
 }
 
 type Mention = { query: string; name: string; entityID: string };
@@ -100,12 +102,12 @@ export const linkedinPostCommand: Command = {
   args: '--account <a> --text "<post>" [--image <path>] [--approvedBy <who>] [--live] [--json]',
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(LINKEDIN_POST_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log linkedin post: ${parsed.error}\n${LINKEDIN_POST_USAGE}` };
-    if (parsed.positionals.length) return { code: 1, stderr: `log linkedin post: takes no words, only flags\n${LINKEDIN_POST_USAGE}` };
+    if (!parsed.ok) return refuseInput("linkedin post", `${parsed.error}`, LINKEDIN_POST_USAGE);
+    if (parsed.positionals.length) return refuseInput("linkedin post", `takes no words, only flags`, LINKEDIN_POST_USAGE);
     const ref = text(parsed.flags, "account");
     const raw = typeof parsed.flags["text"] === "string" ? (parsed.flags["text"] as string) : "";
-    if (!ref || !raw.trim()) return { code: 1, stderr: `log linkedin post: --account and --text are needed\n${LINKEDIN_POST_USAGE}` };
-    if (raw.length > LINKEDIN_TEXT_MAX) return { code: 1, stderr: `log linkedin post: LinkedIn posts hold at most ${LINKEDIN_TEXT_MAX} characters, this one has ${raw.length}` };
+    if (!ref || !raw.trim()) return refuseInput("linkedin post", `--account and --text are needed`, LINKEDIN_POST_USAGE);
+    if (raw.length > LINKEDIN_TEXT_MAX) return refuseInput("linkedin post", `LinkedIn posts hold at most ${LINKEDIN_TEXT_MAX} characters, this one has ${raw.length}`);
     const image = imageOf(text(parsed.flags, "image"));
     if (!image.ok) return refuse("linkedin post", "fileRefused", image.refused);
     const watermark = watermarkReadingOf(raw);
@@ -134,7 +136,7 @@ export const linkedinPostCommand: Command = {
         return { code: 0, stdout: `log linkedin post: dry run: ${account.accountName} would ${planOf(shown)}:\n${shown}${mentionLines(mentions)}\nNothing was posted. --live --approvedBy <who> does it (rule 8).` };
       }
       context.err(`${account.accountName}: ${plan}, approved by ${approvedBy}, on the direct-API engine`);
-      const run = context.directLinkedin!(account, { action: "post", live: true, approvedBy, text: raw, ...(image.path ? { image: image.path } : {}) });
+      const run = await actOnEngine(() => context.directLinkedin!(account, { action: "post", live: true, approvedBy, text: raw, ...(image.path ? { image: image.path } : {}) }));
       for (const line of await recordLinkedinSession(context.twenty, account, run, context.now?.() ?? new Date())) context.err(line);
       if (!run.answer.ok) return failed("post", run);
       if (json) return { code: 0, stdout: JSON.stringify({ platform: "linkedin", account: account.accountName, approvedBy, ...run.answer }, null, 2) };
@@ -185,12 +187,12 @@ export const linkedinDeleteCommand: Command = {
   args: "--account <a> --activity <id|url> [--approvedBy <who>] [--live] [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(LINKEDIN_DELETE_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log linkedin delete: ${parsed.error}\n${LINKEDIN_DELETE_USAGE}` };
-    if (parsed.positionals.length) return { code: 1, stderr: `log linkedin delete: takes no words, only flags\n${LINKEDIN_DELETE_USAGE}` };
+    if (!parsed.ok) return refuseInput("linkedin delete", `${parsed.error}`, LINKEDIN_DELETE_USAGE);
+    if (parsed.positionals.length) return refuseInput("linkedin delete", `takes no words, only flags`, LINKEDIN_DELETE_USAGE);
     const ref = text(parsed.flags, "account");
     const activity = activityOf(text(parsed.flags, "activity"));
-    if (!ref) return { code: 1, stderr: `log linkedin delete: --account is needed\n${LINKEDIN_DELETE_USAGE}` };
-    if (!activity) return { code: 1, stderr: `log linkedin delete: --activity must be a LinkedIn activity id or a post URL holding one\n${LINKEDIN_DELETE_USAGE}` };
+    if (!ref) return refuseInput("linkedin delete", `--account is needed`, LINKEDIN_DELETE_USAGE);
+    if (!activity) return refuseInput("linkedin delete", `--activity must be a LinkedIn activity id or a post URL holding one`, LINKEDIN_DELETE_USAGE);
     const live = parsed.flags["live"] === true;
     const approvedBy = text(parsed.flags, "approvedBy");
     if (live && !approvedBy) return refuse("linkedin delete", "notApproved", "--live needs --approvedBy <who> (rule 8)");
@@ -204,7 +206,7 @@ export const linkedinDeleteCommand: Command = {
         return { code: 0, stdout: `log linkedin delete: dry run: ${account.accountName} would delete activity ${activity}. Nothing was sent. --live --approvedBy <who> does it (rule 8).` };
       }
       context.err(`${account.accountName}: delete activity ${activity}, approved by ${approvedBy}, on the direct-API engine`);
-      const run = context.directLinkedin!(account, { action: "deletePost", live: true, approvedBy, activityId: activity });
+      const run = await actOnEngine(() => context.directLinkedin!(account, { action: "deletePost", live: true, approvedBy, activityId: activity }));
       for (const line of await recordLinkedinSession(context.twenty, account, run, context.now?.() ?? new Date())) context.err(line);
       if (!run.answer.ok) return failed("delete", run);
       if (json) return { code: 0, stdout: JSON.stringify({ platform: "linkedin", account: account.accountName, approvedBy, ...run.answer }, null, 2) };

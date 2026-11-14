@@ -1,8 +1,9 @@
 import { recordLinkedinSession } from "../../../linkedin/account/session/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../../runner/helpers/index.ts";
+import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError, refuseInput } from "../../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../../runner/types.ts";
 import { publicIdOf } from "./cookies.ts";
 import { ACCOUNT_FLAG, APPROVED_BY_FLAG, failed, liveFlag, openAccount, text } from "./share.ts";
+import { actOnEngine } from "../../../platformKit/action/index.ts";
 
 export const LINKEDIN_CONNECT_GAP_MINUTES = 15;
 export const LINKEDIN_CONNECTS_PER_DAY = 5;
@@ -43,10 +44,10 @@ export const linkedinSuggestionsCommand: Command = {
   args: "--account <a> [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(LINKEDIN_SUGGESTIONS_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log linkedin suggestions: ${parsed.error}\n${LINKEDIN_SUGGESTIONS_USAGE}` };
-    if (parsed.positionals.length) return { code: 1, stderr: `log linkedin suggestions: takes no words, only flags\n${LINKEDIN_SUGGESTIONS_USAGE}` };
+    if (!parsed.ok) return refuseInput("linkedin suggestions", `${parsed.error}`, LINKEDIN_SUGGESTIONS_USAGE);
+    if (parsed.positionals.length) return refuseInput("linkedin suggestions", `takes no words, only flags`, LINKEDIN_SUGGESTIONS_USAGE);
     const ref = text(parsed.flags, "account");
-    if (!ref) return { code: 1, stderr: `log linkedin suggestions: --account is needed\n${LINKEDIN_SUGGESTIONS_USAGE}` };
+    if (!ref) return refuseInput("linkedin suggestions", `--account is needed`, LINKEDIN_SUGGESTIONS_USAGE);
     try {
       const opened = await openAccount(context, "suggestions", ref);
       if (!opened.ok) return opened.result;
@@ -97,11 +98,11 @@ export const linkedinConnectCommand: Command = {
   args: "--account <a> --profile <publicId|url> [--approvedBy <who>] [--live] [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(LINKEDIN_CONNECT_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log linkedin connect: ${parsed.error}\n${LINKEDIN_CONNECT_USAGE}` };
-    if (parsed.positionals.length) return { code: 1, stderr: `log linkedin connect: takes no words, only flags\n${LINKEDIN_CONNECT_USAGE}` };
+    if (!parsed.ok) return refuseInput("linkedin connect", `${parsed.error}`, LINKEDIN_CONNECT_USAGE);
+    if (parsed.positionals.length) return refuseInput("linkedin connect", `takes no words, only flags`, LINKEDIN_CONNECT_USAGE);
     const ref = text(parsed.flags, "account");
     const profile = profileOf(text(parsed.flags, "profile"));
-    if (!ref || !profile) return { code: 1, stderr: `log linkedin connect: --account and --profile (a public id or profile URL) are needed\n${LINKEDIN_CONNECT_USAGE}` };
+    if (!ref || !profile) return refuseInput("linkedin connect", `--account and --profile (a public id or profile URL) are needed`, LINKEDIN_CONNECT_USAGE);
     const live = parsed.flags["live"] === true;
     const approvedBy = text(parsed.flags, "approvedBy");
     if (live && !approvedBy) return refuse("linkedin connect", "notApproved", "--live needs --approvedBy <who> (rule 8)");
@@ -122,7 +123,7 @@ export const linkedinConnectCommand: Command = {
       const pace = context.directLinkedin!(account, { action: "connectPace" });
       if (!pace.answer.ok) return failed("connect", pace);
       context.err(`${account.accountName}: invite ${profile}, approved by ${approvedBy}, on the direct-API engine`);
-      const run = context.directLinkedin!(account, { action: "connect", live: true, approvedBy, profile });
+      const run = await actOnEngine(() => context.directLinkedin!(account, { action: "connect", live: true, approvedBy, profile }));
       for (const line of await recordLinkedinSession(context.twenty, account, run, context.now?.() ?? new Date())) context.err(line);
       if (!run.answer.ok) return failed("connect", run);
       const person = (run.answer["connected"] ?? {}) as Partial<SuggestedPerson>;

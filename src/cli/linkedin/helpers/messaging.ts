@@ -1,5 +1,5 @@
 import { recordLinkedinSession } from "../../../linkedin/account/session/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf, refuseError } from "../../runner/helpers/index.ts";
+import { JSON_FLAG, parseArgs, parserSpecOf, refuseError, refuseInput } from "../../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../../runner/types.ts";
 import { ACCOUNT_FLAG, failed, openAccount, text } from "./share.ts";
 
@@ -45,10 +45,10 @@ export const linkedinInboxCommand: Command = {
   args: "--account <a> [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(LINKEDIN_INBOX_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log linkedin inbox: ${parsed.error}\n${LINKEDIN_INBOX_USAGE}` };
-    if (parsed.positionals.length) return { code: 1, stderr: `log linkedin inbox: takes no words, only flags\n${LINKEDIN_INBOX_USAGE}` };
+    if (!parsed.ok) return refuseInput("linkedin inbox", `${parsed.error}`, LINKEDIN_INBOX_USAGE);
+    if (parsed.positionals.length) return refuseInput("linkedin inbox", `takes no words, only flags`, LINKEDIN_INBOX_USAGE);
     const ref = text(parsed.flags, "account");
-    if (!ref) return { code: 1, stderr: `log linkedin inbox: --account is needed\n${LINKEDIN_INBOX_USAGE}` };
+    if (!ref) return refuseInput("linkedin inbox", `--account is needed`, LINKEDIN_INBOX_USAGE);
     try {
       const opened = await openAccount(context, "inbox", ref);
       if (!opened.ok) return opened.result;
@@ -99,12 +99,12 @@ export const linkedinMessagesCommand: Command = {
   args: "--account <a> (--with <who> | --conversation <urn>) [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(LINKEDIN_MESSAGES_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log linkedin messages: ${parsed.error}\n${LINKEDIN_MESSAGES_USAGE}` };
-    if (parsed.positionals.length) return { code: 1, stderr: `log linkedin messages: takes no words, only flags\n${LINKEDIN_MESSAGES_USAGE}` };
+    if (!parsed.ok) return refuseInput("linkedin messages", `${parsed.error}`, LINKEDIN_MESSAGES_USAGE);
+    if (parsed.positionals.length) return refuseInput("linkedin messages", `takes no words, only flags`, LINKEDIN_MESSAGES_USAGE);
     const ref = text(parsed.flags, "account");
     const withWhom = text(parsed.flags, "with");
     const conversation = text(parsed.flags, "conversation");
-    if (!ref || Boolean(withWhom) === Boolean(conversation)) return { code: 1, stderr: `log linkedin messages: --account and one of --with or --conversation are needed\n${LINKEDIN_MESSAGES_USAGE}` };
+    if (!ref || Boolean(withWhom) === Boolean(conversation)) return refuseInput("linkedin messages", `--account and one of --with or --conversation are needed`, LINKEDIN_MESSAGES_USAGE);
     try {
       const opened = await openAccount(context, "messages", ref);
       if (!opened.ok) return opened.result;

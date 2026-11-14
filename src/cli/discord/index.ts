@@ -983,22 +983,22 @@ export const discordSecretsCommand: Command = {
   args: "--account <a> [--show]",
   async run(context, argv) {
     const parsed = parseArgs(argv, { boolean: ["show"], valued: ["account"] });
-    if (!parsed.ok) return { code: 1, stderr: `log discord secrets: ${parsed.error}\n${DISCORD_SECRETS_USAGE}` };
-    if (parsed.positionals.length) return { code: 1, stderr: `log discord secrets: takes no words, only flags\n${DISCORD_SECRETS_USAGE}` };
+    if (!parsed.ok) return refuseInput("discord secrets", parsed.error, DISCORD_SECRETS_USAGE);
+    if (parsed.positionals.length) return refuseInput("discord secrets", "takes no words, only flags", DISCORD_SECRETS_USAGE);
     const ref = parsed.flags["account"];
-    if (typeof ref !== "string") return { code: 1, stderr: `log discord secrets: --account is needed\n${DISCORD_SECRETS_USAGE}` };
+    if (typeof ref !== "string") return refuseInput("discord secrets", "--account is needed", DISCORD_SECRETS_USAGE);
     let account;
     try {
       account = await findDiscordAccount(context.twenty, ref);
     } catch (error) {
-      return { code: 1, stderr: `log discord secrets: ${(error as Error).message}` };
+      return refuseError("discord secrets", error);
     }
     if (parsed.flags["show"]) {
       const held = await context.twenty.loginSecrets(account.id);
       return { code: 0, stdout: `${account.accountName}: email ${mark(held?.email)}, password ${mark(held?.password)}, 2FA secret ${mark(held?.totpSecret)}` };
     }
     if (!shouldPrompt(false, discordSecretsDeps.tty())) {
-      return { code: 1, stderr: "log discord secrets: they are typed in a Clack prompt, so it needs an interactive terminal: run it there (they are never passed as flags)" };
+      return refuse("discord secrets", "terminalOnly", "they are typed in a Clack prompt, so it needs an interactive terminal: run it there (they are never passed as flags)");
     }
     const prompts = discordSecretsDeps.prompts;
     prompts.intro(`log discord secrets — ${account.accountName}`);
@@ -1017,5 +1017,5 @@ export const discordSecretsCommand: Command = {
 
 function stopped(prompts: SecretPrompts) {
   prompts.cancel("Nothing saved.");
-  return { code: 1, stderr: "log discord secrets: cancelled, nothing saved" };
+  return refuseInput("discord secrets", "cancelled, nothing saved");
 }

@@ -35,6 +35,8 @@ With no prompt hook, getGuide({ ask }) routes the owner's words to the one that 
 | `getGuide({ useCase: "inbox/voiceNote" })` | Sending a voice note |
 | `getGuide({ useCase: "instagram/dmReply" })` | Reading and answering an Instagram DM |
 | `getGuide({ useCase: "instagram/newPlatform" })` | Bringing a new platform up, then vendoring its client |
+| `getGuide({ useCase: "linkedin/network" })` | Growing a LinkedIn network and reading its inbox |
+| `getGuide({ useCase: "linkedin/posts" })` | Posting on LinkedIn, and liking or taking a post down |
 | `getGuide({ useCase: "reddit/contributorMaxxing" })` | Contributor maxxing: finding talented builders through what they share |
 | `getGuide({ useCase: "slack/dmReply" })` | Reading and answering a Slack DM |
 | `getGuide({ useCase: "twitter/affiliateMarketing" })` | Affiliate marketing through your DMs |

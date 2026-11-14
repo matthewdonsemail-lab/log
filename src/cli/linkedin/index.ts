@@ -1,5 +1,6 @@
 import { findLinkedinAccount, recordLinkedinSession, linkedinGate } from "../../linkedin/account/session/index.ts";
 import type { PlatformAnswer } from "../../platformKit/session/index.ts";
+import { isErrorCode } from "../../errors/catalog/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandContext, CommandInput } from "../runner/types.ts";
 import type { PlatformAccount } from "../../platformKit/session/index.ts";
@@ -47,7 +48,7 @@ async function scriptsOf(context: CommandContext, account: PlatformAccount, json
   context.err(`${account.accountName}: reading the signed-in feed page once for its bundle URLs (openLinkedinApi)`);
   const run = context.directLinkedin!(account, { action: "scripts" });
   const scripts = Array.isArray(run.answer["scripts"]) ? (run.answer["scripts"] as string[]) : [];
-  if (!run.answer.ok) return { code: 1, stderr: render(account.accountName, run.answer) };
+  if (!run.answer.ok) return { code: 1, error: isErrorCode(run.answer.code) ? run.answer.code : "commandFailed", stderr: render(account.accountName, run.answer) };
   const dir = join(process.env.LOG_CLI_HOME || join(homedir(), ".logCli"), "linkedin", account.accountName);
   mkdirSync(dir, { recursive: true });
   const file = join(dir, "appScripts.json");
@@ -66,16 +67,16 @@ export const linkedinSessionCommand: Command = {
   args: "check|scripts --account <a> [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(LINKEDIN_SESSION_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log linkedin session: ${parsed.error}\n${LINKEDIN_SESSION_USAGE}` };
+    if (!parsed.ok) return refuseInput("linkedin session", `${parsed.error}`, LINKEDIN_SESSION_USAGE);
     const verb = parsed.positionals[0];
-    if ((verb !== "check" && verb !== "scripts") || parsed.positionals.length > 1) return { code: 1, stderr: `log linkedin session: give check or scripts\n${LINKEDIN_SESSION_USAGE}` };
+    if ((verb !== "check" && verb !== "scripts") || parsed.positionals.length > 1) return refuseInput("linkedin session", `give check or scripts`, LINKEDIN_SESSION_USAGE);
     const ref = parsed.flags["account"];
     if (typeof ref !== "string") return { code: 1, error: "inputInvalid", stderr: `log linkedin session check: --account is needed\n${LINKEDIN_SESSION_USAGE}` };
     try {
       const account = await findLinkedinAccount(context.twenty, ref);
       const gate = linkedinGate(account);
       if (!gate.ok) return refuse("linkedin session check", gate.code === "accountDeactivated" ? "accountNotUsable" : gate.code, gate.detail);
-      if (!context.directLinkedin) return { code: 1, stderr: "log linkedin session check: the direct-API engine isn't wired in this context" };
+      if (!context.directLinkedin) return refuse("linkedin session check", "engineNotBuilt", "the direct-API engine isn't wired in this context");
       if (verb === "scripts") return scriptsOf(context, account, Boolean(parsed.flags["json"]));
       context.err(`${account.accountName}: session check on the direct-API engine (openLinkedinApi)`);
       const run = context.directLinkedin(account, { action: "ping" });
