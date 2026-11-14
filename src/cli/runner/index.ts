@@ -35,6 +35,7 @@ import { chatsCommand, messagesCommand, voiceNotesCommand } from "../capabilitie
 import { watchersCommand } from "../watchers/index.ts";
 import { cloneCommand } from "../clone/index.ts";
 import { discordVoiceCommand, instagramVoiceCommand, slackVoiceCommand, twitterVoiceCommand } from "../voiceNote/index.ts";
+import { mobileCommand } from "../mobile/index.ts";
 import { transcribeCommand } from "../transcribe/index.ts";
 import { pollCommand } from "../poll/index.ts";
 import { proxyCommand } from "../proxy/index.ts";
@@ -193,6 +194,7 @@ export const COMMANDS: Command[] = [
   instagramReactCommand,
   instagramVoiceCommand,
   twitterVoiceCommand,
+  mobileCommand,
 ];
 
 export async function runCli(argv: string[], context?: Partial<CommandContext>): Promise<number> {

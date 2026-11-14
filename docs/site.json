@@ -57,6 +57,7 @@
           "folders": ["listingPublish"]
         },
         { "title": "Platform APIs", "folder": "platforms" },
+        { "title": "Mobile: one phone per account", "folder": "mobile" },
         { "title": "Diagrams", "folder": "diagrams" },
         {
           "title": "Working on log",
