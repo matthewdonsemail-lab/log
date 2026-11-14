@@ -16,11 +16,20 @@ const INBOX_CATCHUP = 'src/inbox/catchUp/client.ts'
 const INBOX_PENDING = 'src/inbox/pending/client.ts'
 const WATCHER_CLIENT = 'src/platformKit/watcher/client.ts'
 const WATCHER_TYPES = 'src/platformKit/watcher/types.ts'
+const HARNESS_TYPES = 'src/agentHooks/harness/types.ts'
+const HARNESS = 'src/agentHooks/harness/client.ts'
+const HERMES = 'src/agentHooks/hermes/client.ts'
 
 export const agentHooks = {
   description: 'The agent hooks: one list for both hosts, what each event does, and the check that refuses drift',
   specPath: 'docs/specs/agentHooks.md',
   codePaths: [
+    'src/agentHooks/harness/types.ts',
+    'src/agentHooks/harness/client.ts',
+    'src/agentHooks/hermes/client.ts',
+    'src/contextLayer/hook/client.ts',
+    'src/cli/launch/helpers/setup.ts',
+    'hermesPlugin/native/__init__.py',
     'scripts/contextLayer/service.ts',
     'scripts/hooks/event.ts',
     'src/agentHooks/answers/client.ts',
@@ -53,6 +62,40 @@ export const agentHooks = {
     'src/cli/twitter/helpers/chat.ts',
   ],
   anchors: {
+    'REQ-HOOKS-24': [
+      { kind: 'symbol', file: HARNESS_TYPES, name: 'HARNESSES' },
+      { kind: 'symbol', file: HARNESS_TYPES, name: 'HOOK_HOSTS' },
+      { kind: 'symbol', file: REGISTRY, name: 'hookFiles' },
+      { kind: 'symbol', file: REGISTRY, name: 'cursorHooks' },
+      { kind: 'symbol', file: REGISTRY, name: 'antigravityHooks' },
+      { kind: 'symbol', file: REGISTRY, name: 'hermesPluginYaml' },
+      { kind: 'symbol', file: HARNESS, name: 'withHarnessTable' },
+      { kind: 'uses', file: CHECK, name: 'hookFiles' },
+    ],
+    'REQ-HOOKS-25': [
+      { kind: 'symbol', file: HARNESS, name: 'hookHostOf' },
+      { kind: 'symbol', file: HARNESS, name: 'hostBody' },
+      { kind: 'symbol', file: HARNESS, name: 'clipContext' },
+      { kind: 'uses', file: 'scripts/hooks/event.ts', name: 'hostBody' },
+      { kind: 'uses', file: 'scripts/hooks/antigravity.ts', name: 'clipContext' },
+      { kind: 'string', file: '.opencode/plugins/logHooks/client.ts', includes: '?host=opencode' },
+    ],
+    'REQ-HOOKS-26': [
+      { kind: 'symbol', file: 'src/contextLayer/hook/client.ts', name: 'hookAnswer' },
+      { kind: 'string', file: 'src/contextLayer/hook/client.ts', includes: 'wordsOnly' },
+    ],
+    'REQ-HOOKS-27': [
+      { kind: 'symbol', file: HARNESS, name: 'scratchHookEnv' },
+      { kind: 'symbol', file: HARNESS, name: 'watcherLogsIn' },
+      { kind: 'symbol', file: 'src/contextLayer/service/client.ts', name: 'serviceDisabled' },
+      { kind: 'uses', file: CHECK, name: 'scratchHookEnv' },
+    ],
+    'REQ-HOOKS-28': [
+      { kind: 'symbol', file: 'src/cli/launch/helpers/setup.ts', name: 'SETUP_HARNESSES' },
+      { kind: 'symbol', file: HERMES, name: 'installHermes' },
+      { kind: 'string', file: 'hermesPlugin/native/__init__.py', includes: 'pre_llm_call' },
+      { kind: 'string', file: 'scripts/docs/syncSiteSkills.mjs', includes: 'hermesPlugin' },
+    ],
     'REQ-HOOKS-12': [
       { kind: 'symbol', file: INBOX_WATCH, name: 'ensureLiveWatchers' },
       { kind: 'symbol', file: INBOX_WATCH, name: 'stopStaleWatchers' },
@@ -144,8 +187,8 @@ export const agentHooks = {
       { kind: 'symbol', file: REGISTRY, name: 'AGENT_HOOKS' },
       { kind: 'symbol', file: REGISTRY, name: 'hooksFor' },
       { kind: 'symbol', file: REGISTRY, name: 'hookCommand' },
-      { kind: 'string', file: CHECK, includes: '.claude/settings.json' },
-      { kind: 'string', file: CHECK, includes: '.codex/hooks.json' },
+      { kind: 'string', file: REGISTRY, includes: '.claude/settings.json' },
+      { kind: 'string', file: REGISTRY, includes: '.codex/hooks.json' },
     ],
     'REQ-HOOKS-02': [{ kind: 'string', file: CHECK, includes: '--write' }],
     'REQ-HOOKS-03': [
@@ -176,7 +219,12 @@ export const agentHooks = {
     ],
   },
   rubrics: {
-    'REQ-HOOKS-01': noul('Does checkAgentHooks write both host files, claudeCode and codex, from hooksFor, which turns every entry of AGENT_HOOKS into a command that runs its script from the repo through hookCommand?'),
+    'REQ-HOOKS-24': noul('Is HARNESSES in src/agentHooks/harness/types.ts one row per harness in HARNESS_IDS with every capability in HARNESS_CAPABILITIES, a router, a contextLimit (null only for a harness with no hooks) and a hookFile for each of HOOK_HOSTS; does hookFiles in src/agentHooks/registry/index.ts write .claude/settings.json, .codex/hooks.json, .cursor/hooks.json from cursorHooks (sessionStart and postToolUse running EVENT_SCRIPT with --host cursor), .agents/hooks.json from antigravityHooks, hermesPlugin/native/plugin.yaml from hermesPluginYaml (provides_hooks pre_llm_call) and docs/harnesses/README.md through withHarnessTable; and does checkAgentHooks fail on any that differs, and on a hook host with no hook file?'),
+    'REQ-HOOKS-25': noul('Do the scripts under scripts/hooks read the host with hookHostOf (claudeCode when --host is absent) and print through contextOutput or hostBody; does hookCommand add --host codex and ?host=codex for Codex; does hostBody give Cursor only additional_context and Hermes only context, and keep the hookSpecificOutput shape for the others; does clipContext cut text longer than the host contextLimit to that limit with a line saying so; and does the context service shape /hook and /hooks/<event> answers by the host query parameter?'),
+    'REQ-HOOKS-26': noul('When the route function given to hookAnswer returns null, does hookAnswer run the word-only route over the use cases (listUseCases by default), answer with playMatchText for its play or menu, and give an outcome that starts with wordsOnly, injecting nothing when there is no play and no menu?'),
+    'REQ-HOOKS-27': noul('Does checkAgentHooks run every hook and every adapter probe with scratchHookEnv, whose LOG_DB, LOG_INBOX_STATE, LOG_CONTEXT_LAYER, LOG_QUEUES_DIR, LOG_TWITTER_STATE, LOG_PLATFORM_STATE, LOG_FBK_STATE and LOG_HOOK_MEMORY are inside the scratch folder, with LOG_CONTEXT_SERVICE and LOG_INBOX_POLL off; do readService and startService do nothing when serviceDisabled; and does the check fail when watcherLogsIn finds a watch.log or a service.log exists in the scratch folder?'),
+    'REQ-HOOKS-28': noul('Is SETUP_HARNESSES the HARNESSES rows with installedBy launchSetup; does launchDeps offer each one whose home exists and call installHermes for hermes and installOpenCode for opencode; does installHermes copy plugin.yaml (with log_root set) and __init__.py into <home>/plugins/logHooks and report changed false when nothing differs; does the __init__.py register pre_llm_call, which runs event.ts with --host hermes for UserPromptSubmit (SessionStart first when is_first_turn) and returns its context; and does syncSiteSkills write the play skills into hermesPlugin/skills and fail the check on any other entry there?'),
+    'REQ-HOOKS-01': noul('Does checkAgentHooks write both host files, claudeCode and codex, through hookFiles from hooksFor, which turns every entry of AGENT_HOOKS into a command that runs its script from the repo through hookCommand?'),
     'REQ-HOOKS-02': noul('Does checkAgentHooks add a problem when the hooks of a host file differ from hooksFor(host), rewrite the file instead when the write flag is given, and exit 1 when there is any problem?'),
     'REQ-HOOKS-03': noul('Does AGENT_HOOKS run the page-state script on UserPromptSubmit and on SessionStart for startup, resume, clear and compact, and does hookReply report every finding when the event is SessionStart or UserPromptSubmit?'),
     'REQ-HOOKS-04': noul('Does AGENT_HOOKS run the page-state script on PostToolUse with TOOL_MATCHER, which covers Bash, PowerShell, Monitor and every mcp__log__ tool, and does hookReply on PostToolUse report a finding only when it is not clear and its mark differs from memory.seen for that account?'),
@@ -225,6 +273,11 @@ export const agentHooks = {
     'REQ-HOOKS-21': MET,
     'REQ-HOOKS-22': MET,
     'REQ-HOOKS-23': MET,
+    'REQ-HOOKS-24': MET,
+    'REQ-HOOKS-25': MET,
+    'REQ-HOOKS-26': MET,
+    'REQ-HOOKS-27': MET,
+    'REQ-HOOKS-28': MET,
     unspecifiedBehavior: NOT_VIOLATED,
   },
 }

@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "command": "bun scripts/hooks/event.ts SessionStart --host cursor"
+      }
+    ],
+    "postToolUse": [
+      {
+        "command": "bun scripts/hooks/event.ts PostToolUse --host cursor"
+      }
+    ]
+  }
+}

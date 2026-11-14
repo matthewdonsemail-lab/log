@@ -64,7 +64,7 @@ export function repoInput(root: string = REPO_ROOT): ScorecardInput {
     guides,
     serverInstructions: SERVER_INSTRUCTIONS,
     hostedInstructions: existsSync(join(root, HOSTED_INSTRUCTIONS_FILE)) ? text(join(root, HOSTED_INSTRUCTIONS_FILE)) : "",
-    hookTypes: text(join(root, "src/agentHooks/registry/types.ts")),
+    hookTypes: text(join(root, "src/agentHooks/harness/types.ts")),
     ruleIds: new Set(agentsRules(text(join(root, "AGENTS.md"))).keys()),
     useCaseFiles: filesIn(root, "docs/useCases", [".md"]),
     skillFiles: filesIn(root, "skills", [".md"]),
