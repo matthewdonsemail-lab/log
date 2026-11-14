@@ -58,7 +58,7 @@ export const ADSPOWER_SETUP = {
 
 const SETUP_ADDS: Readonly<Partial<Record<HarnessId, string>>> = {
   opencode: "log's tools as native tools (never Code Mode) and the hooks running, in ~/.config/opencode",
-  hermes: "the native logHooks plugin in ~/.hermes/plugins: its pre_llm_call hook puts the play, pending messages and browser states before each model call (then: hermes plugins enable logHooks)",
+  hermes: "the native logHooks plugin in Hermes's plugins folder (HERMES_HOME, else ~/.hermes, else %LOCALAPPDATA%\\hermes on Windows): its pre_llm_call hook puts the play, pending messages and browser states before each model call (then: hermes plugins enable logHooks)",
 };
 
 export interface SetupHarness {

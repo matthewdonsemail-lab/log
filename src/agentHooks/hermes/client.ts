@@ -6,8 +6,13 @@ import { PACKAGE_ROOT } from "../opencode/client.ts";
 import { HERMES_PLUGIN_DIR, HERMES_PLUGIN_NAME } from "../registry/index.ts";
 import { HERMES_PLUGIN_FILES } from "./types.ts";
 
-export function hermesHome(): string {
-  return process.env.LOG_HERMES_DIR || join(homedir(), ".hermes");
+export function hermesHome(env: NodeJS.ProcessEnv = process.env, home: string = homedir(), exists: (path: string) => boolean = existsSync): string {
+  const named = env.LOG_HERMES_DIR || env.HERMES_HOME;
+  if (named) return named;
+  const dotHermes = join(home, ".hermes");
+  if (exists(dotHermes)) return dotHermes;
+  const windowsHome = env.LOCALAPPDATA ? join(env.LOCALAPPDATA, "hermes") : "";
+  return windowsHome && exists(windowsHome) ? windowsHome : dotHermes;
 }
 
 export function installedPluginYaml(source: string, root: string): string {
