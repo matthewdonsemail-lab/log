@@ -101,6 +101,8 @@ const SOURCE_COMMAND_RULES: Readonly<Record<string, number[]>> = {
   messages: [89, 154, 160, 163],
   watchers: [94, 105, 123, 163],
   console: [47, 55, 134, 163, 168, 172, 177],
+  credentials: [41, 47, 163, 164, 172],
+  accounts: [154, 163, 172],
   balance: [41, 73, 94, 164],
   clone: [39, 41, 94, 106, 119, 142, 143, 145, 146, 147],
   transcribe: [26, 41, 88, 89, 94, 105, 106, 126],

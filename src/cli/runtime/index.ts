@@ -4,7 +4,7 @@ import { finishPairing, keepConnected, readBinding, startPairing } from "../../r
 import type { Authority, ResultPayload, RunTool } from "../../runtime/bridge/index.ts";
 import type { PlayScope } from "../../mcp/server/helpers/index.ts";
 import { defaultDbPath, openDatabase, SCHEMA_VERSION } from "../../storage/schema/index.ts";
-import { readLocalAccounts } from "../../twenty/graphql/index.ts";
+import { workspaceAccounts } from "../../platformKit/account/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
 
@@ -42,20 +42,7 @@ export const runtimeDeps: { callTool: () => Promise<ToolCaller>; connect: typeof
 };
 
 export function accountsList(args: Record<string, unknown>): ResultPayload {
-  const limit = Math.max(1, Math.min(Number(args.limit ?? 50) || 50, 200));
-  const start = Math.max(0, Number(args.cursor ?? 0) || 0);
-  const rows = readLocalAccounts();
-  const accounts = rows.slice(start, start + limit).map((row) => ({
-    id: String(row.id ?? ""),
-    platform: String(row.platform ?? "").toLowerCase(),
-    account: String(row.accountName ?? ""),
-    displayName: row.name ? String(row.name) : null,
-    status: String(row.status ?? "unknown"),
-    sessionState: row.sessionState ? String(row.sessionState) : null,
-    browserLocation: row.adsPowerProfileId ? "workspace" : null,
-    revision: 1,
-  }));
-  return { state: "succeeded", result: { accounts, cursor: start + limit < rows.length ? String(start + limit) : null } };
+  return { state: "succeeded", result: workspaceAccounts(args) };
 }
 
 export async function toolManifest(args: Record<string, unknown>): Promise<ResultPayload> {

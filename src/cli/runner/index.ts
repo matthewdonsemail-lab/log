@@ -2,6 +2,8 @@ import { chatCommand, cookiesCommand, dmCommand, dmsCommand, followersCommand, f
 import { accountCommand, accountsCommand } from "../account/index.ts";
 import { adsPowerCommand } from "../adsPower/index.ts";
 import { localAccountCommand } from "../localAccount/index.ts";
+import { workspaceAccountsCommand } from "../accounts/index.ts";
+import { credentialsCommand } from "../credentials/index.ts";
 import { campaignCommand } from "../campaign/index.ts";
 import { conversationCommand, conversationsCommand } from "../conversation/index.ts";
 import { loginCommand, logoutCommand, whoamiCommand } from "../auth/index.ts";
@@ -66,12 +68,14 @@ export type { Command, CommandContext, CommandResult, MarketplaceData } from "./
 export const COMMANDS: Command[] = [
   launchCommand,
   consoleCommand,
+  credentialsCommand,
   listingsCommand,
   listingCommand,
   accountsCommand,
   accountCommand,
   adsPowerCommand,
   localAccountCommand,
+  workspaceAccountsCommand,
   lifecycleCommand,
   preflightCommand,
   doctorCommand,

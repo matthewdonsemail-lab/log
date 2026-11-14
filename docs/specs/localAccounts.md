@@ -4,7 +4,7 @@ title: "Local accounts"
 
 # Local accounts
 
-Accounts can live in a local file instead of Twenty, on every platform, so log can run everything locally. `log localAccount pull|add|list` (MCP `localAccount`) fills and reads the file, and `LOG_ACCOUNTS=local` leaves Twenty out of accounts entirely. Listings, groups and conversations stay in Twenty. Rule 97, which narrows rule 13 for accounts only.
+Accounts can live in a local file instead of Twenty, on every platform, so log can run everything locally. `log localAccount pull|add|list|login` (MCP `localAccountPull`, `localAccountAdd`, `localAccountList`; `login` is terminal-only) fills and reads the file, and `LOG_ACCOUNTS=local` leaves Twenty out of accounts entirely. Listings, groups and conversations stay in Twenty. Rule 97, which narrows rule 13 for accounts only.
 
 ## The file
 
@@ -31,6 +31,12 @@ Checked by: code and SubQ
 ### REQ-LOCAL-04: List shows the local accounts
 
 `log localAccount list` shows every account in the file with its platform, name, AdsPower profile and session state.
+
+Checked by: code and SubQ
+
+### REQ-LOCAL-10: Login saves an account's email and password from masked prompts
+
+`log localAccount login --platform <p> --account <a>` asks for the account's email and password in two masked prompts and writes them to its row in the file through `saveAccountLogin` (`src/console/signIn/client.ts`), the same save as the console's password sign-in: an account not in the file is `accountNotFound`, a platform that doesn't sign in from them is `passwordSignInUnavailable`, an empty or over-long value is `signInInputInvalid`, and nothing is written. The form is terminal-only (no MCP tool), it refuses with `terminalOnly` when there is no terminal, and the values are never printed.
 
 Checked by: code and SubQ
 

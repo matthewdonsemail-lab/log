@@ -35,6 +35,7 @@ const SAMPLES: Readonly<Record<string, string>> = {
   tweet: "https://x.com/fakeBird/status/1900000000000000001",
   url: "https://www.reddit.com/r/fakeSub/comments/abc123/a_post/",
   userId: "1234567",
+  cursor: "2",
   message: "1234567890123456789",
   text: "sounds good to me",
   window: "60m",

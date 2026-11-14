@@ -1,6 +1,6 @@
 # console
 
-The local console: this machine's log.db, MCP, accounts, usage, events, AI client config and settings, read in the terminal, as JSON per screen, or in the web console on loopback with no sign-in.
+The local console: this machine's log.db, MCP, accounts, usage, events, AI client config, settings and provider keys, read in the terminal, as JSON per screen, or in the web console on loopback with no sign-in.
 
 Written by `bun run docs:build` from the code, the skills and AGENTS.md. Not edited by hand: change the command's usage, its skill or the rule, and rebuild.
 
@@ -16,6 +16,7 @@ Each tool's own description carries its full usage, notes, live line and rules; 
 | `consoleEvents` | The newest log.db events and inference calls, filtered by kind and… | `log console events [--kind <kind>] [--status <recorded\|succeeded\|failed\|unknown>] [--page <n>] [--pageSize <n>] [--json]` |
 | `consoleAiClients` | The MCP config for this machine for Claude Code, Codex or opencode | `log console aiClients [--client <claudeCode\|codex\|opencode>] [--json]` |
 | `consoleSettings` | Where log.db, runs, accounts and settings live, each account's… | `log console settings [--json]` |
+| `credentialsRead` | A provider's saved values that are not secret, the same read the… | `log credentials read --provider <adsPower> [--json]` |
 
 ## The work, step by step: console
 
@@ -74,5 +75,6 @@ Each by its number and first line. The full text is in AGENTS.md (`log://agents`
 - **Rule 47.** CLI, MCP, hooks and guides share the current instructions.
 - **Rule 134.** Existing workspace log.db is the native private record/coordination foundation.
 - **Rule 163.** Agent Log actions go through Log MCP tools; never work around a stale or unavailable MCP with shell Log commands or scratch clients.
+- **Rule 164.** Use existing provider balance/status and timing diagnostics when needed.
 - **Rule 168.** Reset governor or browser-launch counts only when the owner explicitly asks, using the existing recorded reset command.
 - **Rule 172.** The selected persistent cloud workspace owns private accounts, credentials/sessions, messages and execution data in existing SQLite plus protected files.

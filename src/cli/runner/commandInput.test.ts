@@ -9,6 +9,7 @@ const typed = COMMANDS.filter((c) => c.input);
 const SHAPED: Readonly<Record<string, string>> = {
   tweet: "https://x.com/fakeBird/status/1900000000000000001",
   userId: "1234567",
+  cursor: "2",
   message: "1234567890123456789",
   window: "90m",
   target: "t3_abc123",

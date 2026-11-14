@@ -11,7 +11,7 @@ Each tool's own description carries its full usage, notes, live line and rules; 
 | Tool | What it does | Usage |
 |---|---|---|
 | `report` | Show a view |  |
-| `reportData` | The numbers behind a report, from log.db only | `log report data --source twitterDmsBySender [--account <accountName>] [--since <7d\|4w\|12h\|2026-11-01>] [--limit <n>] [--json]` |
+| `reportData` | The numbers behind a report, from log.db only | `log report data --source <twitterDmsBySender\|dmsBySender\|identityProfile> [--platform <p>] [--account <accountName>] [--since <7d\|4w\|12h\|2026-11-01>] [--limit <n>] [--userId <id>] [--handle <handle>] [--json]` |
 
 ## The work, step by step: report
 

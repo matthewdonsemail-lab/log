@@ -8,8 +8,10 @@ flowchart TB
   subgraph g_any["Any platform"]
     c_launch["launch"]
     c_console["console"]
+    c_credentials["credentials"]
     c_adsPower["adsPower"]
     c_localAccount["localAccount"]
+    c_accounts["accounts"]
     c_inspect["inspect"]
     c_flow["flow"]
     c_proxy["proxy"]
@@ -140,6 +142,8 @@ flowchart TB
   c_launch -.- terminal
   cli --> c_console
   mcp --> c_console
+  cli --> c_credentials
+  mcp --> c_credentials
   cli --> c_facebookListings
   mcp --> c_facebookListings
   cli --> c_facebookListing
@@ -152,6 +156,8 @@ flowchart TB
   mcp --> c_adsPower
   cli --> c_localAccount
   mcp --> c_localAccount
+  cli --> c_accounts
+  mcp --> c_accounts
   cli --> c_facebookLifecycle
   mcp --> c_facebookLifecycle
   cli --> c_facebookPreflight

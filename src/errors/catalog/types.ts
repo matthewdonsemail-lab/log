@@ -2239,6 +2239,83 @@ export const ERROR_CATALOG = {
     raisedIn: ['platformKit/signInLink'],
     action: 'The person who asked for the sign-in opens the link, signed in to the console as themself.'
   },
+  credentialInputInvalid: {
+    layer: 'auth',
+    meaning: "The provider is not one log keeps keys for, a value is missing, holds a quote or a line break, or doesn't fit its field (a country list, a local API URL). Nothing was saved.",
+    retryable: false,
+    raisedIn: ['auth/credentials', 'console/credentials'],
+    action: 'Give a known provider and every field it needs, each on one line.'
+  },
+  credentialRejected: {
+    layer: 'auth',
+    meaning: 'The provider refused the key when log checked it. Nothing was saved.',
+    retryable: false,
+    raisedIn: ['auth/credentials'],
+    action: "Copy the key again from the provider's dashboard and save it again."
+  },
+  credentialRateLimited: {
+    layer: 'auth',
+    meaning: 'The provider answered 429 while log checked the key. Nothing was saved.',
+    retryable: true,
+    raisedIn: ['auth/credentials'],
+    action: 'Save it again in a minute.'
+  },
+  credentialValidationUnavailable: {
+    layer: 'auth',
+    meaning: "The provider didn't answer the key check, or answered in a shape log doesn't know. Nothing was saved.",
+    retryable: true,
+    raisedIn: ['auth/credentials'],
+    action: "Check the network and the provider's status, then save it again."
+  },
+  credentialSaveUnconfirmed: {
+    layer: 'auth',
+    meaning: 'The key passed its check, but reading the settings file back did not show it saved.',
+    retryable: true,
+    raisedIn: ['auth/credentials', 'console/credentials'],
+    action: 'Check the settings file (LOG_USER_ENV) is writable, then save it again.'
+  },
+  browserProviderUnavailable: {
+    layer: 'adsPower',
+    meaning: "The browser provider's local API didn't answer at the address given. Nothing was saved.",
+    retryable: true,
+    raisedIn: ['auth/credentials'],
+    action: 'Start the browser provider on this machine, check its local API URL, then save it again.'
+  },
+  signInInputInvalid: {
+    layer: 'tool',
+    meaning: 'The sign-in input is missing a field, names no known platform or method, or a value is empty, too long or holds a line break. Nothing was saved.',
+    retryable: false,
+    raisedIn: ['console/signIn'],
+    action: 'Give the platform, the account and each value on one line.'
+  },
+  passwordSignInUnavailable: {
+    layer: 'tool',
+    meaning: "The platform doesn't sign in from a saved email and password. Nothing was saved.",
+    retryable: false,
+    raisedIn: ['console/signIn'],
+    action: 'Sign the account in by its own route (sessionsSignIn names it).'
+  },
+  reportFieldInvalid: {
+    layer: 'tool',
+    meaning: "A report's input doesn't fit its source's fields: a field is missing, of the wrong kind, or one the source doesn't take. Nothing was read.",
+    retryable: false,
+    raisedIn: ['mcp/apps/report', 'cli/report'],
+    action: 'Fix the fields the refusal names and ask again.'
+  },
+  reportSourceNoData: {
+    layer: 'tool',
+    meaning: 'log.db holds no conversations on that platform, so there is nothing to count.',
+    retryable: false,
+    raisedIn: ['inbox/senders'],
+    action: "Read that platform's inbox first, or ask about a platform that has chats."
+  },
+  identityProfileMissing: {
+    layer: 'tool',
+    meaning: 'log.db holds no stored profile for that person on that platform. No platform was asked.',
+    retryable: false,
+    raisedIn: ['inbox/profiles'],
+    action: 'Profiles are kept when a session check or a followers read sees the person; ask after one has.'
+  },
 } as const satisfies Record<string, ErrorEntry>
 
 export type ErrorCode = keyof typeof ERROR_CATALOG

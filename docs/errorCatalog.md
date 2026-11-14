@@ -354,6 +354,11 @@ stateDiagram-v2
 | --- | --- | --- | --- | --- | --- |
 | `timedOut` | yes | `auth/exchange` | command exits | `log login` waited and the browser never finished signing in. | Run `log login` again, or `log login --token <t>`. |
 | `invalidExchange` | no | `auth/exchange` | command exits | The browser's sign-in payload did not match this login's state or PKCE challenge. | Run `log login` again from the start. |
+| `credentialInputInvalid` | no | `auth/credentials`, `console/credentials` | command exits | The provider is not one log keeps keys for, a value is missing, holds a quote or a line break, or doesn't fit its field (a country list, a local API URL). Nothing was saved. | Give a known provider and every field it needs, each on one line. |
+| `credentialRejected` | no | `auth/credentials` | command exits | The provider refused the key when log checked it. Nothing was saved. | Copy the key again from the provider's dashboard and save it again. |
+| `credentialRateLimited` | yes | `auth/credentials` | command exits | The provider answered 429 while log checked the key. Nothing was saved. | Save it again in a minute. |
+| `credentialValidationUnavailable` | yes | `auth/credentials` | command exits | The provider didn't answer the key check, or answered in a shape log doesn't know. Nothing was saved. | Check the network and the provider's status, then save it again. |
+| `credentialSaveUnconfirmed` | yes | `auth/credentials`, `console/credentials` | command exits | The key passed its check, but reading the settings file back did not show it saved. | Check the settings file (LOG_USER_ENV) is writable, then save it again. |
 
 ## profile
 
@@ -381,4 +386,9 @@ stateDiagram-v2
 | `sessionPlatformInvalid` | no | `platformKit/sessionCheck` | command exits | The platform given isn't one log knows. | Give one of the platforms log lists in its usage, or leave the platform out to check every account. |
 | `signInLinkInvalid` | no | `platformKit/signInLink` | command exits | The sign-in link is unknown, already used or more than ten minutes old. A link works once and grants nothing by itself. | Ask for sign-in again (sessionsSignIn) to get a new link. |
 | `signInLinkNotYours` | no | `platformKit/signInLink` | command exits | The sign-in link was made for another person. It was not used up; only the person who asked for the sign-in can open it. | The person who asked for the sign-in opens the link, signed in to the console as themself. |
+| `signInInputInvalid` | no | `console/signIn` | command exits | The sign-in input is missing a field, names no known platform or method, or a value is empty, too long or holds a line break. Nothing was saved. | Give the platform, the account and each value on one line. |
+| `passwordSignInUnavailable` | no | `console/signIn` | command exits | The platform doesn't sign in from a saved email and password. Nothing was saved. | Sign the account in by its own route (sessionsSignIn names it). |
+| `reportFieldInvalid` | no | `mcp/apps/report`, `cli/report` | command exits | A report's input doesn't fit its source's fields: a field is missing, of the wrong kind, or one the source doesn't take. Nothing was read. | Fix the fields the refusal names and ask again. |
+| `reportSourceNoData` | no | `inbox/senders` | command exits | log.db holds no conversations on that platform, so there is nothing to count. | Read that platform's inbox first, or ask about a platform that has chats. |
+| `identityProfileMissing` | no | `inbox/profiles` | command exits | log.db holds no stored profile for that person on that platform. No platform was asked. | Profiles are kept when a session check or a followers read sees the person; ask after one has. |
 

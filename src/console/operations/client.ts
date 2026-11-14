@@ -78,10 +78,7 @@ export async function runConsoleOperation(tool: string, args: Record<string, unk
     const saved = await saveConsoleCredentials({ provider: args.provider, values: args.values }, { fetcher: deps.fetcher });
     return { ...saved, connections: loadConnectionsView() };
   }
-  if (tool === "credentialsRead") {
-    if (args.provider !== "adsPower") throw new Error("credentialInputInvalid");
-    return { values: readConsoleCredentials({ provider: args.provider }) };
-  }
+  if (tool === "credentialsRead") return { values: readConsoleCredentials({ provider: args.provider }) };
   if (tool === "accountCheck") return accountCheck(args, deps);
   if (tool === "signInLinkOpen") {
     const target = redeemSignInLink(args.token, deps.requester ?? OWNER_REQUESTER);
