@@ -123,7 +123,17 @@ function render(rel) {
     return { title: `Diagram: ${basename(rel, ".mmd")}`, body: `Generated from the code by \`bun run docs:build\`.\n\n\`\`\`mermaid\n${text.trim()}\n\`\`\`\n` };
   }
   const { title, body } = titleAndBody(rel, text);
-  const linked = body.replace(/(\]\()([^)\s]+)(\))/g, (_, open, target, close) => open + rewriteLink(rel, target) + close);
+  let inFence = false;
+  const linked = body
+    .split("\n")
+    .map((line) => {
+      if (/^\s*(```|~~~)/.test(line)) {
+        inFence = !inFence;
+        return line;
+      }
+      return inFence ? line : line.replace(/(\]\()([^)\s]+)(\))/g, (_, open, target, close) => open + rewriteLink(rel, target) + close);
+    })
+    .join("\n");
   return { title, body: plainText(linked) };
 }
 

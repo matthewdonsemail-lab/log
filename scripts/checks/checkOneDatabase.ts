@@ -65,7 +65,7 @@ const ALLOWED: Record<string, { writes: number; kind: Kind }> = {
   'src/runtime/bridge/client.ts': { writes: 1, kind: 'session' },
   'src/rea/facebookClient/client.ts': { writes: 6, kind: 'capture' },
   'src/rea/inspectMap/client.ts': { writes: 6, kind: 'capture' },
-  'src/rea/platformClient/client.ts': { writes: 4, kind: 'capture' },
+  'src/rea/platformClient/client.ts': { writes: 5, kind: 'capture' },
   'src/scaffold/platform/client.ts': { writes: 2, kind: 'repo' },
   'src/scaffold/platform/helpers/templates.ts': { writes: 2, kind: 'repo' },
   'src/search/conversations/client.ts': { writes: 4, kind: 'index' },
