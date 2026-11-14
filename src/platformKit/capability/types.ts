@@ -1,7 +1,7 @@
 import type { Platform } from "../../cli/runner/helpers/platforms.ts";
 import type { ToolEffect } from "../../cli/runner/types.ts";
 
-export const CANONICAL_INPUTS = ["account", "chat", "space", "limit", "seconds", "text", "message", "emoji", "asOne", "approvedBy"] as const;
+export const CANONICAL_INPUTS = ["account", "chat", "space", "limit", "seconds", "text", "message", "emoji", "asOne", "brief", "overGate", "approvedBy"] as const;
 export type CanonicalInput = (typeof CANONICAL_INPUTS)[number];
 
 export interface CapabilityInput {

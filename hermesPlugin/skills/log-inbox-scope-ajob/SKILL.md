@@ -33,11 +33,11 @@ Say: **"go on docs/useCases/inbox/scopeAJob.md for <the person>"**. The agent re
 
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
-| 1 | Read them in full before asking anything: the whole thread, every file, sheet or screenshot they sent, what they have already built, what they are stuck on, and anything they have said about money | `discordRead` { channel, limit: 120 }, `twitterDms` { with }, `slackRead` { chat }, `instagramDms` { account, with } | what they have done, what is blocked, and what they are paying for, in a few lines |
+| 1 | Read them in full before asking anything: the whole thread, every file, sheet or screenshot they sent, what they have already built, what they are stuck on, and anything they have said about money | `chatsList` { account } to find the chat, then `messagesRead` { account, chat, limit: 120 } | what they have done, what is blocked, and what they are paying for, in a few lines |
 | 2 | Read the artefacts they sent, not just the message about them: open the spreadsheet, the doc, the tracker, and say what it actually shows | `read`, the file's own tool (an `.xlsx` through the spreadsheet skill), `mediaView` | each artefact's real content, and the gap between it and the message |
 | 3 | Pull how the owner really writes in that chat, before drafting a word | `voice` { to, with, context } with no text | his latest messages there, his real replies to things like it, and the chat's own length and burst |
 | 4 | Ask the open scope questions, as short lines in his shape, one question per line, and gate the whole draft | `voice` { to, with, context, text }, then the send | every line he would plausibly have typed, and `pass` |
-| 5 | Claim the chat and send it one message per line | `inboxClaim`, `discordSendLive` { channel, text, approvedBy: "<owner>", confirmLive: true } | the platform answers `sent` for every line |
+| 5 | Claim the chat and send it one message per line | `inboxClaim`, `messagesSendLive` { account, chat, text, approvedBy: "<owner>", confirmLive: true } | the platform answers `sent` for every line |
 | 6 | Stay on it until the scope is closed: read their answer, ask the next thing, never a second question the first one already answered | the chat, read before every reply | what it is, what is done, what is blocked, what done looks like, and the constraints |
 | 7 | Tell the owner what the job now is, with the unknowns still in it named | the reply to the owner | one line per open question, and what only he can answer (usually the price) |
 
@@ -66,6 +66,8 @@ Only what the thread has not already answered. In practice, in this order:
 - **A gate refusal is a signal to check the evidence, not only the words.** Before rewriting a fifth time, read `voice` with no text: if his latest messages there are empty, the gate has nothing to compare against and no phrasing will pass.
 - **The scope is usually in the artefact they already sent.** On 2026-11-12 the whole job — the stages, the two blocked substeps, the counts that already passed — was in one spreadsheet the person had sent two days earlier, and the open questions were only about the artefacts, the blocker and what "done" meant.
 - **A play must be loaded before sending as the owner,** and a session that changed models mid-thread loses it: a send with no play is refused `playMissing`.
+- **It runs on whichever platform they wrote on.** `chatsList`, `messagesRead` and `messagesSendLive` take the platform from the account, so the same steps read and answer a chat on X, Discord, Slack or Instagram.
+
 
 ## Next
 
