@@ -155,6 +155,7 @@ export function connectOnce(options: ConnectOptions): Promise<{ code: number; re
     const socket = (options.socket ?? openSocket)(binding.bridgeUrl, { authorization: `Bearer ${binding.credential}` });
     let generation = 0;
     let beat: ReturnType<typeof setInterval> | undefined;
+    const running = new Set<string>();
     const send = (envelope: Omit<Envelope, "protocolVersion" | "workspaceId" | "routeGeneration">) => {
       if (socket.readyState === 1) socket.send(JSON.stringify({ protocolVersion: PROTOCOL_VERSION, workspaceId: binding.workspaceId, routeGeneration: generation, ...envelope }));
     };
@@ -179,6 +180,7 @@ export function connectOnce(options: ConnectOptions): Promise<{ code: number; re
         return;
       }
       const operationId = envelope.operationId ?? "";
+      if (envelope.kind === "reconcile" && running.has(operationId)) return;
       if (envelope.kind === "reconcile" || envelope.kind === "cancel") {
         const known = journalRead(db, operationId);
         send({ kind: "result", operationId, payload: known ?? { state: "unknown", error: { code: "operationUnknown", message: "this workspace has no record of that operation" } } });
@@ -210,6 +212,7 @@ export function connectOnce(options: ConnectOptions): Promise<{ code: number; re
         send({ kind: "result", operationId, payload: journalRead(db, operationId) });
         return;
       }
+      running.add(operationId);
       send({ kind: "accepted", operationId, payload: null });
       journalState(db, operationId, "running");
       onLine(`bridge: running ${checked.tool} for operation ${operationId}`);
@@ -218,6 +221,8 @@ export function connectOnce(options: ConnectOptions): Promise<{ code: number; re
         outcome = await options.runTool(checked.tool, checked.args, checked.authority);
       } catch (error) {
         outcome = { state: options.isLive(checked.tool) ? "unknown" : "failed", error: { code: "runtimeError", message: error instanceof Error ? error.message : String(error) } };
+      } finally {
+        running.delete(operationId);
       }
       journalState(db, operationId, outcome.state, options.redactResult && outcome.result !== undefined ? { ...outcome, result: options.redactResult(checked.tool, outcome.result) } : outcome);
       onLine(`bridge: ${checked.tool} ${outcome.state} (operation ${operationId})`);

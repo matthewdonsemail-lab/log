@@ -101,9 +101,12 @@ export async function consoleOperation(tool: string, args: Record<string, unknow
 }
 
 export async function hostedSignIn(args: Record<string, unknown>, authority: Pick<Authority, "actorUserId"> | null | undefined, call: (input: Record<string, unknown>) => Promise<unknown>, origin: string = readBinding()?.origin ?? ""): Promise<unknown> {
-  const { signInCall } = await import("../../mcp/apps/index.ts");
-  const { ui, ...input } = args;
-  return signInCall(input, (given) => call(given) as never, { rung: ui === true ? "app" : "text", location: "remote", requester: authority?.actorUserId ?? "", origin });
+  const { deferredElicitation, signInCall, withPendingElicitation } = await import("../../mcp/apps/index.ts");
+  const { ui, urlElicitation, elicitation, ...input } = args;
+  const rung = ui === true ? "app" : urlElicitation === true ? "url" : "text";
+  const deferred = deferredElicitation(typeof elicitation === "string" ? elicitation : null);
+  const ran = await signInCall(input, (given) => call(given) as never, { rung, location: "remote", requester: authority?.actorUserId ?? "", origin, ...(rung === "url" ? { elicit: deferred.elicit } : {}) });
+  return withPendingElicitation(ran, deferred.asked());
 }
 
 export function toolRunner(callTool: ToolCaller): RunTool {

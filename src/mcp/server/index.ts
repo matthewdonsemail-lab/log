@@ -1,4 +1,4 @@
-import { timingSafeEqual } from "node:crypto";
+import { randomBytes, timingSafeEqual } from "node:crypto";
 import { existsSync, readFileSync, watch } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -33,10 +33,12 @@ import type { LogToolInput, ProgressLine, ResultIdentity, ToolResult } from "./t
 import { RESULT_SIZE_META } from "./types.ts";
 import { readConsoleEvents } from "../../observability/console/index.ts";
 import { viewerState } from "../../browser/viewer/index.ts";
-import { accountOfArgs, appTools, BROWSER_VIEW_TOOL, BROWSER_VIEW_URI, browserViewResource, httpLocation, isAppTool, readBrowserViewResource, runAppTool, settleLocation, uiCapable, withBrowserView, withBrowserViewUi } from "../apps/browserView/index.ts";
+import { accountOfArgs, appTools, BROWSER_VIEW_TOOL, BROWSER_VIEW_URI, browserViewResource, httpLocation, isAppTool, MCP_APP_MIME_TYPE, readBrowserViewResource, runAppTool, settleLocation, UI_EXTENSION_ID, uiCapable, withBrowserView, withBrowserViewUi } from "../apps/browserView/index.ts";
 import { browserViewLocation } from "../../cli/browser/index.ts";
 import { readReportResource, REPORT_TOOL, REPORT_URI, reportResource, reportTool, runReport, withReportUi } from "../apps/report/index.ts";
-import { isSignInCall, localSignInSurface, signInCall } from "../apps/signIn/index.ts";
+import { deferredElicitation, isSignInCall, localSignInSurface, SIGN_IN_INPUT_KEY, signInCall } from "../apps/signIn/index.ts";
+import { answeredAction, argumentsDigest, dualEraTransport, hostAllowed, isModernHttp, statelessHttp, urlInputRequired } from "../stateless/index.ts";
+import type { StatelessHandlers } from "../stateless/index.ts";
 
 export * from "./helpers/index.ts";
 export type { GuardResult, LogTool, LogToolInput } from "./types.ts";
@@ -396,6 +398,56 @@ export function createLogMcpServer(context: Partial<CommandContext> = {}, option
   return server;
 }
 
+export const STATELESS_SERVER_INFO = { name: "log", version: "0.1.0" } as const;
+
+export interface StatelessLogOptions extends LogMcpOptions {
+  scope?: PlayScope;
+  principal?: string;
+  stateKey?: Uint8Array;
+}
+
+export function statelessTools(): Record<string, unknown>[] {
+  const commands = [...toolsFromCommands(COMMANDS, { shell: false }), ...toolsFromFlows(savedFlows(), { shell: false })];
+  const listed = [guideTool(), ...catalogTools(), ...withUseCases(commands, listUseCases(commands.map((t) => t.name)))];
+  const sized = listed.map((tool) => withBrowserViewUi({ ...tool, _meta: { ...RESULT_SIZE_META } as Record<string, unknown> }));
+  return [...sized, withReportUi({ ...reportTool(), _meta: { ...RESULT_SIZE_META } as Record<string, unknown> }), ...appTools()] as unknown as Record<string, unknown>[];
+}
+
+export function statelessLogHandlers(context: Partial<CommandContext> = {}, options: StatelessLogOptions = {}): StatelessHandlers {
+  const logDir = options.logDir === undefined ? liveLogDir() : options.logDir;
+  const onLine: OnLogLine = (tool, stream, line) => {
+    if (logDir) appendLiveLine(logDir, tool, stream, line);
+  };
+  const scope = options.scope ?? processPlayScope();
+  const principal = options.principal ?? "local";
+  const stateKey = options.stateKey ?? randomBytes(32);
+  return {
+    serverInfo: { ...STATELESS_SERVER_INFO },
+    instructions: SERVER_INSTRUCTIONS,
+    capabilities: { tools: {}, resources: {}, extensions: { [UI_EXTENSION_ID]: { mimeTypes: [MCP_APP_MIME_TYPE] } } },
+    listTools: async () => statelessTools(),
+    listResources: async () => [{ uri: AGENTS_URI, name: "AGENTS.md", description: "The owner's rules for log-cli, every one numbered and dated, the newest at the bottom. Every tool's description cites the ones it falls under.", mimeType: "text/markdown" }, browserViewResource(), reportResource()],
+    readResource: async (uri) => {
+      if (uri === BROWSER_VIEW_URI) return (await readBrowserViewResource()) as unknown as Record<string, unknown>;
+      if (uri === REPORT_URI) return (await readReportResource()) as unknown as Record<string, unknown>;
+      if (uri !== AGENTS_URI) return null;
+      return { contents: [{ uri: AGENTS_URI, mimeType: "text/markdown", text: readFileSync(AGENTS_MD, "utf8") }] };
+    },
+    callTool: async (params, caller) => {
+      const input = params.arguments as LogToolInput | undefined;
+      const run = (given: LogToolInput | undefined) => runToolCall(params.name, given, context, onLine, options.readBrowsers ?? browserViews, caller.signal, uiCapable(caller.capabilities), scope, hasShell(caller.clientInfo?.name));
+      if (!isSignInCall(params.name)) return withCallFooter(params.name, input, await run(input), scope);
+      const expect = { tool: params.name, digest: argumentsDigest(withoutHandle(input)), principal, key: SIGN_IN_INPUT_KEY };
+      const answered = answeredAction(caller, expect, stateKey);
+      const deferred = deferredElicitation(answered);
+      const result = await signInCall(input, run, localSignInSurface(caller.capabilities, (asked) => deferred.elicit(asked.url, asked.message, asked.elicitationId ?? "")));
+      const asked = deferred.asked();
+      if (asked && answered === null) return urlInputRequired(expect, asked.url, asked.message, stateKey);
+      return withCallFooter(params.name, input, result, scope);
+    },
+  };
+}
+
 function loadEnv(root: string): void {
   process.chdir(root);
   const envPath = join(root, ".env.local");
@@ -409,7 +461,7 @@ export async function startLogMcpServer(root: string): Promise<void> {
   console.log = console.error;
   console.info = console.error;
   settleLocation("local");
-  await createLogMcpServer().connect(new StdioServerTransport());
+  await createLogMcpServer().connect(dualEraTransport(new StdioServerTransport(), statelessLogHandlers()));
 }
 
 export interface LogMcpHttpOptions {
@@ -441,6 +493,9 @@ export function serveLogMcpHttp(options: LogMcpHttpOptions = {}): { url: string;
   const oauth = options.oauth ?? null;
   if (!LOOPBACK.has(host) && !token && !oauth) throw new Error(`log MCP over HTTP on ${host} needs a token or OAuth: set LOG_MCP_TOKEN, or LOG_MCP_PUBLIC_URL with Twenty (only loopback runs without one)`);
   const sessions = new Map<string, WebStandardStreamableHTTPServerTransport>();
+  const stateless = statelessLogHandlers(options.context ?? {}, { ...(options.server ?? {}), scope: playScope("http:stateless"), principal: "http" });
+  const rebinding = !LOOPBACK.has(host) || oauth !== null;
+  const allowedHosts = () => [...(LOOPBACK.has(host) ? ["127.0.0.1", "localhost", "[::1]"].flatMap((h) => [h, `${h}:${server.port}`]) : [host, `${host}:${server.port}`]), ...(oauth ? [oauth.publicHost] : [])];
   const server = Bun.serve({
     hostname: host,
     port: options.port ?? 7337,
@@ -462,6 +517,13 @@ export function serveLogMcpHttp(options: LogMcpHttpOptions = {}): { url: string;
       }
       if (url.pathname !== "/mcp") return new Response("Not found: the MCP endpoint is /mcp", { status: 404 });
       if (!authorized(request, token, oauth)) return oauth ? oauth.unauthorized() : new Response("Unauthorized", { status: 401, headers: { "WWW-Authenticate": "Bearer" } });
+      if (request.method === "POST") {
+        const body = await request.clone().json().catch(() => undefined);
+        if (isModernHttp(request.headers, body)) {
+          if (rebinding && !hostAllowed(request.headers, allowedHosts())) return Response.json({ jsonrpc: "2.0", id: null, error: { code: -32600, message: "Host or Origin not allowed" } }, { status: 403 });
+          return statelessHttp(request.headers, body, stateless, request.signal);
+        }
+      }
       const id = request.headers.get("mcp-session-id");
       let transport = id ? sessions.get(id) : undefined;
       if (id && !transport) return Response.json({ jsonrpc: "2.0", error: { code: -32001, message: "Session not found: initialize again" }, id: null }, { status: 404 });
@@ -470,8 +532,8 @@ export function serveLogMcpHttp(options: LogMcpHttpOptions = {}): { url: string;
           sessionIdGenerator: () => crypto.randomUUID(),
           onsessioninitialized: (sessionId) => void sessions.set(sessionId, fresh),
           onsessionclosed: (sessionId) => void sessions.delete(sessionId),
-          enableDnsRebindingProtection: !LOOPBACK.has(host) || oauth !== null,
-          allowedHosts: [...(LOOPBACK.has(host) ? ["127.0.0.1", "localhost", "[::1]"].flatMap((h) => [h, `${h}:${server.port}`]) : [host, `${host}:${server.port}`]), ...(oauth ? [oauth.publicHost] : [])],
+          enableDnsRebindingProtection: rebinding,
+          allowedHosts: allowedHosts(),
         });
         await createLogMcpServer(options.context ?? {}, { ...(options.server ?? {}), playOwner: `http:${crypto.randomUUID()}` }).connect(fresh);
         transport = fresh;
