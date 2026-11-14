@@ -2,7 +2,7 @@ import { clearDeadQueueLockRows } from '../../twitter/queue/store/index'
 import { spawn, spawnSync } from 'node:child_process'
 import { appendFileSync, closeSync, existsSync, mkdirSync, openSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs'
 import { homedir, hostname } from 'node:os'
-import { join } from 'node:path'
+import { dirname, join } from 'node:path'
 import { twitterStateRoot } from '../../directApi/engine/index'
 import { personKeyOf } from '../../twitter/dm/person/index'
 import { SHARED_SESSION } from '../../agentHooks/sessionOffsets/index'
@@ -151,11 +151,21 @@ export function releasePoll(): void {
   rmSync(lockPath(), { force: true })
 }
 
+const WATCHER_FATAL = /: (accountNotFound|sessionDead): |didn't send READY/
+
+export function sessionCheckedSince(platform: string, account: string, since: number): boolean {
+  const session = readJson<{ sessionState?: string; checkedAt?: string }>(join(dirname(inboxRoot()), platform, account, 'session.json'), {})
+  return session.sessionState === 'loggedIn' && Date.parse(session.checkedAt ?? '') > since
+}
+
 export function watcherGone(platform: string, account: string): boolean {
+  const session = readJson<{ sessionState?: string }>(join(dirname(inboxRoot()), platform, account, 'session.json'), {})
+  if (session.sessionState === 'loggedOut') return true
   const path = join(inboxRoot(), platform, account, 'watch.log')
   if (!existsSync(path)) return false
   const lines = readFileSync(path, 'utf8').trim().split('\n').filter((l) => l.includes(': '))
-  return lines.length > 0 && /: accountNotFound: /.test(lines[lines.length - 1])
+  if (!lines.length || !WATCHER_FATAL.test(lines[lines.length - 1])) return false
+  return !sessionCheckedSince(platform, account, statSync(path).mtimeMs)
 }
 
 export function processAlive(pid: number): boolean {

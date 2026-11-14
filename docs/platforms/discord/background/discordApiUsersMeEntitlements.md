@@ -10,22 +10,24 @@
 | Path | `discord.com/api/users/@me/entitlements` |
 | Sends | — |
 | Reads | — |
-| Called from | `runs/inspect/20261113T141543_<name:1>/script1.js:232 625075`, `runs/inspect/20261113T141543_<name:1>/script1.js:124 559868`, `runs/inspect/20261113T141543_<name:1>/script1.js:124 961943`, `runs/inspect/20261113T141543_<name:1>/script1294.js:1 634654` |
-| rea | `ev_a9fa69c7432fa1fcc41058ba491790444cfcec72f4c96150b3d2566a4e5def67` |
+| Called from | `runs/inspect/20261113T231616_deepman2/script3.js:232 625075`, `runs/inspect/20261113T231616_deepman2/script3.js:124 559868`, `runs/inspect/20261113T231616_deepman2/script3.js:124 961943`, `runs/inspect/20261111T233723_deepman2/script1280.js:1 anonymous` |
+| rea | `ev_04e36d30f435d6521f60da8ddf945254e43c8f51b14ebac25b895600ea7014f1` |
 
-Seen 5 time(s) in 5 run(s).
+Seen 11 time(s) in 11 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 5: click e40 | 1 | 200 | 314 ms | 6487 ms | — |
-| inspect | step 1: goto /login | 3 | 200 | 391–441 ms | 11361–1045683 ms | — |
+| inspect | step 1: goto /login | 7 | 200 | 166–441 ms | 11361–1045683 ms | — |
 | inspect | step 2: snapshot | 1 | 200 | 382 ms | 48639 ms | — |
+| inspect | step 6: wait 45s | 1 | 200 | 177 ms | 22336 ms | — |
+| inspect | step 1: goto /channels/@me | 1 | 200 | 148 ms | 2243 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261113T141543_<name:1>**, step 1: goto /login: 200, 419 ms
+**runs/inspect/20261113T231616_deepman2**, step 6: wait 45s: 200, 177 ms
 
 Sent:
 
@@ -47,7 +49,7 @@ Answered:
 []
 ```
 
-**runs/inspect/20261030T222341_<name:1>**, step 2: snapshot: 200, 382 ms
+**runs/inspect/20261111T233723_deepman2**, step 1: goto /login: 200, 166 ms
 
 Sent:
 
@@ -69,7 +71,7 @@ Answered:
 []
 ```
 
-**runs/inspect/20261028T062914_<name:1>**, step 5: click e40: 200, 314 ms
+**runs/inspect/20261109T192314_deepman2**, step 1: goto /channels/@me: 200, 148 ms
 
 Sent:
 

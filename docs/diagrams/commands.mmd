@@ -98,6 +98,7 @@ flowchart TB
   end
   subgraph g_discord["Discord"]
     c_discordSession["session"]
+    c_discordSecrets["secrets"]
     c_discordChats["chats"]
     c_discordServers["servers"]
     c_discordChannels["channels"]
@@ -321,6 +322,8 @@ flowchart TB
   mcp --> c_redditVote
   cli --> c_discordSession
   mcp --> c_discordSession
+  cli --> c_discordSecrets
+  c_discordSecrets -.- terminal
   cli --> c_discordChats
   mcp --> c_discordChats
   cli --> c_discordServers

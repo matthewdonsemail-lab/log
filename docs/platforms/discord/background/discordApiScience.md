@@ -10,10 +10,10 @@
 | Path | `discord.com/api/science` |
 | Sends | `events` |
 | Reads | — |
-| Called from | `runs/inspect/20261113T141543_<name:1>/script1.js:232 625075`, `runs/inspect/20261113T141543_<name:1>/script1.js:124 559868`, `runs/inspect/20261113T141543_<name:1>/script1.js:124 961943`, `runs/inspect/20261113T141543_<name:1>/script1294.js:1 634654` |
-| rea | `ev_a9fa69c7432fa1fcc41058ba491790444cfcec72f4c96150b3d2566a4e5def67` |
+| Called from | `runs/inspect/20261113T231616_deepman2/script3.js:232 625075`, `runs/inspect/20261113T231616_deepman2/script3.js:124 559868`, `runs/inspect/20261113T231616_deepman2/script3.js:124 961943`, `runs/inspect/20261111T233723_deepman2/script1280.js:1 anonymous` |
+| rea | `ev_8cc8df3885612ca767e27a638d04cf6acc9ca7088dd1bcdbc3e850e9b459c9ac` |
 
-Seen 156 time(s) in 6 run(s).
+Seen 235 time(s) in 13 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -21,7 +21,7 @@ Seen 156 time(s) in 6 run(s).
 | inspect | step 2: snapshot | 16 | 204 | 287–485 ms | 8909–52433 ms | — |
 | inspect | step 4: press Enter | 6 | 204 | 267–490 ms | 7564–10902 ms | — |
 | inspect | step 5: wait 75s | 25 | 204 | 273–727 ms | 75767–412983 ms | — |
-| inspect | step 1: goto /login | 32 | 204 | 272–672 ms | 3263–1111934 ms | — |
+| inspect | step 1: goto /login | 87 | 204 | 107–672 ms | 786–1111934 ms | — |
 | inspect | step 3: goto /login | 4 | 204 | 291–396 ms | 5385–47260 ms | — |
 | inspect | step 5: click e40 | 8 | 204 | 306–511 ms | 816–13580 ms | — |
 | inspect | step 7: snapshot | 4 | 204 | 299–529 ms | 16081–19305 ms | — |
@@ -42,14 +42,18 @@ Seen 156 time(s) in 6 run(s).
 | inspect | step 29: type e3276 | 1 | 204 | 324 ms | 7422 ms | — |
 | inspect | step 31: wait 60s | 3 | 204 | 280–567 ms | 40027–243549 ms | — |
 | inspect | step 2: wait 8s | 6 | 204 | 273–319 ms | 22473–28128 ms | — |
-| inspect | step 1: goto /channels/@me | 3 | 204 | 301–321 ms | 10837–12629 ms | — |
+| inspect | step 1: goto /channels/@me | 14 | 204 | 115–326 ms | 1776–12629 ms | — |
 | inspect | Stopping after 1 step(s). | 3 | 204 | 273–490 ms | 1179–5845 ms | — |
+| inspect | signIn: password typed; submitting with Enter | 1 | 204 | 160 ms | 392 ms | — |
+| inspect | step 5: wait 40s | 1 | 204 | 225 ms | 32196 ms | — |
+| inspect | step 6: wait 45s | 9 | 204 | 105–144 ms | 6126–25852 ms | — |
+| inspect | step 2: saveState | 2 | 204 | 111–247 ms | 8891–9221 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261113T141543_<name:1>**, step 1: goto /login: 204, 318 ms
+**runs/inspect/20261113T231616_deepman2**, step 1: goto /login: 204, 118 ms
 
 Sent:
 
@@ -59,7 +63,7 @@ Sent:
     {
       "type": "libdiscore_loaded",
       "properties": {
-        "client_track_timestamp": 1794579361435,
+        "client_track_timestamp": 1794611784062,
         "event_sequence_number": 1,
         "success": true,
         "experimental_features": [],
@@ -67,14 +71,14 @@ Sent:
         "accessibility_features": 128,
         "rendered_locale": "en-US",
         "uptime_app": 0,
-        "launch_signature": "da0ec52b-87ca-46e9-9514-e7bc3ec174ea",
-        "client_send_timestamp": 1794579363093
+        "launch_signature": "5d2a4289-8209-4283-9e4e-cb8a4e52e40f",
+        "client_send_timestamp": 1794611785020
       }
     },
     {
       "type": "login_viewed",
       "properties": {
-        "client_track_timestamp": 1794579362397,
+        "client_track_timestamp": 1794611784706,
         "event_sequence_number": 2,
         "login_source": null,
         "authenticated": true,
@@ -82,51 +86,51 @@ Sent:
         "client_performance_memory": 0,
         "accessibility_features": 128,
         "rendered_locale": "en-US",
-        "uptime_app": 1,
-        "launch_signature": "da0ec52b-87ca-46e9-9514-e7bc3ec174ea",
+        "uptime_app": 0,
+        "launch_signature": "5d2a4289-8209-4283-9e4e-cb8a4e52e40f",
         "client_rtc_state": "DISCONNECTED",
         "client_app_state": "focused",
         "client_viewport_width": 929,
-        "client_viewport_height": 917,
-        "client_send_timestamp": 1794579363093
+        "client_viewport_height": 965,
+        "client_send_timestamp": 1794611785020
       }
     },
     {
       "type": "app_web_perf_startup_metrics",
       "properties": {
-        "client_track_timestamp": 1794579362518,
+        "client_track_timestamp": 1794611784717,
         "event_sequence_number": 3,
-        "load_id": "312b7cea-30e4-45c9-8d22-cab15398b8d0",
+        "load_id": "45f502c0-8f15-4c38-b72b-1533f2785dd9",
         "metric_name": "tti",
         "url_root_path": "login",
         "was_authenticated": true,
-        "time_first_render_after_ready_end": 4245,
+        "time_first_render_after_ready_end": 2132,
         "script_cost_loaf_supported": true,
-        "script_cost_unattributed_eval_ms": 31,
-        "script_cost_total_count": 530,
+        "script_cost_unattributed_eval_ms": 0,
+        "script_cost_total_count": 444,
         "script_cost_reported_count": 20,
         "script_cost_url": [
+          "/assets/web.de87d610f53637ad.js",
           "/assets/619666.39a9c889d48f07ce.js",
-          "/assets/web.637e82960de4dc33.js",
-          "/assets/572018.46aab2493cfbe4fb.js",
-          "/assets/14335.8f50c7e3cc239ed9.js",
-          "/assets/363189.f566234fc8638ced.js",
-          "/assets/641877.378be635771f416b.js",
+          "/assets/bfd4a6f49b9d55af.js",
+          "/assets/184782.5d5ce3c335610c0d.js",
+          "/assets/847727.df0adb53ace998ba.js",
+          "/assets/419070.a248636d4a4a7b5a.js",
           "… 14 more"
         ],
         "script_cost_download_ms": [
+          861,
           0,
-          0,
-          376,
-          474,
-          470,
-          470,
+          208,
+          286,
+          279,
+          276,
           "… 14 more"
         ],
         "script_cost_transfer_size_bytes": [
+          3553955,
           0,
-          0,
-          0,
+          472701,
           0,
           0,
           0,
@@ -135,25 +139,25 @@ Sent:
         "script_cost_from_cache": [
           false,
           false,
-          true,
+          false,
           true,
           true,
           true,
           "… 14 more"
         ],
         "script_cost_initial_eval_ms": [
+          272,
           0,
-          825,
-          0,
+          89,
           0,
           0,
           0,
           "… 14 more"
         ],
         "script_cost_total_eval_ms": [
-          1079,
-          825,
-          102,
+          272,
+          340,
+          89,
           0,
           0,
           0,
@@ -171,62 +175,62 @@ Sent:
         "client_performance_memory": 0,
         "accessibility_features": 128,
         "rendered_locale": "en-US",
-        "uptime_app": 1,
-        "launch_signature": "da0ec52b-87ca-46e9-9514-e7bc3ec174ea",
+        "uptime_app": 0,
+        "launch_signature": "5d2a4289-8209-4283-9e4e-cb8a4e52e40f",
         "client_rtc_state": "DISCONNECTED",
         "client_app_state": "focused",
         "client_viewport_width": 929,
-        "client_viewport_height": 917,
-        "client_send_timestamp": 1794579363093
+        "client_viewport_height": 965,
+        "client_send_timestamp": 1794611785020
       }
     },
     {
       "type": "app_ui_viewed",
       "properties": {
-        "client_track_timestamp": 1794579362637,
+        "client_track_timestamp": 1794611784719,
         "event_sequence_number": 4,
-        "total_compressed_byte_size": 2291525,
-        "total_uncompressed_byte_size": 8063806,
+        "total_compressed_byte_size": 4707355,
+        "total_uncompressed_byte_size": 20354097,
         "total_transfer_byte_size": 0,
-        "js_compressed_byte_size": 731177,
-        "js_uncompressed_byte_size": 2135098,
+        "js_compressed_byte_size": 680629,
+        "js_uncompressed_byte_size": 2497666,
         "js_transfer_byte_size": 0,
-        "css_compressed_byte_size": 126006,
-        "css_uncompressed_byte_size": 519463,
+        "css_compressed_byte_size": 176852,
+        "css_uncompressed_byte_size": 673656,
         "css_transfer_byte_size": 0,
-        "load_id": "312b7cea-30e4-45c9-8d22-cab15398b8d0",
+        "load_id": "45f502c0-8f15-4c38-b72b-1533f2785dd9",
         "screen_name": "<username:1>",
-        "duration_ms_since_app_opened": 4143,
+        "duration_ms_since_app_opened": 2125,
         "app_hardware_acceleration_enabled": true,
         "client_performance_memory": 0,
         "accessibility_features": 128,
         "rendered_locale": "en-US",
-        "uptime_app": 2,
-        "launch_signature": "da0ec52b-87ca-46e9-9514-e7bc3ec174ea",
+        "uptime_app": 0,
+        "launch_signature": "5d2a4289-8209-4283-9e4e-cb8a4e52e40f",
         "client_rtc_state": "DISCONNECTED",
         "client_app_state": "focused",
         "client_viewport_width": 929,
-        "client_viewport_height": 917,
-        "client_send_timestamp": 1794579363093
+        "client_viewport_height": 965,
+        "client_send_timestamp": 1794611785020
       }
     },
     {
       "type": "impression_multi_account_switch_landing",
       "properties": {
-        "client_track_timestamp": 1794579362824,
+        "client_track_timestamp": 1794611784906,
         "event_sequence_number": 5,
         "impression_type": "modal",
         "location_section": "impression_multi_account_switch_landing",
         "client_performance_memory": 0,
         "accessibility_features": 128,
         "rendered_locale": "en-US",
-        "uptime_app": 2,
-        "launch_signature": "da0ec52b-87ca-46e9-9514-e7bc3ec174ea",
+        "uptime_app": 1,
+        "launch_signature": "5d2a4289-8209-4283-9e4e-cb8a4e52e40f",
         "client_rtc_state": "DISCONNECTED",
         "client_app_state": "focused",
         "client_viewport_width": 929,
-        "client_viewport_height": 917,
-        "client_send_timestamp": 1794579363093
+        "client_viewport_height": 965,
+        "client_send_timestamp": 1794611785020
       }
     }
   ]
@@ -239,7 +243,7 @@ Answered:
 null
 ```
 
-**runs/inspect/20261113T044840_<name:1>**, Stopping after 1 step(s).: 204, 281 ms
+**runs/inspect/20261113T231616_deepman2**, signIn: password typed; submitting with Enter: 204, 160 ms
 
 Sent:
 
@@ -247,35 +251,63 @@ Sent:
 {
   "events": [
     {
-      "type": "quest_content_loaded",
+      "type": "open_modal",
       "properties": {
-        "client_track_timestamp": 1794545380358,
-        "client_heartbeat_session_id": "18fa4278-989f-4a8a-a0cd-a6ac55dae24e",
-        "event_sequence_number": 48,
-        "client_ad_session_id": "f20855a6-d7de-453b-9ffc-da1aa6c9dfe7",
-        "billing_session_id": "18fa4278-989f-4a8a-a0cd-a6ac55dae24e",
-        "ad_content_id": "0",
-        "is_targeted": false,
-        "creative_type": 4,
-        "metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dMUVRzcFNNalJKK2tuaFBta3JpeTlqSW52OVlPLzhJZ2U4NitEckQwSFBZUXVPYzdta3R2WVZod3F0RHB2UWk4UEZPSmlnTWVkVHQ4M01hRFBwSXZndGVDQ3FDSldlVzU4dG9MUDlkZHhCd1F6Z3lrSHBXUy8zMzdKWFhMbWY1UE9QWUQ2dm5iOU1Kd0tiMFoxZVl5WUFDY3FVTzF3Vi9qcGhTaGVTYTdMZG1JRVNNWk9TTklTdERMTW9jSXFvVDZGRk1pNTdnM0dmT05oNTJLSG1vQzNFZEI0c2lDdmREcUlRcDRiTUNFalRTcUhzRXFqSnoxMTZLUEsySC9D… (852 chars)",
-        "traffic_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dKS2huOU5Sa3VRYXNlaElFMkdGZ3VRdGNUS0ZaRUtRK0ZxdmVudWRuL0FLdEdrdTV6ajZXbkVVWjcyNGRJbU0yazVvSnFJZldYUndmT0xrUFQ3amRmWkNvVGlaZTRpNitINWZrTEJ2eFNOMmVleGptQitzMGdkWnlwTzNRdUk1TVp1V2ZRUm5GZ1BVdTZSbEc3eEtsVHNFQT09In0=",
-        "decision_id": "e941b5b6-3b21-4ecc-b498-57da9db62dfa",
-        "triggered_by_status_change": false,
-        "impression_id": "d820e4fa-8abd-45d7-adda-00415ffc6297",
-        "is_quest_enrollment_blocked": false,
-        "content_id": 10,
-        "content_name": "QUEST_BAR_V2",
+        "client_track_timestamp": 1794611819182,
+        "event_sequence_number": 7,
+        "type": "Guild Join Captcha",
         "client_performance_memory": 0,
-        "accessibility_features": 524416,
+        "accessibility_features": 128,
         "rendered_locale": "en-US",
-        "uptime_app": 47,
-        "launch_signature": "d02bcd25-a0eb-4106-812a-4b37defeb286",
+        "uptime_app": 35,
+        "launch_signature": "5d2a4289-8209-4283-9e4e-cb8a4e52e40f",
         "client_rtc_state": "DISCONNECTED",
         "client_app_state": "focused",
         "client_viewport_width": 929,
-        "client_viewport_height": 917,
-        "client_uuid": "UABCI2oq6BPh8X6X7rI806EBAAAjAAAA",
-        "client_send_timestamp": 1794545380723
+        "client_viewport_height": 965,
+        "client_uuid": "QiBC2OQZzRUysZRJXKgy16EBAAABAAAA",
+        "client_send_timestamp": 1794611819184
+      }
+    },
+    {
+      "type": "open_modal",
+      "properties": {
+        "client_track_timestamp": 1794611819182,
+        "event_sequence_number": 8,
+        "type": "Captcha Modal",
+        "client_performance_memory": 0,
+        "accessibility_features": 128,
+        "rendered_locale": "en-US",
+        "uptime_app": 35,
+        "launch_signature": "5d2a4289-8209-4283-9e4e-cb8a4e52e40f",
+        "client_rtc_state": "DISCONNECTED",
+        "client_app_state": "focused",
+        "client_viewport_width": 929,
+        "client_viewport_height": 965,
+        "client_uuid": "QiBC2OQZzRUysZRJXKgy16EBAAACAAAA",
+        "client_send_timestamp": 1794611819184
+      }
+    },
+    {
+      "type": "captcha_event",
+      "properties": {
+        "client_track_timestamp": 1794611819182,
+        "event_sequence_number": 9,
+        "captcha_event_name": "initial-load",
+        "captcha_service": "hcaptcha",
+        "sitekey": "a9b5fb07-92ff-493f-86fe-352a2803b3df",
+        "captcha_flow_key": "6c4c1504-9c87-4cc7-9b25-e617212357cf",
+        "client_performance_memory": 0,
+        "accessibility_features": 128,
+        "rendered_locale": "en-US",
+        "uptime_app": 35,
+        "launch_signature": "5d2a4289-8209-4283-9e4e-cb8a4e52e40f",
+        "client_rtc_state": "DISCONNECTED",
+        "client_app_state": "focused",
+        "client_viewport_width": 929,
+        "client_viewport_height": 965,
+        "client_uuid": "QiBC2OQZzRUysZRJXKgy16EBAAADAAAA",
+        "client_send_timestamp": 1794611819184
       }
     }
   ]
@@ -288,7 +320,7 @@ Answered:
 null
 ```
 
-**runs/inspect/20261030T222341_<name:1>**, step 1: goto /channels/@me: 204, 321 ms
+**runs/inspect/20261113T231616_deepman2**, step 5: wait 40s: 204, 225 ms
 
 Sent:
 
@@ -296,135 +328,27 @@ Sent:
 {
   "events": [
     {
-      "type": "libdiscore_loaded",
+      "type": "captcha_event",
       "properties": {
-        "client_track_timestamp": 1793399045821,
-        "client_heartbeat_session_id": "89078896-68d6-43c2-8cf6-7676bb88761e",
-        "event_sequence_number": 1,
-        "success": true,
-        "experimental_features": [
-          "2026-10-wasm-precompressed-brotli:1"
-        ],
+        "client_track_timestamp": 1794611881111,
+        "event_sequence_number": 10,
+        "captcha_event_name": "open",
+        "captcha_service": "hcaptcha",
+        "sitekey": "a9b5fb07-92ff-493f-86fe-352a2803b3df",
+        "captcha_flow_key": "b02bff83-01db-4ced-ac69-689ea56089f7",
         "client_performance_memory": 0,
         "accessibility_features": 128,
         "rendered_locale": "en-US",
-        "uptime_app": 0,
-        "launch_signature": "7242838a-60a3-40ff-8b74-371f049c70d6",
-        "client_send_timestamp": 1793399050810
-      }
-    },
-    {
-      "type": "client_heartbeat",
-      "properties": {
-        "client_track_timestamp": 1793399045844,
-        "client_heartbeat_session_id": "89078896-68d6-43c2-8cf6-7676bb88761e",
-        "event_sequence_number": 2,
-        "client_heartbeat_initialization_timestamp": 1793399045821,
-        "client_heartbeat_version": 31,
-        "is_idle": false,
-        "idle_duration_ms": 1793399045843,
-        "is_afk": false,
-        "is_system_suspended": false,
-        "is_system_locked": false,
-        "client_performance_memory": 0,
-        "accessibility_features": 128,
-        "rendered_locale": "en-US",
-        "uptime_app": 0,
-        "launch_signature": "7242838a-60a3-40ff-8b74-371f049c70d6",
+        "uptime_app": 97,
+        "launch_signature": "5d2a4289-8209-4283-9e4e-cb8a4e52e40f",
         "client_rtc_state": "DISCONNECTED",
         "client_app_state": "focused",
         "client_viewport_width": 929,
-        "client_viewport_height": 917,
-        "client_send_timestamp": 1793399050810
+        "client_viewport_height": 965,
+        "client_uuid": "QiBC2OQZzRUysZRJXKgy16EBAAAEAAAA",
+        "client_send_timestamp": 1794611881118
       }
-    },
-    {
-      "type": "client_ad_heartbeat",
-      "properties": {
-        "client_track_timestamp": 1793399049622,
-        "client_heartbeat_session_id": "89078896-68d6-43c2-8cf6-7676bb88761e",
-        "event_sequence_number": 3,
-        "client_ad_session_id": "7aa0183c-a722-4bb4-a9c7-700cd2fff0fa",
-        "client_heartbeat_initialization_timestamp": 1793399049480,
-        "client_heartbeat_version": 3,
-        "client_performance_memory": 0,
-        "accessibility_features": 524416,
-        "rendered_locale": "en-US",
-        "uptime_app": 4,
-        "launch_signature": "7242838a-60a3-40ff-8b74-371f049c70d6",
-        "client_rtc_state": "DISCONNECTED",
-        "client_app_state": "focused",
-        "client_viewport_width": 929,
-        "client_viewport_height": 917,
-        "client_send_timestamp": 1793399050810
-      }
-    },
-    {
-      "type": "dismissible_content_shown_before_connection_open",
-      "properties": {
-        "client_track_timestamp": 1793399049624,
-        "client_heartbeat_session_id": "89078896-68d6-43c2-8cf6-7676bb88761e",
-        "event_sequence_number": 4,
-        "content_type": "NITRO_FILE_UPLOAD_1GB_UPSELL",
-        "group_name": null,
-        "latest_version": null,
-        "guild_id": null,
-        "snowflake_id": null,
-        "client_performance_memory": 0,
-        "accessibility_features": 524416,
-        "rendered_locale": "en-US",
-        "uptime_app": 4,
-        "launch_signature": "7242838a-60a3-40ff-8b74-371f049c70d6",
-        "client_rtc_state": "DISCONNECTED",
-        "client_app_state": "focused",
-        "client_viewport_width": 929,
-        "client_viewport_height": 917,
-        "client_send_timestamp": 1793399050810
-      }
-    },
-    {
-      "type": "session_start_client",
-      "properties": {
-        "client_track_timestamp": 1793399049866,
-        "client_heartbeat_session_id": "89078896-68d6-43c2-8cf6-7676bb88761e",
-        "event_sequence_number": 5,
-        "client_performance_memory": 0,
-        "accessibility_features": 524416,
-        "rendered_locale": "en-US",
-        "uptime_app": 4,
-        "launch_signature": "7242838a-60a3-40ff-8b74-371f049c70d6",
-        "client_rtc_state": "DISCONNECTED",
-        "client_app_state": "focused",
-        "client_viewport_width": 929,
-        "client_viewport_height": 917,
-        "client_send_timestamp": 1793399050810
-      }
-    },
-    {
-      "type": "gateway_connected",
-      "properties": {
-        "client_track_timestamp": 1793399049926,
-        "client_heartbeat_session_id": "89078896-68d6-43c2-8cf6-7676bb88761e",
-        "event_sequence_number": 6,
-        "num_failed_connect_attempts": 0,
-        "gateway_url": "wss://gateway.discord.gg",
-        "is_reconnect": false,
-        "is_fast_connect": false,
-        "duration_ms_since_first_connect_attempt": 430,
-        "duration_ms_since_connect_attempt_start": 430,
-        "client_performance_memory": 0,
-        "accessibility_features": 524416,
-        "rendered_locale": "en-US",
-        "uptime_app": 4,
-        "launch_signature": "7242838a-60a3-40ff-8b74-371f049c70d6",
-        "client_rtc_state": "DISCONNECTED",
-        "client_app_state": "focused",
-        "client_viewport_width": 929,
-        "client_viewport_height": 917,
-        "client_send_timestamp": 1793399050810
-      }
-    },
-    "… 2 more"
+    }
   ]
 }
 ```

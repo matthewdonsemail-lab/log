@@ -19,6 +19,7 @@ for p in (str(ROOT), str(VENDOR / "endcord")):
 from platformKit import engine as kit
 from platformKit import media
 from platformKit import reactions
+from discordApi import browserGateway, browserIdentity, browserRest
 
 PLATFORM = "discord"
 LIBRARY = "vendor/endcord"
@@ -26,13 +27,24 @@ WRITES: tuple[str, ...] = ("send", "delete", "react", "voice")
 SEARCH_PAGE = 25
 
 
-def client_of(token: str) -> Any:
-    from endcord import client_properties as props
-    from endcord import discord
+identity: dict[str, Any] | None = None
+launched = browserIdentity.launch()
 
-    agent = props.get_user_agent()
-    properties = props.encode_properties(props.add_user_agent(props.get_default_properties(), agent))
-    return discord.Discord(token, None, properties, agent)
+
+def client_of(token: str) -> Any:
+    if identity is None:
+        raise SystemExit("templateStale: no recording of this account's browser")
+    return browserRest.browser_discord(token, identity, launched)
+
+
+def with_identity(action: Any) -> Any:
+    async def run(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
+        global identity
+        identity = browserIdentity.load(str(spec.get("stateRoot") or ""), str(spec.get("account") or "")) if spec.get("stateRoot") and spec.get("account") else None
+        if identity is None:
+            return {"ok": False, "code": "templateStale", "detail": f"no recording of {spec.get('account') or 'this account'}'s own browser to talk to Discord as: sign in once in its browser (log inspect start --account <a>, then close it), so its gateway sign-on and headers are recorded", "loginState": "unknown"}
+        return await action(spec, cookies)
+    return run
 
 
 def me_of(token: str) -> tuple[int | None, Any]:
@@ -421,20 +433,19 @@ def live(event: dict[str, Any]) -> None:
 
 
 def watch_of(token: str, seconds: float, spec: dict[str, Any]) -> dict[str, Any]:
-    from endcord import client_properties as props
-    from endcord import gateway
-
-    gateway.is_relevant_message = lambda *args, **kwargs: True
-    agent = props.get_user_agent()
-    properties = props.add_user_agent(props.get_default_properties(), agent)
-    socket = gateway.Gateway(token, None, props.add_for_gateway(properties), agent)
+    socket = browserGateway.BrowserGateway(token, identity, launched)
     threading.Thread(target=socket.connect, daemon=True).start()
     started = time.time()
     while not socket.get_ready():
+        if socket.get_state() == 0:
+            closed = socket.get_messages() or {}
+            detail = str((closed.get("d") or {}).get("detail") or "")
+            if socket.dead():
+                return {"ok": False, "code": "sessionDead", "detail": f"Discord's gateway closed with 4004 (authentication failed) before READY{f': {detail}' if detail else ''}", "loginState": "loggedOut"}
+            return {"ok": False, "code": "platformError", "detail": f"Discord's gateway closed before READY{f': {detail}' if detail else ''}", "loginState": "unknown"}
         if time.time() - started > 45:
+            socket.stop()
             return {"ok": False, "code": "platformError", "detail": "Discord's gateway didn't send READY within 45 s", "loginState": "unknown"}
-        if socket.get_state() == 0 and time.time() - started > 10:
-            return {"ok": False, "code": "sessionDead", "detail": "Discord's gateway closed before READY", "loginState": "loggedOut"}
         time.sleep(0.2)
     me = str(socket.get_my_id())
     save_servers_from(socket, spec)
@@ -449,6 +460,11 @@ def watch_of(token: str, seconds: float, spec: dict[str, Any]) -> dict[str, Any]
                 break
             time.sleep(0.05)
             continue
+        if event.get("op") == "CLOSED":
+            live({"kind": "closed", "at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "detail": str((event.get("d") or {}).get("detail") or "the gateway closed")})
+            if socket.dead():
+                return {"ok": False, "code": "sessionDead", "detail": "Discord's gateway closed with 4004 (authentication failed)", "loginState": "loggedOut", "messages": count}
+            break
         if event.get("op") != "MESSAGE_CREATE":
             continue
         d = event.get("d") or {}
@@ -825,7 +841,7 @@ posts = with_token(lambda token, spec: posts_of(token, spec) if str(spec.get("ch
 search = with_token(lambda token, spec: search_of(token, spec) if str(spec.get("server") or "").isdigit() else {"ok": False, "code": "sendInvalid", "detail": "search needs a server id"})
 
 
-ACTIONS = {"ping": ping, "chats": chats, "export": export, "read": read, "send": send, "delete": delete, "react": react, "voice": voice, "watch": watch, "voiceNotes": voice_notes, "servers": servers, "channels": channels, "posts": posts, "search": search}
+ACTIONS = {name: with_identity(action) for name, action in {"ping": ping, "chats": chats, "export": export, "read": read, "send": send, "delete": delete, "react": react, "voice": voice, "watch": watch, "voiceNotes": voice_notes, "servers": servers, "channels": channels, "posts": posts, "search": search}.items()}
 
 
 if __name__ == "__main__":

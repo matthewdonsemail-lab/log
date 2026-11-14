@@ -47,6 +47,7 @@ export const DIRECT_ROUTES: Readonly<Record<string, DirectRoute>> = {
   redditReply: { platform: 'reddit', library: 'reverseChud', only: true, surface: 'posts', method: 'reply', when: 'a comment or reply', seam: 'directReddit' },
   redditVote: { platform: 'reddit', library: 'reverseChud', only: true, surface: 'posts', method: 'vote', when: 'a vote', seam: 'directReddit' },
   discordSession: { platform: 'discord', library: 'endcord', only: true, surface: 'account', method: 'ping', when: 'session check', seam: 'directDiscord' },
+  discordSecrets: { platform: 'discord', library: 'endcord', only: true, surface: 'account', method: 'none', when: 'secrets (a Clack prompt; the email, password and 2FA secret go to Twenty, Discord is not called)', seam: 'directDiscord' },
   discordChats: { platform: 'discord', library: 'endcord', only: true, surface: 'messages', method: 'get_dms', when: 'chats (the DMs and group DMs)', seam: 'directDiscord' },
   discordRead: { platform: 'discord', library: 'endcord', only: true, surface: 'messages', method: 'get_messages', when: 'read (a chat or channel, paged with before)', seam: 'directDiscord' },
   discordServers: { platform: 'discord', library: 'endcord', only: true, surface: 'account', method: 'get_guilds', when: 'servers (the servers the account is in)', seam: 'directDiscord' },

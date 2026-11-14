@@ -20,6 +20,7 @@ import { hostCommand } from "../host/index.ts";
 import { inspectCommand } from "../inspect/index.ts";
 import { joinCommand } from "../join/index.ts";
 import { messengerCommand } from "../messenger/index.ts";
+import { discordSecretsCommand } from "../discord/index.ts";
 import { searchCommand } from "../search/index.ts";
 import { kbCommand } from "../kb/index.ts";
 import { runtimeCommand } from "../runtime/index.ts";
@@ -143,6 +144,7 @@ export const COMMANDS: Command[] = [
   redditReplyCommand,
   redditVoteCommand,
   discordSessionCommand,
+  discordSecretsCommand,
   discordChatsCommand,
   discordServersCommand,
   discordChannelsCommand,

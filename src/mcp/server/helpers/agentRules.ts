@@ -122,6 +122,7 @@ const SOURCE_COMMAND_RULES: Readonly<Record<string, number[]>> = {
   linkedinMessages: [63, 64, 73, 94, 102],
   linkedinCookies: [13, 21, 63, 64, 73, 83, 102],
   discordSession: [13, 63, 64, 73, 83, 94],
+  discordSecrets: [13, 21, 63, 94],
   discordChats: [13, 63, 64, 73, 83, 94],
   discordServers: [13, 63, 64, 73, 83, 94],
   discordChannels: [13, 63, 64, 73, 83, 94],

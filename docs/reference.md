@@ -5,7 +5,7 @@ Generated from the code by `bun run docs:build`, so it always matches what `log`
 <!-- surface:start · written by `bun run docs:build` from the code. Not edited by hand. -->
 ## Commands, MCP tools and hooks
 
-log-cli is platform-agnostic: 7 platforms so far, Facebook (23 commands of its own), X (18 commands of its own), Reddit (5 commands of its own), Discord (12 commands of its own), LinkedIn (9 commands of its own), Slack (9 commands of its own), Instagram (6 commands of its own), and a new one is made by `log new platform <name>` (rule 83). A command that acts on one platform names it first, `log <platform> <command> …` (`log facebook listings`, `log twitter session`, `log reddit session`, `log discord session`, `log linkedin session`, `log slack session`, `log instagram session`), in every form; one that works on any platform takes none (the Platform column, rule 63).
+log-cli is platform-agnostic: 7 platforms so far, Facebook (23 commands of its own), X (18 commands of its own), Reddit (5 commands of its own), Discord (13 commands of its own), LinkedIn (9 commands of its own), Slack (9 commands of its own), Instagram (6 commands of its own), and a new one is made by `log new platform <name>` (rule 83). A command that acts on one platform names it first, `log <platform> <command> …` (`log facebook listings`, `log twitter session`, `log reddit session`, `log discord session`, `log linkedin session`, `log slack session`, `log instagram session`), in every form; one that works on any platform takes none (the Platform column, rule 63).
 Each command runs on the platform's direct API first where it has one, and on the account's browser otherwise (the Engine and Browser columns). log-cli is browser-agnostic too: each account's browser is a driver (AdsPower first, Camoufox kept, more browser providers to come), and every driver opens through the same gates.
 Every command is a CLI command (`log [<platform>] <command>`) and, unless it only works in a terminal, an MCP tool on the `log` server (Facebook's take the command's name, every other platform's start with the platform: `twitterReply`, `redditSessionCheck`).
 The same hooks fire whether it runs from a shell or over MCP, and both write the same live log, `~/.logCli/mcp/<day>.log`.
@@ -38,9 +38,9 @@ flowchart LR
   e_reverseChud --> api
   p_reddit -->|"browser: the any-platform commands"| b_reddit["Reddit's browser path: no proxy: this machine's own exit, the profile's timezone follows it (rule 84)"]
   b_reddit --> drivers
-  p_discord["Discord (DISCORD): 12 commands of its own"]
+  p_discord["Discord (DISCORD): 13 commands of its own"]
   twenty --> p_discord
-  p_discord -->|"direct API: discord session, discord chats, discord servers, discord channels, discord posts, discord search, discord read, discord watch, discord send, discord delete, discord react, discord voice"| e_endcord["endcord (vendor/endcord): the saved session, a governor per account"]
+  p_discord -->|"direct API: discord session, discord secrets, discord chats, discord servers, discord channels, discord posts, discord search, discord read, discord watch, discord send, discord delete, discord react, discord voice"| e_endcord["endcord (vendor/endcord): the saved session, a governor per account"]
   e_endcord --> api
   p_discord -->|"browser: the any-platform commands"| b_discord["Discord's browser path: no proxy: this machine's own exit, the profile's timezone follows it (rule 84)"]
   b_discord --> drivers
@@ -105,14 +105,14 @@ Source: [`docs/diagrams/browsers.mmd`](diagrams/browsers.mmd).
 
 - **The account's browser, through the driver:** `facebook host`, `inspect`, `flow`, `<platform> warmup`, `facebook join`, `facebook read`, `facebook poll`, `facebook check`, `reddit read`, `discord read`, `slack read`. They run on whichever browser the account uses: AdsPower when it has a linked profile (`socialAccounts.adsPowerProfileId`), Camoufox otherwise, or what `socialAccounts.browserDriver` says.
 - **Camoufox only, not on the driver yet:** `facebook doctor`, `facebook connect`, `facebook profile`, `facebook scan`, `facebook status`, `facebook watch`, `facebook publish`, `facebook campaign`, `discord watch`, `linkedin connect`, `slack watch`, `instagram watch`. They launch Camoufox themselves (facebook-camofox-client's worker, or the publish, connect and profile sessions), so on an AdsPower account they don't open its AdsPower profile. Moving one onto the driver is moving it into `OPENER_ACTIONS` (`src/browser/run`).
-- **No browser:** `launch`, `console`, `facebook listings`, `facebook listing`, `facebook accounts`, `facebook account`, `adsPower`, `localAccount`, `facebook lifecycle`, `facebook preflight`, `proxy`, `facebook conversations`, `facebook conversation`, `facebook messenger`, `errors`, `graph`, `facebook capture`, `runs`, `storage`, `timing`, `inbox`, `media`, `browsers`, `browser`, `report`, `job`, `mcp`, `login`, `logout`, `whoami`, `twitter session`, `twitter follows`, `twitter dms`, `twitter chat`, `twitter cookies`, `voice`, `search`, `kb`, `runtime`, `memelord`, `treg`, `balance`, `governor`, `sessions`, `clone`, `transcribe`, `twitter followers`, `twitter notifications`, `twitter reply`, `twitter quote`, `twitter post`, `twitter like`, `twitter list`, `twitter repost`, `twitter follow`, `twitter dm`, `twitter react`, `twitter queue`, `new`, `reddit session`, `reddit post`, `reddit reply`, `reddit vote`, `discord session`, `discord chats`, `discord servers`, `discord channels`, `discord posts`, `discord search`, `discord send`, `discord delete`, `discord react`, `discord voice`, `linkedin session`, `linkedin cookies`, `linkedin post`, `linkedin delete`, `linkedin suggestions`, `linkedin like`, `linkedin inbox`, `linkedin messages`, `slack session`, `slack workspaces`, `slack chats`, `slack send`, `slack cookies`, `slack react`, `slack voice`, `instagram session`, `instagram dms`, `instagram send`, `instagram react`, `instagram voice`, `twitter voice`.
+- **No browser:** `launch`, `console`, `facebook listings`, `facebook listing`, `facebook accounts`, `facebook account`, `adsPower`, `localAccount`, `facebook lifecycle`, `facebook preflight`, `proxy`, `facebook conversations`, `facebook conversation`, `facebook messenger`, `errors`, `graph`, `facebook capture`, `runs`, `storage`, `timing`, `inbox`, `media`, `browsers`, `browser`, `report`, `job`, `mcp`, `login`, `logout`, `whoami`, `twitter session`, `twitter follows`, `twitter dms`, `twitter chat`, `twitter cookies`, `voice`, `search`, `kb`, `runtime`, `memelord`, `treg`, `balance`, `governor`, `sessions`, `clone`, `transcribe`, `twitter followers`, `twitter notifications`, `twitter reply`, `twitter quote`, `twitter post`, `twitter like`, `twitter list`, `twitter repost`, `twitter follow`, `twitter dm`, `twitter react`, `twitter queue`, `new`, `reddit session`, `reddit post`, `reddit reply`, `reddit vote`, `discord session`, `discord secrets`, `discord chats`, `discord servers`, `discord channels`, `discord posts`, `discord search`, `discord send`, `discord delete`, `discord react`, `discord voice`, `linkedin session`, `linkedin cookies`, `linkedin post`, `linkedin delete`, `linkedin suggestions`, `linkedin like`, `linkedin inbox`, `linkedin messages`, `slack session`, `slack workspaces`, `slack chats`, `slack send`, `slack cookies`, `slack react`, `slack voice`, `instagram session`, `instagram dms`, `instagram send`, `instagram react`, `instagram voice`, `twitter voice`.
 - **No browser path at all:** X. Its accounts run on the direct API only (rule 80).
 
 Each browser's capabilities, built or not: [`docs/browsers.md`](browsers.md) (generated, `bun run check:browsers`). AdsPower's setup: [`docs/adsPower.md`](adsPower.md).
 
 ### Engines: the direct API first, the browser behind it
 
-A command on the direct-API engine calls the platform's internal API with the account's saved session, paced by its own governor, and opens no browser. Each platform has its own vendored client: Facebook through fbk (`vendor/fbk`), X through twikit (`vendor/twikit`), Reddit through reverseChud (`vendor/reverseChud`), Discord through endcord (`vendor/endcord`), LinkedIn through openLinkedinApi (`vendor/openLinkedinApi`), Slack through gabrielSlack (`vendor/gabrielSlack`), Instagram through instagrapi (`vendor/instagrapi`). Every one reaches the network through one pinned browser-impersonating session: curl_cffi for the Python clients (`check:twikitTransport`), wreq-js for reverseChud (`check:reverseChudTransport`). Which engine runs each command is code (`DIRECT_ROUTES` and `commandEngine` in `src/directApi/engine`), and this section, the Engine column and every MCP tool's description are generated from it (7 clients, 60 commands).
+A command on the direct-API engine calls the platform's internal API with the account's saved session, paced by its own governor, and opens no browser. Each platform has its own vendored client: Facebook through fbk (`vendor/fbk`), X through twikit (`vendor/twikit`), Reddit through reverseChud (`vendor/reverseChud`), Discord through endcord (`vendor/endcord`), LinkedIn through openLinkedinApi (`vendor/openLinkedinApi`), Slack through gabrielSlack (`vendor/gabrielSlack`), Instagram through instagrapi (`vendor/instagrapi`). Every one reaches the network through one pinned browser-impersonating session: curl_cffi for the Python clients (`check:twikitTransport`), wreq-js for reverseChud (`check:reverseChudTransport`). Which engine runs each command is code (`DIRECT_ROUTES` and `commandEngine` in `src/directApi/engine`), and this section, the Engine column and every MCP tool's description are generated from it (7 clients, 61 commands).
 
 **Facebook.** Facebook's own page decides, not accountStatus: loggedIn reads; checkpoint stops and deactivates the account; loggedOut or accountWarning hands over to the browser path. Each account has its own governor (gaps of 4 s or more, 120 an hour, 500 a day, 40 writes a day, a 15-minute pause on a soft block, 6 hours on a checkpoint) and its result is written to socialAccounts.sessionState.
 
@@ -150,6 +150,7 @@ A command on the direct-API engine calls the platform's internal API with the ac
 **Discord.** Discord's own answer decides. Each account has its own governor under ~/.logCli/discord/<account>, refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.
 
 - `log discord session`: the direct-API engine only (endcord, vendored in vendor/endcord, account.ping for the session check; no browser).
+- `log discord secrets`: the direct-API engine only (endcord, vendored in vendor/endcord, account.none for the secrets (a Clack prompt; the email, password and 2FA secret go to Twenty, Discord is not called); no browser).
 - `log discord chats`: the direct-API engine only (endcord, vendored in vendor/endcord, messages.get_dms for the chats (the DMs and group DMs); no browser).
 - `log discord servers`: the direct-API engine only (endcord, vendored in vendor/endcord, account.get_guilds for the servers (the servers the account is in); no browser).
 - `log discord channels`: the direct-API engine only (endcord, vendored in vendor/endcord, messages.get_channels for the channels (one server, by category and kind); no browser).
@@ -206,7 +207,7 @@ flowchart LR
   shell["Bash / PowerShell / Monitor"]
   mcp["MCP server log: 219 command tools + saved flows"]
   bin["bin/log.ts"]
-  runCli["runCli: 117 commands (COMMANDS)"]
+  runCli["runCli: 118 commands (COMMANDS)"]
   live[("~/.logCli/mcp/day.log: the live log")]
   engine{"commandEngine: DIRECT_ROUTES"}
   direct["Direct-API engine: fbk, twikit, reverseChud, endcord, openLinkedinApi, gabrielSlack, instagrapi (vendor/), the account's saved session, a governor per account"]
@@ -342,6 +343,7 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | [`log reddit reply`](#log-reddit-reply) | Comment on a Reddit post or reply to one of its comments through the account's direct-API engine; a dry run unless --live | `reddit` first | `--account <accountName>` `--url <post permalink>` `--text <text>` `--comment <t1_id>` `--approvedBy <who>` `--live` `--json` | direct API only | none | `redditReply`, `redditReplyLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 41, 63, 2, 73, 94, 30, 38, 39, 40, 41 |
 | [`log reddit vote`](#log-reddit-vote) | Vote on a Reddit post or comment through the account's direct-API engine; a dry run unless --live | `reddit` first | `--account <accountName>` `--url <post permalink>` `--target <t3_id|t1_id>` `--direction` `--approvedBy <who>` `--live` `--json` | direct API only | none | `redditVote`, `redditVoteLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 63, 2, 73, 94, 30, 38, 39, 40, 41 |
 | [`log discord session`](#log-discord-session) | Check that Discord still accepts an account's saved session, on the direct-API engine, sending nothing; the answer goes to Twenty | `discord` first | `--account <accountName>` `--json` | direct API only | none | `discordSessionCheck` | PreToolUse, PostToolUse · PreToolUse, PostToolUse | no | 175, 63, 2, 73, 83, 94, 30, 38, 39, 40, 41 |
+| [`log discord secrets`](#log-discord-secrets) | The Discord account's email, password and 2FA secret, asked in a Clack prompt and kept in Twenty for its sign-in, never printed | `discord` first | `--account <accountName>` `--show` | direct API only | none | terminal only: asks for a Discord account's email, password and 2FA secret in a Clack prompt (masked). Run `log discord secrets --account <a>` in a terminal. | PreToolUse, PostToolUse · n/a | no | 175, 35, 63, 94, 30, 38, 39, 40, 41 |
 | [`log discord chats`](#log-discord-chats) | List the account's DMs and group DMs with their ids, on the direct-API engine, sending nothing | `discord` first | `--account <accountName>` `--json` | direct API only | none | `discordChats` | PreToolUse, PostToolUse · PreToolUse, PostToolUse | no | 175, 63, 2, 73, 83, 94, 30, 38, 39, 40, 41 |
 | [`log discord servers`](#log-discord-servers) | List the Discord servers the account is in, on the direct-API engine, sending nothing | `discord` first | `--account <accountName>` `--json` | direct API only | none | `discordServers` | PreToolUse, PostToolUse · PreToolUse, PostToolUse | no | 175, 63, 2, 73, 83, 94, 30, 38, 39, 40, 41 |
 | [`log discord channels`](#log-discord-channels) | List one Discord server's channels by category and kind (text, forum, media, voice), on the direct-API engine, sending nothing | `discord` first | `--account <accountName>` `--server <server name>` `--json` | direct API only | none | `discordChannels` | PreToolUse, PostToolUse · PreToolUse, PostToolUse | no | 175, 63, 2, 73, 83, 94, 30, 38, 39, 40, 41 |
@@ -506,6 +508,7 @@ flowchart TB
   end
   subgraph g_discord["Discord"]
     c_discordSession["session"]
+    c_discordSecrets["secrets"]
     c_discordChats["chats"]
     c_discordServers["servers"]
     c_discordChannels["channels"]
@@ -729,6 +732,8 @@ flowchart TB
   mcp --> c_redditVote
   cli --> c_discordSession
   mcp --> c_discordSession
+  cli --> c_discordSecrets
+  c_discordSecrets -.- terminal
   cli --> c_discordChats
   mcp --> c_discordChats
   cli --> c_discordServers
@@ -1896,6 +1901,15 @@ Check that Discord still accepts an account's saved session, on the direct-API e
 log discord session check --account <accountName> [--json]
 Checks that Discord still accepts the account's saved session, on the direct-API engine (no browser). Sends nothing.
 Discord's own answer decides. The result goes to socialAccounts.sessionState, and refreshed cookies are merged back into the row.
+```
+
+#### log discord secrets
+
+The Discord account's email, password and 2FA secret, asked in a Clack prompt and kept in Twenty for its sign-in, never printed Terminal only: asks for a Discord account's email, password and 2FA secret in a Clack prompt (masked). Run `log discord secrets --account <a>` in a terminal.
+
+```text
+log discord secrets --account <accountName> [--show]
+Asks for the Discord account's email, password and 2FA secret (the base32 key from its authenticator setup, optional) in a Clack prompt, masked, and keeps them in Twenty (socialAccounts email, password, totpSecret) for the account's sign-in in its own browser. Nothing is printed; --show says only which are set. It never calls Discord, the direct-API engine included.
 ```
 
 #### log discord chats

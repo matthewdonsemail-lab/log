@@ -87,6 +87,7 @@ export const COMMAND_INDEX: CommandIndexEntry[] = [
   { name: "reply", platform: "reddit", module: "src/cli/reddit/index.ts", exportName: "redditReplyCommand" },
   { name: "vote", platform: "reddit", module: "src/cli/reddit/index.ts", exportName: "redditVoteCommand" },
   { name: "session", platform: "discord", module: "src/cli/discord/index.ts", exportName: "discordSessionCommand" },
+  { name: "secrets", platform: "discord", module: "src/cli/discord/index.ts", exportName: "discordSecretsCommand" },
   { name: "chats", platform: "discord", module: "src/cli/discord/index.ts", exportName: "discordChatsCommand" },
   { name: "servers", platform: "discord", module: "src/cli/discord/index.ts", exportName: "discordServersCommand" },
   { name: "channels", platform: "discord", module: "src/cli/discord/index.ts", exportName: "discordChannelsCommand" },
