@@ -43,7 +43,32 @@ export function migrate(handle: Database, now: Date = new Date()): AppliedMigrat
       throw error
     }
   }
-  return applied
+  return [...applied, ...repairSkipped(handle, now)]
+}
+
+export function missingObjectsOf(handle: Database, names: readonly string[]): string[] {
+  const present = new Set((handle.prepare("SELECT name FROM sqlite_master WHERE type IN ('table', 'index')").all() as { name: string }[]).map((r) => r.name))
+  return names.filter((name) => !present.has(name))
+}
+
+export function repairSkipped(handle: Database, now: Date = new Date()): AppliedMigration[] {
+  const version = schemaVersionOf(handle)
+  const repaired: AppliedMigration[] = []
+  for (const migration of MIGRATIONS) {
+    if (!migration.creates || migration.version > version) continue
+    if (missingObjectsOf(handle, migration.creates).length === 0) continue
+    handle.exec('BEGIN IMMEDIATE')
+    try {
+      const missing = missingObjectsOf(handle, migration.creates)
+      if (missing.length > 0) migration.apply(handle)
+      handle.exec('COMMIT')
+      if (missing.length > 0) repaired.push({ version: migration.version, name: migration.name, appliedAt: now.toISOString(), repaired: missing })
+    } catch (error) {
+      handle.exec('ROLLBACK')
+      throw error
+    }
+  }
+  return repaired
 }
 
 export function defaultDbPath(env: Record<string, string | undefined> = process.env): string {

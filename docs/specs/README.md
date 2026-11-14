@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 50 domains, 565 requirements. Each one's anchors are proved against its code by the syntax tree on every commit, push and pull request (`bun run check:specs`). SubQ reads a requirement against its code only when asked (`bun run check:specs --subq`, rule 170). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 50 domains, 566 requirements. Each one's anchors are proved against its code by the syntax tree on every commit, push and pull request (`bun run check:specs`). SubQ reads a requirement against its code only when asked (`bun run check:specs --subq`, rule 170). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -814,6 +814,7 @@ How log keeps what it reads and does: one SQLite database, `~/.logCli/log.db`, w
 - **REQ-STORAGE-09** A gap is never closed over a newer drop
 - **REQ-STORAGE-10** Each part of a send is fenced by its claim
 - **REQ-STORAGE-11** Bulk work is short and resumable, and old and new code share the file
+- **REQ-STORAGE-19** A create-only migration another branch skipped is repaired, never re-run blind
 - **REQ-STORAGE-12** The X queues live in log.db
 - **REQ-STORAGE-13** The MCP jobs live in log.db
 - **REQ-STORAGE-14** Transcripts live in log.db
