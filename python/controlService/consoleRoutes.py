@@ -42,6 +42,8 @@ RUNTIME_ERRORS = {
     "browserInputFailed",
     "browserCheckUnresolved",
     "browserOperationRefused",
+    "signInLinkInvalid",
+    "signInLinkNotYours",
 }
 
 BROWSER_OPERATIONS = {"state": "browserState", "open": "browserOpen", "frame": "browserFrame", "input": "browserInput", "action": "browserAction", "saveState": "browserSaveState", "close": "browserClose"}
@@ -69,6 +71,10 @@ class AccountSignIn(Strict):
     cookies: str | None = Field(default=None, max_length=65536)
     username: str | None = Field(default=None, max_length=320)
     password: str | None = Field(default=None, max_length=1024)
+
+
+class SignInLinkOpen(Strict):
+    token: str = Field(min_length=32, max_length=64, pattern=r"^[A-Za-z0-9_-]{32,64}$")
 
 
 class BrowserRequest(Strict):
@@ -132,6 +138,10 @@ def console_router(settings: Settings, engine: Engine, dispatcher: Dispatcher) -
     @router.post("/teams/{teamId}/console/signIn")
     async def sign_in(teamId: str, body: AccountSignIn, request: Request, response: Response):
         return await relay(request, response, teamId, "accountSignIn", body.model_dump(exclude_none=True), True)
+
+    @router.post("/teams/{teamId}/console/signInLink")
+    async def sign_in_link(teamId: str, body: SignInLinkOpen, request: Request, response: Response):
+        return await relay(request, response, teamId, "signInLinkOpen", {"token": body.token}, True)
 
     @router.post("/teams/{teamId}/console/browser/{operation}")
     async def browser(teamId: str, operation: str, body: BrowserRequest, request: Request, response: Response):

@@ -64,6 +64,13 @@ export interface SignInResult {
   next: SessionNextStep | null;
 }
 
+export interface AccountNotConfigured {
+  error: "accountNotConfigured";
+  platform: Platform | null;
+  account: string;
+  next: SessionNextStep;
+}
+
 export interface SignInRequest {
   account: SignInAccount;
   route?: SignInRoute;
@@ -78,4 +85,4 @@ export interface SignInStore {
 
 export const SIGN_IN_SNAPSHOT_MS = 30 * 60 * 1000;
 
-export const SIGN_IN_ERRORS = ["signInRouteUnavailable", "sessionSaveUnconfirmed", "accountCheckBusy"] as const;
+export const SIGN_IN_ERRORS = ["signInRouteUnavailable", "sessionSaveUnconfirmed", "accountCheckBusy", "accountNotConfigured"] as const;

@@ -20,6 +20,8 @@ INSTRUCTIONS = Path(__file__).with_name("serverInstructions.txt").read_text(enco
 HIDDEN = {"toolManifest", "uiResourcesList", "uiResourceRead"}
 SESSION_HEADER = "mcp-session-id"
 MAX_TEXT = 200_000
+UI_ARGUMENT_TOOLS = {"report", "sessionsSignIn"}
+VIEW_TOOLS = {"browserView", "sessionsSignIn"}
 
 
 def fallback_tool(name: str) -> dict:
@@ -148,7 +150,7 @@ def mcp_router(settings: Settings, engine: Engine, dispatcher: Dispatcher) -> AP
             return {"isError": True, "content": [{"type": "text", "text": "unknown tool"}]}
         if name in APP_TOOLS:
             return await call_app_tool(actor, name, arguments)
-        if name == "report":
+        if name in UI_ARGUMENT_TOOLS:
             arguments = {**arguments, "ui": ui}
         try:
             view = await dispatcher.run(actor, uuid.uuid4(), name, arguments)
@@ -167,7 +169,7 @@ def mcp_router(settings: Settings, engine: Engine, dispatcher: Dispatcher) -> AP
                 answer["structuredContent"] = spec
             return answer
         answer = {"content": [{"type": "text", "text": tool_text(view.result)}]}
-        if ui and name == "browserView" and isinstance(view.result, dict):
+        if ui and name in VIEW_TOOLS and isinstance(view.result, dict):
             answer["structuredContent"] = view.result
         return answer
 

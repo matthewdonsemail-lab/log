@@ -14,6 +14,7 @@ export type StateScope =
   | 'browserCheckProof'
   | 'signIn'
   | 'sessionSave'
+  | 'signInLink'
   | 'watcherEnd'
   | 'watcherHold'
 

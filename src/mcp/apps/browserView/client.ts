@@ -3,6 +3,7 @@ import { ViewerError, VIEWER_ERROR_TEXT, viewerFrame, viewerInput, viewerState, 
 import type { ViewerView } from "../../../browser/viewer/index.ts";
 import { browserViewJson, browserViewLocation, browserViewText } from "../../../cli/browser/index.ts";
 import type { BrowserViewLocation } from "../../../cli/browser/index.ts";
+import { SIGN_IN_TOOL } from "../signIn/types.ts";
 import { widgetHtml } from "./helpers/index.ts";
 import { APP_TOOLS, BROWSER_VIEW_DONE_TOOL, BROWSER_VIEW_FRAME_TOOL, BROWSER_VIEW_INPUT_TOOL, BROWSER_VIEW_STREAM_TOOL, BROWSER_VIEW_TOOL, BROWSER_VIEW_URI, MCP_APP_MIME_TYPE, UI_EXTENSION_ID } from "./types.ts";
 import type { AppToolDefinition, AppToolName, BrowserViewCsp } from "./types.ts";
@@ -65,7 +66,7 @@ export function isAppTool(name: string): name is AppToolName {
 }
 
 export function withBrowserViewUi<T extends { name: string; _meta?: Record<string, unknown> }>(tool: T): T {
-  if (tool.name !== BROWSER_VIEW_TOOL) return tool;
+  if (tool.name !== BROWSER_VIEW_TOOL && tool.name !== SIGN_IN_TOOL) return tool;
   return { ...tool, _meta: { ...(tool._meta ?? {}), ui: { resourceUri: BROWSER_VIEW_URI } } };
 }
 

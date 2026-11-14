@@ -1,0 +1,77 @@
+{
+  "platform": "instagram",
+  "pages": [
+    {
+      "name": "login",
+      "signals": {
+        "url": "https://www.instagram.com/accounts/login/",
+        "heading": "Sign in",
+        "text": "Sign in to continue. Email or username. Password.",
+        "password": true,
+        "code": false,
+        "width": 1280,
+        "height": 800,
+        "historyLength": 1
+      },
+      "expect": {
+        "state": "instagramLogin",
+        "blocked": false,
+        "inputAllowed": true
+      }
+    },
+    {
+      "name": "twoStep",
+      "signals": {
+        "url": "https://www.instagram.com/accounts/login/two_factor?next=%2F",
+        "heading": "Enter the code",
+        "text": "Enter the 6-digit code from your authentication app.",
+        "password": false,
+        "code": true,
+        "width": 1280,
+        "height": 800,
+        "historyLength": 1
+      },
+      "expect": {
+        "state": "instagramTwoStep",
+        "blocked": false,
+        "inputAllowed": true
+      }
+    },
+    {
+      "name": "stopped",
+      "signals": {
+        "url": "https://www.instagram.com/accounts/suspended/",
+        "heading": "Your account is on hold",
+        "text": "This account can't be used right now.",
+        "password": false,
+        "code": false,
+        "width": 1280,
+        "height": 800,
+        "historyLength": 1
+      },
+      "expect": {
+        "state": "instagramStopped",
+        "blocked": true,
+        "inputAllowed": false
+      }
+    },
+    {
+      "name": "signedIn",
+      "signals": {
+        "url": "https://www.instagram.com/",
+        "heading": "Home",
+        "text": "Welcome back",
+        "password": false,
+        "code": false,
+        "width": 1280,
+        "height": 800,
+        "historyLength": 1
+      },
+      "expect": {
+        "state": "unknown",
+        "blocked": false,
+        "inputAllowed": false
+      }
+    }
+  ]
+}
