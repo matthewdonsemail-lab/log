@@ -5,6 +5,9 @@ const SPACE: CapabilityInput = { name: "space", kind: "string", description: "Wh
 const LIMIT: CapabilityInput = { name: "limit", kind: "integer", min: 1, description: "At most this many; refused with inputUnsupported on a platform whose command has no limit" };
 const CHAT: CapabilityInput = { name: "chat", kind: "string", required: true, description: "The chat: as the owner says it (a name or handle) or its id, from chatsList" };
 
+const WATCH_CHAT: CapabilityInput = { name: "chat", kind: "string", description: "Only this chat: as the owner says it or its id; refused with inputUnsupported on a platform whose watch takes none" };
+const SECONDS: CapabilityInput = { name: "seconds", kind: "integer", min: 5, max: 3600, fallback: 60, description: "Listen for this many seconds, then stop (default 60)" };
+
 const X_CONVERSATION_ID = /^\d+[-:]\d+$/;
 
 export const CAPABILITIES: readonly CapabilityDefinition[] = [
@@ -34,6 +37,19 @@ export const CAPABILITIES: readonly CapabilityDefinition[] = [
       slack: { command: "slackRead", words: [], inputs: { account: { flag: "account" }, chat: { flag: "chat" }, space: { flag: "workspace" }, limit: { flag: "limit" } } },
       instagram: { command: "instagramDms", words: [], inputs: { account: { flag: "account" }, chat: { flag: "with" }, limit: { flag: "limit" } } },
       facebook: { command: "facebookConversation", words: ["show"], inputs: { chat: { positional: true } } },
+    },
+  },
+  {
+    noun: "messages",
+    verb: "watch",
+    summary: "Listen to an account's messages for a set time as its platform pushes them, through the account's one watcher, the platform taken from the account",
+    effect: "read",
+    inputs: [ACCOUNT, WATCH_CHAT, SPACE, SECONDS],
+    platforms: {
+      twitter: { command: "twitterChat", words: ["watch"], inputs: { account: { flag: "account" }, seconds: { flag: "seconds" } } },
+      discord: { command: "discordWatch", words: [], inputs: { account: { flag: "account" }, chat: { flag: "channel" }, seconds: { flag: "seconds" } } },
+      slack: { command: "slackWatch", words: [], inputs: { account: { flag: "account" }, chat: { flag: "chat" }, space: { flag: "workspace" }, seconds: { flag: "seconds" } } },
+      instagram: { command: "instagramWatch", words: [], inputs: { account: { flag: "account" }, seconds: { flag: "seconds" } } },
     },
   },
 ];

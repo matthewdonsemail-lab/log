@@ -1,6 +1,6 @@
 import { recordLaunchReset } from "../../../browser/run/helpers/index.ts";
-import { resetHostOpens } from "../../../marketplace/host/index.ts";
-import type { FacebookAccount } from "../../../marketplace/socialAccount/index.ts";
+import { resetHostOpens } from "../../../facebook/marketplace/host/index.ts";
+import type { FacebookAccount } from "../../../platformKit/socialAccount/index.ts";
 
 export function resetAccountOpens(account: FacebookAccount, reason: string, at: Date = new Date()): string {
   recordLaunchReset(account.accountName, reason, at);

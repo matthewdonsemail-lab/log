@@ -55,7 +55,7 @@ log facebook scan / status / watch / publish / campaign run / connect / proxy ch
   │  TS: findAccount (Twenty) → prepareRun (browser/run)
   │      not FACEBOOK / unusable status / no proxy / no homeCountry ──▶ refused, no Python started
   │      (publish) listing country ≠ homeCountry ──▶ listingCountryMismatch
-  │      no locale / timezone for the home (marketplace/home) ──▶ noHomeLocale / noHomeTimezone
+  │      no locale / timezone for the home (platformKit/home) ──▶ noHomeLocale / noHomeTimezone
   │      outside 08:00-22:00 in the home timezone (or activeHoursStart/End) ──▶ outsideActiveHours
   │      deviceProfile stored but unreadable ──▶ deviceProfileInvalid
   │      (proxy check skips home, hours and device: it opens no browser)
@@ -120,7 +120,7 @@ ever gets the system variables Firefox needs (`SAFE_ENV` in
   cursor, addon paths. After a browser upgrade the user agent's Firefox
   version follows the installed browser, like a real Firefox update.
 - **Geolocation:** the home city's centre from `CITY_COORDINATES`
-  (`src/marketplace/home/types.ts`, next to the timezones), or the exit IP's
+  (`src/platformKit/home/types.ts`, next to the timezones), or the exit IP's
   location when the city isn't there. It is moved 150 m to 1.8 km off the
   centre, with an accuracy pinned per account between 20 and 1500 m, and the
   permission is granted so `permissions.query` agrees. Camoufox 0.5.8's GeoIP
@@ -136,7 +136,7 @@ ever gets the system variables Firefox needs (`SAFE_ENV` in
 
 ### Locale per country
 
-`HOME_COUNTRIES` in `src/marketplace/home/types.ts` is the one table: IE
+`HOME_COUNTRIES` in `src/platformKit/home/types.ts` is the one table: IE
 `en-IE`, GB `en-GB`, US `en-US`, CA `en-CA`, AU `en-AU`, NZ `en-NZ`. It also
 sets the Facebook interface locale for the create form (`?locale=en_GB` for
 IE).
@@ -153,7 +153,7 @@ IE).
 
 ### Local hours
 
-`outsideActiveHours` (`src/marketplace/home/helpers/activeHours.ts`) reads the
+`outsideActiveHours` (`src/platformKit/home/helpers/activeHours.ts`) reads the
 wall clock in the home timezone through Intl, so daylight saving is handled.
 Countries with several time zones need the city in `CITY_TIMEZONES`.
 `log facebook watch` checks before every scan, not only at the start. The

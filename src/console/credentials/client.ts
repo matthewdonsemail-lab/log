@@ -1,5 +1,5 @@
 import { savedCredential, saveProviderCredentials, validateCredentialInput, validateProviderCredentials } from "../../auth/credentials/index.ts";
-import type { CredentialFetch, CredentialSaveResult } from "../../auth/credentials/index.ts";
+import type { CredentialFetch, CredentialProvider, CredentialSaveResult } from "../../auth/credentials/index.ts";
 import { credentialValue, readExtensionPublicValues } from "../connections/index.ts";
 
 type Env = Record<string, string | undefined>;
@@ -18,6 +18,9 @@ export async function saveConsoleCredentials(input: { provider?: unknown; values
   return result;
 }
 
+export const READABLE_PROVIDERS: readonly CredentialProvider[] = ["adsPower"];
+
 export function readConsoleCredentials(input: { provider?: unknown }, env: Env = process.env): Record<string, string> {
+  if (!(READABLE_PROVIDERS as readonly unknown[]).includes(input.provider)) throw new Error("credentialInputInvalid");
   return readExtensionPublicValues(input.provider, env);
 }

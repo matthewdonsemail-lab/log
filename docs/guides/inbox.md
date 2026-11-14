@@ -1,6 +1,6 @@
 # inbox
 
-Every platform's chats as one inbox: listing and reading them, who waits on a reply, claiming a chat before acting in it, and every action's log.
+Every platform's chats as one inbox: listing, reading and watching them, who waits on a reply, claiming a chat before acting in it, and every action's log.
 
 Load next, when the work needs it: getGuide({ topic: "voiceGate" }) (The voice gate every send as the owner passes on every platform: a draft checked against the owner's own writing before it goes out, and the voice and AI-tells indexes behind it).
 
@@ -30,10 +30,15 @@ Each tool's own description carries its full usage, notes, live line and rules; 
 | `inboxRelease` | Release this session's claim on a chat when it is done with it | `log inbox release --platform <p> --account <a> --chat <conversationId\|handle> [--json]` |
 | `inboxResume` | The owner's go-ahead after a refused catch-up | `log inbox resume --platform <p> --account <a> --by <who> [--json]` |
 | `inboxWaiting` | Who wrote last on every platform, from log.db in time order | `log inbox waiting [--platform <p>] [--account <a>] [--limit <n>] [--oldest] [--json]` |
+| `inboxPending` | What the account watchers heard since this reader last asked, with… | `log inbox pending --reader <name> [--json]` |
 | `inboxClaims` | Every live claim | `log inbox claims [--json]` |
 | `inboxActions` | The log of every claim, refusal, send and release, oldest first, to… | `log inbox actions [--platform <p>] [--account <a>] [--chat <conversationId\|handle>] [--limit <n>] [--json]` |
 | `chatsList` | List an account's chats on its own platform, the platform taken from… | `log chats list --account <account> [--space <space>] [--limit <limit>] [--platform <p>] [--json]` |
 | `messagesRead` | Read one chat's messages on the account's own platform, the platform… | `log messages read --account <account> --chat <chat> [--space <space>] [--limit <limit>] [--platform <p>] [--json]` |
+| `messagesWatch` | Listen to an account's messages for a set time as its platform pushes… | `log messages watch --account <account> [--chat <chat>] [--space <space>] [--seconds <seconds>] [--platform <p>] [--json]` |
+| `watchersStatus` | Each account watcher's state, read from log.db | `log watchers status [--platform <p>] [--account <a>] [--json]` |
+| `watchersStart` | Start the watcher of every signed-in account that isn't running… | `log watchers start [--platform <p>] [--account <a>] [--json]` |
+| `watchersStop` | Stop the named account watchers and hold them until start names them… | `log watchers stop [--platform <p>] [--account <a>] [--json]` |
 
 ## The rules these tools fall under
 
@@ -48,6 +53,7 @@ Each by its number and first line. The full text is in AGENTS.md (`log://agents`
 - **Rule 94.** Every platform call goes through Log and its governor, never a scratch client with account tokens/cookies.
 - **Rule 105.** One platform/account owns one continuous engine session and push connection.
 - **Rule 109.** Read the full relevant chat and current private context before drafting or sending.
+- **Rule 123.** Platforms use their existing push/watch path to keep private records current.
 - **Rule 133.** Claim a chat before acting; consult recent actions, preserve claim generation and check it before subsequent message parts.
 - **Rule 134.** Existing workspace log.db is the native private record/coordination foundation.
 - **Rule 138.** Media and voice-note context uses the existing private media descriptions and transcripts.

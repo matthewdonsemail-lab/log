@@ -56,8 +56,8 @@ A save Twenty refused keeps the run's device and session in
 every browser (`log facebook host send --account <a> SHUTDOWN`), then run `log facebook account
 resetOpens <a>|all --reason "<why>"`. It deletes nothing.
 
-Code: `src/marketplace/host` (the runner), `src/cli/host` (the steps),
-`src/marketplace/lifecycle` (the machine). Doc: `docs/lifecycle.md`.
+Code: `src/facebook/marketplace/host` (the runner), `src/cli/host` (the steps),
+`src/platformKit/lifecycle` (the machine). Doc: `docs/lifecycle.md`.
 
 ## The check (every watch round)
 
@@ -113,7 +113,7 @@ usual. Mountain Top, host 20261024T222706, steps 12-26.
 
 The host's setLocation types the account's own home written out
 (`homePlace`: its city and the state or province from `CITY_REGIONS`,
-`src/marketplace/home/types.ts`, through `fullPlaceName`, so it passes the
+`src/platformKit/home/types.ts`, through `fullPlaceName`, so it passes the
 acronym check): "Mountain Top, Pennsylvania", "Kamloops, British
 Columbia". A listing's `locationQuery` is used only for a home with no region.
 `log facebook preflight` shows each account's place and refuses one with no

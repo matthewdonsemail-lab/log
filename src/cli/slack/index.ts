@@ -9,14 +9,18 @@ import { gateDeps } from "../twitter/helpers/voice.ts";
 import { latestSeq, recordPosition } from "../../inbox/store/index.ts";
 import { slackCatchUp, storeRead, waitCaughtUp } from "../../inbox/catchUp/index.ts";
 import { guardSend } from "../../inbox/claims/index.ts";
+import type { SendGuard } from "../../inbox/claims/index.ts";
+import { confirmParts, rethrowFailure, runAction } from "../../platformKit/action/index.ts";
 import type { InboxMessage } from "../../inbox/watch/index.ts";
 import { withVoiceNotes } from "../transcribe/index.ts";
 import type { AudioOf } from "../transcribe/index.ts";
 import { profileFor, readProfiles, splitPlan } from "../../voice/pairs/index.ts";
 import type { VoiceProfile } from "../../voice/pairs/index.ts";
 import type { PlatformAccount, PlatformAnswer } from "../../platformKit/session/index.ts";
-import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuse, refuseError, refuseInput } from "../runner/helpers/index.ts";
+import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuse, refuseGated, refuseError, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandContext, CommandInput, CommandResult, FlagSpec } from "../runner/types.ts";
+
+type HeldGuard = Extract<SendGuard, { ok: true }>;
 
 export const SLACK_SESSION_USAGE = [
   "Usage: log slack session check --account <accountName> [--workspace <domain>] [--json]",
@@ -439,49 +443,56 @@ export const slackSendCommand: Command = {
       if (!live && parsed.flags["json"]) return { code: 0, stdout: JSON.stringify({ engine: "directApi", platform: "slack", account: opened.account.accountName, ok: true, dryRun: true, chat: chat.id, split: { parts: plan.parts, gapSeconds: plan.gapSeconds, why: plan.why }, watermark }, null, 2) };
       if (!live) return { code: 0, stdout: [`log slack send: dry run: ${opened.account.accountName} would send to ${chat.label} ${planLine}:`, ...plan.parts.map((p, i) => `  ${i + 1}. ${p}`), watermarkLine(watermark), "Nothing was sent. --live --approvedBy <who> sends it (rule 8); --asOne sends it as one message."].join("\n") };
       context.err(`${opened.account.accountName}: send to ${chat.label} ${planLine} on the direct-API engine, approved by ${approvedBy}`);
-      const caught = await waitCaughtUp("slack", opened.account.accountName);
-      if (!caught.ok) return refuse("slack send", "accountBehind", caught.refused);
-      const readUpTo = latestSeq();
-      const voiced = await gateDeps.gate(context, { platform: "slack", account: opened.account.accountName, to: chat.label, text, conversationId: chat.id });
-      if (!voiced.ok) return refuse("slack send", "voiceGateFailed", voiced.refused);
-      context.err(voiced.line);
-      const guard = guardSend({ platform: "slack", account: opened.account.accountName, conversationId: chat.id }, undefined, { readUpTo });
-      if (!guard.ok) return refuse("slack send", "chatClaimedElsewhere", guard.refused);
-      let movedOn: string[] = [];
-      const sent: PlatformAnswer[] = [];
-      const startedAt = slackDeps.now();
-      let interrupted: InboxMessage[] = [];
-      let fenced = false;
-      try {
-      for (const [i, part] of plan.parts.entries()) {
-        if (i) {
-          await slackDeps.wait(plan.gapSeconds * 1000);
-          interrupted = slackDeps.incoming(opened.account.accountName, chat.id, startedAt);
-          if (interrupted.length) break;
-        }
-        const step = guard.part(i, part);
-        if (step === "lost") {
-          fenced = true;
-          break;
-        }
-        if (step === "movedOn") {
-          movedOn = guard.heard();
-          break;
-        }
-        if (step === "alreadySent") {
-          sent.push({ ok: true, event: "sent", sent: [] } as PlatformAnswer);
-          continue;
-        }
-        const run = context.directSlack!(opened.account, { action: "send", chat: chat.id, lines: [part], live: true, approvedBy, ...inWorkspace(opened.workspace) });
-        sent.push(run.answer);
-        if (!run.answer.ok) break;
-        guard.partSent(i, part, ((run.answer.sent as { ts?: string }[] | undefined) ?? [])[0]?.ts ?? null);
-        context.err(`  ${i + 1}/${plan.parts.length} sent ${((run.answer.sent as { ts?: string }[] | undefined) ?? [])[0]?.ts ?? ""}: ${part}`);
+      const sending = { movedOn: [] as string[], sent: [] as PlatformAnswer[], interrupted: [] as InboxMessage[], fenced: false };
+      const acted = await runAction<HeldGuard, typeof sending>({
+        gate: async () => {
+          const caught = await waitCaughtUp("slack", opened.account.accountName);
+          if (!caught.ok) return { ok: false, code: "accountBehind", detail: caught.refused };
+          const readUpTo = latestSeq();
+          const voiced = await gateDeps.gate(context, { platform: "slack", account: opened.account.accountName, to: chat.label, text, conversationId: chat.id });
+          if (!voiced.ok) return { ok: false, code: "voiceGateFailed", detail: voiced.refused };
+          context.err(voiced.line);
+          const guard = guardSend({ platform: "slack", account: opened.account.accountName, conversationId: chat.id }, undefined, { readUpTo });
+          return guard.ok ? { ok: true, held: guard } : { ok: false, code: "chatClaimedElsewhere", detail: guard.refused };
+        },
+        act: async (guard) => {
+          const startedAt = slackDeps.now();
+          for (const [i, part] of plan.parts.entries()) {
+            if (i) {
+              await slackDeps.wait(plan.gapSeconds * 1000);
+              sending.interrupted = slackDeps.incoming(opened.account.accountName, chat.id, startedAt);
+              if (sending.interrupted.length) break;
+            }
+            const step = guard.part(i, part);
+            if (step === "lost") {
+              sending.fenced = true;
+              break;
+            }
+            if (step === "movedOn") {
+              sending.movedOn = guard.heard();
+              break;
+            }
+            if (step === "alreadySent") {
+              sending.sent.push({ ok: true, event: "sent", sent: [] } as PlatformAnswer);
+              continue;
+            }
+            const run = context.directSlack!(opened.account, { action: "send", chat: chat.id, lines: [part], live: true, approvedBy, ...inWorkspace(opened.workspace) });
+            sending.sent.push(run.answer);
+            if (!run.answer.ok) break;
+            guard.partSent(i, part, ((run.answer.sent as { ts?: string }[] | undefined) ?? [])[0]?.ts ?? null);
+            context.err(`  ${i + 1}/${plan.parts.length} sent ${((run.answer.sent as { ts?: string }[] | undefined) ?? [])[0]?.ts ?? ""}: ${part}`);
+          }
+          return sending;
+        },
+        confirm: (s) => confirmParts({ sent: s.sent.filter((a) => a.ok).length, total: plan.parts.length, interrupted: s.interrupted.length > 0, movedOn: s.movedOn.length > 0, lost: s.fenced, last: s.sent[s.sent.length - 1] }),
+      });
+      if (acted.held) {
+        const ok = sending.sent.filter((a) => a.ok).length;
+        acted.held.done(sending.interrupted.length ? "interrupted" : ok === plan.parts.length ? "sent" : "failed", `${ok} of ${plan.parts.length}${sending.fenced ? ", then the claim on this chat was lost, so the rest was held" : ""}: ${plan.parts.slice(0, ok).join(" / ").slice(0, 300)}`);
       }
-      } finally {
-        const ok = sent.filter((a) => a.ok).length;
-        guard.done(interrupted.length ? "interrupted" : ok === plan.parts.length ? "sent" : "failed", `${ok} of ${plan.parts.length}${fenced ? ", then the claim on this chat was lost, so the rest was held" : ""}: ${plan.parts.slice(0, ok).join(" / ").slice(0, 300)}`);
-      }
+      rethrowFailure(acted);
+      if (!acted.held) return refuseGated("slack send", acted, "chatClaimedElsewhere");
+      const { movedOn, sent, interrupted } = sending;
       if (movedOn.length) return refuse("slack send", "chatMovedOn", `>>> THEY WROTE AFTER THE GATE READ THE CHAT: nothing was sent, so answer what they said first.\n${movedOn.map((m) => `  ${m}`).join("\n")}`);
       const done = sent.filter((a) => a.ok);
       const last = sent[sent.length - 1];

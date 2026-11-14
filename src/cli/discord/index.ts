@@ -14,6 +14,8 @@ import { latestSeq, recordPosition } from "../../inbox/store/index.ts";
 import { catchUpOneChat, discordCatchUp, storeRead, waitCaughtUp } from "../../inbox/catchUp/index.ts";
 import type { ReadMessage } from "../../inbox/catchUp/index.ts";
 import { guardSend } from "../../inbox/claims/index.ts";
+import type { SendGuard } from "../../inbox/claims/index.ts";
+import { confirmParts, passGate, rethrowFailure, runAction } from "../../platformKit/action/index.ts";
 import { cachedChatList, chatMessageCount, chatMessages, findInChatList, isVisualAttachment, markBackfilled, mediaNotSaved, readSourceFor, sourceLine } from "../../inbox/dbRead/index.ts";
 import type { ReadSource } from "../../inbox/dbRead/index.ts";
 import type { MessageAttachment } from "../../inbox/catchUp/index.ts";
@@ -24,8 +26,10 @@ import { profileFor, readProfiles, splitPlan } from "../../voice/pairs/index.ts"
 import type { VoiceProfile } from "../../voice/pairs/index.ts";
 import type { DiscordChat } from "../../discord/chat/match/index.ts";
 import type { PlatformAnswer } from "../../platformKit/session/index.ts";
-import { JSON_FLAG, listOf, numberOf, parseArgs, parserSpecOf, refuse, refuseError, truthOf, refuseInput } from "../runner/helpers/index.ts";
+import { JSON_FLAG, listOf, numberOf, parseArgs, parserSpecOf, refuse, refuseGated, refuseError, truthOf, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandInput, CommandResult, FlagSpec } from "../runner/types.ts";
+
+type HeldGuard = Extract<SendGuard, { ok: true }>;
 
 export const DISCORD_SESSION_USAGE = [
   "Usage: log discord session check --account <accountName> [--json]",
@@ -471,14 +475,24 @@ export const discordDeleteCommand: Command = {
         return { code: 0, stdout: [`log discord delete: dry run: ${account.accountName} in ${target}:`, ...rows.map((r) => `  ${r.id}  ${r.would === "delete" ? "would delete" : r.would === "notFound" ? "not in the latest 100 messages" : "refused, someone else sent it"}${r.text ? `: ${r.text.replace(/\s+/g, " ").slice(0, 160)}` : ""}`), "Nothing was deleted. --live --approvedBy <who> deletes them (rule 8)."].join("\n") };
       }
       context.err(`${account.accountName}: delete ${ids.length} message(s) in ${target} on the direct-API engine, approved by ${approvedBy}`);
-      const done: PlatformAnswer[] = [];
-      for (const [i, id] of ids.entries()) {
-        if (i) await discordDeps.wait(4000);
-        const run = context.directDiscord(account, { action: "delete", channel: target, message: id, live: true, approvedBy });
-        done.push(run.answer);
-        if (!run.answer.ok) break;
-        context.err(`  ${i + 1}/${ids.length} deleted ${id}: ${String(run.answer.content ?? "").replace(/\s+/g, " ").slice(0, 160)}`);
-      }
+      const direct = context.directDiscord;
+      const acted = await runAction<null, PlatformAnswer[]>({
+        gate: passGate,
+        act: async () => {
+          const answers: PlatformAnswer[] = [];
+          for (const [i, id] of ids.entries()) {
+            if (i) await discordDeps.wait(4000);
+            const run = direct(account, { action: "delete", channel: target, message: id, live: true, approvedBy });
+            answers.push(run.answer);
+            if (!run.answer.ok) break;
+            context.err(`  ${i + 1}/${ids.length} deleted ${id}: ${String(run.answer.content ?? "").replace(/\s+/g, " ").slice(0, 160)}`);
+          }
+          return answers;
+        },
+        confirm: (answers) => confirmParts({ sent: answers.filter((a) => a.ok && a.event === "deleted").length, total: ids.length, last: answers[answers.length - 1] }),
+      });
+      rethrowFailure(acted);
+      const done = acted.answer!;
       const deleted = done.filter((a) => a.ok && a.event === "deleted");
       const code = deleted.length === ids.length ? 0 : 1;
       if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", platform: "discord", account: account.accountName, approvedBy, channelId: target, deleted: done }, null, 2) };
@@ -594,58 +608,65 @@ export const discordSendCommand: Command = {
       if (!context.directDiscord) return { code: 1, stderr: "log discord send: the direct-API engine isn't wired in this context" };
       context.err(`${account.accountName}: send to ${label} ${planLine} on the direct-API engine, approved by ${approvedBy}`);
       const direct = context.directDiscord;
-      const caught = kind === "channel" ? await waitCaughtUp("discord", account.accountName) : catchUpOneChat("discord", account.accountName, target, () => direct(account, { action: "read", channel: target, limit: 20, saveAudio: false, saveImages: false } as never).answer as { ok: boolean; messages?: ReadMessage[] }, context.now?.() ?? new Date());
-      if (!caught.ok) return refuse("discord send", "accountBehind", caught.refused);
-      if ("how" in caught && caught.how === "chatRead") context.err(`${account.accountName}: still catching up, so this one chat was read from Discord first (${caught.stored} new message(s) stored) instead of waiting for the whole account`);
-      const chatCurrent = "how" in caught && caught.how === "chatRead";
-      const readUpTo = latestSeq();
-      if (parsed.flags["overGate"] === true) {
-        const same = gateDeps.same({ platform: "discord", account: account.accountName, to: shown, text });
-        if (!same.ok) return refuse("discord send", "sameAsSent", same.refused);
-        context.err(`${account.accountName}: --overGate: matt said to send this message over the voice gate, so its read is skipped; the AI artifact check passed (rule 152)`);
-      } else {
-        const roomSource = kind === "channel" ? null : await readSourceFor("discord", account.accountName, target, chatMessageCount("discord", account.accountName, target), 20);
-        const voiced = await gateDeps.gate(context, { platform: "discord", account: account.accountName, to: shown, text, conversationId: target, ...(parsed.flags["brief"] === true ? { brief: true, files: files.paths } : {}), readRoom: () => (roomSource?.from === "db" || chatCurrent ? roomFromRead(shown, kind, { ok: true, messages: chatMessages("discord", account.accountName, target, 20) }) : roomFromRead(shown, kind, direct(account, { action: "read", channel: target, limit: 20, saveAudio: false, saveImages: false } as never).answer)) });
-        if (!voiced.ok) return refuse("discord send", "voiceGateFailed", voiced.refused);
-        context.err(voiced.line);
+      const sending = { movedOn: [] as string[], sent: [] as PlatformAnswer[], interrupted: [] as InboxMessage[], fenced: false };
+      const acted = await runAction<HeldGuard, typeof sending>({
+        gate: async () => {
+          const caught = kind === "channel" ? await waitCaughtUp("discord", account.accountName) : catchUpOneChat("discord", account.accountName, target, () => direct(account, { action: "read", channel: target, limit: 20, saveAudio: false, saveImages: false } as never).answer as { ok: boolean; messages?: ReadMessage[] }, context.now?.() ?? new Date());
+          if (!caught.ok) return { ok: false, code: "accountBehind", detail: caught.refused };
+          if ("how" in caught && caught.how === "chatRead") context.err(`${account.accountName}: still catching up, so this one chat was read from Discord first (${caught.stored} new message(s) stored) instead of waiting for the whole account`);
+          const chatCurrent = "how" in caught && caught.how === "chatRead";
+          const readUpTo = latestSeq();
+          if (parsed.flags["overGate"] === true) {
+            const same = gateDeps.same({ platform: "discord", account: account.accountName, to: shown, text });
+            if (!same.ok) return { ok: false, code: "sameAsSent", detail: same.refused };
+            context.err(`${account.accountName}: --overGate: matt said to send this message over the voice gate, so its read is skipped; the AI artifact check passed (rule 152)`);
+          } else {
+            const roomSource = kind === "channel" ? null : await readSourceFor("discord", account.accountName, target, chatMessageCount("discord", account.accountName, target), 20);
+            const voiced = await gateDeps.gate(context, { platform: "discord", account: account.accountName, to: shown, text, conversationId: target, ...(parsed.flags["brief"] === true ? { brief: true, files: files.paths } : {}), readRoom: () => (roomSource?.from === "db" || chatCurrent ? roomFromRead(shown, kind, { ok: true, messages: chatMessages("discord", account.accountName, target, 20) }) : roomFromRead(shown, kind, direct(account, { action: "read", channel: target, limit: 20, saveAudio: false, saveImages: false } as never).answer)) });
+            if (!voiced.ok) return { ok: false, code: "voiceGateFailed", detail: voiced.refused };
+            context.err(voiced.line);
+          }
+          const guard = guardSend({ platform: "discord", account: account.accountName, conversationId: target }, undefined, { readUpTo });
+          return guard.ok ? { ok: true, held: guard } : { ok: false, code: "chatClaimedElsewhere", detail: guard.refused };
+        },
+        act: async (guard) => {
+          const startedAt = discordDeps.now();
+          for (const [i, part] of plan.parts.entries()) {
+            if (i) {
+              await discordDeps.wait(plan.gapSeconds * 1000);
+              sending.interrupted = discordDeps.incoming(account.accountName, target, startedAt);
+              if (sending.interrupted.length) break;
+            }
+            const step = guard.part(i, part);
+            if (step === "lost") {
+              sending.fenced = true;
+              break;
+            }
+            if (step === "movedOn") {
+              sending.movedOn = guard.heard();
+              break;
+            }
+            if (step === "alreadySent") {
+              sending.sent.push({ ok: true, event: "sent", messageId: "(already sent before)" } as PlatformAnswer);
+              continue;
+            }
+            const run = direct(account, { action: "send", channel: target, text: part, live: true, approvedBy, ...(i ? { continuesSend: true } : {}), ...(files.paths.length && i === plan.parts.length - 1 ? { files: files.paths } : {}) });
+            sending.sent.push(run.answer);
+            if (!run.answer.ok || run.answer.event !== "sent") break;
+            guard.partSent(i, part, run.answer.messageId ? String(run.answer.messageId) : null);
+            context.err(`  ${i + 1}/${plan.parts.length} sent ${run.answer.messageId}: ${part}`);
+          }
+          return sending;
+        },
+        confirm: (s) => confirmParts({ sent: s.sent.filter((a) => a.ok && a.event === "sent").length, total: plan.parts.length, interrupted: s.interrupted.length > 0, movedOn: s.movedOn.length > 0, lost: s.fenced, last: s.sent[s.sent.length - 1] }),
+      });
+      if (acted.held) {
+        const ok = sending.sent.filter((a) => a.ok && a.event === "sent").length;
+        acted.held.done(sending.interrupted.length ? "interrupted" : ok === plan.parts.length ? "sent" : "failed", `${ok} of ${plan.parts.length}${sending.fenced ? ", then the claim on this chat was lost, so the rest was held" : ""}: ${plan.parts.slice(0, ok).join(" / ").slice(0, 300)}`);
       }
-      const guard = guardSend({ platform: "discord", account: account.accountName, conversationId: target }, undefined, { readUpTo });
-      if (!guard.ok) return refuse("discord send", "chatClaimedElsewhere", guard.refused);
-      let movedOn: string[] = [];
-      const sent: PlatformAnswer[] = [];
-      const startedAt = discordDeps.now();
-      let interrupted: InboxMessage[] = [];
-      let fenced = false;
-      try {
-        for (const [i, part] of plan.parts.entries()) {
-          if (i) {
-            await discordDeps.wait(plan.gapSeconds * 1000);
-            interrupted = discordDeps.incoming(account.accountName, target, startedAt);
-            if (interrupted.length) break;
-          }
-          const step = guard.part(i, part);
-          if (step === "lost") {
-            fenced = true;
-            break;
-          }
-          if (step === "movedOn") {
-            movedOn = guard.heard();
-            break;
-          }
-          if (step === "alreadySent") {
-            sent.push({ ok: true, event: "sent", messageId: "(already sent before)" } as PlatformAnswer);
-            continue;
-          }
-          const run = context.directDiscord(account, { action: "send", channel: target, text: part, live: true, approvedBy, ...(i ? { continuesSend: true } : {}), ...(files.paths.length && i === plan.parts.length - 1 ? { files: files.paths } : {}) });
-          sent.push(run.answer);
-          if (!run.answer.ok || run.answer.event !== "sent") break;
-          guard.partSent(i, part, run.answer.messageId ? String(run.answer.messageId) : null);
-          context.err(`  ${i + 1}/${plan.parts.length} sent ${run.answer.messageId}: ${part}`);
-        }
-      } finally {
-        const ok = sent.filter((a) => a.ok && a.event === "sent").length;
-        guard.done(interrupted.length ? "interrupted" : ok === plan.parts.length ? "sent" : "failed", `${ok} of ${plan.parts.length}${fenced ? ", then the claim on this chat was lost, so the rest was held" : ""}: ${plan.parts.slice(0, ok).join(" / ").slice(0, 300)}`);
-      }
+      rethrowFailure(acted);
+      if (!acted.held) return refuseGated("discord send", acted, "chatClaimedElsewhere");
+      const { movedOn, sent, interrupted } = sending;
       if (movedOn.length) return refuse("discord send", "chatMovedOn", `>>> THEY WROTE AFTER THE GATE READ THE CHAT: nothing was sent, so answer what they said first.\n${movedOn.map((m) => `  ${m}`).join("\n")}`);
       const last = sent[sent.length - 1];
       const done = sent.filter((a) => a.ok && a.event === "sent");

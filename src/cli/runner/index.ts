@@ -2,6 +2,8 @@ import { chatCommand, cookiesCommand, dmCommand, dmsCommand, followersCommand, f
 import { accountCommand, accountsCommand } from "../account/index.ts";
 import { adsPowerCommand } from "../adsPower/index.ts";
 import { localAccountCommand } from "../localAccount/index.ts";
+import { workspaceAccountsCommand } from "../accounts/index.ts";
+import { credentialsCommand } from "../credentials/index.ts";
 import { campaignCommand } from "../campaign/index.ts";
 import { conversationCommand, conversationsCommand } from "../conversation/index.ts";
 import { loginCommand, logoutCommand, whoamiCommand } from "../auth/index.ts";
@@ -29,6 +31,7 @@ import { balanceCommand } from "../balance/index.ts";
 import { governorCommand } from "../governor/index.ts";
 import { sessionsCommand } from "../sessions/index.ts";
 import { chatsCommand, messagesCommand } from "../capabilities/index.ts";
+import { watchersCommand } from "../watchers/index.ts";
 import { cloneCommand } from "../clone/index.ts";
 import { discordVoiceCommand, instagramVoiceCommand, slackVoiceCommand, twitterVoiceCommand } from "../voiceNote/index.ts";
 import { transcribeCommand } from "../transcribe/index.ts";
@@ -65,12 +68,14 @@ export type { Command, CommandContext, CommandResult, MarketplaceData } from "./
 export const COMMANDS: Command[] = [
   launchCommand,
   consoleCommand,
+  credentialsCommand,
   listingsCommand,
   listingCommand,
   accountsCommand,
   accountCommand,
   adsPowerCommand,
   localAccountCommand,
+  workspaceAccountsCommand,
   lifecycleCommand,
   preflightCommand,
   doctorCommand,
@@ -125,6 +130,7 @@ export const COMMANDS: Command[] = [
   sessionsCommand,
   chatsCommand,
   messagesCommand,
+  watchersCommand,
   cloneCommand,
   transcribeCommand,
   followersCommand,

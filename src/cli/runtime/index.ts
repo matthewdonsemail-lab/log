@@ -1,10 +1,10 @@
-import { consoleErrorCode, isConsoleOperation, redactConsoleArgs, redactConsoleResult, runConsoleOperation } from "../../console/operations/index.ts";
+import { consoleErrorCode, isConsoleOperation, redactConsoleArgs, redactConsoleResult, runConsoleOperation, UNJOURNALED_TOOLS } from "../../console/operations/index.ts";
 import type { ConsoleOperationDeps } from "../../console/operations/index.ts";
 import { finishPairing, keepConnected, readBinding, startPairing } from "../../runtime/bridge/index.ts";
 import type { Authority, ResultPayload, RunTool } from "../../runtime/bridge/index.ts";
 import type { PlayScope } from "../../mcp/server/helpers/index.ts";
 import { defaultDbPath, openDatabase, SCHEMA_VERSION } from "../../storage/schema/index.ts";
-import { readLocalAccounts } from "../../twenty/graphql/index.ts";
+import { workspaceAccounts } from "../../platformKit/account/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
 
@@ -26,7 +26,9 @@ export const RUNTIME_INPUT: CommandInput = {
 
 type ToolCaller = (name: string, input: Record<string, unknown>, scope?: PlayScope) => Promise<{ isError?: boolean; structuredContent?: unknown; content?: unknown }>;
 
-export const runtimeDeps: { callTool: () => Promise<ToolCaller>; connect: typeof keepConnected; dbPath: () => string } = {
+export const WATCHERS_EVERY_MS = 60_000;
+
+export const runtimeDeps: { callTool: () => Promise<ToolCaller>; connect: typeof keepConnected; dbPath: () => string; startWatchers: (callTool: ToolCaller) => Promise<unknown> } = {
   callTool: async () => {
     const { runToolCall } = await import("../../mcp/server/index.ts");
     const { settleLocation } = await import("../../mcp/apps/index.ts");
@@ -36,23 +38,11 @@ export const runtimeDeps: { callTool: () => Promise<ToolCaller>; connect: typeof
   },
   connect: keepConnected,
   dbPath: () => defaultDbPath(),
+  startWatchers: (callTool) => callTool("watchersStart", {}),
 };
 
 export function accountsList(args: Record<string, unknown>): ResultPayload {
-  const limit = Math.max(1, Math.min(Number(args.limit ?? 50) || 50, 200));
-  const start = Math.max(0, Number(args.cursor ?? 0) || 0);
-  const rows = readLocalAccounts();
-  const accounts = rows.slice(start, start + limit).map((row) => ({
-    id: String(row.id ?? ""),
-    platform: String(row.platform ?? "").toLowerCase(),
-    account: String(row.accountName ?? ""),
-    displayName: row.name ? String(row.name) : null,
-    status: String(row.status ?? "unknown"),
-    sessionState: row.sessionState ? String(row.sessionState) : null,
-    browserLocation: row.adsPowerProfileId ? "workspace" : null,
-    revision: 1,
-  }));
-  return { state: "succeeded", result: { accounts, cursor: start + limit < rows.length ? String(start + limit) : null } };
+  return { state: "succeeded", result: workspaceAccounts(args) };
 }
 
 export async function toolManifest(args: Record<string, unknown>): Promise<ResultPayload> {
@@ -110,6 +100,12 @@ export async function consoleOperation(tool: string, args: Record<string, unknow
   }
 }
 
+export async function hostedSignIn(args: Record<string, unknown>, authority: Pick<Authority, "actorUserId"> | null | undefined, call: (input: Record<string, unknown>) => Promise<unknown>, origin: string = readBinding()?.origin ?? ""): Promise<unknown> {
+  const { signInCall } = await import("../../mcp/apps/index.ts");
+  const { ui, ...input } = args;
+  return signInCall(input, (given) => call(given) as never, { rung: ui === true ? "app" : "text", location: "remote", requester: authority?.actorUserId ?? "", origin });
+}
+
 export function toolRunner(callTool: ToolCaller): RunTool {
   return async (tool, args, authority) => {
     if (tool === "accountsList") return accountsList(args);
@@ -118,9 +114,10 @@ export function toolRunner(callTool: ToolCaller): RunTool {
     if (tool === "report") return reportOperation(args);
     const scope = await hostedPlayScope(authority);
     if (tool === "getGuide") return guideOperation(args, scope);
-    if (isConsoleOperation(tool)) return consoleOperation(tool, args, (name, input) => callTool(name, input, scope));
+    if (isConsoleOperation(tool)) return consoleOperation(tool, args, (name, input) => callTool(name, input, scope), { requester: authority?.actorUserId ?? "" });
     const { withCallFooter } = await import("../../mcp/server/index.ts");
-    const answer = withCallFooter(tool, args, (await callTool(tool, args, scope)) as Parameters<typeof withCallFooter>[2], scope);
+    const ran = tool === "sessionsSignIn" ? await hostedSignIn(args, authority, (input) => callTool(tool, input, scope)) : await callTool(tool, args, scope);
+    const answer = withCallFooter(tool, args, ran as Parameters<typeof withCallFooter>[2], scope);
     const content = (answer.structuredContent ?? {}) as Record<string, unknown>;
     const { browsers: _browsers, ...result } = content;
     return answer.isError ? { state: "failed", result, error: { code: [content.code, content.error].find((c): c is string => typeof c === "string" && /^[a-zA-Z]{1,60}$/.test(c)) ?? "toolFailed", message: String(content.stderr ?? content.message ?? "the tool failed").slice(0, 2000) } } : { state: "succeeded", result };
@@ -173,8 +170,13 @@ export const runtimeCommand: Command = {
     const isolation = isolationRefusal(process.env);
     if (isolation) return { code: 1, stderr: `log runtime connect: ${isolation}` };
     const db = openDatabase(runtimeDeps.dbPath());
-    const runTool = toolRunner(await runtimeDeps.callTool());
+    const callTool = await runtimeDeps.callTool();
+    const runTool = toolRunner(callTool);
     const onLine = (line: string) => context.err?.(line);
+    const superviseWatchers = () => void runtimeDeps.startWatchers(callTool).catch((error: unknown) => onLine(`watchersStart: ${error instanceof Error ? error.message : String(error)}`));
+    superviseWatchers();
+    const watching = setInterval(superviseWatchers, WATCHERS_EVERY_MS);
+    watching.unref?.();
     const closed = await runtimeDeps.connect({
       binding,
       db,
@@ -182,9 +184,10 @@ export const runtimeCommand: Command = {
       isLive: (tool) => tool.endsWith("Live"),
       redact: redactConsoleArgs,
       redactResult: redactConsoleResult,
+      unjournaled: (tool) => UNJOURNALED_TOOLS.includes(tool),
       hello: () => ({ runtimeVersion: "log", schemaVersion: SCHEMA_VERSION, capabilities: { persistentStorage: true, browserAvailable: Boolean(process.env.ADSPOWER_API_KEY || process.env.ADSPOWER_HOST), driver: process.env.ADSPOWER_API_KEY || process.env.ADSPOWER_HOST ? "adsPower" : "none", protocolVersion: 1, checkedAt: new Date().toISOString(), status: "passed" } }),
       onLine,
-    });
+    }).finally(() => clearInterval(watching));
     db.close();
     return closed.code === 1000 ? { code: 0, stdout: "log runtime connect: stopped" } : { code: 1, stderr: `log runtime connect: closed ${closed.code} ${closed.reason}` };
   },

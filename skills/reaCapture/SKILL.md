@@ -9,7 +9,7 @@ The point of this work: use REA on real captures of our own Facebook client
 to find out what the create page actually does, then score design changes
 with SubQ so the client gets as efficient as it can. The work is based on
 live runs. log-cli already knows much of the flow
-(`docs/listingPublish/`, `src/marketplace/publish/machine.ts`). The
+(`docs/listingPublish/`, `src/facebook/marketplace/publish/machine.ts`). The
 captures test that knowledge and find what it misses.
 
 Why a HAR plus scripts, read offline: `docs/rea/matrix/` and
@@ -80,7 +80,7 @@ notes print
 `log facebook publish` runs these itself. To re-run on any HAR:
 
 ```bash
-log facebook capture --har <path> --out <dir>      # --noRea to only write the files
+log capture har <path> --out <dir>      # --noRea to only write the files
 rea inspect-web-network-capture <absolute>/session.har har --format json
 ```
 
@@ -98,7 +98,7 @@ is read per request instead (step 2b).
 ### 2b. The Facebook client docs (per request, rule 25)
 
 ```bash
-log facebook capture --docs          # run it live (Monitor), every stage prints
+log capture docs          # run it live (Monitor), every stage prints
 ```
 
 1. Every run under `~/.logCli` is split by its `steps.jsonl`; each request
@@ -144,7 +144,7 @@ What rea does per run (`settleInBackground`, its own hidden process):
 For a decision, write `docs/rea/findings/<runId>.md` by hand: the operations the
 create page fired, in order, with timing; the fields each one submits;
 what the page's scripts read from the browser; and every gap against
-`src/marketplace/publish/machine.ts` and `docs/listingPublish/formFill.md`.
+`src/facebook/marketplace/publish/machine.ts` and `docs/listingPublish/formFill.md`.
 Each line names its rea `evidence_id`. Session values aren't copied into
 this file. It holds names, orders and counts.
 
@@ -166,7 +166,7 @@ Record the decision and its evidence ids in the `log.md` entry.
 ## Every action's run feeds the request docs
 
 Every action (inspect, flow, host, warm-up, publish) records the session's
-`session.har` with Facebook's bundles in it, and `log facebook capture --docs`
+`session.har` with Facebook's bundles in it, and `log capture docs`
 reads code slices from all of them: a run that isn't settled yet (a host still
 open) has its bundles taken from its `session.har` and kept as `scripts/`
 (`scriptsFromHar`). The recorder reads each body first, before any header round

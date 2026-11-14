@@ -1,4 +1,4 @@
-import type { ConnectContext, ConnectOutput } from "../../../marketplace/connect/index.ts";
+import type { ConnectContext, ConnectOutput } from "../../../platformKit/connect/index.ts";
 
 export function summarizeConnect(context: unknown): Record<string, unknown> {
   const c = context as ConnectContext | undefined;

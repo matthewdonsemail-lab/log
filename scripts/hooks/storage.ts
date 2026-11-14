@@ -1,5 +1,6 @@
 #!/usr/bin/env bun
 import { diskFree, runsBytes, storageVerdict } from '../../src/browser/runStore/index'
+import { contextOutput, hookHostOf } from '../../src/agentHooks/harness/index'
 
 const raw = await Bun.stdin.text().catch(() => '')
 let event = 'UserPromptSubmit'
@@ -8,4 +9,4 @@ try {
 } catch {}
 
 const verdict = storageVerdict(runsBytes(), diskFree())
-if (verdict) process.stdout.write(JSON.stringify({ hookSpecificOutput: { hookEventName: event, additionalContext: verdict } }))
+if (verdict) process.stdout.write(contextOutput(event, verdict, hookHostOf(process.argv)))

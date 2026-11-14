@@ -1,0 +1,59 @@
+{
+  "platform": "facebook",
+  "pages": [
+    {
+      "name": "login",
+      "signals": {
+        "url": "https://www.facebook.com/login/",
+        "heading": "Log in to Facebook",
+        "text": "Email address or phone number. Password. Log in",
+        "password": true,
+        "code": false,
+        "width": 1280,
+        "height": 800,
+        "historyLength": 1
+      },
+      "expect": {
+        "state": "loginForm",
+        "blocked": false,
+        "inputAllowed": true
+      }
+    },
+    {
+      "name": "twoStep",
+      "signals": {
+        "url": "https://www.facebook.com/two_step_verification/two_factor/",
+        "heading": "Go to your authentication app",
+        "text": "Enter the 6-digit code for this account from the two-factor authentication app you set up",
+        "password": false,
+        "code": true,
+        "width": 1280,
+        "height": 800,
+        "historyLength": 1
+      },
+      "expect": {
+        "state": "twoStepCode",
+        "blocked": false,
+        "inputAllowed": true
+      }
+    },
+    {
+      "name": "stopped",
+      "signals": {
+        "url": "https://www.facebook.com/checkpoint/1501092823525282/",
+        "heading": "Confirm your identity",
+        "text": "Upload a photo of yourself",
+        "password": false,
+        "code": false,
+        "width": 1280,
+        "height": 800,
+        "historyLength": 1
+      },
+      "expect": {
+        "state": "checkpoint",
+        "blocked": true,
+        "inputAllowed": false
+      }
+    }
+  ]
+}

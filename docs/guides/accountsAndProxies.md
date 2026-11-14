@@ -1,6 +1,6 @@
 # accountsAndProxies
 
-Each account's proxy: checking it, giving it one from a provider in its home city, and providers' traffic; and the interactive launcher that sets log up and adds accounts.
+Every account in the workspace with its session state, and each account's proxy: checking it, giving it one from a provider in its home city, and providers' traffic; and the interactive launcher that sets log up and adds accounts.
 
 Load next, when the work needs it: getGuide({ topic: "sessions" }) (Whether each account's saved session still works, from the platform's own answer, with the next step to sign it back in; and log's own sign-in for a team (login, logout, whoami)); getGuide({ topic: "accountBrowser" }) (An account's one browser on any platform: opening it through its gates, inspecting a page step by step, where every open browser is, the live view for signing in, AdsPower profiles and local accounts).
 
@@ -20,6 +20,7 @@ Each tool's own description carries its full usage, notes, live line and rules; 
 
 | Tool | What it does | Usage |
 |---|---|---|
+| `accountsList` | Every social account in this workspace with its platform, status and… | `log accounts list [--limit <n>] [--cursor <n>] [--json]` |
 | `proxyCheck` | Check an account's proxy | `log proxy check   --account <accountName> [--json]` |
 | `proxyAssign` | Give an account | `log proxy assign  --account <accountName> \| --missing  [--vendor twoCaptcha\|byteful] [--city <city> [--region <state>] \| --anyCity] [--minutes <1-120>] [--socks5]` |
 | `proxyBalance` | Each proxy provider's traffic and balance | `log proxy balance [--json]` |
@@ -35,3 +36,6 @@ Each by its number and first line. The full text is in AGENTS.md (`log://agents`
 - **Rule 39.** Use only the scope, options and intent the owner stated or implied.
 - **Rule 40.** Do not propose physical infrastructure unless the owner asks.
 - **Rule 41.** Paid work must stay within the authorized task and spend.
+- **Rule 154.** Show people/chats by meaningful names and handles; keep routing ids internal unless needed for the specific technical artifact.
+- **Rule 163.** Agent Log actions go through Log MCP tools; never work around a stale or unavailable MCP with shell Log commands or scratch clients.
+- **Rule 172.** The selected persistent cloud workspace owns private accounts, credentials/sessions, messages and execution data in existing SQLite plus protected files.

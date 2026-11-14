@@ -1,10 +1,10 @@
-import { recordAccountIssue } from "../../marketplace/replacement/index.ts";
+import { recordAccountIssue } from "../../facebook/marketplace/replacement/index.ts";
 import { readdirSync } from "node:fs";
 import { dirname } from "node:path";
-import { hostDir, readProgress, runHost, sendControl } from "../../marketplace/host/index.ts";
-import type { HostControl, MilestoneField } from "../../marketplace/host/index.ts";
-import { standingOf } from "../../marketplace/lifecycle/index.ts";
-import { findAccount, toTwentyEnum } from "../../marketplace/socialAccount/index.ts";
+import { hostDir, readProgress, runHost, sendControl } from "../../facebook/marketplace/host/index.ts";
+import type { HostControl, MilestoneField } from "../../facebook/marketplace/host/index.ts";
+import { standingOf } from "../../platformKit/lifecycle/index.ts";
+import { findAccount, toTwentyEnum } from "../../platformKit/socialAccount/index.ts";
 import { createInspector, formatTraceLine } from "../../observability/trace/index.ts";
 import { numberOf, parseArgs, parserSpecOf, PROXY_MS_FLAG, refuseError, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";

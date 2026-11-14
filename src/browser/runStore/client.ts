@@ -72,7 +72,7 @@ export function listRuns(options: { root?: string; builtAt?: number; now?: numbe
       const settled = captureDir ? existsSync(join(captureDir, 'settle.json')) : null
       const documented = captureDir ? statSync(join(captureDir, 'session.har')).mtimeMs <= builtAt : null
       const busy = open.has(path.toLowerCase()) || now - newestChange(path) < BUSY_MS
-      const keep = busy ? 'still being written' : settled === false ? 'not settled by rea yet: log facebook capture --settle <its capture folder>' : documented === false ? 'not in the request docs yet: log facebook capture --docs' : null
+      const keep = busy ? 'still being written' : settled === false ? 'not settled by rea yet: log capture settle <its capture folder>' : documented === false ? 'not in the request docs yet: log capture docs' : null
       entries.push({ path, action, run, account: match[4], day: `${match[1]}-${match[2]}-${match[3]}`, bytes: sizeOf(path), captureDir, settled, documented, open: busy, keep })
     }
   }

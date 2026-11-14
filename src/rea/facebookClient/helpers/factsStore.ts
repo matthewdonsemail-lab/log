@@ -1,6 +1,6 @@
 import { REPORT_LINE } from '../../capture/helpers/splitHarBySteps'
 import type { ClientOperation, OperationKind, OperationSample, OperationSighting } from '../types'
-import { FACTS_END, FACTS_START, stepLabel } from './renderOperationDoc'
+import { FACTS_END, factsSpan, stepLabel } from './renderOperationDoc'
 
 export interface FactsRow {
   action: string
@@ -97,8 +97,9 @@ const rangeOf = (cell: string): [number, number] => {
 }
 
 export function factsFromDoc(doc: string): StoredFacts | null {
-  if (!doc.includes(FACTS_START) || !doc.includes(FACTS_END)) return null
-  const facts = doc.slice(doc.indexOf(FACTS_START), doc.indexOf(FACTS_END))
+  const span = factsSpan(doc)
+  if (!span) return null
+  const facts = doc.slice(span.start, span.end - FACTS_END.length)
   const field = (name: string) => new RegExp(`^\\| ${name} \\| (.*) \\|$`, 'm').exec(facts)?.[1] ?? '—'
   const seen = /^Seen (\d+) time\(s\) in (\d+) run\(s\)\.$/m.exec(facts)
   const rows: FactsRow[] = []

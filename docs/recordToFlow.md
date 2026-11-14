@@ -9,7 +9,7 @@ It works on every platform with a browser path (Facebook, Reddit). Every run pas
 | Stage | Command | What it produces |
 | --- | --- | --- |
 | 1. Look | `log inspect start --account <a> --url <url>`, then `log inspect do <action>` | One visible browser kept open. Every step is recorded in order: an accessibility snapshot with element refs, a screenshot, the step's own HAR, and rea's reading of that HAR. |
-| 2. Read | `log facebook capture --docs` | `docs/platforms/<platform>/<domain>/<request>.md`: every request the site's pages made, what it sends and reads, which step fires it, timings, errors, and rea's evidence from the site's own code. |
+| 2. Read | `log capture docs` | `docs/platforms/<platform>/<domain>/<request>.md`: every request the site's pages made, what it sends and reads, which step fires it, timings, errors, and rea's evidence from the site's own code. |
 | 3. Map | `log inspect map [<run>] [--all]` | The recording as states and transitions (`flow.md`, `machine.json`). `--all` combines every run. |
 | 4. Flow | `log flow fromInspect <run> --name <n> --rename text1=firstName …` | `src/browser/flow/definitions/<n>.json`: each step's element by role and name, the request that confirms each step, and the parameters. Plus its doc in `docs/platforms/facebook/flows/<n>.md`. |
 | 5. Machine | `createFlowMachine(definition)` | An XState machine: one state per step, and `failed` on the first step that fails. |

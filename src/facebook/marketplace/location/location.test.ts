@@ -1,8 +1,8 @@
 import { describe, expect, test } from 'bun:test'
 import { countryOfLocation } from '../../../browser/proxy/index'
 import { parseInspectAction } from '../../../browser/inspect/index'
-import { toPublishListing } from '../../../marketplace/agencyListing/index'
-import type { AgencyListing } from '../../../marketplace/agencyListing/index'
+import { toPublishListing } from '../agencyListing/index'
+import type { AgencyListing } from '../agencyListing/index'
 import { fullPlaceName, homePlace, placeProblem } from './index'
 
 describe('placeProblem: a Marketplace location is typed written out', () => {

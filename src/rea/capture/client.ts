@@ -48,7 +48,7 @@ export async function inspectCapture(dir: string, scripts: CapturedScript[], run
     writeFileSync(join(dir, "reaNetwork.json"), JSON.stringify({ code: read.code, stdout: read.stdout, stderr: read.stderr }), { mode: 0o600 });
     network = `REA network exit ${read.code}`;
   }
-  return `${network}, ${scripts.length} scripts saved (read per request by \`log facebook capture --docs\`)`;
+  return `${network}, ${scripts.length} scripts saved (read per request by \`log capture docs\`)`;
 }
 
 export async function settleCapture(dir: string, runner: ReaRunner = defaultReaRunner): Promise<string | null> {
@@ -108,11 +108,13 @@ export async function settleRunCapture(dir: string, runner: ReaRunner = defaultR
 
 const LOG_BIN = fileURLToPath(new URL("../../../bin/log.ts", import.meta.url));
 
+export const SETTLE_ARGS: readonly string[] = ["capture", "settle"];
+
 export function settleInBackground(dir: string): string | null {
   if (!existsSync(join(dir, "session.har"))) return null;
   const out = openSync(join(dir, "settle.log"), "a");
   try {
-    const child = spawn(process.execPath, [LOG_BIN, "facebook", "capture", "--settle", dir], { detached: true, stdio: ["ignore", out, out], windowsHide: true });
+    const child = spawn(process.execPath, [LOG_BIN, ...SETTLE_ARGS, dir], { detached: true, stdio: ["ignore", out, out], windowsHide: true });
     child.unref();
   } finally {
     closeSync(out);

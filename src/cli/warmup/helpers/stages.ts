@@ -1,8 +1,8 @@
 import { createActor, fromPromise, toPromise } from "xstate";
 import { FLOWS_DIR, flowFromRecording, loadFlow, pageProblem, readRecordedCommands, saveFlow, writeFlowDoc } from "../../../browser/flow/index.ts";
 import type { ErrorCode } from "../../../errors/catalog/index.ts";
-import { recordAccountIssue } from "../../../marketplace/replacement/index.ts";
-import type { FacebookAccount } from "../../../marketplace/socialAccount/index.ts";
+import { recordAccountIssue } from "../../../facebook/marketplace/replacement/index.ts";
+import type { FacebookAccount } from "../../../platformKit/socialAccount/index.ts";
 import { ACTIVITY_SCRIPTS, appendStageLog, pickActivities, readStageLog, renderStageLogLine, SCRIPTS_IN_ORDER, stageLogPath, warmupMachine } from "../../../facebook/warmup/stages/index.ts";
 import type { ActivityOutcome, StageLogLine, WarmupActivity } from "../../../facebook/warmup/stages/index.ts";
 import { createInspector, formatTraceLine } from "../../../observability/trace/index.ts";

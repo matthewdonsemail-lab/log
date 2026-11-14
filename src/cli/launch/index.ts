@@ -5,8 +5,8 @@ import { cancel, intro, isCancel, multiselect, outro, password, select, text } f
 import { buildBrowserCommand } from "../../auth/session/helpers/urls.ts";
 import { DEFAULT_LOCAL_API_URL } from "../../browser/adsPower/types.ts";
 import { userEnvPath } from "../../config/userEnv/index.ts";
-import { LISTING_STATUSES, listListingsWhere } from "../../marketplace/agencyListing/index.ts";
-import { checkRunnable, listFacebookAccounts, toTwentyEnum } from "../../marketplace/socialAccount/index.ts";
+import { LISTING_STATUSES, listListingsWhere } from "../../facebook/marketplace/agencyListing/index.ts";
+import { checkRunnable, listFacebookAccounts, toTwentyEnum } from "../../platformKit/socialAccount/index.ts";
 import { accountsCommand } from "../account/index.ts";
 import { listGroups } from "../../facebook/group/join/index.ts";
 import type { Group } from "../../facebook/group/join/index.ts";
@@ -21,6 +21,7 @@ import type { Platform } from "../runner/helpers/platforms.ts";
 import type { Command, CommandContext, CommandResult } from "../runner/types.ts";
 import { installOpenCode, opencodeConfigDir } from "../../agentHooks/opencode/index.ts";
 import type { HarnessInstall } from "../../agentHooks/opencode/index.ts";
+import { hermesHome, installHermes } from "../../agentHooks/hermes/index.ts";
 import { ADSPOWER_SETUP, agentSetupText, browserSignInSteps, needsBrowser, parseLaunchArgs, platformOfTwenty, platformOption, setEnvValue, SETUP_EXTENSIONS, SETUP_HARNESSES, setupSummary, shouldPrompt, signInRouteOf, START_ACTIONS, START_PLATFORMS, twentyReady } from "./helpers/index.ts";
 import type { LaunchTTY, SetupExtension, SetupHarness, SetupOutcome } from "./helpers/index.ts";
 
@@ -41,6 +42,8 @@ interface LaunchPrompts {
   multiselect(option: Parameters<typeof multiselect>[0]): Promise<unknown>;
   password(option: Parameters<typeof password>[0]): Promise<unknown>;
 }
+
+const harnessHomes: Partial<Record<SetupHarness["id"], () => string>> = { opencode: opencodeConfigDir, hermes: hermesHome };
 
 export const launchDeps: {
   prompts: LaunchPrompts;
@@ -84,8 +87,8 @@ export const launchDeps: {
       return false;
     }
   },
-  harnesses: () => (existsSync(opencodeConfigDir()) ? SETUP_HARNESSES : []),
-  installHarness: () => installOpenCode(),
+  harnesses: () => SETUP_HARNESSES.filter((harness) => existsSync(harnessHomes[harness.id]?.() ?? "")),
+  installHarness: (harness) => (harness.id === "hermes" ? installHermes() : installOpenCode()),
   envFile: () => userEnvPath(),
   readEnv: (file) => (existsSync(file) ? readFileSync(file, "utf8") : ""),
   writeEnv: (file, text) => {

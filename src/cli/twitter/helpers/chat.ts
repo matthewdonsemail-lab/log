@@ -44,6 +44,7 @@ export const CHAT_INPUT: CommandInput = {
     },
     {
       words: ["watch"],
+      effect: "read",
       summary: "Watch the account's X Chat live over X's own socket: each message the moment X pushes it, nothing polled",
       positionals: [],
       flags: [

@@ -12,7 +12,7 @@ description: 'The account lifecycle (rule 35): one XState machine per Facebook a
    logged reason (top of AGENTS.md, rule 35). Never add a command that opens a
    browser of its own.
 2. **The machine is the spec.** Change the lifecycle in
-   `src/marketplace/lifecycle/machine.ts` and its tests, then regenerate the
+   `src/platformKit/lifecycle/machine.ts` and its tests, then regenerate the
    doc: `log facebook lifecycle states --write`. Never hand-edit the generated tree.
 3. **Final is final.** Restricted, banned, lost and deactivated: the record stays in Twenty;
    nothing resumes them. A `/checkpoint` page is never pressed through: the

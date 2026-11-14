@@ -7,11 +7,11 @@ import { prepareRun } from "../../browser/run/index.ts";
 import { settleInBackground } from "../../rea/capture/index.ts";
 import type { PublishSession } from "../../camofox/session/index.ts";
 import type { ErrorCode } from "../../errors/catalog/index.ts";
-import { countryMismatch, getListing, listListingsWhere, PUBLISHABLE_STATUSES, recordRun, setListingStatus, toPublishListing } from "../../marketplace/agencyListing/index.ts";
-import type { AgencyListing } from "../../marketplace/agencyListing/index.ts";
-import { publishMachine } from "../../marketplace/publish/index.ts";
-import { connectMachine } from "../../marketplace/connect/index.ts";
-import type { ActOutput, ConnectActorInputs, ReadOutput, SaveOutput, SolveOutput as ConnectSolveOutput } from "../../marketplace/connect/index.ts";
+import { countryMismatch, getListing, listListingsWhere, PUBLISHABLE_STATUSES, recordRun, setListingStatus, toPublishListing } from "../../facebook/marketplace/agencyListing/index.ts";
+import type { AgencyListing } from "../../facebook/marketplace/agencyListing/index.ts";
+import { publishMachine } from "../../facebook/marketplace/publish/index.ts";
+import { connectMachine } from "../../platformKit/connect/index.ts";
+import type { ActOutput, ConnectActorInputs, ReadOutput, SaveOutput, SolveOutput as ConnectSolveOutput } from "../../platformKit/connect/index.ts";
 import type { LoginSecrets } from "../../twenty/graphql/index.ts";
 import type {
   CaptureOutput,
@@ -26,11 +26,11 @@ import type {
   SolveOutput,
   StepOutput,
   UploadOutput,
-} from "../../marketplace/publish/index.ts";
-import { countPostedToday, recordAccountIssue } from "../../marketplace/replacement/index.ts";
-import { homeOf } from "../../marketplace/home/index.ts";
-import { fetchProxyUrl, findAccount, markPosted, recordProxyCheck } from "../../marketplace/socialAccount/index.ts";
-import type { FacebookAccount } from "../../marketplace/socialAccount/index.ts";
+} from "../../facebook/marketplace/publish/index.ts";
+import { countPostedToday, recordAccountIssue } from "../../facebook/marketplace/replacement/index.ts";
+import { homeOf } from "../../platformKit/home/index.ts";
+import { fetchProxyUrl, findAccount, markPosted, recordProxyCheck } from "../../platformKit/socialAccount/index.ts";
+import type { FacebookAccount } from "../../platformKit/socialAccount/index.ts";
 import { preparePhotos } from "../../media/photo/index.ts";
 import { createInspector, formatTraceLine } from "../../observability/trace/index.ts";
 import { renderLoss } from "../live/helpers/index.ts";

@@ -3,8 +3,8 @@ import { runTwitterEngine, runTwitterEngineLive } from "../../twitter/account/se
 import { runInspectSession, sendInspectCommand } from "../../browser/inspect/index.ts";
 import { startConnectSession, startProfileSession, startSession } from "../../camofox/session/index.ts";
 import { runWorker } from "../../camofox/worker/index.ts";
-import { listAccounts } from "../../marketplace/account/index.ts";
-import { listListings } from "../../marketplace/listing/index.ts";
+import { listAccounts } from "../../platformKit/account/index.ts";
+import { listListings } from "../../facebook/marketplace/listing/index.ts";
 import { createTwentyClient, withLocalAccounts } from "../../twenty/graphql/index.ts";
 import { runRedditEngine } from "../../reddit/account/session/index.ts";
 import { runDiscordEngine, runDiscordEngineLive } from "../../discord/account/session/index.ts";

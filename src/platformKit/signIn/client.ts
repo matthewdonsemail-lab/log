@@ -2,12 +2,13 @@ import { createActor } from "xstate";
 import type { Snapshot } from "xstate";
 import { signInRoutesOf } from "../../cli/launch/helpers/start.ts";
 import { PLATFORM_LABELS, PLATFORM_SITES } from "../../cli/runner/helpers/platforms.ts";
+import type { Platform } from "../../cli/runner/helpers/platforms.ts";
 import { nextStepOf } from "../sessionCheck/index.ts";
 import type { SessionNextStep } from "../sessionCheck/index.ts";
 import { logDbSignInStore } from "./helpers/index.ts";
 import { signInMachineWith } from "./machine.ts";
 import { SIGN_IN_SNAPSHOT_MS } from "./types.ts";
-import type { SignInAccount, SignInActors, SignInMachineOutput, SignInRequest, SignInResult, SignInRoute, SignInStage, SignInState, SignInStore } from "./types.ts";
+import type { AccountNotConfigured, SignInAccount, SignInActors, SignInMachineOutput, SignInRequest, SignInResult, SignInRoute, SignInStage, SignInState, SignInStore } from "./types.ts";
 
 export interface SignInDeps {
   actors: SignInActors;
@@ -41,6 +42,21 @@ export function signInNextStep(account: SignInAccount, state: SignInState, outpu
   if (state === "failed") return { says: `Sign-in stopped at ${output.stage}${output.code ? ` (${output.code})` : ""}${output.detail ? `: ${output.detail}` : ""}. Nothing was retried.`, tool: null, cli: null, alternative: null };
   if (state === "stopped") return nextStepOf(account, "stopped");
   return null;
+}
+
+export function accountNotConfigured(account: string, platform: Platform | null): AccountNotConfigured {
+  const on = platform ? ` on ${PLATFORM_LABELS[platform]}` : "";
+  return {
+    error: "accountNotConfigured",
+    platform,
+    account,
+    next: {
+      says: `No account ${account}${on} is set up in this workspace, so there is nothing to sign in. Add it first: the console's Connections page (Add account), or log localAccount add on the workspace's machine. Then sign it in with sessionsSignIn.`,
+      tool: null,
+      cli: `log localAccount add --platform ${platform ?? "<platform>"} --account ${account}`,
+      alternative: null,
+    },
+  };
 }
 
 function settled(actor: { getSnapshot(): { status: string; context: { waiting: boolean } }; subscribe(observer: { next: () => void; error: (error: unknown) => void }): { unsubscribe(): void } }): Promise<void> {

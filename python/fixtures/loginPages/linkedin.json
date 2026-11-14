@@ -1,0 +1,77 @@
+{
+  "platform": "linkedin",
+  "pages": [
+    {
+      "name": "login",
+      "signals": {
+        "url": "https://www.linkedin.com/login",
+        "heading": "Sign in",
+        "text": "Sign in to continue. Email or username. Password.",
+        "password": true,
+        "code": false,
+        "width": 1280,
+        "height": 800,
+        "historyLength": 1
+      },
+      "expect": {
+        "state": "linkedinLogin",
+        "blocked": false,
+        "inputAllowed": true
+      }
+    },
+    {
+      "name": "twoStep",
+      "signals": {
+        "url": "https://www.linkedin.com/checkpoint/challenge/verify",
+        "heading": "Enter the code",
+        "text": "Enter the 6-digit code from your authentication app.",
+        "password": false,
+        "code": true,
+        "width": 1280,
+        "height": 800,
+        "historyLength": 1
+      },
+      "expect": {
+        "state": "linkedinTwoStep",
+        "blocked": false,
+        "inputAllowed": true
+      }
+    },
+    {
+      "name": "stopped",
+      "signals": {
+        "url": "https://www.linkedin.com/checkpoint/lg/login-submit",
+        "heading": "Your account is on hold",
+        "text": "This account can't be used right now.",
+        "password": false,
+        "code": false,
+        "width": 1280,
+        "height": 800,
+        "historyLength": 1
+      },
+      "expect": {
+        "state": "linkedinStopped",
+        "blocked": true,
+        "inputAllowed": false
+      }
+    },
+    {
+      "name": "signedIn",
+      "signals": {
+        "url": "https://www.linkedin.com/feed/",
+        "heading": "Home",
+        "text": "Welcome back",
+        "password": false,
+        "code": false,
+        "width": 1280,
+        "height": 800,
+        "historyLength": 1
+      },
+      "expect": {
+        "state": "unknown",
+        "blocked": false,
+        "inputAllowed": false
+      }
+    }
+  ]
+}

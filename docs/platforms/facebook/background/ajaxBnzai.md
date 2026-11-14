@@ -373,7 +373,7 @@ Telemetry: the page's performance and interaction logging, batched. The most fre
 
 ## What our machine does with it
 
-Nothing. It is part of the page around our flow; no state of `marketplace/connect` or `marketplace/publish` waits for it or reads it.
+Nothing. It is part of the page around our flow; no state of `platformKit/connect` or `facebook/marketplace/publish` waits for it or reads it.
 
 ## What can go wrong
 

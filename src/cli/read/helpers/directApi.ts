@@ -1,6 +1,6 @@
 import { outcomeOf, runEngine } from "../../../directApi/engine/index.ts";
 import type { DirectOutcome } from "../../../directApi/engine/index.ts";
-import type { FacebookAccount } from "../../../marketplace/socialAccount/index.ts";
+import type { FacebookAccount } from "../../../platformKit/socialAccount/index.ts";
 
 export interface DirectPost { id: string | null; text: string; creation_time: number | null; author?: unknown }
 export type DirectRead = DirectOutcome<DirectPost>;

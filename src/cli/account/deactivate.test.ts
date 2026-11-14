@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { syncProfiles } from "../../browser/adsPower/index.ts";
 import type { AdsPowerClient, AdsPowerProfile } from "../../browser/adsPower/index.ts";
-import { listFacebookAccounts } from "../../marketplace/socialAccount/index.ts";
+import { listFacebookAccounts } from "../../platformKit/socialAccount/index.ts";
 import { marketplaceFixture } from "../../twenty/graphql/index.ts";
 import { runCli } from "../runner/index.ts";
 

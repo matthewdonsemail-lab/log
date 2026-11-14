@@ -3,7 +3,7 @@ import { mkdtempSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { createMemoryTwenty, pullLocalAccounts, readLocalAccounts, upsertLocalAccount, withLocalAccounts } from './helpers/index'
-import { findAccount } from '../../marketplace/socialAccount/index'
+import { findAccount } from '../../platformKit/socialAccount/index'
 
 function setup(only = false) {
   const path = join(mkdtempSync(join(tmpdir(), 'localAccounts')), 'localAccounts.json')

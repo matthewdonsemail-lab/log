@@ -11,6 +11,7 @@ export const localAccounts = {
   codePaths: [
     'src/twenty/graphql/helpers/localAccounts.ts',
     'src/cli/localAccount/index.ts',
+    'src/console/signIn/client.ts',
     'src/cli/runner/client.ts',
     'src/mcp/server/helpers/agentRules.ts',
   ],
@@ -34,6 +35,11 @@ export const localAccounts = {
       { kind: 'string', file: LOCAL, includes: 'local' },
     ],
     'REQ-LOCAL-09': [{ kind: 'symbol', file: RULES, name: 'COMMAND_RULES' }],
+    'REQ-LOCAL-10': [
+      { kind: 'symbol', file: CLI, name: 'localAccountDeps' },
+      { kind: 'symbol', file: CLI, name: 'saveLogin' },
+      { kind: 'symbol', file: 'src/console/signIn/client.ts', name: 'saveAccountLogin' },
+    ],
   },
   rubrics: {
     'REQ-LOCAL-01': noul('Does localAccountsPath return the LOG_LOCAL_ACCOUNTS environment value when it is set and the default file otherwise, and does writeLocalAccounts write the file readable by its owner only (mode 0o600)?'),
@@ -45,6 +51,7 @@ export const localAccounts = {
     'REQ-LOCAL-07': noul('Does update on socialAccounts write the change to the local file with writeLocalAccounts when the row is in the file, without calling remote.update?'),
     'REQ-LOCAL-08': noul('For every object other than socialAccounts, do list, get, create and update in withLocalAccounts call the remote client whatever localOnly says?'),
     'REQ-LOCAL-09': noul('In src/mcp/server/helpers/agentRules.ts, the COMMAND_RULES object has one key per command with the rule numbers it falls under. Does its localAccount key (the line that starts with localAccount: inside COMMAND_RULES, near the top of COMMAND_RULES) list the number 97 in its array?'),
+    'REQ-LOCAL-10': noul('Does localAccount login refuse with terminalOnly before prompting when there is no terminal, ask for the email and password through masked prompts, and save them only through saveAccountLogin with signInRequestOf (method password), so an account missing from the file, a platform outside PASSWORD_PLATFORMS and an empty or over-long value refuse with the same codes as the console and write nothing, never printing either value?'),
     unspecifiedBehavior: noul('Does the local accounts code write an account to Twenty when it should stay local, read Twenty with LOG_ACCOUNTS=local, or keep listings, groups or conversations in the local file, by a route the specification does not describe?'),
   },
   assertions: {
@@ -57,6 +64,7 @@ export const localAccounts = {
     'REQ-LOCAL-07': MET,
     'REQ-LOCAL-08': MET,
     'REQ-LOCAL-09': MET,
+    'REQ-LOCAL-10': MET,
     unspecifiedBehavior: NOT_VIOLATED,
   },
 }

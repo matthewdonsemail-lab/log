@@ -5,7 +5,7 @@ Generated from the code by `bun run docs:build`, so it always matches what `log`
 <!-- surface:start · written by `bun run docs:build` from the code. Not edited by hand. -->
 ## Commands, MCP tools and hooks
 
-log-cli is platform-agnostic: 7 platforms so far, Facebook (23 commands of its own), X (18 commands of its own), Reddit (5 commands of its own), Discord (12 commands of its own), LinkedIn (2 commands of its own), Slack (9 commands of its own), Instagram (6 commands of its own), and a new one is made by `log new platform <name>` (rule 83). A command that acts on one platform names it first, `log <platform> <command> …` (`log facebook listings`, `log twitter session`, `log reddit session`, `log discord session`, `log linkedin session`, `log slack session`, `log instagram session`), in every form; one that works on any platform takes none (the Platform column, rule 63).
+log-cli is platform-agnostic: 7 platforms so far, Facebook (22 commands of its own), X (18 commands of its own), Reddit (5 commands of its own), Discord (12 commands of its own), LinkedIn (2 commands of its own), Slack (9 commands of its own), Instagram (6 commands of its own), and a new one is made by `log new platform <name>` (rule 83). A command that acts on one platform names it first, `log <platform> <command> …` (`log facebook listings`, `log twitter session`, `log reddit session`, `log discord session`, `log linkedin session`, `log slack session`, `log instagram session`), in every form; one that works on any platform takes none (the Platform column, rule 63).
 Each command runs on the platform's direct API first where it has one, and on the account's browser otherwise (the Engine and Browser columns). log-cli is browser-agnostic too: each account's browser is a driver (AdsPower first, Camoufox kept, more browser providers to come), and every driver opens through the same gates.
 Every command is a CLI command (`log [<platform>] <command>`) and, unless it only works in a terminal, an MCP tool on the `log` server (Facebook's take the command's name, every other platform's start with the platform: `twitterReply`, `redditSessionCheck`).
 The same hooks fire whether it runs from a shell or over MCP, and both write the same live log, `~/.logCli/mcp/<day>.log`.
@@ -21,7 +21,7 @@ flowchart LR
   twenty[("Twenty socialAccounts: one row per account, its platform, session and proxy")]
   api["The platform's internal API: its own answer decides (rule 73)"]
   drivers["The account's browser: AdsPower or Camoufox, through the driver (The browser layer)"]
-  p_facebook["Facebook (FACEBOOK): 23 commands of its own"]
+  p_facebook["Facebook (FACEBOOK): 22 commands of its own"]
   twenty --> p_facebook
   p_facebook -->|"direct API: facebook read"| e_fbk["fbk (vendor/fbk): the saved session, a governor per account"]
   e_fbk --> api
@@ -69,7 +69,7 @@ flowchart LR
   anyB --> b_linkedin
   anyB --> b_slack
   anyB --> b_instagram
-  anyN["Any platform, no browser: launch, console, adsPower, localAccount, proxy, errors, graph, runs, storage, timing, inbox, media, browsers, browser, report, job, mcp, login, logout, whoami, voice, search, kb, runtime, memelord, treg, balance, governor, sessions, chats, messages, clone, transcribe, new"]
+  anyN["Any platform, no browser: launch, console, credentials, adsPower, localAccount, accounts, proxy, errors, graph, capture, runs, storage, timing, inbox, media, browsers, browser, report, job, mcp, login, logout, whoami, voice, search, kb, runtime, memelord, treg, balance, governor, sessions, chats, messages, watchers, clone, transcribe, new"]
   anyN -.-> twenty
   newP["log new platform name: one more platform, wired whole (rule 83)"] -.-> twenty
   drivers --> api
@@ -105,7 +105,7 @@ Source: [`docs/diagrams/browsers.mmd`](diagrams/browsers.mmd).
 
 - **The account's browser, through the driver:** `facebook host`, `inspect`, `flow`, `<platform> warmup`, `facebook join`, `facebook read`, `facebook poll`, `facebook check`, `reddit read`, `discord read`, `slack read`. They run on whichever browser the account uses: AdsPower when it has a linked profile (`socialAccounts.adsPowerProfileId`), Camoufox otherwise, or what `socialAccounts.browserDriver` says.
 - **Camoufox only, not on the driver yet:** `facebook doctor`, `facebook connect`, `facebook profile`, `facebook scan`, `facebook status`, `facebook watch`, `facebook publish`, `facebook campaign`, `discord watch`, `slack watch`, `instagram watch`. They launch Camoufox themselves (facebook-camofox-client's worker, or the publish, connect and profile sessions), so on an AdsPower account they don't open its AdsPower profile. Moving one onto the driver is moving it into `OPENER_ACTIONS` (`src/browser/run`).
-- **No browser:** `launch`, `console`, `facebook listings`, `facebook listing`, `facebook accounts`, `facebook account`, `adsPower`, `localAccount`, `facebook lifecycle`, `facebook preflight`, `proxy`, `facebook conversations`, `facebook conversation`, `facebook messenger`, `errors`, `graph`, `facebook capture`, `runs`, `storage`, `timing`, `inbox`, `media`, `browsers`, `browser`, `report`, `job`, `mcp`, `login`, `logout`, `whoami`, `twitter session`, `twitter follows`, `twitter dms`, `twitter chat`, `twitter cookies`, `voice`, `search`, `kb`, `runtime`, `memelord`, `treg`, `balance`, `governor`, `sessions`, `chats`, `messages`, `clone`, `transcribe`, `twitter followers`, `twitter notifications`, `twitter reply`, `twitter quote`, `twitter post`, `twitter like`, `twitter list`, `twitter repost`, `twitter follow`, `twitter dm`, `twitter react`, `twitter queue`, `new`, `reddit session`, `reddit post`, `reddit reply`, `reddit vote`, `discord session`, `discord chats`, `discord servers`, `discord channels`, `discord posts`, `discord search`, `discord send`, `discord delete`, `discord react`, `discord voice`, `linkedin session`, `linkedin cookies`, `slack session`, `slack workspaces`, `slack chats`, `slack send`, `slack cookies`, `slack react`, `slack voice`, `instagram session`, `instagram dms`, `instagram send`, `instagram react`, `instagram voice`, `twitter voice`.
+- **No browser:** `launch`, `console`, `credentials`, `facebook listings`, `facebook listing`, `facebook accounts`, `facebook account`, `adsPower`, `localAccount`, `accounts`, `facebook lifecycle`, `facebook preflight`, `proxy`, `facebook conversations`, `facebook conversation`, `facebook messenger`, `errors`, `graph`, `capture`, `runs`, `storage`, `timing`, `inbox`, `media`, `browsers`, `browser`, `report`, `job`, `mcp`, `login`, `logout`, `whoami`, `twitter session`, `twitter follows`, `twitter dms`, `twitter chat`, `twitter cookies`, `voice`, `search`, `kb`, `runtime`, `memelord`, `treg`, `balance`, `governor`, `sessions`, `chats`, `messages`, `watchers`, `clone`, `transcribe`, `twitter followers`, `twitter notifications`, `twitter reply`, `twitter quote`, `twitter post`, `twitter like`, `twitter list`, `twitter repost`, `twitter follow`, `twitter dm`, `twitter react`, `twitter queue`, `new`, `reddit session`, `reddit post`, `reddit reply`, `reddit vote`, `discord session`, `discord chats`, `discord servers`, `discord channels`, `discord posts`, `discord search`, `discord send`, `discord delete`, `discord react`, `discord voice`, `linkedin session`, `linkedin cookies`, `slack session`, `slack workspaces`, `slack chats`, `slack send`, `slack cookies`, `slack react`, `slack voice`, `instagram session`, `instagram dms`, `instagram send`, `instagram react`, `instagram voice`, `twitter voice`.
 - **No browser path at all:** X. Its accounts run on the direct API only (rule 80).
 
 Each browser's capabilities, built or not: [`docs/browsers.md`](browsers.md) (generated, `bun run check:browsers`). AdsPower's setup: [`docs/adsPower.md`](adsPower.md).
@@ -197,9 +197,9 @@ flowchart LR
   agent["Agent (Claude Code, Codex)"]
   matt["matt, in a terminal"]
   shell["Bash / PowerShell / Monitor"]
-  mcp["MCP server log: 225 command tools + saved flows"]
+  mcp["MCP server log: 234 command tools + saved flows"]
   bin["bin/log.ts"]
-  runCli["runCli: 112 commands (COMMANDS)"]
+  runCli["runCli: 115 commands (COMMANDS)"]
   live[("~/.logCli/mcp/day.log: the live log")]
   engine{"commandEngine: DIRECT_ROUTES"}
   direct["Direct-API engine: fbk, twikit, reverseChud, endcord, openLinkedinApi, gabrielSlack, instagrapi (vendor/), the account's saved session, a governor per account"]
@@ -256,12 +256,14 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | [`log launch`](#log-launch) | Start here: a guided menu to set log up (platforms, sign-ins, the account's browser and extensions), add an account, sign it in, check it and connect your agent (and the listing tools when Twenty is set up) | any (none) | `--setup` `--json` | none | none | terminal only: prompts in a terminal (Clack). Call the commands it wraps directly. | PreToolUse, PostToolUse · n/a | no | 30, 38, 39, 40, 41 |
 | [`log console`](#log-console) | The local console: this machine's status, accounts, usage, events, AI client config and settings, as an interactive terminal console, as JSON per screen, or as the web console served on loopback (--web) | any (none) | `[--web]` `[--port <integer 0..65535>]` `[--noOpen]` `[--json]` `[--platform <facebook|twitter|reddit|discord|linkedin|slack|instagram>]` `[--days <1|7|30>]` `[--kind <kind>]` `[--status <recorded|succeeded|failed|unknown>]` `[--page <integer 0..>]` `[--pageSize <integer 1..>]` `[--client <claudeCode|codex|opencode>]` | none | none | `consoleStart`, `consoleConnections`, `consoleUsage`, `consoleEvents`, `consoleAiClients`, `consoleSettings` | PreToolUse, PostToolUse · PostToolUse | no | 47, 134, 163, 168, 172, 30, 38, 39, 40, 41 |
+| [`log credentials`](#log-credentials) | A provider's keys on this machine: save them from masked prompts, checked with the provider first, or read the values that are not secret | any (none) | `--provider <adsPower|typesafe|subq|memelord|fishAudio|inworld|treg|jina|assemblyAi|parallel|twoCaptcha|byteful>` `[--host <url>]` `[--homes <CC,CC|all>]` `[--json]` | none | none | `credentialsRead` | PreToolUse, PostToolUse · PostToolUse | no | 41, 47, 163, 164, 172, 30, 38, 39, 40, 41 |
 | [`log facebook listings`](#log-facebook-listings) | List the Twenty listings, by status, account or campaign | `facebook` first | `[--status <DRAFT|READY|PUBLISHING|UNCONFIRMED|FAILED|BLOCKED|REMOVED|ACCOUNT_LOST|REPLACED|ACTIVE|UNDER_REVIEW|DUPLICATE_TAKEDOWN|DELETED_BY_FB|POLICY_VIOLATION|COMMERCE_BAN|CHECKPOINT_REQUIRED|SOLD|RETRY_EXHAUSTED|UNKNOWN>]` `[--account <accountName>]` `[--campaign <campaignId>]` `[--json]` | none | none | `facebookListings` | PreToolUse, PostToolUse · PostToolUse | no | 30, 38, 39, 40, 41 |
 | [`log facebook listing`](#log-facebook-listing) | Show one Twenty listing, or create one for an account from a JSON file | `facebook` first | `[--json]` `--account <accountName>` `--file <listing.json>` `[--live]` `[--bypass]` `[--now]` `[--apply]` | none | none | `facebookListing`, `facebookListingCreate`, `facebookListingRemove`, `facebookListingRemoveLive`, `facebookListingSweep`, `facebookListingLint` | PreToolUse, PostToolUse · PostToolUse | no | 35, 30, 38, 39, 40, 41 |
 | [`log facebook accounts`](#log-facebook-accounts) | List the FACEBOOK accounts in Twenty: status, home, proxy, and whether each may run | `facebook` first | `[--json]` | none | none | `facebookAccounts` | PreToolUse, PostToolUse · PostToolUse | no | 30, 38, 39, 40, 41 |
 | [`log facebook account`](#log-facebook-account) | Show one account, or set its status (banned/dead/restricted replace its campaign listings) | `facebook` first | `[--json]` `--from <folder>` `[--reason <text>]` `[--detail <text>]` | none | none | `facebookAccountShow`, `facebookAccountResave`, `facebookAccountResetOpens`, `facebookAccountStatus` | PreToolUse, PostToolUse · PostToolUse | no | 35, 30, 38, 39, 40, 41 |
 | [`log adsPower`](#log-adspower) | AdsPower: Local API status, its profiles, and one profile per Twenty account (sync) | any (none) | `[--json]` `[--apply]` `[--account <accountName>]` `[--homes <US,IE,…>]` | none | none | `adsPowerStatus`, `adsPowerProfiles`, `adsPowerSync` | PreToolUse, PostToolUse · PostToolUse | no | 35, 44, 30, 38, 39, 40, 41 |
 | [`log localAccount`](#log-localaccount) | Accounts kept in a local file instead of Twenty: add one, with the account's browser profile, pull every Twenty account in, or list them | any (none) | `[--platform <facebook|twitter|reddit|discord|linkedin|slack|instagram>]` `--account <accountName>` `[--adsPower <profileId>]` `[--proxy <scheme://user:pass@host:port>]` `[--home <CC>]` `[--city <city>]` `[--json]` `[--refresh]` | none | none | `localAccountAdd`, `localAccountList`, `localAccountPull` | PreToolUse, PostToolUse · PostToolUse | no | 35, 44, 30, 38, 39, 40, 41 |
+| [`log accounts`](#log-accounts) | Every social account in this workspace with its platform, status and session state, the list the hosted accountsList answers | any (none) | `[--limit <integer 1..200>]` `[--cursor <n>]` `[--json]` | none | none | `accountsList` | PreToolUse, PostToolUse · PostToolUse | no | 154, 163, 172, 30, 38, 39, 40, 41 |
 | [`log facebook lifecycle`](#log-facebook-lifecycle) | Each account's place in its lifecycle (rule 35): status, state, what onboarding has left; `states` prints the machine | `facebook` first | `[--account <name>]` `[--json]` `[--write]` | none | none | `facebookLifecycle`, `facebookLifecycleStates` | PreToolUse, PostToolUse · PostToolUse | no | 35, 30, 38, 39, 40, 41 |
 | [`log facebook preflight`](#log-facebook-preflight) | Before any browser opens, check each account will get through: home timezone, hours, proxy speed and country, the account's browser and its kernel, launches and host opens left, no session left open, its picture on disk | `facebook` first | `[--account <accountName>]` `[--homes <US,CA,…>]` `[--noProxy]` `[--apply]` `[--json]` | none | none | `facebookPreflight` | PreToolUse, PostToolUse · PostToolUse | no | 35, 79, 30, 38, 39, 40, 41 |
 | [`log facebook doctor`](#log-facebook-doctor) | Check python, facebook-camofox-client, Camoufox, Twenty, and which accounts may run | `facebook` first | `[--json]` | browser | Camoufox only | `facebookDoctor` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 35, 30, 38, 39, 40, 41 |
@@ -286,15 +288,15 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | [`log facebook messenger`](#log-facebook-messenger) | Messenger's PIN for the account's encrypted chats: asked in a Clack prompt, kept in Twenty, never printed | `facebook` first | `--account <accountName>` `--show` | none | none | terminal only: asks matt for the Messenger PIN in a Clack prompt (masked). He runs `log facebook messenger pin --account <a>` in a terminal. | PreToolUse, PostToolUse · n/a | no | 8, 35, 29, 30, 38, 39, 40, 41 |
 | [`log errors`](#log-errors) | List every error code: meaning, retryable, where each machine ends up | any (none) | `[--layer <account|listing|photo|form|captcha|runtime|twenty|proxyVendor|auth|profile|tool>]` `[--code <code>]` `[--json]` `[--markdown]` | none | none | `errors` | PreToolUse, PostToolUse · PostToolUse | no | 25, 30, 38, 39, 40, 41 |
 | [`log graph`](#log-graph) | Print a machine's states and transitions as a Mermaid diagram | any (none) | none | none | none | `graph` | PreToolUse, PostToolUse · PostToolUse | no | 25, 30, 38, 39, 40, 41 |
-| [`log facebook capture`](#log-facebook-capture) | Read a run's raw HAR (any browser driver) and its scripts with offline rea; --docs builds every platform's client docs, rea reading each request's code. No browser. | `facebook` first | `[--har <path>]` `[--out <dir>]` `[--settle <runCaptureDir>]` `[--docs]` `[--noRea]` `[--json]` | none | none | `facebookCapture` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 19, 26, 73, 30, 38, 39, 40, 41 |
+| [`log capture`](#log-capture) | Read a run's raw HAR and scripts with offline rea (any platform or browser driver), settle a run's capture, or build every platform's client docs. No browser. | any (none) | `[--out <dir>]` `[--noRea]` `[--json]` | none | none | `captureHar`, `captureSettle`, `captureDocs` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 19, 26, 73, 30, 38, 39, 40, 41 |
 | [`log runs`](#log-runs) | The recorded runs on this machine, and pruning the ones rea settled and the request docs hold, keeping each one's findings and domains | any (none) | `[--json]` `[--before <date>]` `[--apply]` | none | none | `runsList`, `runsExchanges`, `runsPrune`, `runsSpace` | PreToolUse, PostToolUse · PostToolUse | no | 19, 25, 66, 73, 30, 38, 39, 40, 41 |
 | [`log storage`](#log-storage) | Check that log.db's typed tables are exactly what its events derive, and rebuild them from the events | any (none) | `[--json]` `[--apply]` | none | none | `storageVerify`, `storageRebuild` | PreToolUse, PostToolUse · PostToolUse | no | 73, 134, 30, 38, 39, 40, 41 |
 | [`log timing`](#log-timing) | Where the time goes in every call: p50, p95 and p99 per tool and per stage, from the timings every call stores in log.db, or one call as a waterfall | any (none) | `[--tool <name>]` `[--hours <number>]` `[--stages <number>]` `[--call <callId>]` `[--json]` | none | none | `timing` | PreToolUse, PostToolUse · PostToolUse | no | 26, 73, 165, 30, 38, 39, 40, 41 |
-| [`log inbox`](#log-inbox) | Claim a chat before acting on it, release it, list the live claims, and read the log of every action taken in a chat | any (none) | `[--platform <twitter|discord|slack|instagram>]` `[--account <a>]` `[--chat <conversationId|handle>]` `[--event <eventId>]` `[--json]` `--by <who>` `[--limit <integer 1..1000>]` `[--oldest]` | none | none | `inboxClaim`, `inboxRelease`, `inboxResume`, `inboxWaiting`, `inboxClaims`, `inboxActions` | PreToolUse, PostToolUse · PostToolUse | no | 94, 105, 109, 133, 134, 138, 30, 38, 39, 40, 41 |
+| [`log inbox`](#log-inbox) | Claim a chat before acting on it, release it, list the live claims, read the log of every action taken in a chat, and read what the watchers heard | any (none) | `[--platform <twitter|discord|slack|instagram>]` `[--account <a>]` `[--chat <conversationId|handle>]` `[--event <eventId>]` `[--json]` `--by <who>` `[--limit <integer 1..1000>]` `[--oldest]` `--reader <name>` | none | none | `inboxClaim`, `inboxRelease`, `inboxResume`, `inboxWaiting`, `inboxPending`, `inboxClaims`, `inboxActions` | PreToolUse, PostToolUse · PostToolUse | no | 94, 105, 109, 133, 134, 138, 30, 38, 39, 40, 41 |
 | [`log media`](#log-media) | Turn every image, meme and video into text any model reads, kept in the .db with a small preview, so replies read what was sent | any (none) | `[--json]` `[--wait <number 0..>]` | none | none | `mediaDescriber`, `mediaDescribe`, `mediaStatus`, `mediaView` | PreToolUse, PostToolUse · PostToolUse | no | 26, 41, 138, 105, 137, 30, 38, 39, 40, 41 |
 | [`log browsers`](#log-browsers) | Where every open browser is: its page, the known page state it sits on, the call that resolves it, and what only the owner can clear (rule 35) | any (none) | `[--json]` | none | none | `browsers` | PreToolUse, PostToolUse · PostToolUse | no | 29, 35, 30, 38, 39, 40, 41 |
 | [`log browser`](#log-browser) | One account's live browser: whether it needs a person to sign in, in the window on this machine or inline from a remote runtime | any (none) | `--account <accountName>` `[--json]` | none | none | `browserView` | PreToolUse, PostToolUse · PostToolUse | no | 8, 19, 35, 94, 105, 30, 38, 39, 40, 41 |
-| [`log report`](#log-report) | The numbers behind a report, read from log.db only (who messaged an account and how often, by source), for the MCP report view | any (none) | `--source <twitterDmsBySender>` `[--account <accountName>]` `[--since <dateOrSpan>]` `[--limit <integer>]` `[--json]` | none | none | `reportData` | PreToolUse, PostToolUse · PostToolUse | no | 134, 154, 160, 30, 38, 39, 40, 41 |
+| [`log report`](#log-report) | The numbers behind a report, read from log.db only (who messaged an account and how often, or one person's stored profile, by source), for the MCP report view | any (none) | `--source <twitterDmsBySender|dmsBySender|identityProfile>` `[--platform <facebook|twitter|reddit|discord|linkedin|slack|instagram>]` `[--account <accountName>]` `[--since <dateOrSpan>]` `[--limit <integer 1..200>]` `[--userId <id>]` `[--handle <handle>]` `[--json]` | none | none | `reportData` | PreToolUse, PostToolUse · PostToolUse | no | 134, 154, 160, 30, 38, 39, 40, 41 |
 | [`log job`](#log-job) | Follow or stop a long MCP run: each runs as a job when it outlasts its call's wait | any (none) | `[--afterLine <integer 0..>]` `[--waitMs <integer 0..>]` `[--json]` | none | none | `jobStatus`, `jobCancel`, `jobList` | PreToolUse, PostToolUse · PostToolUse | no | 8, 26, 35, 30, 38, 39, 40, 41 |
 | [`log mcp`](#log-mcp) | This server's MCP sign-ins over OAuth (through Twenty, the owner only): list the clients, revoke them | any (none) | `[--json]` | none | none | terminal only: manages who may sign in to this server's MCP (OAuth through Twenty). matt runs `log mcp clients` or `mcp revoke <clientId\|all>` in a terminal on the server. | PreToolUse, PostToolUse · n/a | no | 35, 47, 167, 30, 38, 39, 40, 41 |
 | [`log login`](#log-login) | Only for a team on Twenty: sign in to its Twenty through its sign-in app (OAuth). Local accounts need no sign-in, and without Twenty set up it says so | any (none) | `--webUrl <url>` `--apiUrl <url>` `--token <accessToken>` `--json` | none | none | terminal only: opens a browser for Twenty OAuth and waits for it. Run `log login` in a terminal. | PreToolUse, PostToolUse · n/a | no | 30, 38, 39, 40, 41 |
@@ -315,7 +317,8 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | [`log governor`](#log-governor) | Read every platform account's governor count, and put one back to 0 when the owner says so, recorded in log.db | any (none) | `[--platform <facebook|twitter|reddit|discord|linkedin|slack|instagram>]` `[--json]` `--account <accountName|all>` `--by <who>` `[--reason <text>]` | none | none | `governorShow`, `governorReset` | PreToolUse, PostToolUse · PostToolUse | no | 73, 86, 94, 105, 163, 168, 30, 38, 39, 40, 41 |
 | [`log sessions`](#log-sessions) | Check every account's saved session through its platform's own answer, and sign one in from its own browser | any (none) | `[--platform <facebook|twitter|reddit|discord|linkedin|slack|instagram>]` `[--account <accountName>]` `[--json]` `[--route <browser|cookies>]` `[--done]` `[--wait <integer 0..900>]` | none | none | `sessionsCheck`, `sessionsSignIn` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 25, 73, 94, 163, 30, 38, 39, 40, 41 |
 | [`log chats`](#log-chats) | List an account's chats on its own platform, the platform taken from the account | any (none) | `--account <account>` `[--space <space>]` `[--limit <integer 1..>]` `[--platform <facebook|twitter|reddit|discord|linkedin|slack|instagram>]` `[--json]` | none | none | `chatsList` | PreToolUse, PostToolUse · PostToolUse | no | 89, 154, 160, 163, 30, 38, 39, 40, 41 |
-| [`log messages`](#log-messages) | Read one chat's messages on the account's own platform, the platform taken from the account | any (none) | `--account <account>` `--chat <chat>` `[--space <space>]` `[--limit <integer 1..>]` `[--platform <facebook|twitter|reddit|discord|linkedin|slack|instagram>]` `[--json]` | none | none | `messagesRead` | PreToolUse, PostToolUse · PostToolUse | no | 89, 154, 160, 163, 30, 38, 39, 40, 41 |
+| [`log messages`](#log-messages) | Read one chat's messages on the account's own platform, the platform taken from the account; Listen to an account's messages for a set time as its platform pushes them, through the account's one watcher, the platform taken from the account | any (none) | `--account <account>` `[--chat <chat>]` `[--space <space>]` `[--limit <integer 1..>]` `[--platform <facebook|twitter|reddit|discord|linkedin|slack|instagram>]` `[--json]` `[--seconds <integer 5..3600>]` | none | none | `messagesRead`, `messagesWatch` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 89, 154, 160, 163, 30, 38, 39, 40, 41 |
+| [`log watchers`](#log-watchers) | Each account's one watcher: its state, starting the ones that aren't running and stopping them, from any harness | any (none) | `[--platform <facebook|twitter|reddit|discord|linkedin|slack|instagram>]` `[--account <a>]` `[--json]` | none | none | `watchersStatus`, `watchersStart`, `watchersStop` | PreToolUse, PostToolUse · PostToolUse | no | 94, 105, 123, 163, 30, 38, 39, 40, 41 |
 | [`log clone`](#log-clone) | the owner's voice, cloned once per provider (Inworld or Fish Audio) from their own voice notes, and words said in it to a local file | any (none) | `[--provider <inworld|fishAudio>]` `[--from <file,…>]` `[--apply]` `[--replace]` `[--json]` `--text <text>` `[--model <model>]` `[--format <mp3|wav>]` | none | none | `cloneVoice`, `cloneSpeak` | PreToolUse, PostToolUse · PostToolUse | no | 39, 41, 94, 163, 142, 30, 38, 39, 40, 41 |
 | [`log transcribe`](#log-transcribe) | Transcribe every voice note in the saved X and Discord conversations with AssemblyAI, written into the conversation store for search, voice and SubQ | any (none) | `[--platform <twitter|discord>]` `[--account <a>]` `[--list]` `[--noIndex]` `[--json]` | none | none | `transcribe`, `transcribeFile` | PreToolUse, PostToolUse · PostToolUse | no | 26, 41, 89, 94, 105, 163, 138, 30, 38, 39, 40, 41 |
 | [`log twitter followers`](#log-twitter-followers) | Read an X account's own followers on the direct-API engine, sending nothing | `twitter` first | `--account <accountName>` `[--limit <integer 1..4000>]` `[--json]` | direct API only | none | `twitterFollowers` | PreToolUse, PostToolUse · PostToolUse | no | 73, 105, 30, 38, 39, 40, 41 |
@@ -404,13 +407,16 @@ flowchart TB
   subgraph g_any["Any platform"]
     c_launch["launch"]
     c_console["console"]
+    c_credentials["credentials"]
     c_adsPower["adsPower"]
     c_localAccount["localAccount"]
+    c_accounts["accounts"]
     c_inspect["inspect"]
     c_flow["flow"]
     c_proxy["proxy"]
     c_errors["errors"]
     c_graph["graph"]
+    c_capture["capture"]
     c_runs["runs"]
     c_storage["storage"]
     c_timing["timing"]
@@ -435,6 +441,7 @@ flowchart TB
     c_sessions["sessions"]
     c_chats["chats"]
     c_messages["messages"]
+    c_watchers["watchers"]
     c_clone["clone"]
     c_transcribe["transcribe"]
     c_new["new"]
@@ -465,7 +472,6 @@ flowchart TB
     c_facebookConversations["conversations"]
     c_facebookConversation["conversation"]
     c_facebookMessenger["messenger"]
-    c_facebookCapture["capture"]
   end
   subgraph g_twitter["X"]
     c_twitterSession["session"]
@@ -535,6 +541,8 @@ flowchart TB
   c_launch -.- terminal
   cli --> c_console
   mcp --> c_console
+  cli --> c_credentials
+  mcp --> c_credentials
   cli --> c_facebookListings
   mcp --> c_facebookListings
   cli --> c_facebookListing
@@ -547,6 +555,8 @@ flowchart TB
   mcp --> c_adsPower
   cli --> c_localAccount
   mcp --> c_localAccount
+  cli --> c_accounts
+  mcp --> c_accounts
   cli --> c_facebookLifecycle
   mcp --> c_facebookLifecycle
   cli --> c_facebookPreflight
@@ -611,9 +621,9 @@ flowchart TB
   mcp --> c_errors
   cli --> c_graph
   mcp --> c_graph
-  cli --> c_facebookCapture
-  mcp --> c_facebookCapture
-  c_facebookCapture --> live
+  cli --> c_capture
+  mcp --> c_capture
+  c_capture --> live
   cli --> c_runs
   mcp --> c_runs
   cli --> c_storage
@@ -673,6 +683,9 @@ flowchart TB
   mcp --> c_chats
   cli --> c_messages
   mcp --> c_messages
+  c_messages --> live
+  cli --> c_watchers
+  mcp --> c_watchers
   cli --> c_clone
   mcp --> c_clone
   cli --> c_transcribe
@@ -1028,6 +1041,16 @@ log console settings [--json]
 Everything is local: no sign-in, no team. Each screen reads the same src/console loader as the web console's /api/console endpoint.
 ```
 
+#### log credentials
+
+A provider's keys on this machine: save them from masked prompts, checked with the provider first, or read the values that are not secret MCP tools: `credentialsRead`, one per form, with named fields.
+
+```text
+log credentials save --provider <adsPower|typesafe|subq|memelord|fishAudio|inworld|treg|jina|assemblyAi|parallel|twoCaptcha|byteful> [--host <url>] [--homes <CC,CC|all>]
+log credentials read --provider <adsPower> [--json]
+save keeps a provider's keys in this machine's settings file, the same save as the console's Settings page: each key is typed in a masked prompt, never passed as a flag or printed, and is checked with the provider before it is written; nothing is written when the provider refuses it. --host and --homes are the browser provider's local API URL and allowed countries (default: what is saved now). read shows a provider's saved values that are not secret, the same read the console's form starts from.
+```
+
 #### log facebook listings
 
 List the Twenty listings, by status, account or campaign MCP tools: `facebookListings`, one per form, with named fields.
@@ -1085,8 +1108,18 @@ Accounts kept in a local file instead of Twenty: add one, with the account's bro
 ```text
 log localAccount add --platform <facebook|twitter|reddit|discord|linkedin|slack> --account <accountName> [--adsPower <profileId>] [--proxy <scheme://user:pass@host:port>] [--home <CC>] [--city <city>]
 log localAccount list [--json]
+log localAccount login --platform <p> --account <accountName>   (saves the account's email and password to the file from two masked prompts, the same save as the console's password sign-in, on a platform that signs in from them; run in a terminal)
 log localAccount pull [--platform <p>] [--refresh] [--json]   (copies every account Twenty has, cookies and login included, into the file; an account already there is kept unless --refresh; each keeps its Twenty id, so listings and groups still find it)
 A local account lives in ~/.logCli/localAccounts.json (LOG_LOCAL_ACCOUNTS moves it), not in Twenty. Every command finds it by its accountName, a local row winning over a Twenty row of the same name, and the session a run captures is saved back to the file. LOG_ACCOUNTS=local leaves Twenty out of accounts entirely.
+```
+
+#### log accounts
+
+Every social account in this workspace with its platform, status and session state, the list the hosted accountsList answers MCP tools: `accountsList`, one per form, with named fields.
+
+```text
+log accounts list [--limit <n>] [--cursor <n>] [--json]
+Every social account in this workspace, on every platform: its platform, account name, status and session state, never a credential. The same list the hosted accountsList answers, read from the local accounts file. --limit is how many to list (default 50, at most 200); a page that leaves accounts out names the --cursor of the next.
 ```
 
 #### log facebook lifecycle
@@ -1345,15 +1378,15 @@ Print a machine's states and transitions as a Mermaid diagram MCP tools: `graph`
 log graph <publish|monitor>
 ```
 
-#### log facebook capture
+#### log capture
 
-Read a run's raw HAR (any browser driver) and its scripts with offline rea; --docs builds every platform's client docs, rea reading each request's code. No browser. MCP tools: `facebookCapture`, one per form, with named fields.
+Read a run's raw HAR and scripts with offline rea (any platform or browser driver), settle a run's capture, or build every platform's client docs. No browser. MCP tools: `captureHar`, `captureSettle`, `captureDocs`, one per form, with named fields.
 
 ```text
-log facebook capture --har <path> [--out <dir>] [--noRea] [--json]
-log facebook capture --settle <runCaptureDir>  (what each run starts in the background: rea reads its capture, split per step)
-log facebook capture --docs [--noRea]  (every run's requests → docs/platforms/<platform>/, one doc per request, rea reading each one's slice: Facebook's by its modules, every other platform with a browser path by the call sites its bundles hold for each request)
-The HAR is the one Playwright writes from the account browser that ran. It is copied raw, and rea reads it. No browser opens.
+log capture har <path> [--out <dir>] [--noRea] [--json]
+log capture settle <runCaptureDir>  (what each run starts in the background: rea reads its capture, split per step)
+log capture docs [--noRea]  (every run's requests → docs/platforms/<platform>/, one doc per request, rea reading each one's slice: by the platform's modules where it has a module map, otherwise by the call sites its bundles hold for each request)
+The HAR is the one Playwright writes from the account browser that ran, on any platform and any browser driver. It is copied raw, and rea reads it. No browser opens.
 ```
 
 #### log runs
@@ -1388,7 +1421,7 @@ log timing --call <callId> [--json]   (one call as a waterfall: every stage in o
 
 #### log inbox
 
-Claim a chat before acting on it, release it, list the live claims, and read the log of every action taken in a chat MCP tools: `inboxClaim`, `inboxRelease`, `inboxResume`, `inboxWaiting`, `inboxClaims`, `inboxActions`, one per form, with named fields.
+Claim a chat before acting on it, release it, list the live claims, read the log of every action taken in a chat, and read what the watchers heard MCP tools: `inboxClaim`, `inboxRelease`, `inboxResume`, `inboxWaiting`, `inboxPending`, `inboxClaims`, `inboxActions`, one per form, with named fields.
 
 ```text
 log inbox claim --platform <twitter|discord|slack|instagram> --account <a> --chat <conversationId|handle> [--event <eventId>] [--json]
@@ -1397,6 +1430,8 @@ log inbox claims [--json]
 log inbox resume --platform <p> --account <a> --by <who> [--json]
 log inbox actions [--platform <p>] [--account <a>] [--chat <conversationId|handle>] [--limit <n>] [--json]
 log inbox waiting [--platform <p>] [--account <a>] [--limit <n>] [--oldest] [--json]
+log inbox pending --reader <name> [--json]
+pending is what the account watchers heard since this reader last asked, with what to do next for each message: the one delivery every harness reads, the prompt hook's included. A reader is one name per session or harness; a new one starts from now.
 Only the session that claims a chat acts on it (rule 133). Every message the push channels bring in has an event id (shown in >>> NEW MESSAGE). claim takes the chat for this session for 10 minutes before you draft or send; a second session is refused (chatClaimedElsewhere). Every send claims the chat itself and releases it once it is sent, interrupted or failed, so two sessions never answer the same chat. A claim held by a session that ended frees itself. resume is matt's go-ahead after a refused catch-up (rule 94): the account's gap opens again and its owner catches up through its own session within 30 s; only when the owner says so. claims lists who holds what; actions is the log of every claim, refusal, send and release, oldest first, to search what was already done in a chat before acting. waiting is who wrote last on every platform, read from log.db and nothing else: each chat's messages in time order (never the order they were stored in, since a backfill stores older messages later), one person's chats judged together (an X user's old DM and X Chat), a message mirrored into the other side counted once as whoever sent it first, reactions, read markers and call notices never counted as the last word. It lists the people waiting on a reply, then apart the ones who reacted to your last message (a follow-up), newest first unless --oldest.
 ```
 
@@ -1431,11 +1466,11 @@ Where the runtime is comes from LOG_BROWSER_VIEW_LOCATION (local or remote), whi
 
 #### log report
 
-The numbers behind a report, read from log.db only (who messaged an account and how often, by source), for the MCP report view MCP tools: `reportData`, one per form, with named fields.
+The numbers behind a report, read from log.db only (who messaged an account and how often, or one person's stored profile, by source), for the MCP report view MCP tools: `reportData`, one per form, with named fields.
 
 ```text
-log report data --source twitterDmsBySender [--account <accountName>] [--since <7d|4w|12h|2026-11-01>] [--limit <n>] [--json]
-The numbers behind a report, read from log.db only: no platform call, no governor use, nothing sent. twitterDmsBySender counts who messaged the account in its one-to-one DMs (the old DM thread and the Chat thread with one person counted as one, a message mirrored into both counted once; group chats left out), most messages first, with each person's first and last message time, the totals and the count per day. It holds only what log.db has: run twitterDms first if the inbox may be behind.
+log report data --source <twitterDmsBySender|dmsBySender|identityProfile> [--platform <p>] [--account <accountName>] [--since <7d|4w|12h|2026-11-01>] [--limit <n>] [--userId <id>] [--handle <handle>] [--json]
+The numbers behind a report, read from log.db only: no platform call, no governor use, nothing sent. The sources are the report tool's (REPORT_SOURCES). twitterDmsBySender counts who messaged the account in its one-to-one DMs (the old DM thread and the Chat thread with one person counted as one, a message mirrored into both counted once; group chats left out), most messages first, with each person's first and last message time, the totals and the count per day. dmsBySender counts the same on the --platform named, for any platform with chats in log.db (reportSourceNoData when it has none). identityProfile reads one person's stored profile on --platform by --userId or --handle (identityProfileMissing when none is stored). Each holds only what log.db has: read the platform's inbox first if it may be behind.
 --account keeps one account (default every account the source covers in log.db). --since keeps messages from that date or span on. --limit is how many people to list, default 20, at most 200; the totals count everyone.
 Show it with the MCP tool report (getGuide({ topic: "ui" })): an MCP Apps host draws it inline, any other host gets markdown with unicode bars.
 ```
@@ -1637,7 +1672,7 @@ Check every account's saved session through its platform's own answer, and sign 
 log sessions check [--platform <p>] [--account <accountName>] [--json]
 log sessions signIn --account <accountName> [--platform <p>] [--route browser|cookies] [--done] [--wait <seconds>] [--json]
 check: checks every account's saved session through its platform's own check (X, Discord, Instagram, Slack, Reddit, LinkedIn), one account after another, and says for each: signed in, needs signing in (a 401, or no session saved), stopped (the platform refused: nothing retries, rule 94) or unknown. One gate decides which accounts may be checked: a deactivated account is skipped, and one held stopped (by its status, its session or its last check) is never checked again until the owner says so. A check holds the account while it runs, so a second check of it is refused as busy; a check whose process died is read back as unknown. An account that needs signing in comes with its next step, sessionsSignIn. Facebook is checked in its browser. Each result is also the console's last check for that account, so the console, the CLI and the MCP tool sessionsCheck say the same. Sends nothing.
-signIn: one sign-in, as a machine: it checks the account first (signed in: done; held stopped: nothing is opened), then opens the account's own browser on the platform's login screen for the owner to sign in themself (route browser, every platform with a browser), or takes the masked cookie prompt in a terminal (route cookies: X, LinkedIn and Slack; X has no browser yet). The session is saved from the browser when it closes, and only when the platform's own sign-in cookies are in it, so a signed-out browser never overwrites a stored session; then it is checked again. With no --wait it returns while the owner signs in; --done (or the owner closing the window) finishes it. Sends nothing.
+signIn: one sign-in, as a machine: it checks the account first (signed in: done; held stopped: nothing is opened), then opens the account's own browser on the platform's login screen for the owner to sign in themself (route browser, every platform with a browser), or takes the masked cookie prompt in a terminal (route cookies: X, LinkedIn and Slack; X has no browser yet). The session is saved from the browser when it closes, and only when the platform's own sign-in cookies are in it, so a signed-out browser never overwrites a stored session; then it is checked again. With no --wait it returns while the owner signs in; --done (or the owner closing the window) finishes it. An account that isn't set up answers accountNotConfigured with the step that adds it. Through MCP on a remote runtime, a waiting sign-in also shows the live browser inline where the host draws MCP Apps, asks the host to open a console link where it supports URL requests, and otherwise gives that link as text: it works once, for ten minutes, only for the person who asked. Sends nothing.
 ```
 
 #### log chats
@@ -1653,13 +1688,27 @@ The platform comes from the account: one account by that name gives its platform
 
 #### log messages
 
-Read one chat's messages on the account's own platform, the platform taken from the account MCP tools: `messagesRead`, one per form, with named fields.
+Read one chat's messages on the account's own platform, the platform taken from the account; Listen to an account's messages for a set time as its platform pushes them, through the account's one watcher, the platform taken from the account MCP tools: `messagesRead`, `messagesWatch`, one per form, with named fields.
 
 ```text
 log messages read --account <account> --chat <chat> [--space <space>] [--limit <limit>] [--platform <p>] [--json]
+log messages watch --account <account> [--chat <chat>] [--space <space>] [--seconds <seconds>] [--platform <p>] [--json]
 read: Read one chat's messages on the account's own platform, the platform taken from the account. It runs that platform's own command with the inputs renamed to its flags (messagesRead), so the answer is that command's answer.
 Platforms: Facebook, X, Discord, Slack, Instagram.
+watch: Listen to an account's messages for a set time as its platform pushes them, through the account's one watcher, the platform taken from the account. It runs that platform's own command with the inputs renamed to its flags (messagesWatch), so the answer is that command's answer.
+Platforms: X, Discord, Slack, Instagram.
 The platform comes from the account: one account by that name gives its platform, two give platformAmbiguous (give --platform), none gives accountNotFound. A platform without the capability answers capabilityMissing with the platforms that have it, and an input its command doesn't take answers inputUnsupported. Nothing is contacted before that. log messages only reads.
+```
+
+#### log watchers
+
+Each account's one watcher: its state, starting the ones that aren't running and stopping them, from any harness MCP tools: `watchersStatus`, `watchersStart`, `watchersStop`, one per form, with named fields.
+
+```text
+log watchers status [--platform <p>] [--account <a>] [--json]
+log watchers start [--platform <p>] [--account <a>] [--json]
+log watchers stop [--platform <p>] [--account <a>] [--json]
+Each signed-in account on a platform with a push watcher has one watcher process, the one owner of its socket (rule 105). Its state is one machine: starting, catchingUp, live, reconnecting, and at its end stopped, signInNeeded, coolingDown or failed; a second watcher for the same account is refused as busy. status reads each watcher's state from log.db. start starts every signed-in account's watcher that isn't running, cooling down or held, the same start the inbox hook and the runtime make, and lifts the hold on the accounts it names. stop ends the named watchers and holds them, so nothing starts them again until start names them. A platform with no push watcher answers capabilityMissing. Messages a watcher hears are read with log inbox pending.
 ```
 
 #### log clone

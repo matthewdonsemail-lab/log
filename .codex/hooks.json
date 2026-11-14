@@ -7,7 +7,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/pageState.ts\"",
+            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/pageState.ts\" --host codex",
             "timeout": 20
           }
         ]
@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/storage.ts\"",
+            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/storage.ts\" --host codex",
             "timeout": 30
           }
         ]
@@ -27,7 +27,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/engines.ts\"",
+            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/engines.ts\" --host codex",
             "timeout": 10
           }
         ]
@@ -37,7 +37,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/knowledge.ts\"",
+            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/knowledge.ts\" --host codex",
             "timeout": 10
           }
         ]
@@ -47,7 +47,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/inbox.ts\"",
+            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/inbox.ts\" --host codex",
             "timeout": 15
           }
         ]
@@ -57,7 +57,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/queue.ts\"",
+            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/queue.ts\" --host codex",
             "timeout": 10
           }
         ]
@@ -67,7 +67,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/useCases.ts\"",
+            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/useCases.ts\" --host codex",
             "timeout": 10
           }
         ]
@@ -77,7 +77,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/xLive.ts\"",
+            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/xLive.ts\" --host codex",
             "timeout": 10
           }
         ]
@@ -88,7 +88,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/pageState.ts\"",
+            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/pageState.ts\" --host codex",
             "timeout": 20
           }
         ]
@@ -97,7 +97,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/storage.ts\"",
+            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/storage.ts\" --host codex",
             "timeout": 30
           }
         ]
@@ -106,7 +106,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/engines.ts\"",
+            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/engines.ts\" --host codex",
             "timeout": 10
           }
         ]
@@ -115,7 +115,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/inbox.ts\"",
+            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/inbox.ts\" --host codex",
             "timeout": 15
           }
         ]
@@ -124,7 +124,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "curl -sf --connect-timeout 0.2 --max-time 0.8 -X POST --data-binary @- http://127.0.0.1:47317/hook || bun \"$(git rev-parse --show-toplevel)/scripts/hooks/useCases.ts\"",
+            "command": "curl -sf --connect-timeout 0.2 --max-time 0.8 -X POST --data-binary @- http://127.0.0.1:47317/hook?host=codex || bun \"$(git rev-parse --show-toplevel)/scripts/hooks/useCases.ts\" --host codex",
             "timeout": 10
           }
         ]
@@ -133,7 +133,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/queue.ts\"",
+            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/queue.ts\" --host codex",
             "timeout": 10
           }
         ]
@@ -142,7 +142,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/xLive.ts\"",
+            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/xLive.ts\" --host codex",
             "timeout": 10
           }
         ]
@@ -154,7 +154,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/inbox.ts\"",
+            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/inbox.ts\" --host codex",
             "timeout": 15
           }
         ]
@@ -164,7 +164,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/queue.ts\"",
+            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/queue.ts\" --host codex",
             "timeout": 10
           }
         ]
@@ -174,7 +174,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/xLive.ts\"",
+            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/xLive.ts\" --host codex",
             "timeout": 10
           }
         ]
@@ -184,7 +184,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/pageState.ts\"",
+            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/pageState.ts\" --host codex",
             "timeout": 20
           }
         ]
@@ -196,7 +196,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/chatNames.ts\"",
+            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/chatNames.ts\" --host codex",
             "timeout": 10
           }
         ]
@@ -206,7 +206,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/liveLogs.ts\"",
+            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/liveLogs.ts\" --host codex",
             "timeout": 10
           }
         ]
@@ -217,7 +217,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/pageState.ts\"",
+            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/pageState.ts\" --host codex",
             "timeout": 20
           }
         ]

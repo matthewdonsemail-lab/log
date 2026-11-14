@@ -4,7 +4,7 @@ export { actsAsOwner, argsLiveFlags, commandTools, OWNER_EFFECTS, PLAY_HANDLE, h
 export type { ToolOptions } from "./toolsFromCommands.ts";
 export type { CommandTool } from "./toolsFromCommands.ts";
 export { flowActsAsOwner, flowArgv, flowOfTool, flowRunInput, FLOW_RUN_TOOL, flowPlatformLabel, flowTool, toolsFromFlows } from "./toolsFromFlows.ts";
-export { ARGS_TOOLS_GIVEN_FORMS, currentToolName, renamedLine, renamedTool, RENAMED_COMMAND_TOOLS, RENAMED_FLOW_TOOLS, RENAMED_TOOLS, withRenamedNote } from "./toolAliases.ts";
+export { ARGS_TOOLS_GIVEN_FORMS, currentToolName, renamedLine, renamedTool, RENAMED_COMMAND_TOOLS, RENAMED_FLOW_TOOLS, RENAMED_SHARED_TOOLS, RENAMED_TOOLS, withRenamedNote } from "./toolAliases.ts";
 export { annotationsOf, LIVE_SUFFIX, titleOf } from "./toolAnnotations.ts";
 export { formatLogLine, logFileName } from "./formatLogLine.ts";
 export type { LogStream } from "./formatLogLine.ts";

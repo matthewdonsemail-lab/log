@@ -8,13 +8,16 @@ flowchart TB
   subgraph g_any["Any platform"]
     c_launch["launch"]
     c_console["console"]
+    c_credentials["credentials"]
     c_adsPower["adsPower"]
     c_localAccount["localAccount"]
+    c_accounts["accounts"]
     c_inspect["inspect"]
     c_flow["flow"]
     c_proxy["proxy"]
     c_errors["errors"]
     c_graph["graph"]
+    c_capture["capture"]
     c_runs["runs"]
     c_storage["storage"]
     c_timing["timing"]
@@ -39,6 +42,7 @@ flowchart TB
     c_sessions["sessions"]
     c_chats["chats"]
     c_messages["messages"]
+    c_watchers["watchers"]
     c_clone["clone"]
     c_transcribe["transcribe"]
     c_new["new"]
@@ -69,7 +73,6 @@ flowchart TB
     c_facebookConversations["conversations"]
     c_facebookConversation["conversation"]
     c_facebookMessenger["messenger"]
-    c_facebookCapture["capture"]
   end
   subgraph g_twitter["X"]
     c_twitterSession["session"]
@@ -139,6 +142,8 @@ flowchart TB
   c_launch -.- terminal
   cli --> c_console
   mcp --> c_console
+  cli --> c_credentials
+  mcp --> c_credentials
   cli --> c_facebookListings
   mcp --> c_facebookListings
   cli --> c_facebookListing
@@ -151,6 +156,8 @@ flowchart TB
   mcp --> c_adsPower
   cli --> c_localAccount
   mcp --> c_localAccount
+  cli --> c_accounts
+  mcp --> c_accounts
   cli --> c_facebookLifecycle
   mcp --> c_facebookLifecycle
   cli --> c_facebookPreflight
@@ -215,9 +222,9 @@ flowchart TB
   mcp --> c_errors
   cli --> c_graph
   mcp --> c_graph
-  cli --> c_facebookCapture
-  mcp --> c_facebookCapture
-  c_facebookCapture --> live
+  cli --> c_capture
+  mcp --> c_capture
+  c_capture --> live
   cli --> c_runs
   mcp --> c_runs
   cli --> c_storage
@@ -277,6 +284,9 @@ flowchart TB
   mcp --> c_chats
   cli --> c_messages
   mcp --> c_messages
+  c_messages --> live
+  cli --> c_watchers
+  mcp --> c_watchers
   cli --> c_clone
   mcp --> c_clone
   cli --> c_transcribe

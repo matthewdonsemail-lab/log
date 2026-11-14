@@ -8,6 +8,7 @@ const ROUTES = 'src/directApi/engine/client.ts'
 const ENGINE = 'python/instagramApi/engine.py'
 const INBOX = 'src/inbox/watch/client.ts'
 const HOOK = 'scripts/hooks/inbox.ts'
+const WATCHERS = 'src/platformKit/watcher/types.ts'
 const HOST = 'python/instagramApi/host.py'
 
 export const instagram = {
@@ -51,9 +52,9 @@ export const instagram = {
     'REQ-INSTAGRAM-08': [
       { kind: 'symbol', file: COMMAND, name: 'instagramWatchCommand' },
       { kind: 'string', file: ENGINE, includes: 'realtimeDropped' },
-      { kind: 'symbol', file: INBOX, name: 'startInstagramWatch' },
       { kind: 'string', file: INBOX, includes: 'instagram' },
-      { kind: 'string', file: HOOK, includes: 'instagram' },
+      { kind: 'string', file: WATCHERS, includes: 'instagram' },
+      { kind: 'uses', file: HOOK, name: 'superviseLocalWatchers' },
     ],
     'REQ-INSTAGRAM-09': [
       { kind: 'string', file: HOST, includes: 'instagramSessionHostDown' },
@@ -73,7 +74,7 @@ export const instagram = {
     'REQ-INSTAGRAM-05': noul('Does ping in python/instagramApi/engine.py answer sessionDead without calling Instagram when the cookies have no sessionid, and otherwise sign in only through the vendored instagrapi Client with login_by_sessionid, its private transport set to curl, answering sessionMismatch when the user Instagram returns differs from the cookies\' ds_user_id, and challenged, rateLimited or sessionDead for instagrapi\'s challenge, rate limit and login errors?'),
     'REQ-INSTAGRAM-06': noul('Does instagramDmsCommand call the engine with action inbox without --with and action thread with it, and do the engine\'s inbox and thread read only through instagrapi\'s direct_threads and direct_thread (never a send or a mark-seen call), answering threadNeeded before any call when no thread is named, threadNotFound when none matches, and threadAmbiguous with the candidates when several do?'),
     'REQ-INSTAGRAM-07': noul("Does instagramSendCommand refuse --live without --approvedBy and refuse copy with aiArtifacts before any call, make a dry run that calls nothing without --live, and send with --live only through the engine's send action, which answers nothingToSend or photoMissing before calling Instagram and otherwise sends through instagrapi's direct_send_photo then direct_send one line at a time (one message unless asOne), stopping at the first refusal with what was sent reported?"),
-    'REQ-INSTAGRAM-08': noul("Does instagramWatchCommand run the engine's watch through directInstagramLive, which connects instagrapi's realtime client, subscribes to the DM sync, pings while it waits and emits each new message as a live event, and with --inbox add only messages not from the account to the inbox; and does the inbox hook start startInstagramWatch for every signed-in Instagram account not cooling off, stop stale watchers, and give the agent a NEW INSTAGRAM MESSAGE block that answers through instagramDms, voice and instagramSendLive, never the browser?"),
+    'REQ-INSTAGRAM-08': noul("Does instagramWatchCommand run the engine's watch through directInstagramLive, which connects instagrapi's realtime client, subscribes to the DM sync, pings while it waits and emits each new message as a live event, and with --inbox add only messages not from the account to the inbox; and does the inbox hook start the Instagram watch from WATCH_COMMANDS through superviseLocalWatchers for every signed-in Instagram account not cooling off, stop stale watchers, and give the agent a NEW INSTAGRAM MESSAGE block that answers through instagramDms, voice and instagramSendLive, never the browser?"),
     'REQ-INSTAGRAM-09': noul("Does every Instagram engine call go through host.py's call to the account's one host process (unless LOG_INSTAGRAM_HOST is inline), which takes host.lock so a second host can't start, keeps one signed-in instagrapi client that later calls reuse (answering reused) and one realtime connection that every watch shares as a listener, runs the calls other than watch one at a time, and when the host can't be reached answers instagramSessionHostDown without opening a session of its own?"),
     'REQ-INSTAGRAM-04': noul('Is instagram listed in PLATFORMS and PLATFORM_SITES, and does DIRECT_ROUTES have a instagramSession route for platform instagram?'),
     unspecifiedBehavior: noul('Does the Instagram code call Instagram outside the engine and its governor, or record anything but the answer Instagram gave, by a route the specification does not describe?'),

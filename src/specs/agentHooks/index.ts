@@ -13,11 +13,23 @@ const INBOX_RELAY = 'src/inbox/relay/client.ts'
 const INBOX_CLAIMS = 'src/inbox/claims/client.ts'
 const INBOX_STORE = 'src/inbox/store/client.ts'
 const INBOX_CATCHUP = 'src/inbox/catchUp/client.ts'
+const INBOX_PENDING = 'src/inbox/pending/client.ts'
+const WATCHER_CLIENT = 'src/platformKit/watcher/client.ts'
+const WATCHER_TYPES = 'src/platformKit/watcher/types.ts'
+const HARNESS_TYPES = 'src/agentHooks/harness/types.ts'
+const HARNESS = 'src/agentHooks/harness/client.ts'
+const HERMES = 'src/agentHooks/hermes/client.ts'
 
 export const agentHooks = {
   description: 'The agent hooks: one list for both hosts, what each event does, and the check that refuses drift',
   specPath: 'docs/specs/agentHooks.md',
   codePaths: [
+    'src/agentHooks/harness/types.ts',
+    'src/agentHooks/harness/client.ts',
+    'src/agentHooks/hermes/client.ts',
+    'src/contextLayer/hook/client.ts',
+    'src/cli/launch/helpers/setup.ts',
+    'hermesPlugin/native/__init__.py',
     'scripts/contextLayer/service.ts',
     'scripts/hooks/event.ts',
     'src/agentHooks/answers/client.ts',
@@ -50,14 +62,49 @@ export const agentHooks = {
     'src/cli/twitter/helpers/chat.ts',
   ],
   anchors: {
+    'REQ-HOOKS-24': [
+      { kind: 'symbol', file: HARNESS_TYPES, name: 'HARNESSES' },
+      { kind: 'symbol', file: HARNESS_TYPES, name: 'HOOK_HOSTS' },
+      { kind: 'symbol', file: REGISTRY, name: 'hookFiles' },
+      { kind: 'symbol', file: REGISTRY, name: 'cursorHooks' },
+      { kind: 'symbol', file: REGISTRY, name: 'antigravityHooks' },
+      { kind: 'symbol', file: REGISTRY, name: 'hermesPluginYaml' },
+      { kind: 'symbol', file: HARNESS, name: 'withHarnessTable' },
+      { kind: 'uses', file: CHECK, name: 'hookFiles' },
+    ],
+    'REQ-HOOKS-25': [
+      { kind: 'symbol', file: HARNESS, name: 'hookHostOf' },
+      { kind: 'symbol', file: HARNESS, name: 'hostBody' },
+      { kind: 'symbol', file: HARNESS, name: 'clipContext' },
+      { kind: 'uses', file: 'scripts/hooks/event.ts', name: 'hostBody' },
+      { kind: 'uses', file: 'scripts/hooks/antigravity.ts', name: 'clipContext' },
+      { kind: 'string', file: '.opencode/plugins/logHooks/client.ts', includes: '?host=opencode' },
+    ],
+    'REQ-HOOKS-26': [
+      { kind: 'symbol', file: 'src/contextLayer/hook/client.ts', name: 'hookAnswer' },
+      { kind: 'string', file: 'src/contextLayer/hook/client.ts', includes: 'wordsOnly' },
+    ],
+    'REQ-HOOKS-27': [
+      { kind: 'symbol', file: HARNESS, name: 'scratchHookEnv' },
+      { kind: 'symbol', file: HARNESS, name: 'watcherLogsIn' },
+      { kind: 'symbol', file: 'src/contextLayer/service/client.ts', name: 'serviceDisabled' },
+      { kind: 'uses', file: CHECK, name: 'scratchHookEnv' },
+    ],
+    'REQ-HOOKS-28': [
+      { kind: 'symbol', file: 'src/cli/launch/helpers/setup.ts', name: 'SETUP_HARNESSES' },
+      { kind: 'symbol', file: HERMES, name: 'installHermes' },
+      { kind: 'string', file: 'hermesPlugin/native/__init__.py', includes: 'pre_llm_call' },
+      { kind: 'string', file: 'scripts/docs/syncSiteSkills.mjs', includes: 'hermesPlugin' },
+    ],
     'REQ-HOOKS-12': [
       { kind: 'symbol', file: INBOX_WATCH, name: 'ensureLiveWatchers' },
       { kind: 'symbol', file: INBOX_WATCH, name: 'stopStaleWatchers' },
-      { kind: 'symbol', file: INBOX_WATCH, name: 'startTwitterWatch' },
-      { kind: 'symbol', file: INBOX_WATCH, name: 'startDiscordWatch' },
-      { kind: 'symbol', file: INBOX_WATCH, name: 'startSlackWatch' },
-      { kind: 'string', file: INBOX_WATCH, includes: '--inbox' },
-      { kind: 'string', file: INBOX_HOOK, includes: 'discord' },
+      { kind: 'symbol', file: WATCHER_CLIENT, name: 'superviseWatchers' },
+      { kind: 'symbol', file: WATCHER_CLIENT, name: 'startWatcher' },
+      { kind: 'symbol', file: WATCHER_TYPES, name: 'WATCH_COMMANDS' },
+      { kind: 'string', file: WATCHER_CLIENT, includes: '--inbox' },
+      { kind: 'uses', file: INBOX_HOOK, name: 'superviseLocalWatchers' },
+      { kind: 'uses', file: INBOX_HOOK, name: 'readPending' },
     ],
     'REQ-HOOKS-23': [
       { kind: 'symbol', file: 'src/inbox/relay/client.ts', name: 'notThePlatform' },
@@ -134,14 +181,14 @@ export const agentHooks = {
       { kind: 'symbol', file: INBOX_WATCH, name: 'watchHolder' },
       { kind: 'symbol', file: INBOX_WATCH, name: 'takeAlerts' },
       { kind: 'string', file: INBOX_WATCH, includes: 'INSERT INTO owners' },
-      { kind: 'string', file: INBOX_HOOK, includes: 'ONE PROCESS PER ACCOUNT' },
+      { kind: 'string', file: INBOX_PENDING, includes: 'ONE PROCESS PER ACCOUNT' },
     ],
     'REQ-HOOKS-01': [
       { kind: 'symbol', file: REGISTRY, name: 'AGENT_HOOKS' },
       { kind: 'symbol', file: REGISTRY, name: 'hooksFor' },
       { kind: 'symbol', file: REGISTRY, name: 'hookCommand' },
-      { kind: 'string', file: CHECK, includes: '.claude/settings.json' },
-      { kind: 'string', file: CHECK, includes: '.codex/hooks.json' },
+      { kind: 'string', file: REGISTRY, includes: '.claude/settings.json' },
+      { kind: 'string', file: REGISTRY, includes: '.codex/hooks.json' },
     ],
     'REQ-HOOKS-02': [{ kind: 'string', file: CHECK, includes: '--write' }],
     'REQ-HOOKS-03': [
@@ -172,7 +219,12 @@ export const agentHooks = {
     ],
   },
   rubrics: {
-    'REQ-HOOKS-01': noul('Does checkAgentHooks write both host files, claudeCode and codex, from hooksFor, which turns every entry of AGENT_HOOKS into a command that runs its script from the repo through hookCommand?'),
+    'REQ-HOOKS-24': noul('Is HARNESSES in src/agentHooks/harness/types.ts one row per harness in HARNESS_IDS with every capability in HARNESS_CAPABILITIES, a router, a contextLimit (null only for a harness with no hooks) and a hookFile for each of HOOK_HOSTS; does hookFiles in src/agentHooks/registry/index.ts write .claude/settings.json, .codex/hooks.json, .cursor/hooks.json from cursorHooks (sessionStart and postToolUse running EVENT_SCRIPT with --host cursor), .agents/hooks.json from antigravityHooks, hermesPlugin/native/plugin.yaml from hermesPluginYaml (provides_hooks pre_llm_call) and docs/harnesses/README.md through withHarnessTable; and does checkAgentHooks fail on any that differs, and on a hook host with no hook file?'),
+    'REQ-HOOKS-25': noul('Do the scripts under scripts/hooks read the host with hookHostOf (claudeCode when --host is absent) and print through contextOutput or hostBody; does hookCommand add --host codex and ?host=codex for Codex; does hostBody give Cursor only additional_context and Hermes only context, and keep the hookSpecificOutput shape for the others; does clipContext cut text longer than the host contextLimit to that limit with a line saying so; and does the context service shape /hook and /hooks/<event> answers by the host query parameter?'),
+    'REQ-HOOKS-26': noul('When the route function given to hookAnswer returns null, does hookAnswer run the word-only route over the use cases (listUseCases by default), answer with playMatchText for its play or menu, and give an outcome that starts with wordsOnly, injecting nothing when there is no play and no menu?'),
+    'REQ-HOOKS-27': noul('Does checkAgentHooks run every hook and every adapter probe with scratchHookEnv, whose LOG_DB, LOG_INBOX_STATE, LOG_CONTEXT_LAYER, LOG_QUEUES_DIR, LOG_TWITTER_STATE, LOG_PLATFORM_STATE, LOG_FBK_STATE and LOG_HOOK_MEMORY are inside the scratch folder, with LOG_CONTEXT_SERVICE and LOG_INBOX_POLL off; do readService and startService do nothing when serviceDisabled; and does the check fail when watcherLogsIn finds a watch.log or a service.log exists in the scratch folder?'),
+    'REQ-HOOKS-28': noul('Is SETUP_HARNESSES the HARNESSES rows with installedBy launchSetup; does launchDeps offer each one whose home exists and call installHermes for hermes and installOpenCode for opencode; does installHermes copy plugin.yaml (with log_root set) and __init__.py into <home>/plugins/logHooks and report changed false when nothing differs; does the __init__.py register pre_llm_call, which runs event.ts with --host hermes for UserPromptSubmit (SessionStart first when is_first_turn) and returns its context; and does syncSiteSkills write the play skills into hermesPlugin/skills and fail the check on any other entry there?'),
+    'REQ-HOOKS-01': noul('Does checkAgentHooks write both host files, claudeCode and codex, through hookFiles from hooksFor, which turns every entry of AGENT_HOOKS into a command that runs its script from the repo through hookCommand?'),
     'REQ-HOOKS-02': noul('Does checkAgentHooks add a problem when the hooks of a host file differ from hooksFor(host), rewrite the file instead when the write flag is given, and exit 1 when there is any problem?'),
     'REQ-HOOKS-03': noul('Does AGENT_HOOKS run the page-state script on UserPromptSubmit and on SessionStart for startup, resume, clear and compact, and does hookReply report every finding when the event is SessionStart or UserPromptSubmit?'),
     'REQ-HOOKS-04': noul('Does AGENT_HOOKS run the page-state script on PostToolUse with TOOL_MATCHER, which covers Bash, PowerShell, Monitor and every mcp__log__ tool, and does hookReply on PostToolUse report a finding only when it is not clear and its mark differs from memory.seen for that account?'),
@@ -183,7 +235,7 @@ export const agentHooks = {
     'REQ-HOOKS-09': noul('Does checkAgentHooks add a problem for every tool from toolsFromCommands and toolsFromFlows for which toolIsHooked is false?'),
     'REQ-HOOKS-10': noul('Does checkAgentHooks add a problem for every MCP tool of a LONG_RUNNING command whose description does not point at the live log?'),
     'REQ-HOOKS-11': noul('Does checkAgentHooks add a problem for a PAGE_STATES state with no RESOLVE_CALLS entry, a RESOLVE_CALLS key that is not a page state, a resolver whose sample call names a tool that is not an MCP tool, and a state whose resolve text names a log command that is not in COMMANDS?'),
-    'REQ-HOOKS-12': noul('Does the inbox hook script, on every event, call stopStaleWatchers and then ensureLiveWatchers for twitter, discord and slack accounts, leaving out accounts for which coolingDown is true, so that startTwitterWatch, startDiscordWatch and startSlackWatch run the account watch with --inbox, and does it put the messages from takePending into the agent context through inboxContext?'),
+    'REQ-HOOKS-12': noul('Does the inbox hook script, on every event, call superviseLocalWatchers, whose superviseWatchers runs replaceHungOwners, stopStaleWatchers and then ensureLiveWatchers for every platform in WATCH_COMMANDS, leaving out accounts for which coolingDown is true or the owner holds, so that startWatcher runs the account watch from WATCH_COMMANDS with --inbox, and does it put the messages and alerts from readPending into the agent context?'),
     'REQ-HOOKS-15': noul('Does claimChat create one claim row per chat for the calling process inside an immediate transaction, refuse another live process holding the same chat (an X chat matched by the person id or the pair), renew its own and take over a claim whose process ended or whose expiresAt passed; does guardSend claim the chat before each discord, slack, twitter dm, queue dm and instagram send and release it as sent, interrupted or failed; does every claim, renewal, refusal, send and release go to the actions table through recordAction; and does the inbox hook put claimContext, each pushed message with its eventIdOf id and its claim state, in front of the agent?'),
     'REQ-HOOKS-14': noul('Does ownOrAttach make the watch that wins claimWatcher the one owner, opening a relay with openRelay that records its owners row (pid, hostname, startedAt, a lastHeartbeat refreshed every HEARTBEAT_MS, status, port, token, subscribers) and broadcasting every event to every subscriber that sent the token, while a watch that loses attaches through attachRelay to a live owner session or, when it is an inbox watch, is refused; and does replaceHungOwners stop an owner whose heartbeat is older than STALE_MS and write a hungOwner alert? Do the twitter chat, discord, slack and instagram watch commands all go through ownOrAttach?'),
     'REQ-HOOKS-13': noul('In src/inbox/watch/client.ts, does claimWatcher write the owners row with the watcher pid inside an immediate transaction, refuse a second watcher while the lock holder pid is alive by adding a duplicateWatcher alert row, and take over the row when the holder pid is dead; does ensureLiveWatchers skip starting a watcher while watchHolder returns a live holder; and does stopStaleWatchers stop a live lock holder as well as the pid file process? In scripts/hooks/inbox.ts, are the takeAlerts lines put first in the agent context under ONE PROCESS PER ACCOUNT?'),
@@ -221,6 +273,11 @@ export const agentHooks = {
     'REQ-HOOKS-21': MET,
     'REQ-HOOKS-22': MET,
     'REQ-HOOKS-23': MET,
+    'REQ-HOOKS-24': MET,
+    'REQ-HOOKS-25': MET,
+    'REQ-HOOKS-26': MET,
+    'REQ-HOOKS-27': MET,
+    'REQ-HOOKS-28': MET,
     unspecifiedBehavior: NOT_VIOLATED,
   },
 }

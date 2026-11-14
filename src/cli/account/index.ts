@@ -1,6 +1,6 @@
-import { ACCOUNT_STATUSES, findAccount, fromTwentyEnum, listFacebookAccounts, toTwentyEnum } from "../../marketplace/socialAccount/index.ts";
-import type { AccountStatus } from "../../marketplace/socialAccount/index.ts";
-import { setStatusAndReplace } from "../../marketplace/replacement/index.ts";
+import { ACCOUNT_STATUSES, findAccount, fromTwentyEnum, listFacebookAccounts, toTwentyEnum } from "../../platformKit/socialAccount/index.ts";
+import type { AccountStatus } from "../../platformKit/socialAccount/index.ts";
+import { setStatusAndReplace } from "../../facebook/marketplace/replacement/index.ts";
 import { isErrorCode } from "../../errors/catalog/index.ts";
 import { createAdsPowerClient, syncProfiles } from "../../browser/adsPower/index.ts";
 import { openInspects } from "../../browser/inspect/index.ts";

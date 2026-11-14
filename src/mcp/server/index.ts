@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
-import { CallToolRequestSchema, ListResourcesRequestSchema, ListToolsRequestSchema, ReadResourceRequestSchema } from "@modelcontextprotocol/sdk/types.js";
+import { CallToolRequestSchema, ElicitResultSchema, ListResourcesRequestSchema, ListToolsRequestSchema, ReadResourceRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { COMMANDS, defaultSendInspect, runCli } from "../../cli/runner/index.ts";
 import type { CommandContext } from "../../cli/runner/types.ts";
@@ -36,6 +36,7 @@ import { viewerState } from "../../browser/viewer/index.ts";
 import { accountOfArgs, appTools, BROWSER_VIEW_TOOL, BROWSER_VIEW_URI, browserViewResource, httpLocation, isAppTool, readBrowserViewResource, runAppTool, settleLocation, uiCapable, withBrowserView, withBrowserViewUi } from "../apps/browserView/index.ts";
 import { browserViewLocation } from "../../cli/browser/index.ts";
 import { readReportResource, REPORT_TOOL, REPORT_URI, reportResource, reportTool, runReport, withReportUi } from "../apps/report/index.ts";
+import { isSignInCall, localSignInSurface, signInCall } from "../apps/signIn/index.ts";
 
 export * from "./helpers/index.ts";
 export type { GuardResult, LogTool, LogToolInput } from "./types.ts";
@@ -365,7 +366,8 @@ export function createLogMcpServer(context: Partial<CommandContext> = {}, option
   });
   server.setRequestHandler(CallToolRequestSchema, async (request, extra) => {
     const input = request.params.arguments as LogToolInput | undefined;
-    const result = await runToolCall(request.params.name, input, context, onLine, options.readBrowsers ?? browserViews, extra.signal, uiCapable(server.getClientCapabilities()), scope, hasShell(server.getClientVersion()?.name));
+    const run = (given: LogToolInput | undefined) => runToolCall(request.params.name, given, context, onLine, options.readBrowsers ?? browserViews, extra.signal, uiCapable(server.getClientCapabilities()), scope, hasShell(server.getClientVersion()?.name));
+    const result = isSignInCall(request.params.name) ? await signInCall(input, run, localSignInSurface(server.getClientCapabilities(), (params) => extra.sendRequest({ method: "elicitation/create", params }, ElicitResultSchema))) : await run(input);
     return withCallFooter(request.params.name, input, result, scope);
   });
   if (options.playOwner) {
