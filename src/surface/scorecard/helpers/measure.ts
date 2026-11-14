@@ -102,7 +102,7 @@ export function liveCommands(tools: readonly ScoredCommandTool[]): ScoredCommand
 }
 
 export function hookHosts(typesText: string): string[] {
-  const union = /export\s+type\s+HookHost\s*=\s*([^;]+);/.exec(typesText)?.[1] ?? "";
+  const union = /export\s+const\s+HOOK_HOSTS\s*=\s*\[([^\]]*)\]/.exec(typesText)?.[1] ?? /export\s+type\s+HookHost\s*=\s*([^;]+);/.exec(typesText)?.[1] ?? "";
   return [...union.matchAll(/["'](\w+)["']/g)].map((m) => m[1]);
 }
 

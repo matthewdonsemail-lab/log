@@ -154,3 +154,35 @@ Checked by: code and SubQ
 `notThePlatform` (`src/inbox/relay/client.ts`) is true for a failure that `NETWORK_FAILURE` or `OWN_FAILURE` matches and `PLATFORM_REFUSAL` does not. Such a failure leaves the gap open for the next check, and a gap once refused for one is reopened. A 429, 226, 344, soft block or rate limit is still a refusal, and nothing resumes until matt says so (rules 94, 150). Once, one account had been held since a DNS failure and another since a crash of log's own.
 
 Checked by: code and SubQ
+
+## Every harness
+
+### REQ-HOOKS-24: One harness table, one hook file per hook host
+
+`HARNESSES` (`src/agentHooks/harness/types.ts`) is one row per harness log supports: Claude Code, Codex, Cursor, Hermes, OpenCode, Antigravity, the Claude app, ChatGPT and Grok. Each row says, as yes, no or unknown, whether it has a prompt hook, a session-start hook, tool hooks, MCP Apps, server instructions, skills and URL elicitation, how the prompt router reaches it (`promptHook`, `preLlmCall` or `ask`), its hook text limit and the file its hooks come from. `HOOK_HOSTS` (the `HookHost` type) is the six with hooks. `hookFiles` (`src/agentHooks/registry/index.ts`) writes, from `AGENT_HOOKS`: `.claude/settings.json` and `.codex/hooks.json` as before (REQ-HOOKS-01), `.cursor/hooks.json` (`cursorHooks`: `sessionStart` and `postToolUse`, each one `bun scripts/hooks/event.ts <event> --host cursor`, since Cursor's `beforeSubmitPrompt` can't add context), `.agents/hooks.json` (`antigravityHooks`), the native Hermes plugin's `hermesPlugin/native/plugin.yaml` (`hermesPluginYaml`: `logHooks`, `provides_hooks: pre_llm_call`) and the table in `docs/harnesses/README.md` (`withHarnessTable`). OpenCode's hooks stay the hand-written plugin in `.opencode/plugins/logHooks/`. `check:agentHooks` fails when any of them differs and when a hook host has no hook file.
+
+Checked by: code and SubQ
+
+### REQ-HOOKS-25: Each adapter answers in its harness's shape, cut to its limit
+
+The hook scripts take `--host <id>` (`hookHostOf`, Claude Code when it is left out); Codex's commands and its service call carry `--host codex` and `?host=codex`, OpenCode's plugin calls the service with `?host=opencode`. `hostBody` shapes an answer: Claude Code, Codex and OpenCode get `hookSpecificOutput.additionalContext`, Cursor `{ additional_context }`, Hermes `{ context }`, and `scripts/hooks/antigravity.ts` its `injectSteps`. `clipContext` cuts the text to the harness's `contextLimit` and says it was cut: 10,000 characters for Claude Code, 7,500 for Codex (about 2,500 tokens), 7,500 for a harness whose limit no source states, and 20,000 for OpenCode (its plugin's own cap).
+
+Checked by: code and SubQ
+
+### REQ-HOOKS-26: The prompt hook names the play when the service is down
+
+When the context service gives no answer (down, starting or timed out), `hookAnswer` (`src/contextLayer/hook/client.ts`) runs the word-only `route` over `listUseCases()`, the same router `getGuide({ ask })` uses, and its outcome starts with `wordsOnly`. A prompt that matches no play still injects nothing.
+
+Checked by: code and SubQ
+
+### REQ-HOOKS-27: The check runs every hook on scratch state, starting nothing
+
+`check:agentHooks` runs each hook and each adapter (`scripts/hooks/useCases.ts` for Claude Code and Codex, `event.ts --host hermes`, `event.ts --host cursor`, `antigravity.ts`) with `scratchHookEnv`: `LOG_DB`, the inbox, the context layer, the queues, the X, platform and fbk state and the hook memory all in its scratch folder, with a signed-in `fakeBird` account, `LOG_CONTEXT_SERVICE=off` (so `readService` reads nothing and `startService` starts nothing) and `LOG_INBOX_POLL=off` (so no watcher starts). It fails when a hook leaves a `watch.log` (`watcherLogsIn`) or a context service log in the scratch folder. Before, every run started the context service detached against the scratch database the next hook opened.
+
+Checked by: code and SubQ
+
+### REQ-HOOKS-28: Setup installs the hooks for each harness it finds
+
+`SETUP_HARNESSES` (`src/cli/launch/helpers/setup.ts`) is the table's rows with `installedBy: "launchSetup"`: Hermes and OpenCode. `log launch --setup` offers each whose home exists (`~/.hermes`, `~/.config/opencode`). For Hermes, `installHermes` (`src/agentHooks/hermes/client.ts`) copies `plugin.yaml` and `__init__.py` into `<home>/plugins/logHooks`, with `log_root` set to the log install, and says nothing changed on a second run; the owner enables it with `hermes plugins enable logHooks`. Its `pre_llm_call` runs `scripts/hooks/event.ts UserPromptSubmit --host hermes` (and `SessionStart` first on a session's first turn) and returns `{ "context": … }`. The portable plugin's skills are the 38 play skills, written by `bun run skills:build` (`scripts/docs/syncSiteSkills.mjs`) into `hermesPlugin/skills/` as into `.claude/skills/`, and `check:siteSkills` fails on any other skill there.
+
+Checked by: code and SubQ

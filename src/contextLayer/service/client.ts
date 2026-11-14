@@ -27,6 +27,7 @@ export function processAlive(pid: number): boolean {
 }
 
 export function readService(root = contextLayerRoot()): ServiceInfo | null {
+  if (serviceDisabled()) return null
   const info = getState<ServiceInfo>('contextService', root, { legacyFile: servicePath(root) })?.body
   return info && processAlive(info.pid) ? info : null
 }
@@ -49,7 +50,12 @@ export function logTiming(line: Omit<TimingLine, 'at'>, _root = contextLayerRoot
   } catch {}
 }
 
+export function serviceDisabled(env: Record<string, string | undefined> = process.env): boolean {
+  return env.LOG_CONTEXT_SERVICE === 'off'
+}
+
 export function startService(repo: string, root = contextLayerRoot()): number | null {
+  if (serviceDisabled()) return null
   mkdirSync(root, { recursive: true })
   try {
     if (!claimState('contextServiceStarting', root, { pid: process.pid }, SERVICE_START_GRACE_MS)) return null

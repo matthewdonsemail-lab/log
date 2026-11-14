@@ -4,8 +4,9 @@ Hermes (Nous Research) is an agent that runs on a server and answers through gat
 
 - **Plugin:** log has a Hermes plugin, named `log`, in this repo under [`hermesPlugin/`](../../hermesPlugin/README.md).
   - **Install:** `hermes plugins install log --no-enable`, then `hermes plugins enable log`. log itself is installed first, with `logMcp` on the PATH.
-  - **What it adds:** it starts `logMcp` on the same machine over stdio, marks the server untrusted so every send asks for approval, ships two skills (`log:dm-inbox`, `log:outreach`) and adds a read-only log tab to Hermes's dashboard.
-  - **What it doesn't do yet:** it has no hosted option, and no `pre_llm_call` hook, so routing still goes through `getGuide` as below.
+  - **What it adds:** it starts `logMcp` on the same machine over stdio, marks the server untrusted so every send asks for approval, ships every log play as a skill (generated from `docs/useCases/` by `bun run skills:build`, the same 38 Claude Code gets) and adds a read-only log tab to Hermes's dashboard.
+  - **The router hook:** a portable plugin can't register hooks ([sources.md](../proposals/sources.md)), so the hook is a second, native plugin, `logHooks`, in [`hermesPlugin/native/`](../../hermesPlugin/native/plugin.yaml) (`plugin.yaml`, `__init__.py`). Its `pre_llm_call` runs `scripts/hooks/event.ts UserPromptSubmit --host hermes` with the message (and `SessionStart` first on a session's first turn) and returns `{ "context": … }`, cut to 7,500 characters per event. `log launch --setup` copies it into `~/.hermes/plugins/logHooks` with the log install's path; then `hermes plugins enable logHooks`.
+  - **What it doesn't do yet:** it has no hosted option; the hook runs only where log is installed on the same machine as Hermes.
 - **Connects:**
   - **Config:** `mcp_servers` in `~/.hermes/config.yaml`. A remote server takes `url` and `auth: oauth`; Hermes handles registration, PKCE and refresh, and keeps tokens in `~/.hermes/mcp-tokens/<server>.json`. A local server takes `command`. ([Hermes: MCP](https://hermes-agent.nousresearch.com/docs/user-guide/features/mcp), [MCP config reference](https://hermes-agent.nousresearch.com/docs/reference/mcp-config-reference))
   - **Tool names:** Hermes names tools `mcp_<server>_<tool>`, so log's tools appear as `mcp_log_report` and so on.
@@ -14,9 +15,9 @@ Hermes (Nous Research) is an agent that runs on a server and answers through gat
   - **Views:** `report` comes back as text, and that is what reaches Telegram.
   - **Sign-in:** happens in the log console or, when log runs on the owner's machine, the window on their screen.
 - **Guidance:**
-  - **Prompt router:** Hermes has no prompt hooks for it, so the model routes each request with `getGuide({ ask: "<the owner's words>" })` (as `mcp_log_getGuide`).
+  - **Prompt router:** with `logHooks` enabled, `pre_llm_call` names the play before each model call. Without it the model routes each request with `getGuide({ ask: "<the owner's words>" })` (as `mcp_log_getGuide`).
   - **Server instructions:** Hermes's MCP page doesn't mention them.
   - **Resources and prompts:** Hermes does wrap a server's resources and prompts as tools (`list_resources`, `read_resource`, `list_prompts`, `get_prompt`), so log's `log://agents` resource can be read.
   - **What's left:** guidance comes through the tool descriptions and `getGuide`.
-  - **Skills:** Hermes has its own skills system. Whether log's installable skills load there isn't checked.
+  - **Skills:** the plugin's skills are named `log:<skill>` by Hermes. Whether Hermes loads them as Claude Code does isn't checked by running it.
 - **Approvals:** Hermes routes MCP form elicitation to its approval prompts, which show as buttons on Telegram and Slack. URL elicitation is declined as unsupported.

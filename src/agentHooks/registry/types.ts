@@ -9,4 +9,11 @@ export interface AgentHook {
   why: string;
 }
 
-export type HookHost = "claudeCode" | "codex";
+export type { HookHost } from "../harness/types.ts";
+
+export interface HookFile {
+  path: string;
+  format: "json" | "text";
+  wanted: (current: string | null) => string;
+  same: (current: string | null) => boolean;
+}

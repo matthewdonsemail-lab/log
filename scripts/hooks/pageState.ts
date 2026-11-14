@@ -1,5 +1,6 @@
 #!/usr/bin/env bun
 import { join } from 'node:path'
+import { hookHostOf, hostBody } from '../../src/agentHooks/harness/index'
 import { hookReply, parseMemory } from '../../src/agentHooks/pageState/index'
 import type { HookEvent } from '../../src/agentHooks/registry/index'
 import { readOpenBrowsers } from '../../src/browser/inspect/index'
@@ -25,4 +26,5 @@ const memory = parseMemory(kept ? JSON.stringify(kept.body) : '')
 
 const result = hookReply(event, readOpenBrowsers(), memory, input.stop_hook_active === true)
 putState('hookMemory', memoryPath, result.memory)
-if (result.output) process.stdout.write(JSON.stringify(result.output))
+const body = hostBody(hookHostOf(process.argv), event, result.output as Record<string, unknown> | null)
+if (body) process.stdout.write(JSON.stringify(body))
