@@ -393,3 +393,15 @@ stateDiagram-v2
 | `reportSourceNoData` | no | `inbox/senders` | command exits | log.db holds no conversations on that platform, so there is nothing to count. | Read that platform's inbox first, or ask about a platform that has chats. |
 | `identityProfileMissing` | no | `inbox/profiles` | command exits | log.db holds no stored profile for that person on that platform. No platform was asked. | Profiles are kept when a session check or a followers read sees the person; ask after one has. |
 
+## mobile
+
+| Code | Retry | Raised in | Ends in | Meaning | Do |
+| --- | --- | --- | --- | --- | --- |
+| `noPhoneAttached` | no | `cli/mobile`, `mobile/device` | command exits | The account has no phone of its own attached, so nothing can be done on the phone. | Attach one with `log mobile android snapchat attach --account <accountName> --serial <serial>`. |
+| `phoneNotFound` | no | `cli/mobile`, `mobile/android` | command exits | No phone with that serial is connected to this machine. | Plug the phone in and list the connected ones with `log mobile android snapchat devices`. |
+| `phoneAlreadyAttached` | no | `cli/mobile`, `mobile/device` | command exits | That phone, or that account, is already attached to another one. One phone belongs to one account. | Attach a different phone, or take the old attachment out of ~/.logCli/mobileDevices.json first. |
+| `phoneNotOnline` | yes | `cli/mobile`, `mobile/android` | command exits | The phone is connected but offline, or its debugging prompt has not been accepted. | Unlock the phone and accept the debugging prompt, then list the phones again. |
+| `noPhoneSelected` | no | `cli/mobile`, `mobile/device` | command exits | More than one phone could be meant, so nothing was chosen. | Name the one you mean with --serial. |
+| `appleDeviceNotWired` | no | `cli/mobile`, `mobile/apple` | command exits | The Apple route is not wired on this machine: no iPhone is paired with Apple's own device tooling here. | Use the Android route, or pair an iPhone with the device tooling first. |
+| `deviceLayerNotWired` | no | `cli/mobile` | command exits | The device layer was not wired into this context, so there is no phone to drive. | Wire the mobile services into the command context (src/mobile/services/index.ts) before asking for a phone. |
+

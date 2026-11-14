@@ -124,4 +124,5 @@ export const COMMAND_INDEX: CommandIndexEntry[] = [
   { name: "react", platform: "instagram", module: "src/cli/react/index.ts", exportName: "instagramReactCommand" },
   { name: "voice", platform: "instagram", module: "src/cli/voiceNote/index.ts", exportName: "instagramVoiceCommand" },
   { name: "voice", platform: "twitter", module: "src/cli/voiceNote/index.ts", exportName: "twitterVoiceCommand" },
+  { name: "mobile", platform: "any", module: "src/cli/mobile/index.ts", exportName: "mobileCommand" },
 ]

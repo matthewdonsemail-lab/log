@@ -170,6 +170,7 @@ const SOURCE_COMMAND_RULES: Readonly<Record<string, number[]>> = {
   instagramDms: [13, 63, 64, 73, 83, 94, 126, 129],
   instagramSend: [8, 13, 63, 64, 73, 83, 90, 94, 111, 129, 130, 133, 135, 137, 138],
   instagramWatch: [13, 26, 63, 64, 73, 83, 94, 123, 129, 131, 132],
+  mobile: [1, 13, 25, 26, 29, 63, 64, 94],
 };
 
 const CONSOLIDATED_RULES: Readonly<Record<number, number | null>> = {

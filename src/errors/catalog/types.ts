@@ -15,6 +15,7 @@ export type ErrorLayer =
   | 'warmup'
   | 'twitter'
   | 'tool'
+  | 'mobile'
 
 export type PublishEnd = 'failed' | 'blocked' | 'needsPerson' | 'unconfirmedId'
 
@@ -2329,6 +2330,55 @@ export const ERROR_CATALOG = {
     retryable: false,
     raisedIn: ['inbox/profiles'],
     action: 'Profiles are kept when a session check or a followers read sees the person; ask after one has.'
+  },
+  noPhoneAttached: {
+    layer: 'mobile',
+    meaning: 'The account has no phone of its own attached, so nothing can be done on the phone.',
+    retryable: false,
+    raisedIn: ['cli/mobile', 'mobile/device'],
+    action: 'Attach one with `log mobile android snapchat attach --account <accountName> --serial <serial>`.'
+  },
+  phoneNotFound: {
+    layer: 'mobile',
+    meaning: 'No phone with that serial is connected to this machine.',
+    retryable: false,
+    raisedIn: ['cli/mobile', 'mobile/android'],
+    action: 'Plug the phone in and list the connected ones with `log mobile android snapchat devices`.'
+  },
+  phoneAlreadyAttached: {
+    layer: 'mobile',
+    meaning: 'That phone, or that account, is already attached to another one. One phone belongs to one account.',
+    retryable: false,
+    raisedIn: ['cli/mobile', 'mobile/device'],
+    action: 'Attach a different phone, or take the old attachment out of ~/.logCli/mobileDevices.json first.'
+  },
+  phoneNotOnline: {
+    layer: 'mobile',
+    meaning: 'The phone is connected but offline, or its debugging prompt has not been accepted.',
+    retryable: true,
+    raisedIn: ['cli/mobile', 'mobile/android'],
+    action: 'Unlock the phone and accept the debugging prompt, then list the phones again.'
+  },
+  noPhoneSelected: {
+    layer: 'mobile',
+    meaning: 'More than one phone could be meant, so nothing was chosen.',
+    retryable: false,
+    raisedIn: ['cli/mobile', 'mobile/device'],
+    action: 'Name the one you mean with --serial.'
+  },
+  appleDeviceNotWired: {
+    layer: 'mobile',
+    meaning: "The Apple route is not wired on this machine: no iPhone is paired with Apple's own device tooling here.",
+    retryable: false,
+    raisedIn: ['cli/mobile', 'mobile/apple'],
+    action: 'Use the Android route, or pair an iPhone with the device tooling first.'
+  },
+  deviceLayerNotWired: {
+    layer: 'mobile',
+    meaning: 'The device layer was not wired into this context, so there is no phone to drive.',
+    retryable: false,
+    raisedIn: ['cli/mobile'],
+    action: 'Wire the mobile services into the command context (src/mobile/services/index.ts) before asking for a phone.'
   },
 } as const satisfies Record<string, ErrorEntry>
 
