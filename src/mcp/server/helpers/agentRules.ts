@@ -144,6 +144,8 @@ const SOURCE_COMMAND_RULES: Readonly<Record<string, number[]>> = {
   linkedinSuggestions: [63, 64, 73, 94, 102],
   linkedinConnect: [8, 63, 64, 73, 94, 102],
   linkedinLike: [8, 63, 64, 73, 94, 102],
+  linkedinRepost: [8, 63, 64, 73, 94, 102],
+  linkedinMessage: [8, 63, 64, 73, 90, 94, 102],
   linkedinInbox: [63, 64, 73, 94, 102],
   linkedinMessages: [63, 64, 73, 94, 102],
   linkedinCookies: [13, 21, 63, 64, 73, 83, 102],

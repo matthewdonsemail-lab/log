@@ -13,7 +13,7 @@
 | Called from | `runs/inspect/20261107T170649_<name:1>/script10.js:16 anonymous`, `runs/inspect/20261107T170649_<name:1>/script31.js:9763 anonymous`, `runs/inspect/20261107T170649_<name:1>/script31.js:2179 statement`, `runs/inspect/20261107T170649_<name:1>/script31.js:4448 statement` |
 | rea | `ev_8f5b17e622af162b3bea6ae47295b22bd0fd5770008aa3a5e612cb3e8b90d3f6` |
 
-Seen 91 time(s) in 2 run(s).
+Seen 93 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -40,6 +40,8 @@ Seen 91 time(s) in 2 run(s).
 | inspect | step 27: click e1346 | 1 | 200 | 65 ms | 20516 ms | — |
 | inspect | step 29: snapshot | 1 | 200 | 68 ms | 26827 ms | — |
 | inspect | POST 0 /flagship-web/rsc-action/actions/component (782 ms) | 1 | 200 | 60 ms | 13361 ms | — |
+| chrome | step 3: react to a post, by hand | 1 | 200 | 71 ms | 9736 ms | — |
+| chrome | step 8: comment on a post, by hand | 1 | 200 | 106 ms | 3345 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

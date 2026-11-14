@@ -125,6 +125,8 @@ flowchart TB
     c_linkedinSuggestions["suggestions"]
     c_linkedinConnect["connect"]
     c_linkedinLike["like"]
+    c_linkedinRepost["repost"]
+    c_linkedinMessage["message"]
     c_linkedinInbox["inbox"]
     c_linkedinMessages["messages"]
   end
@@ -382,6 +384,10 @@ flowchart TB
   mcp --> c_linkedinConnect
   cli --> c_linkedinLike
   mcp --> c_linkedinLike
+  cli --> c_linkedinRepost
+  mcp --> c_linkedinRepost
+  cli --> c_linkedinMessage
+  mcp --> c_linkedinMessage
   cli --> c_linkedinInbox
   mcp --> c_linkedinInbox
   cli --> c_linkedinMessages

@@ -53,6 +53,8 @@ WRITE_TOOLS = frozenset({
     "linkedinDeleteLive",
     "linkedinConnectLive",
     "linkedinLikeLive",
+    "linkedinRepostLive",
+    "linkedinMessageLive",
 })
 
 

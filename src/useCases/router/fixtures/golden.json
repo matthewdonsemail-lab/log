@@ -8,7 +8,7 @@
   { "prompt": "comment on reddit posts", "expect": "none", "note": "audit: no Reddit play comments or posts" },
   { "prompt": "post on reddit", "expect": "none", "note": "audit" },
   { "prompt": "upvote on reddit", "expect": "none", "note": "audit" },
-  { "prompt": "reply to my linkedin dms", "expect": "menu", "menu": "inbox/showMe", "note": "audit: no LinkedIn play, so no platform play" },
+  { "prompt": "reply to my linkedin dms", "expect": "linkedin/network", "note": "linkedin/network answers LinkedIn conversations since 2026-11-14 (log linkedin message)" },
   { "prompt": "join facebook groups for plumbing leads in my town", "expect": "facebook/groups", "note": "audit" },
   { "prompt": "read the posts in the facebook group", "expect": "facebook/groups", "note": "audit" },
   { "prompt": "check my accounts", "expect": "inbox/signIn", "note": "audit marks this wrong; inbox/signIn lists it word for word and its first step is the account check" },

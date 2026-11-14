@@ -13,7 +13,7 @@
 | Called from | `runs/inspect/20261107T170649_<name:1>/script13.js:12 anonymous` |
 | rea | `ev_2b7a18c271a4f80536532c2cac14a9478e5ead3403f7631fd1303b375af517a7` |
 
-Seen 5 time(s) in 2 run(s).
+Seen 7 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -22,6 +22,8 @@ Seen 5 time(s) in 2 run(s).
 | inspect | step 4: goto /feed/ | 1 | 200 | 954 ms | 6485 ms | — |
 | inspect | POST 0 /flagship-web/rsc-action/actions/server-request (382 ms) | 1 | 200 | 1163 ms | 6522 ms | — |
 | inspect | step 25: goto /in/<profile>/ | 1 | 200 | 1199 ms | 1252 ms | — |
+| chrome | step 5: comment on a post, by hand | 1 | 200 | 1109 ms | 3714 ms | — |
+| chrome | step 7: connect with a member, by hand | 1 | 200 | 1597 ms | 6181 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

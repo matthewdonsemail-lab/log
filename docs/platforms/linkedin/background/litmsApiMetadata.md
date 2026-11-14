@@ -10,10 +10,10 @@
 | Path | `/litms/api/metadata` |
 | Sends | — |
 | Reads | `emails.sha1`, `emails.sha256`, `client.deviceType`, `client.browserLanguage`, `client.assignedControlGroup`, `client.assignedLtsNgwTreatment`, `client.isUserLoggedIn`, `client.countryCode`, `client.isInternalRequest`, `id.dmp`, `compliance.isCCPAOptIn`, `compliance.isLinkedInEmployee` and 11 more |
-| Called from | `runs/inspect/20261107T170649_<name:1>/script37.js:1709 statement`, `runs/inspect/20261107T170649_<name:1>/script60.js:1992 statement`, `runs/inspect/20261107T170649_<name:1>/script49.js:922 statement`, `runs/inspect/20261107T170649_<name:1>/script61.js:692 statement` |
-| rea | `ev_dcd6192a07f9e1dc889c5a59cbe07c98ac3583615ab55d9508db461520a10af9` |
+| Called from | `runs/inspect/20261107T170649_<name:1>/script37.js:1709 statement`, `runs/inspect/20261107T170649_<name:1>/script60.js:1992 statement`, `runs/chrome/20261114T213510_<name:1>/script1.js:1000 statement`, `runs/chrome/20261114T213510_<name:1>/script46.js:1106 statement` |
+| rea | `ev_766af98e3a50ffaf4e1b39b21de7a4d3d663e2db9759eebd4ca09ec0675adebd` |
 
-Seen 8 time(s) in 3 run(s).
+Seen 9 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -25,6 +25,7 @@ Seen 8 time(s) in 3 run(s).
 | inspect | step 6: goto /feed/ | 1 | 200 | 178 ms | 2236 ms | — |
 | inspect | step 12: goto /feed/ | 1 | 200 | 162 ms | 3351 ms | — |
 | inspect | clearSession: linkedin cookies cleared on 1 domain(s): .linkedin.com | 1 | 200 | 65 ms | 4220 ms | — |
+| chrome | step 2: send a message, by hand | 1 | 200 | 112 ms | 10098 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

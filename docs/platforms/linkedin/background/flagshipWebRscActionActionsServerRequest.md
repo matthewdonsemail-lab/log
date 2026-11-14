@@ -13,7 +13,7 @@
 | Called from | `runs/inspect/20261107T170649_<name:3>/script60.js:1742 showErrorToast`, `runs/inspect/20261107T170649_<name:3>/script60.js:1742 showSuccessToast`, `runs/inspect/20261107T170649_<name:3>/script50.js:1155 anonymous`, `runs/inspect/20261107T170649_<name:3>/script50.js:1229 anonymous` |
 | rea | `ev_beea3ff6a23754247201f9854f98467e0eb184892094bdc5ae1088a7bdf55062` |
 
-Seen 65 time(s) in 2 run(s).
+Seen 99 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -39,6 +39,13 @@ Seen 65 time(s) in 2 run(s).
 | inspect | POST 0 /flagship-web/rsc-action/actions/server-request (273 ms) | 1 | 200 | 200 ms | 112793 ms | — |
 | inspect | step 25: goto /in/<profile>/ | 3 | 200 | 98–124 ms | 1243–1256 ms | — |
 | inspect | step 31: press Escape | 2 | 200 | 114–1004 ms | 144–1941 ms | — |
+| chrome | step 1: the owner's own Chrome, recorded by hand (har4): the feed and messaging open | 1 | 200 | 111 ms | 21020 ms | — |
+| chrome | step 3: react to a post, by hand | 14 | 200 | 128–563 ms | 194–12278 ms | — |
+| chrome | step 4: repost a post, by hand | 2 | 200 | 182–193 ms | 300–2203 ms | — |
+| chrome | step 5: comment on a post, by hand | 6 | 200 | 100–387 ms | 8–6423 ms | — |
+| chrome | step 7: connect with a member, by hand | 5 | 200 | 180–732 ms | 300–11475 ms | — |
+| chrome | step 8: comment on a post, by hand | 4 | 200 | 169–370 ms | 51–5196 ms | — |
+| chrome | step 9: open My Network's invitations, by hand | 2 | 200 | 633–700 ms | 107–300 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

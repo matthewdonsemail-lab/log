@@ -10,8 +10,8 @@
 | Path | `/flagship-web/rsc-action/actions/app-config` |
 | Sends | — |
 | Reads | — |
-| Called from | `runs/inspect/20261107T170649_<name:1>/script50.js:4236 statement`, `runs/inspect/20261107T170649_<name:1>/script37.js:1810 statement`, `runs/inspect/20261107T170649_<name:1>/script60.js:2375 statement`, `runs/inspect/20261107T170649_<name:1>/script49.js:949 statement` |
-| rea | `ev_38cfc5b696a5280645647ef049d0c12bf870721c67c775bfc0267773183762b5` |
+| Called from | `runs/inspect/20261107T170649_<name:1>/script50.js:4236 statement`, `runs/inspect/20261107T170649_<name:1>/script37.js:1810 statement`, `runs/inspect/20261107T170649_<name:1>/script60.js:2375 statement`, `runs/chrome/20261114T213510_<name:1>/script46.js:1263 statement` |
+| rea | `ev_ac6080ad29f23aa605cbe54f1b92979f8e11e2553c29e58f7d70f8349a0eeee1` |
 
 Seen 7 time(s) in 2 run(s).
 

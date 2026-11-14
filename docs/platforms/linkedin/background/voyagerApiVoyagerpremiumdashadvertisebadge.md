@@ -13,7 +13,7 @@
 | Called from | — |
 | rea | `ev_99f341f871ab6a7fd99a5029ee1e64c2ae5a59824eea1a83c8954a6041b5977d` |
 
-Seen 24 time(s) in 2 run(s).
+Seen 25 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -33,6 +33,7 @@ Seen 24 time(s) in 2 run(s).
 | inspect | POST 0 /flagship-web/rsc-action/actions/server-request (273 ms) | 1 | 200 | 69 ms | 474900 ms | — |
 | inspect | step 25: goto /in/<profile>/ | 1 | 200 | 132 ms | 2975 ms | — |
 | inspect | step 29: snapshot | 1 | 200 | 68 ms | 27522 ms | — |
+| chrome | step 8: comment on a post, by hand | 1 | 200 | 76 ms | 4112 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

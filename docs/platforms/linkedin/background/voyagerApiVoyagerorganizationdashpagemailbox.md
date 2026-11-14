@@ -13,7 +13,7 @@
 | Called from | `runs/inspect/20261107T170649_<name:1>/script60.js:1110 anonymous`, `runs/inspect/20261107T170649_<name:1>/script60.js:1076 anonymous` |
 | rea | `ev_41c8cfd9c647f8db687f9317d81557c47a1c59294c7ec06c83685220b8f86c69` |
 
-Seen 7 time(s) in 2 run(s).
+Seen 9 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -24,6 +24,8 @@ Seen 7 time(s) in 2 run(s).
 | inspect | step 6: goto /feed/ | 1 | 200 | 251 ms | 3326 ms | — |
 | inspect | step 12: goto /feed/ | 1 | 200 | 100 ms | 3861 ms | — |
 | inspect | step 25: goto /in/<profile>/ | 1 | 200 | 87 ms | 2755 ms | — |
+| chrome | step 1: the owner's own Chrome, recorded by hand (har4): the feed and messaging open | 1 | 200 | 133 ms | 24168 ms | — |
+| chrome | step 8: comment on a post, by hand | 1 | 200 | 94 ms | 7502 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

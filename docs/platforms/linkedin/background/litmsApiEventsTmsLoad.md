@@ -13,7 +13,7 @@
 | Called from | `runs/inspect/20261107T170649_<name:3>/script20.js:1 anonymous`, `runs/inspect/20261107T170649_<name:3>/script31.js:460 anonymous` |
 | rea | `ev_58484ddf774e72495c809f53697f7f3f99b9fc3d9e0b361a3e3163fec68a59cb` |
 
-Seen 8 time(s) in 3 run(s).
+Seen 10 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -25,6 +25,8 @@ Seen 8 time(s) in 3 run(s).
 | inspect | step 6: goto /feed/ | 1 | 200 | 243 ms | 2667 ms | — |
 | inspect | step 12: goto /feed/ | 1 | 200 | 62 ms | 3585 ms | — |
 | inspect | clearSession: linkedin cookies cleared on 1 domain(s): .linkedin.com | 1 | 200 | 78 ms | 4357 ms | — |
+| chrome | step 2: send a message, by hand | 1 | 200 | 57 ms | 10421 ms | — |
+| chrome | step 9: open My Network's invitations, by hand | 1 | 200 | 185 ms | 1554 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

@@ -9,11 +9,11 @@
 | doc_id | — |
 | Path | `/voyager/api/graphql` |
 | Sends | — |
-| Reads | `data.data`, `data.extensions`, `meta.microSchema`, `included` |
+| Reads | `data.data`, `data.extensions`, `meta.microSchema`, `included`, `data.errors` |
 | Called from | `runs/inspect/20261107T170649_<name:7>/script37.js:1433 fetchIdentityModule`, `runs/inspect/20261107T161246_<name:7>/script264.js:252 fetchIdentityModule` |
 | rea | `ev_ebb311c92c2fd9b9d68f44d37f3ac6312b93ea7fe007073cf2c6760d9ed28046` |
 
-Seen 102 time(s) in 2 run(s).
+Seen 141 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -29,6 +29,9 @@ Seen 102 time(s) in 2 run(s).
 | inspect | step 25: goto /in/<profile>/ | 13 | 200 | 67–398 ms | 2375–2928 ms | — |
 | inspect | step 27: click e1346 | 2 | 200 | 142–150 ms | 2067–2212 ms | — |
 | inspect | step 31: press Escape | 1 | 200 | 138 ms | 7 ms | — |
+| chrome | step 1: the owner's own Chrome, recorded by hand (har4): the feed and messaging open | 13 | 200 | 80–1845 ms | 23990–24658 ms | — |
+| chrome | step 2: send a message, by hand | 10 | 200 | 98–569 ms | 314–8281 ms | — |
+| chrome | step 8: comment on a post, by hand | 16 | 200 | 71–1841 ms | 7231–9467 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

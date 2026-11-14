@@ -8,12 +8,12 @@
 | Kind | endpoint |
 | doc_id | — |
 | Path | `/flagship-web/in` |
-| Sends | `requestedArguments`, `isPrefetch`, `$type`, `screenId`, `pageKey`, `presentationStyle`, `presentation`, `title`, `url`, `inheritActor`, `colorScheme`, `disableScreenGutters`, `shouldHideMobileTopNavBar`, `shouldHideLoadingSpinner`, `replaceCurrentScreen`, `shouldHideMobileTopNavBarDivider`, `clearBackStack`, `preserveCurrentChildren`, `sharedElementTransitions`, `newHierarchy`, `screenTitle`, `sduiTrackingProvenance` |
+| Sends | `$type`, `screenId`, `pageKey`, `presentationStyle`, `presentation`, `title`, `url`, `inheritActor`, `colorScheme`, `disableScreenGutters`, `shouldHideMobileTopNavBar`, `shouldHideLoadingSpinner`, `replaceCurrentScreen`, `shouldHideMobileTopNavBarDivider`, `clearBackStack`, `preserveCurrentChildren`, `sharedElementTransitions`, `newHierarchy`, `screenTitle`, `sduiTrackingProvenance`, `requestedArguments`, `isPrefetch` |
 | Reads | — |
 | Called from | `runs/inspect/20261107T170649_<name:1>/script13.js:12 anonymous` |
 | rea | `ev_2b7a18c271a4f80536532c2cac14a9478e5ead3403f7631fd1303b375af517a7` |
 
-Seen 7 time(s) in 1 run(s).
+Seen 8 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -23,6 +23,7 @@ Seen 7 time(s) in 1 run(s).
 | inspect | step 5: goto /feed/ | 2 | 200, 0 | 670–705 ms | 1915–5643 ms | — |
 | inspect | step 6: goto /feed/ | 1 | 200 | 734 ms | 1932 ms | — |
 | inspect | step 12: goto /feed/ | 1 | 200 | 824 ms | 2219 ms | — |
+| chrome | step 5: comment on a post, by hand | 1 | 200 | 555 ms | 5563 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

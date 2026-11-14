@@ -28,8 +28,8 @@ describe('redactDoc', () => {
   test('LinkedIn profiles, member ids and headlines are taken out, and test dummies are kept', () => {
     const slug = j('ana', '-ruiz', '-4b7c91')
     const member = j('ACoA', 'AEnyetUBAf7CS5MtYcM7QQqSeDrj')
-    const out = redactDoc([`goto /in/${slug}/`, `"ids": "List(urn:li:fsd_profile:${member})"`, `"variables": "(memberIdentity:${slug})"`, `"headline": "${j('Founder', ' at a shop')}"`, '/in/janedoe/'].join('\n'))
-    expect(out).toBe(['goto /in/<profile>/', '"ids": "List(urn:li:fsd_profile:<memberId>)"', '"variables": "(memberIdentity:<profile>)"', '"headline": "<messageText>"', '/in/janedoe/'].join('\n'))
+    const out = redactDoc([`goto /in/${slug}/`, `"ids": "List(urn:li:fsd_profile:${member})"`, `"variables": "(memberIdentity:${slug})"`, `"headline": "${j('Founder', ' at a shop')}"`, '/in/janedoe/', `presenceStatusTopic%3Aurn%3Ali%3Afsd_profile%3A${member})`].join('\n'))
+    expect(out).toBe(['goto /in/<profile>/', '"ids": "List(urn:li:fsd_profile:<memberId>)"', '"variables": "(memberIdentity:<profile>)"', '"headline": "<messageText>"', '/in/janedoe/', 'presenceStatusTopic%3Aurn%3Ali%3Afsd_profile%3A<memberId>)'].join('\n'))
   })
 
   test('emails, phones and IPs inside free text are replaced', () => {

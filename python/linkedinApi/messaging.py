@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import json
+import os
 import time
+import uuid
 from datetime import datetime, timezone
 from typing import Any
 from urllib.parse import quote
@@ -18,6 +20,9 @@ PRELOAD_REFERER = f"{ORIGIN}/preload/?_bprMode=vanilla"
 INBOX_PAGE = "d_messaging_index"
 THREAD_PAGE = "d_flagship3_messaging_conversation_detail"
 INBOX_COUNT = 20
+MESSAGES = f"{VOYAGER}/voyagerMessagingDashMessengerMessages"
+CONVERSATIONS = f"{VOYAGER}/voyagerMessagingDashMessengerConversations"
+MESSAGE_MAX = 8000
 
 
 def text_of(node: Any) -> str:
@@ -136,6 +141,22 @@ def voyager_track(browser: dict[str, str]) -> str:
     return json.dumps({"clientVersion": RECORDED_VOYAGER_VERSION, "mpVersion": RECORDED_VOYAGER_VERSION, "osName": "web", "timezoneOffset": int(offset.total_seconds() // 3600) if offset else 0, "timezone": zone, "deviceFormFactor": "DESKTOP", "mpName": "voyager-web", "displayDensity": 1, "displayWidth": 1920, "displayHeight": 1080}, separators=(",", ":"))
 
 
+def tracking_id() -> str:
+    return "".join(chr(b) for b in os.urandom(16))
+
+
+def message_body(conversation_urn: str, mailbox: str, text: str) -> dict[str, Any]:
+    return {"message": {"body": {"attributes": [], "text": text}, "renderContentUnions": [], "conversationUrn": conversation_urn, "originToken": str(uuid.uuid4())}, "mailboxUrn": mailbox, "trackingId": tracking_id(), "dedupeByClientGeneratedToken": False}
+
+
+def sent_message(answer: dict[str, Any], text: str) -> dict[str, Any] | None:
+    value = answer.get("value") if isinstance(answer.get("value"), dict) else {}
+    urn = str(value.get("entityUrn") or "")
+    if not urn.startswith("urn:li:msg_message:") or ((value.get("body") or {}).get("text") or "") != text:
+        return None
+    return {"messageUrn": urn, "deliveredAt": when_of(value.get("deliveredAt"))}
+
+
 class Messaging(Composer):
     def __init__(self, session: Any, cookies: dict[str, str], browser: dict[str, str], log: Any = None, sleep: Any = None, now: Any = None) -> None:
         super().__init__(session, cookies, browser, log=log, sleep=sleep)
@@ -191,9 +212,12 @@ class Messaging(Composer):
         self.pause(0.3, 0.9)
         return {"conversations": self.conversations()}
 
-    def messages(self, conversation_urn: str = "", with_whom: str = "") -> dict[str, Any]:
-        self.open_mailbox()
-        self.pause(0.3, 0.9)
+    def post_json(self, name: str, url: str, body: dict[str, Any], page: str) -> str:
+        headers = self.voyager_headers(page, "application/json")
+        headers["content-type"] = "text/plain;charset=UTF-8"
+        return self.check(name, self.session.post(url, headers=headers, data=json.dumps(body, ensure_ascii=False, separators=(",", ":")).encode("utf-8"), allow_redirects=False))
+
+    def chosen(self, conversation_urn: str, with_whom: str) -> dict[str, Any]:
         listed = self.conversations()
         if conversation_urn:
             chosen = [c for c in listed if c["conversationUrn"] == conversation_urn] or [{"conversationUrn": conversation_urn, "people": []}]
@@ -204,5 +228,38 @@ class Messaging(Composer):
                 raise ShareRefused("conversationNotFound", f"none of the account's {len(listed)} newest conversations is with {with_whom}. The newest are with: {offered}")
             if len(chosen) > 1:
                 raise ShareRefused("conversationAmbiguous", f"{len(chosen)} of the newest conversations are with {with_whom}: pass --conversation with one of {', '.join(c['conversationUrn'] for c in chosen)}")
+        return chosen[0]
+
+    def messages(self, conversation_urn: str = "", with_whom: str = "") -> dict[str, Any]:
+        self.open_mailbox()
+        self.pause(0.3, 0.9)
+        conversation = self.chosen(conversation_urn, with_whom)
         self.pause(0.8, 2.0)
-        return {"conversation": chosen[0], "messages": self.thread(chosen[0]["conversationUrn"])}
+        return {"conversation": conversation, "messages": self.thread(conversation["conversationUrn"])}
+
+    def send(self, parts: list[str], conversation_urn: str = "", with_whom: str = "") -> dict[str, Any]:
+        if not parts or any(not p.strip() or len(p) > MESSAGE_MAX for p in parts):
+            raise ShareRefused("messageInvalid", f"a LinkedIn message needs text in every part, at most {MESSAGE_MAX} characters each")
+        self.open_mailbox()
+        self.pause(0.3, 0.9)
+        conversation = self.chosen(conversation_urn, with_whom)
+        urn = conversation["conversationUrn"]
+        self.pause(0.8, 2.0)
+        self.thread(urn)
+        self.pause(2.0, 5.0)
+        sent: list[dict[str, Any]] = []
+        for part in parts:
+            self.post_json("typing", f"{CONVERSATIONS}?action=typing", {"conversationUrn": urn}, THREAD_PAGE)
+            self.pause(min(12.0, 1.5 + len(part) / 9), min(20.0, 3.0 + len(part) / 6))
+            text_answer = self.post_json("createMessage", f"{MESSAGES}?action=createMessage", message_body(urn, self.mailbox, part), THREAD_PAGE)
+            try:
+                answer = json.loads(text_answer or "{}")
+            except ValueError:
+                answer = {}
+            confirmed = sent_message(answer if isinstance(answer, dict) else {}, part)
+            if not confirmed:
+                raise ShareRefused("messageUnconfirmed", f"LinkedIn's answer to part {len(sent) + 1} of {len(parts)} named no message with that text in {urn}, so it isn't known to be sent; {len(sent)} went before it. Nothing is retried (rule 94)", sent=sent)
+            sent.append({**confirmed, "text": part})
+            if len(sent) < len(parts):
+                self.pause(1.0, 3.0)
+        return {"conversation": conversation, "sent": sent}

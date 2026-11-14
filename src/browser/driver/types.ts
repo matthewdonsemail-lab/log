@@ -75,4 +75,4 @@ export interface BrowserSessionOutput {
   failure: DriverFailure | null
 }
 
-export const CAPTURE_FOLDERS: readonly string[] = [...BROWSER_DRIVERS, 'firefox']
+export const CAPTURE_FOLDERS: readonly string[] = [...BROWSER_DRIVERS, 'firefox', 'chrome']

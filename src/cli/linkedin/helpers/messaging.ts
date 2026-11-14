@@ -1,7 +1,9 @@
 import { recordLinkedinSession } from "../../../linkedin/account/session/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf, refuseError, refuseInput } from "../../runner/helpers/index.ts";
+import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError, refuseInput } from "../../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../../runner/types.ts";
-import { ACCOUNT_FLAG, failed, openAccount, text } from "./share.ts";
+import { ACCOUNT_FLAG, APPROVED_BY_FLAG, failed, liveFlag, openAccount, text } from "./share.ts";
+import { actOnEngine } from "../../../platformKit/action/index.ts";
+import { splitPlan } from "../../../voice/pairs/index.ts";
 
 export type LinkedinPerson = { name: string; profileId: string; profileUrl: string; headline: string };
 export type LinkedinMessage = { at: string | null; from: string; fromMe: boolean; text: string; attachments?: { name: string; type: string; url: string }[]; messageUrn: string };
@@ -120,6 +122,80 @@ export const linkedinMessagesCommand: Command = {
       return { code: 0, stdout: `log linkedin messages: ${account.accountName} and ${who}, ${messages.length} messages:\n${messages.map(messageLine).join("\n")}` };
     } catch (error) {
       return refuseError("linkedin messages", error);
+    }
+  },
+};
+
+export const LINKEDIN_MESSAGE_USAGE = [
+  "Usage: log linkedin message --account <accountName> (--with <name|profileId> | --conversation <urn>) --text <text> [--asOne] [--approvedBy <who>] [--live] [--json]",
+  "Writes in one of the account's LinkedIn conversations, on the direct-API engine (no browser): the feed, the account's own profile, its newest conversations to find the one with them (as `log linkedin messages` does), that conversation's messages, then for each message LinkedIn's typing signal and createMessage, the calls the messaging page makes, recorded from a real visit. Only an existing conversation; a first message to someone new isn't built.",
+  "A draft on several lines goes out one message per line (rule 90); --asOne sends it as one. A dry run unless --live, which needs --approvedBy (rule 8); the dry run sends nothing and shows the parts. LinkedIn's answer decides: each part counts only when the answer names a new message with its text; the first that doesn't is messageUnconfirmed, the rest are not sent, and nothing is retried (rule 94). Each part is a write for the governor. Read the conversation first with `log linkedin messages`.",
+].join("\n");
+
+const LINKEDIN_MESSAGE_INPUT: CommandInput = {
+  forms: [
+    {
+      words: [],
+      summary: "Write in one LinkedIn conversation, one message per line; a dry run unless --live",
+      positionals: [],
+      flags: [
+        ACCOUNT_FLAG,
+        { name: "with", kind: "string", description: "The other person's name, profile id (ACoA…) or public id" },
+        { name: "conversation", kind: "string", description: "The conversation's urn, from log linkedin inbox --json" },
+        { name: "text", kind: "string", required: true, description: "What to say; each line is its own message unless --asOne" },
+        { name: "asOne", kind: "boolean", description: "Send a draft on several lines as one message (rule 90)" },
+        APPROVED_BY_FLAG,
+        liveFlag("Send it"),
+        JSON_FLAG,
+      ],
+      groups: [{ rule: "atLeastOne", names: ["with", "conversation"] }, { rule: "atMostOne", names: ["with", "conversation"] }],
+    },
+  ],
+};
+
+export const linkedinMessageCommand: Command = {
+  usage: LINKEDIN_MESSAGE_USAGE,
+  platform: "linkedin",
+  name: "message",
+  effect: "write",
+  input: LINKEDIN_MESSAGE_INPUT,
+  summary: "Write in one LinkedIn conversation, one message per line, on the direct-API engine; a dry run unless --live",
+  args: "--account <a> (--with <who> | --conversation <urn>) --text <text> [--asOne] [--approvedBy <who>] [--live] [--json]",
+  async run(context, argv) {
+    const parsed = parseArgs(argv, parserSpecOf(LINKEDIN_MESSAGE_INPUT));
+    if (!parsed.ok) return refuseInput("linkedin message", `${parsed.error}`, LINKEDIN_MESSAGE_USAGE);
+    if (parsed.positionals.length) return refuseInput("linkedin message", `takes no words, only flags`, LINKEDIN_MESSAGE_USAGE);
+    const ref = text(parsed.flags, "account");
+    const withWhom = text(parsed.flags, "with");
+    const conversation = text(parsed.flags, "conversation");
+    const draft = typeof parsed.flags["text"] === "string" ? (parsed.flags["text"] as string) : "";
+    if (!ref) return refuseInput("linkedin message", `--account is needed`, LINKEDIN_MESSAGE_USAGE);
+    if (Boolean(withWhom) === Boolean(conversation)) return refuseInput("linkedin message", `give one of --with or --conversation`, LINKEDIN_MESSAGE_USAGE);
+    if (!draft.trim()) return refuseInput("linkedin message", `--text is needed`, LINKEDIN_MESSAGE_USAGE);
+    const live = parsed.flags["live"] === true;
+    const approvedBy = text(parsed.flags, "approvedBy");
+    if (live && !approvedBy) return refuse("linkedin message", "notApproved", "--live needs --approvedBy <who> (rule 8)");
+    const json = Boolean(parsed.flags["json"]);
+    const plan = splitPlan(draft, null, parsed.flags["asOne"] === true);
+    const target = withWhom ? `the conversation with ${withWhom}` : conversation;
+    try {
+      const opened = await openAccount(context, "message", ref);
+      if (!opened.ok) return opened.result;
+      const account = opened.account;
+      if (!live) {
+        if (json) return { code: 0, stdout: JSON.stringify({ platform: "linkedin", account: account.accountName, dryRun: true, with: withWhom || null, conversation: conversation || null, parts: plan.parts, why: plan.why }, null, 2) };
+        return { code: 0, stdout: [`log linkedin message: dry run: ${account.accountName} would write in ${target}, ${plan.parts.length === 1 ? "as one message" : `as ${plan.parts.length} messages`} (${plan.why}):`, ...plan.parts.map((p, i) => `  ${i + 1}. ${p}`), "Nothing was sent. --live --approvedBy <who> does it (rule 8)."].join("\n") };
+      }
+      context.err(`${account.accountName}: write ${plan.parts.length} message(s) in ${target}, approved by ${approvedBy}, on the direct-API engine`);
+      const run = await actOnEngine(() => context.directLinkedin!(account, { action: "message", live: true, approvedBy, parts: plan.parts, ...(withWhom ? { with: withWhom } : { conversation }) }));
+      for (const line of await recordLinkedinSession(context.twenty, account, run, context.now?.() ?? new Date())) context.err(line);
+      if (!run.answer.ok) return failed("message", run);
+      if (json) return { code: 0, stdout: JSON.stringify({ platform: "linkedin", account: account.accountName, approvedBy, ...run.answer }, null, 2) };
+      const sent = Array.isArray(run.answer["sent"]) ? (run.answer["sent"] as { at?: string | null; deliveredAt?: string | null; text: string }[]) : [];
+      const people = ((run.answer["conversation"] as LinkedinConversation | undefined)?.people ?? []).map((p) => p.name).filter(Boolean).join(", ") || target;
+      return { code: 0, stdout: [`log linkedin message: ${account.accountName} wrote ${sent.length} message(s) to ${people}; LinkedIn confirmed each. Approved by ${approvedBy}.`, ...sent.map((m, i) => `  ${i + 1}. ${m.deliveredAt ?? "?"} ${m.text}`)].join("\n") };
+    } catch (error) {
+      return refuseError("linkedin message", error);
     }
   },
 };

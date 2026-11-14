@@ -166,19 +166,19 @@
     },
     {
       "name": "log-linkedin-network",
-      "description": "Growing a LinkedIn network and reading its inbox. A log play (docs/useCases/linkedin/network.md): Invite the people LinkedIn suggests on My Network, slowly, and read the account's conversations, from its own session with no browser.",
+      "description": "Growing a LinkedIn network, and reading and answering its inbox. A log play (docs/useCases/linkedin/network.md): Invite the people LinkedIn suggests on My Network, slowly, and read and answer the account's conversations, from its own session with no browser.",
       "files": [
         "SKILL.md"
       ],
-      "summary": "Growing a LinkedIn network and reading its inbox"
+      "summary": "Growing a LinkedIn network, and reading and answering its inbox"
     },
     {
       "name": "log-linkedin-posts",
-      "description": "Posting on LinkedIn, and liking or taking a post down. A log play (docs/useCases/linkedin/posts.md): Post text, an image or mentions from the account's own session, like someone's post, or delete one of the account's own posts, each the way LinkedIn's own web client does it, with no browser.",
+      "description": "Posting on LinkedIn, liking or reposting, and taking a post down. A log play (docs/useCases/linkedin/posts.md): Post text, an image or mentions from the account's own session, like or repost someone's post, or delete one of the account's own posts, each the way LinkedIn's own web client does it, with no browser.",
       "files": [
         "SKILL.md"
       ],
-      "summary": "Posting on LinkedIn, and liking or taking a post down"
+      "summary": "Posting on LinkedIn, liking or reposting, and taking a post down"
     },
     {
       "name": "log-reddit-contributor-maxxing",

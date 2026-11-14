@@ -12,7 +12,7 @@ export const FLOW_LIVE_TOOL = "flowRunLive";
 
 export const LEGACY_FLOW_LIVE_TOOL = "flowLive";
 
-export const PLAY_GATED_ON_MAIN: ReadonlySet<string> = new Set(["twitterDmLive", "twitterReplyLive", "twitterQuoteLive", "twitterQueueRunLive", "twitterVoiceLive", "discordSendLive", "slackSendLive", "instagramSendLive"]);
+export const PLAY_GATED_ON_MAIN: ReadonlySet<string> = new Set(["twitterDmLive", "twitterReplyLive", "twitterQuoteLive", "twitterQueueRunLive", "twitterVoiceLive", "discordSendLive", "slackSendLive", "instagramSendLive", "linkedinMessageLive"]);
 
 export type PlayGateMode = "required" | "anyPlay" | "ifPlay" | "none";
 

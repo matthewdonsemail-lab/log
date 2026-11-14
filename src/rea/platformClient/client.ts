@@ -36,6 +36,12 @@ interface RawEntry {
   request?: { url?: string };
 }
 
+function withoutServerAddress(entry: unknown): unknown {
+  if (!entry || typeof entry !== "object") return entry;
+  const { serverIPAddress: _dropped, ...kept } = entry as Record<string, unknown>;
+  return kept;
+}
+
 function rawUrlOf(entry: RawEntry): URL | null {
   try {
     return new URL(entry.request?.url ?? "");
@@ -52,12 +58,14 @@ function bodyOf(sent: unknown): unknown {
   return sent && typeof sent === "object" && !Array.isArray(sent) && "body" in (sent as Record<string, unknown>) ? (sent as Record<string, unknown>).body : sent;
 }
 
+const isFieldName = (key: string): boolean => /^[A-Za-z_$][\w$.-]{0,80}$/.test(key);
+
 function variablesOf(sent: unknown): string[] {
   const body = bodyOf(sent);
   if (!body || typeof body !== "object" || Array.isArray(body)) return [];
   const variables = (body as Record<string, unknown>).variables;
-  if (variables && typeof variables === "object" && !Array.isArray(variables)) return Object.keys(variables);
-  return Object.keys(body).filter((k) => k !== "operation" && k !== "operationName");
+  if (variables && typeof variables === "object" && !Array.isArray(variables)) return Object.keys(variables).filter(isFieldName);
+  return Object.keys(body).filter((k) => k !== "operation" && k !== "operationName" && isFieldName(k));
 }
 
 export function readsOf(answer: unknown, depth = 2, prefix = ""): string[] {
@@ -233,7 +241,7 @@ export async function readOperationNetwork(operations: ClientOperation[], rawByN
     const dir = join(outDir, "network", operation.domain);
     mkdirSync(dir, { recursive: true });
     const file = join(dir, `${operation.name}.har`);
-    writeFileSync(file, JSON.stringify({ log: { version: "1.2", creator: { name: "log", version: "1" }, entries: rawByName.get(operation.name) } }), { mode: 0o600 });
+    writeFileSync(file, JSON.stringify({ log: { version: "1.2", creator: { name: "log", version: "1" }, entries: (rawByName.get(operation.name) ?? []).map(withoutServerAddress) } }), { mode: 0o600 });
     const read = await runner(["inspect-web-network-capture", file, "har", "--format", "json"], dir);
     const id = read.code === 0 ? evidenceIdOf(read.stdout) : null;
     if (id) operation.reaEvidenceId = id;

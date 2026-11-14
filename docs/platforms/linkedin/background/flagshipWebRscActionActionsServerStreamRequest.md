@@ -13,7 +13,7 @@
 | Called from | `runs/inspect/20261106T014139_<name:1>/script12.js:1 b7`, `runs/inspect/20261107T170649_<name:1>/script13.js:1 b8` |
 | rea | `ev_871fc298a6ca40ab00a951152efd2b3867b8a360a5fceb78097b27f3c9e8f0bc` |
 
-Seen 20 time(s) in 2 run(s).
+Seen 30 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -28,6 +28,13 @@ Seen 20 time(s) in 2 run(s).
 | inspect | step 6: goto /feed/ | 1 | 200 | 890091 ms | 1923 ms | — |
 | inspect | step 12: goto /feed/ | 1 | 200 | 890110 ms | 2210 ms | — |
 | inspect | step 25: goto /in/<profile>/ | 1 | 0 | 42757 ms | 1248 ms | — |
+| chrome | step 1: the owner's own Chrome, recorded by hand (har4): the feed and messaging open | 1 | 200 | 18192 ms | 23958 ms | — |
+| chrome | step 2: send a message, by hand | 2 | 200 | 501–32093 ms | 8346–8847 ms | — |
+| chrome | step 5: comment on a post, by hand | 2 | 200 | 297–4525 ms | 6121–6419 ms | — |
+| chrome | step 6: open the add-a-note invite, by hand | 1 | 200 | 1672 ms | 416 ms | — |
+| chrome | step 7: connect with a member, by hand | 2 | 200 | 6821–30839 ms | 493–7315 ms | — |
+| chrome | step 8: comment on a post, by hand | 1 | 200 | 2970 ms | 7583 ms | — |
+| chrome | step 9: open My Network's invitations, by hand | 1 | 200 | 832 ms | 296 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
