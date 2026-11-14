@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 49 domains, 545 requirements. Each one's anchors are proved against its code by the syntax tree on every commit, push and pull request (`bun run check:specs`). SubQ reads a requirement against its code only when asked (`bun run check:specs --subq`, rule 170). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 49 domains, 549 requirements. Each one's anchors are proved against its code by the syntax tree on every commit, push and pull request (`bun run check:specs`). SubQ reads a requirement against its code only when asked (`bun run check:specs --subq`, rule 170). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -99,6 +99,10 @@ Whether an account is signed in, and signing it back in, is one capability with 
 - **REQ-SESSIONS-06** A signed-out browser never overwrites a session
 - **REQ-SESSIONS-07** Every surface calls the same machine
 - **REQ-SESSIONS-08** A login page off facebook.com is the owner's
+- **REQ-SESSIONS-09** A missing account is a structured `accountNotConfigured`
+- **REQ-SESSIONS-10** What the owner sees is decided from what the host declares
+- **REQ-SESSIONS-11** Page states are classified per platform
+- **REQ-SESSIONS-12** The live view's polling writes no hosted journal row
 
 ## [Account watchers](./watchers.md)
 

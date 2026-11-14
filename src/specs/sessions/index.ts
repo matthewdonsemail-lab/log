@@ -21,11 +21,19 @@ const OPERATIONS = 'src/console/operations/client.ts'
 const TOOLS_FROM = 'src/mcp/server/helpers/toolsFromCommands.ts'
 const HOSTED = 'python/controlService/tools.py'
 const PAGE_STATE = 'src/browser/flow/helpers/pageState.ts'
+const SURFACE = 'src/mcp/apps/signIn/client.ts'
+const LINK = 'src/platformKit/signInLink/client.ts'
+const LINK_STORE = 'src/platformKit/signInLink/helpers/store.ts'
+const VIEWER_STATE = 'python/browser/viewerState.py'
+const BRIDGE = 'src/runtime/bridge/client.ts'
+const OPERATION_TYPES = 'src/console/operations/types.ts'
+const SERVER = 'src/mcp/server/index.ts'
+const RUNTIME = 'src/cli/runtime/index.ts'
 
 export const sessions = {
   description: 'Whether an account is signed in, and signing it back in: one state, one gate and one machine on every surface',
   specPath: 'docs/specs/sessions.md',
-  codePaths: [CHECK_TYPES, CHECK_CLIENT, CHECK_MACHINE, CHECK_ROWS, SIGN_IN_MACHINE, SIGN_IN_CLIENT, SIGN_IN_STORE, SHAPES, START, LIVE, SOCIAL, SESSIONS, ACTORS, CONSOLE_CHECK, CONSOLE_SIGN_IN, BROWSER_CHECK, OPERATIONS, TOOLS_FROM, PAGE_STATE],
+  codePaths: [CHECK_TYPES, CHECK_CLIENT, CHECK_MACHINE, CHECK_ROWS, SIGN_IN_MACHINE, SIGN_IN_CLIENT, SIGN_IN_STORE, SHAPES, START, LIVE, SOCIAL, SESSIONS, ACTORS, CONSOLE_CHECK, CONSOLE_SIGN_IN, BROWSER_CHECK, OPERATIONS, TOOLS_FROM, PAGE_STATE, SURFACE, LINK, LINK_STORE, VIEWER_STATE, BRIDGE, OPERATION_TYPES],
   anchors: {
     'REQ-SESSIONS-01': [
       { kind: 'symbol', file: CHECK_TYPES, name: 'CHECK_STATES' },
@@ -79,6 +87,28 @@ export const sessions = {
       { kind: 'symbol', file: PAGE_STATE, name: 'platformLoginState' },
       { kind: 'symbol', file: PAGE_STATE, name: 'platformOfUrl' },
     ],
+    'REQ-SESSIONS-09': [
+      { kind: 'symbol', file: SIGN_IN_CLIENT, name: 'accountNotConfigured' },
+      { kind: 'uses', file: SESSIONS, name: 'accountNotConfigured' },
+    ],
+    'REQ-SESSIONS-10': [
+      { kind: 'symbol', file: SURFACE, name: 'signInCall' },
+      { kind: 'symbol', file: SURFACE, name: 'signInRungOf' },
+      { kind: 'uses', file: SERVER, name: 'signInCall' },
+      { kind: 'string', file: RUNTIME, includes: 'sessionsSignIn' },
+      { kind: 'symbol', file: LINK, name: 'issueSignInLink' },
+      { kind: 'symbol', file: LINK, name: 'redeemSignInLink' },
+      { kind: 'uses', file: OPERATIONS, name: 'redeemSignInLink' },
+      { kind: 'string', file: LINK_STORE, includes: 'RETURNING' },
+    ],
+    'REQ-SESSIONS-11': [
+      { kind: 'symbol', file: VIEWER_STATE, name: 'viewer_state' },
+      { kind: 'symbol', file: VIEWER_STATE, name: 'platform_of' },
+    ],
+    'REQ-SESSIONS-12': [
+      { kind: 'symbol', file: OPERATION_TYPES, name: 'UNJOURNALED_TOOLS' },
+      { kind: 'symbol', file: BRIDGE, name: 'connectOnce' },
+    ],
   },
   rubrics: {
     'REQ-SESSIONS-01': noul('Is CHECK_STATES exactly signedIn, signInNeeded, stopped, unknown, checking and skipped, do the console and the session check use that one type, and are the old stored names read as signedIn, checking and unknown?'),
@@ -89,6 +119,10 @@ export const sessions = {
     'REQ-SESSIONS-06': noul('Is a browser session saved only when the platform session cookies or token are in it, with sessionState and sessionCheckedAt written, is the outcome recorded and returned to the sign-in machine, and is a signed-out browser left without touching the stored session?'),
     'REQ-SESSIONS-07': noul('Do log sessions signIn, the sessionsSignIn tool and the console sign-in and browser close all run runSignIn, does the console pass pasted cookies through the context rather than a module change, and does the hosted relay list the four session tools?'),
     'REQ-SESSIONS-08': noul('Does pageStateOf resolve loginForm to Facebook sign-in only on facebook.com, and to the owner signing in on any other platform?'),
+    'REQ-SESSIONS-09': noul('Does a sign-in or a check of an account that is not set up refuse with accountNotConfigured, carrying the platform and the step that adds the account, as structured data?'),
+    'REQ-SESSIONS-10': noul('Does sessionsSignIn pick MCP Apps, then URL elicitation, then text from what the host declares, and is the link a console page that holds no secret, works once, expires in ten minutes, is refused to anyone but the person it was made for, and never carries the stream URL?'),
+    'REQ-SESSIONS-11': noul('Does the viewer classify a password field as <platform>Login and a code field as <platform>TwoStep off facebook.com, keep Facebook classification on facebook.com, and treat a checkpoint or suspended address as a stop?'),
+    'REQ-SESSIONS-12': noul('Do the browser-view app tools and the console frame and state polls run through the bridge without an operations row, while every other tool is journaled?'),
     unspecifiedBehavior: noul('Does a check or a sign-in retry a refused account, save a session with no sign-in cookies, or keep check state in module memory, by a route the specification does not describe?'),
   },
   assertions: {
@@ -100,6 +134,10 @@ export const sessions = {
     'REQ-SESSIONS-06': MET,
     'REQ-SESSIONS-07': MET,
     'REQ-SESSIONS-08': MET,
+    'REQ-SESSIONS-09': MET,
+    'REQ-SESSIONS-10': MET,
+    'REQ-SESSIONS-11': MET,
+    'REQ-SESSIONS-12': MET,
     unspecifiedBehavior: NOT_VIOLATED,
   },
 }

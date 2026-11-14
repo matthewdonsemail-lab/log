@@ -144,6 +144,7 @@ export interface ConnectOptions {
   socket?: (url: string, headers: Record<string, string>) => WebSocket;
   redact?: (tool: string, args: Record<string, unknown>) => Record<string, unknown>;
   redactResult?: (tool: string, result: unknown) => unknown;
+  unjournaled?: (tool: string) => boolean;
 }
 
 const openSocket = (url: string, headers: Record<string, string>) => new (WebSocket as unknown as new (url: string, options: { headers: Record<string, string> }) => WebSocket)(url, { headers });
@@ -188,6 +189,16 @@ export function connectOnce(options: ConnectOptions): Promise<{ code: number; re
       if ("code" in checked) {
         onLine(`bridge: refused ${operationId}: ${checked.code} (${checked.message})`);
         send({ kind: "result", operationId, payload: { state: "failed", error: { code: checked.code, message: checked.message } } });
+        return;
+      }
+      if (options.unjournaled?.(checked.tool)) {
+        let polled: ResultPayload;
+        try {
+          polled = await options.runTool(checked.tool, checked.args, checked.authority);
+        } catch (error) {
+          polled = { state: "failed", error: { code: "runtimeError", message: error instanceof Error ? error.message : String(error) } };
+        }
+        send({ kind: "result", operationId, payload: polled });
         return;
       }
       const accepted = journalAccept(db, checked.authority, operationId, options.redact ? options.redact(checked.tool, checked.args) : checked.args, options.isLive(checked.tool));

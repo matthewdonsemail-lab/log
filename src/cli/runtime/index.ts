@@ -1,4 +1,4 @@
-import { consoleErrorCode, isConsoleOperation, redactConsoleArgs, redactConsoleResult, runConsoleOperation } from "../../console/operations/index.ts";
+import { consoleErrorCode, isConsoleOperation, redactConsoleArgs, redactConsoleResult, runConsoleOperation, UNJOURNALED_TOOLS } from "../../console/operations/index.ts";
 import type { ConsoleOperationDeps } from "../../console/operations/index.ts";
 import { finishPairing, keepConnected, readBinding, startPairing } from "../../runtime/bridge/index.ts";
 import type { Authority, ResultPayload, RunTool } from "../../runtime/bridge/index.ts";
@@ -113,6 +113,12 @@ export async function consoleOperation(tool: string, args: Record<string, unknow
   }
 }
 
+export async function hostedSignIn(args: Record<string, unknown>, authority: Pick<Authority, "actorUserId"> | null | undefined, call: (input: Record<string, unknown>) => Promise<unknown>, origin: string = readBinding()?.origin ?? ""): Promise<unknown> {
+  const { signInCall } = await import("../../mcp/apps/index.ts");
+  const { ui, ...input } = args;
+  return signInCall(input, (given) => call(given) as never, { rung: ui === true ? "app" : "text", location: "remote", requester: authority?.actorUserId ?? "", origin });
+}
+
 export function toolRunner(callTool: ToolCaller): RunTool {
   return async (tool, args, authority) => {
     if (tool === "accountsList") return accountsList(args);
@@ -121,9 +127,10 @@ export function toolRunner(callTool: ToolCaller): RunTool {
     if (tool === "report") return reportOperation(args);
     const scope = await hostedPlayScope(authority);
     if (tool === "getGuide") return guideOperation(args, scope);
-    if (isConsoleOperation(tool)) return consoleOperation(tool, args, (name, input) => callTool(name, input, scope));
+    if (isConsoleOperation(tool)) return consoleOperation(tool, args, (name, input) => callTool(name, input, scope), { requester: authority?.actorUserId ?? "" });
     const { withCallFooter } = await import("../../mcp/server/index.ts");
-    const answer = withCallFooter(tool, args, (await callTool(tool, args, scope)) as Parameters<typeof withCallFooter>[2], scope);
+    const ran = tool === "sessionsSignIn" ? await hostedSignIn(args, authority, (input) => callTool(tool, input, scope)) : await callTool(tool, args, scope);
+    const answer = withCallFooter(tool, args, ran as Parameters<typeof withCallFooter>[2], scope);
     const content = (answer.structuredContent ?? {}) as Record<string, unknown>;
     const { browsers: _browsers, ...result } = content;
     return answer.isError ? { state: "failed", result, error: { code: [content.code, content.error].find((c): c is string => typeof c === "string" && /^[a-zA-Z]{1,60}$/.test(c)) ?? "toolFailed", message: String(content.stderr ?? content.message ?? "the tool failed").slice(0, 2000) } } : { state: "succeeded", result };
@@ -190,6 +197,7 @@ export const runtimeCommand: Command = {
       isLive: (tool) => tool.endsWith("Live"),
       redact: redactConsoleArgs,
       redactResult: redactConsoleResult,
+      unjournaled: (tool) => UNJOURNALED_TOOLS.includes(tool),
       hello: () => ({ runtimeVersion: "log", schemaVersion: SCHEMA_VERSION, capabilities: { persistentStorage: true, browserAvailable: Boolean(process.env.ADSPOWER_API_KEY || process.env.ADSPOWER_HOST), driver: process.env.ADSPOWER_API_KEY || process.env.ADSPOWER_HOST ? "adsPower" : "none", protocolVersion: 1, checkedAt: new Date().toISOString(), status: "passed" } }),
       onLine,
     }).finally(() => clearInterval(watching));

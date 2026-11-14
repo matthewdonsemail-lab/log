@@ -185,6 +185,7 @@ stateDiagram-v2
 | `accountCheckBusy` | yes | `platformKit/sessionCheck`, `platformKit/signIn` | publish→blocked, monitor→blocked | Another check or sign-in of this account is running, held by a live process. Nothing was sent. | Wait for the running check to finish, then check again. |
 | `accountCheckStopped` | no | `platformKit/sessionCheck` | publish→blocked, monitor→blocked | The account is held stopped: its status, its session or its last check was a platform refusal, so it isn't checked or signed in again (rule 94). Nothing was sent. | The owner looks at the stop first; it lifts once a newer session check or sign-in is recorded. |
 | `signInRouteUnavailable` | no | `platformKit/signIn` | publish→blocked, monitor→blocked | The platform doesn't sign in by that route: browser needs a platform with a browser, cookies a platform with a cookie prompt. Nothing was opened. | Sign in by the route the refusal names (X: cookies). |
+| `accountNotConfigured` | no | `platformKit/signIn`, `platformKit/sessionCheck` | publish→blocked, monitor→blocked | No account by that name is set up in this workspace (on that platform, when one was given), so there is nothing to sign in. The answer carries the platform and the step that adds it. | Add the account (the console's Connections page, or log localAccount add), then sign it in. |
 
 ## listing
 
@@ -378,4 +379,6 @@ stateDiagram-v2
 | `playMissing` | no | `mcp/server` | command exits | A tool that sends as the owner was called with no play loaded for the caller, so nothing was sent. | Load the play that fits with getGuide({ useCase }), the refusal lists them, then call again. |
 | `playNotCovering` | no | `mcp/server` | command exits | A tool that sends as the owner was called under a play that neither names it nor is filed under its platform, so nothing was sent. | End the play with getGuide({ clearPlay: true }) or load the play that fits, then call again. |
 | `sessionPlatformInvalid` | no | `platformKit/sessionCheck` | command exits | The platform given isn't one log knows. | Give one of the platforms log lists in its usage, or leave the platform out to check every account. |
+| `signInLinkInvalid` | no | `platformKit/signInLink` | command exits | The sign-in link is unknown, already used or more than ten minutes old. A link works once and grants nothing by itself. | Ask for sign-in again (sessionsSignIn) to get a new link. |
+| `signInLinkNotYours` | no | `platformKit/signInLink` | command exits | The sign-in link was made for another person. It was not used up; only the person who asked for the sign-in can open it. | The person who asked for the sign-in opens the link, signed in to the console as themself. |
 

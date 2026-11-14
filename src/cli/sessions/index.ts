@@ -2,11 +2,12 @@ import { inProcessToolCaller } from "../../console/accountCheck/index.ts";
 import { readConnectionRows } from "../../console/connections/index.ts";
 import { checkSessions, runSessionCheck, sessionsText } from "../../platformKit/sessionCheck/index.ts";
 import type { SessionCheckAccount, SessionToolCaller } from "../../platformKit/sessionCheck/index.ts";
-import { runSignIn, signInRouteFor, signInText } from "../../platformKit/signIn/index.ts";
+import { accountNotConfigured, runSignIn, signInRouteFor, signInText } from "../../platformKit/signIn/index.ts";
 import type { SignInActors, SignInRoute, SignInStore } from "../../platformKit/signIn/index.ts";
 import { isErrorCode } from "../../errors/catalog/index.ts";
 import { SIGN_IN_ROUTE_NAMES } from "../launch/helpers/start.ts";
 import { PLATFORMS } from "../runner/helpers/platforms.ts";
+import type { Platform } from "../runner/helpers/platforms.ts";
 import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandContext, CommandInput } from "../runner/types.ts";
 import { cookieSaveBy, liveWiring, signInActorsOf } from "./helpers/index.ts";
@@ -15,7 +16,7 @@ export const SESSIONS_USAGE = [
   "Usage: log sessions check [--platform <p>] [--account <accountName>] [--json]",
   "       log sessions signIn --account <accountName> [--platform <p>] [--route browser|cookies] [--done] [--wait <seconds>] [--json]",
   "check: checks every account's saved session through its platform's own check (X, Discord, Instagram, Slack, Reddit, LinkedIn), one account after another, and says for each: signed in, needs signing in (a 401, or no session saved), stopped (the platform refused: nothing retries, rule 94) or unknown. One gate decides which accounts may be checked: a deactivated account is skipped, and one held stopped (by its status, its session or its last check) is never checked again until the owner says so. A check holds the account while it runs, so a second check of it is refused as busy; a check whose process died is read back as unknown. An account that needs signing in comes with its next step, sessionsSignIn. Facebook is checked in its browser. Each result is also the console's last check for that account, so the console, the CLI and the MCP tool sessionsCheck say the same. Sends nothing.",
-  "signIn: one sign-in, as a machine: it checks the account first (signed in: done; held stopped: nothing is opened), then opens the account's own browser on the platform's login screen for the owner to sign in themself (route browser, every platform with a browser), or takes the masked cookie prompt in a terminal (route cookies: X, LinkedIn and Slack; X has no browser yet). The session is saved from the browser when it closes, and only when the platform's own sign-in cookies are in it, so a signed-out browser never overwrites a stored session; then it is checked again. With no --wait it returns while the owner signs in; --done (or the owner closing the window) finishes it. Sends nothing.",
+  "signIn: one sign-in, as a machine: it checks the account first (signed in: done; held stopped: nothing is opened), then opens the account's own browser on the platform's login screen for the owner to sign in themself (route browser, every platform with a browser), or takes the masked cookie prompt in a terminal (route cookies: X, LinkedIn and Slack; X has no browser yet). The session is saved from the browser when it closes, and only when the platform's own sign-in cookies are in it, so a signed-out browser never overwrites a stored session; then it is checked again. With no --wait it returns while the owner signs in; --done (or the owner closing the window) finishes it. An account that isn't set up answers accountNotConfigured with the step that adds it. Through MCP on a remote runtime, a waiting sign-in also shows the live browser inline where the host draws MCP Apps, asks the host to open a console link where it supports URL requests, and otherwise gives that link as text: it works once, for ten minutes, only for the person who asked. Sends nothing.",
 ].join("\n");
 
 export const SESSIONS_INPUT: CommandInput = {
@@ -75,23 +76,35 @@ async function check(context: CommandContext, flags: Record<string, unknown>, st
     });
   } catch (error) {
     const { code } = errorOf(error);
-    return { code: 1, error: isErrorCode(code) ? code : "commandFailed", stderr: `log sessions check: ${code}${code === "accountNotFound" ? `: no account ${str("account")}${str("platform") ? ` on ${str("platform")}` : ""}` : ""}` };
+    if (code === "accountNotFound") return notConfigured("check", str("account") ?? "", str("platform"), flags["json"] === true);
+    return { code: 1, error: isErrorCode(code) ? code : "commandFailed", stderr: `log sessions check: ${code}` };
   }
   return { code: 0, stdout: flags["json"] === true ? JSON.stringify({ accounts: reports }, null, 2) : sessionsText(reports) };
 }
 
-function pickAccount(accounts: SessionCheckAccount[], name: string, platform?: string): SessionCheckAccount {
+function platformNamed(platform?: string): Platform | null {
   const wanted = platform?.toLowerCase().replace(/^x$/, "twitter");
+  return wanted && (PLATFORMS as readonly string[]).includes(wanted) ? (wanted as Platform) : null;
+}
+
+function pickAccount(accounts: SessionCheckAccount[], name: string, platform?: string): SessionCheckAccount | null {
+  const wanted = platformNamed(platform);
   const key = name.replace(/^@/, "").toLowerCase();
   const found = accounts.filter((account) => account.name.toLowerCase() === key && (!wanted || account.platform === wanted));
-  if (!found.length) throw new Error(`accountNotFound: no account ${name}${wanted ? ` on ${wanted}` : ""}`);
+  if (!found.length) return null;
   if (found.length > 1) throw new Error(`platformAmbiguous: ${name} is on ${found.map((account) => account.platform).join(" and ")}: add --platform`);
   return found[0];
+}
+
+function notConfigured(command: string, name: string, platform: string | undefined, json: boolean) {
+  const answer = accountNotConfigured(name.replace(/^@/, ""), platformNamed(platform));
+  return { code: 1, error: answer.error, stdout: json ? JSON.stringify({ ok: false, ...answer }, null, 2) : `${answer.error}: ${answer.next.says}\n  ${answer.next.cli}`, stderr: `log sessions ${command}: ${answer.error}: no account ${answer.account}${answer.platform ? ` on ${answer.platform}` : ""}` };
 }
 
 async function signIn(context: CommandContext, flags: Record<string, unknown>, str: (name: string) => string | undefined, waitSeconds: number) {
   try {
     const account = pickAccount(sessionsDeps.accounts(), str("account") ?? "", str("platform"));
+    if (!account) return notConfigured("signIn", str("account") ?? "", str("platform"), flags["json"] === true);
     const route = signInRouteFor(account, str("route") as SignInRoute | undefined);
     const callTool = await sessionsDeps.callTool();
     const result = await runSignIn({ account, route, finish: flags["done"] === true }, {

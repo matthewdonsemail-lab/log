@@ -61,6 +61,7 @@ CONSOLE_TOOLS = {
     "credentialsRead": "providerAdmin",
     "credentialsSave": "providerAdmin",
     "accountSignIn": "browserAdmin",
+    "signInLinkOpen": "browserAdmin",
 }
 
 

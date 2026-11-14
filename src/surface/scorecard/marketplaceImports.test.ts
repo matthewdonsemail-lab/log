@@ -18,11 +18,9 @@ describe("marketplaceImports", () => {
     ).toEqual(["src/cli/fakeCommand/index.ts"]);
   });
 
-  test("shared code no longer imports src/marketplace/, except the files left for after slices 14, 15 and 20", () => {
+  test("shared code no longer imports src/marketplace/, except the file left for after slice 15", () => {
     expect(marketplaceImports(filesIn(REPO_ROOT, "src", [".ts", ".tsx", ".mjs", ".js"]))).toEqual([
       "src/platformKit/session/client.ts",
-      "src/platformKit/signIn/helpers/sessionShapes.ts",
-      "src/platformKit/signIn/signIn.test.ts",
     ]);
   });
 });
