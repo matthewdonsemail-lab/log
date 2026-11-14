@@ -1,0 +1,12 @@
+pack:
+  name: log
+  description: "log by ListeningKit for Hermes in one install: log's tools, every play as a skill, the dashboard's log tab, and the router hook that puts the play you asked for and every new message in front of the model before each answer."
+  author: ListeningKit
+  version: "0.2.0"
+plugins:
+  - repo: matthewdonsemail-lab/log
+    subdir: hermesPlugin
+    ref: 986c88a95416920fd94b60b36f8ed23599742267
+  - repo: matthewdonsemail-lab/log
+    subdir: hermesPlugin/native
+    ref: 986c88a95416920fd94b60b36f8ed23599742267

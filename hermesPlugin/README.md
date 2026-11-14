@@ -37,7 +37,7 @@ An Agent Plugins v1 package:
 - `mcp.json`: starts log's MCP server (`logMcp`) on your machine over stdio. Hermes gets log's tools as `mcp__log__*`: DM inboxes, conversation reads, session checks, search across past conversations, the voice check, and the send/reply/quote tools.
 - `plugin.json`: marks the `log` server **untrusted**, so every tool not annotated read-only (anything that sends or changes an account) asks for approval and is refused in cron and other unattended runs. The tool-call timeout is 600 s, because a platform read can take a while.
 - `skills/`: every log play, one skill each (`log:log-twitter-dm-inbox`, `log:log-inbox-triage` and so on), generated from log's use cases by `bun run skills:build`, the same skills Claude Code gets. Each one starts by loading its play with `getGuide({ useCase })`, so log's play gate lets its sends through.
-- `native/`: a second, native Hermes plugin, `logHooks` (`plugin.yaml`, `__init__.py`). A portable plugin like this one can't register hooks, so the router lives there: its `pre_llm_call` hook runs log's hook script before each model call and adds what it answers to the turn: the play the prompt asks for, anyone waiting in a signed-in inbox, open browsers on a state log can resolve, and, on a session's first turn, what a session start gets. `log launch --setup` installs it into `~/.hermes/plugins/logHooks` with the path of your log install.
+- `native/`: a second, native Hermes plugin, `logHooks` (`plugin.yaml`, `__init__.py`). A portable plugin like this one can't register hooks, so the router lives there: its `pre_llm_call` hook runs log's hook script before each model call and adds what it answers to the turn: the play the prompt asks for, anyone waiting in a signed-in inbox, open browsers on a state log can resolve, and, on a session's first turn, what a session start gets. The pack installs it beside `log`, and it finds your log install by itself; `log launch --setup` can install it too.
 - `dashboard/`: the log tab for Hermes's dashboard (`manifest.json`, `plugin_api.py`, `dist/`). Plain JavaScript on the dashboard SDK, no build step and no bundled libraries.
 
 ## Install
@@ -51,19 +51,17 @@ An Agent Plugins v1 package:
 
    log's [install guide](https://github.com/matthewdonsemail-lab/log/blob/main/docs/install.md) also has a one-line installer that sets up Bun and the Python its platform engines use. Check `logMcp` is on your PATH.
 
-2. Install and enable the plugin from the Hermes catalog (it's listed as `listeningkit-log` and named `log` once installed):
+2. Install everything with one command, the tools, skills and dashboard tab (`log`) and the router hook (`logHooks`):
 
    ```bash
-   hermes plugins install listeningkit-log --enable
+   hermes plugins pack install https://log.listeningkit.com/hermes-pack.yaml
    ```
 
-   For what is on `main` before the catalog pin moves: `hermes plugins install matthewdonsemail-lab/log/hermesPlugin --enable`. That's a source outside the catalog, so Hermes's install scan asks you to add `--force` after you read its findings. This folder is the plugin's only home; `deepmroot/listeningkit-log`, where it started, is no longer updated.
+   It's a Hermes plugin pack: Hermes shows both plugins, pinned to one exact commit of this repo, asks once, then installs and enables them. Restart Hermes to load them. The hook finds your log install by itself (Bun's or npm's global install), so there's no setup step.
 
-3. For the router hook, pick Hermes in `log launch --setup` (it shows when Hermes's home exists: `HERMES_HOME`, `~/.hermes`, or `%LOCALAPPDATA%\hermes` on Windows), then enable the native plugin it installed:
+   Only the tools and skills: `hermes plugins install listeningkit-log --enable` from the Hermes catalog. This folder is the plugin's only home; `deepmroot/listeningkit-log`, where it started, is no longer updated.
 
-   ```bash
-   hermes plugins enable logHooks
-   ```
+3. Already ran `log launch --setup` and picked Hermes? That installed `logHooks` too; the pack's copy replaces it.
 
 ## Disclosure
 

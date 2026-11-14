@@ -62,7 +62,7 @@ export const QUICK_ANSWERS: Record<PageId, FaqItem[]> = {
   ],
   hermes: [
     { q: 'How do I add log to Hermes?', a: 'Add log under mcp_servers in ~/.hermes/config.yaml with url: https://mcp.listeningkit.com/mcp and auth: oauth, run hermes mcp login log once, then /reload-mcp in a running session.' },
-    { q: 'Is there a log plugin for Hermes?', a: 'Yes. With log installed on the same machine, hermes plugins install listeningkit-log --enable adds log’s tools, every log play as a skill and a log tab in the Hermes dashboard. Install it from the Hermes catalog or from matthewdonsemail-lab/log/hermesPlugin, not from deepmroot/listeningkit-log, which is no longer updated.' },
+    { q: 'Is there a log plugin for Hermes?', a: 'Yes. With log installed on the same machine, hermes plugins pack install https://log.listeningkit.com/hermes-pack.yaml installs log’s tools, every log play as a skill, a log tab in the Hermes dashboard and the router hook, in one command. Install it from log.listeningkit.com or matthewdonsemail-lab/log, not from deepmroot/listeningkit-log, which is no longer updated.' },
     { q: 'What are the tools called inside Hermes?', a: 'Hermes names MCP tools mcp_<server>_<tool>, so log’s tools show up as mcp_log_twitterDms, mcp_log_voice and so on.' },
     { q: 'Why run log inside Hermes?', a: 'Hermes stays on all day on a server and talks to you on Telegram and other chats. So it can check your inboxes on a schedule, and you approve a reply with a word from your phone.' },
     { q: 'Does it send without asking me?', a: 'No. Every send waits for your yes, wherever you give it.' },
