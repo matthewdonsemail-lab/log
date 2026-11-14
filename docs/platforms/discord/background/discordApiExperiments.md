@@ -1,6 +1,6 @@
 # discordApiExperiments
 
-<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log capture docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -10,14 +10,14 @@
 | Path | `discord.com/api/experiments` |
 | Sends | — |
 | Reads | `fingerprint`, `assignments`, `guild_experiments`, `installation` |
-| Called from | `runs/inspect/20261113T231616_deepman2/script3.js:232 625075`, `runs/inspect/20261113T231616_deepman2/script3.js:124 559868`, `runs/inspect/20261113T231616_deepman2/script3.js:124 961943`, `runs/inspect/20261111T233723_deepman2/script1280.js:1 anonymous` |
-| rea | `ev_49c3465763303366b16be6ed50a2834f48b31b6bc83b50fe34ade4d92b7cab5f` |
+| Called from | `runs/inspect/20261114T184328_deepman2/script0.js:232 625075`, `runs/inspect/20261114T184328_deepman2/script0.js:124 559868`, `runs/inspect/20261114T184328_deepman2/script0.js:124 961943`, `runs/inspect/20261111T233723_deepman2/script1280.js:1 anonymous` |
+| rea | `ev_f6daff8038b4f477b27b852e31fc1f2f76f7dd725b1883891e74b824ed6f0ac3` |
 
-Seen 11 time(s) in 10 run(s).
+Seen 12 time(s) in 11 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 1: goto /login | 8 | 200 | 122–673 ms | 498–7786 ms | — |
+| inspect | step 1: goto /login | 9 | 200 | 122–673 ms | 498–7786 ms | — |
 | inspect | step 3: goto /login | 1 | 200 | 325 ms | 3838 ms | — |
 | inspect | step 1: goto /channels/@me | 2 | 200 | 151–638 ms | 1622–10181 ms | — |
 
@@ -25,7 +25,7 @@ Seen 11 time(s) in 10 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261113T231616_deepman2**, step 1: goto /login: 200, 129 ms
+**runs/inspect/20261114T184328_deepman2**, step 1: goto /login: 200, 129 ms
 
 Sent:
 
@@ -50,7 +50,7 @@ Answered:
       11,
       -1,
       1,
-      5585,
+      6948,
       "… 5 more"
     ],
     [
@@ -59,7 +59,7 @@ Answered:
       1,
       -1,
       4,
-      7855,
+      5097,
       "… 5 more"
     ],
     [
@@ -68,7 +68,7 @@ Answered:
       1,
       -1,
       1,
-      2740,
+      8200,
       "… 5 more"
     ]
   ],

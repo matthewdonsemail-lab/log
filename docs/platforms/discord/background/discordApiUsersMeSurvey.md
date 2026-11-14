@@ -1,6 +1,6 @@
 # discordApiUsersMeSurvey
 
-<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log capture docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -10,10 +10,10 @@
 | Path | `discord.com/api/users/@me/survey` |
 | Sends | — |
 | Reads | `message`, `retry_after`, `global`, `survey` |
-| Called from | `runs/inspect/20261113T231616_deepman2/script3.js:232 625075`, `runs/inspect/20261113T231616_deepman2/script3.js:124 559868`, `runs/inspect/20261113T231616_deepman2/script3.js:124 961943`, `runs/inspect/20261111T233723_deepman2/script1280.js:1 anonymous` |
-| rea | `ev_75da7f437da5ee64784462f2429e2f82f768dcbb5cd042acb4f5ec7982e1c03e` |
+| Called from | `runs/inspect/20261114T184328_deepman2/script0.js:232 625075`, `runs/inspect/20261114T184328_deepman2/script0.js:124 559868`, `runs/inspect/20261114T184328_deepman2/script0.js:124 961943`, `runs/inspect/20261111T233723_deepman2/script1280.js:1 anonymous` |
+| rea | `ev_f6daff8038b4f477b27b852e31fc1f2f76f7dd725b1883891e74b824ed6f0ac3` |
 
-Seen 9 time(s) in 9 run(s).
+Seen 10 time(s) in 10 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -21,10 +21,34 @@ Seen 9 time(s) in 9 run(s).
 | inspect | step 2: snapshot | 1 | 429 | 363 ms | 47817 ms | — |
 | inspect | step 1: goto /login | 6 | 429, 200 | 143–500 ms | 25485–1044475 ms | — |
 | inspect | step 6: wait 45s | 1 | 429 | 169 ms | 22074 ms | — |
+| inspect | step 9: wait 45s | 1 | 429 | 170 ms | 12807 ms | — |
 
-### What it sent and what came back (the newest 2 from our runs)
+### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261114T184328_deepman2**, step 9: wait 45s: 429, 170 ms
+
+Sent:
+
+```json
+{
+  "query": {
+    "disable_auto_seen": "true"
+  },
+  "body": null
+}
+```
+
+Answered:
+
+```json
+{
+  "message": "<messageText>",
+  "retry_after": 10972.826,
+  "global": false
+}
+```
 
 **runs/inspect/20261113T231616_deepman2**, step 6: wait 45s: 429, 169 ms
 

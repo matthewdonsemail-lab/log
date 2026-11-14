@@ -1,6 +1,6 @@
 # discordApiUsersMeAffinitiesGuilds
 
-<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log capture docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -10,10 +10,10 @@
 | Path | `discord.com/api/users/@me/affinities/guilds` |
 | Sends | — |
 | Reads | `guild_affinities` |
-| Called from | `runs/inspect/20261113T231616_deepman2/script3.js:232 625075`, `runs/inspect/20261113T231616_deepman2/script3.js:124 559868`, `runs/inspect/20261113T231616_deepman2/script3.js:124 961943`, `runs/inspect/20261111T233723_deepman2/script1280.js:1 anonymous` |
-| rea | `ev_e2e786af98c7afa8d6564bf46bb14515d59122791e1fe296a82b6ad248e66d43` |
+| Called from | `runs/inspect/20261114T184328_deepman2/script0.js:232 625075`, `runs/inspect/20261114T184328_deepman2/script0.js:124 559868`, `runs/inspect/20261114T184328_deepman2/script0.js:124 961943`, `runs/inspect/20261111T233723_deepman2/script1280.js:1 anonymous` |
+| rea | `ev_f6daff8038b4f477b27b852e31fc1f2f76f7dd725b1883891e74b824ed6f0ac3` |
 
-Seen 9 time(s) in 9 run(s).
+Seen 10 time(s) in 10 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -21,10 +21,53 @@ Seen 9 time(s) in 9 run(s).
 | inspect | step 2: snapshot | 1 | 200 | 640 ms | 47867 ms | — |
 | inspect | step 1: goto /login | 6 | 200 | 161–514 ms | 25496–1044582 ms | — |
 | inspect | step 6: wait 45s | 1 | 200 | 171 ms | 22084 ms | — |
+| inspect | step 9: wait 45s | 1 | 200 | 407 ms | 12821 ms | — |
 
-### What it sent and what came back (the newest 2 from our runs)
+### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261114T184328_deepman2**, step 9: wait 45s: 200, 407 ms
+
+Sent:
+
+```json
+null
+```
+
+Answered:
+
+```json
+{
+  "guild_affinities": [
+    {
+      "guild_id": "1483217544214085663",
+      "affinity": 38.35481877669739
+    },
+    {
+      "guild_id": "1290725749543927941",
+      "affinity": 31.447502316543655
+    },
+    {
+      "guild_id": "1019350475847499849",
+      "affinity": 26.389629900834567
+    },
+    {
+      "guild_id": "1272308870919880735",
+      "affinity": 8.28964492710318
+    },
+    {
+      "guild_id": "1442518050527248436",
+      "affinity": 6.778734512637333
+    },
+    {
+      "guild_id": "1490078307754967311",
+      "affinity": 6.126599483982498
+    },
+    "… 11 more"
+  ]
+}
+```
 
 **runs/inspect/20261113T231616_deepman2**, step 6: wait 45s: 200, 171 ms
 

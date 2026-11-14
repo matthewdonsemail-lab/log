@@ -1,6 +1,6 @@
 # discordApiQuestsEarnedDecision
 
-<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log capture docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -10,20 +10,46 @@
 | Path | `discord.com/api/quests/earned-decision` |
 | Sends | — |
 | Reads | `quests`, `request_id`, `response_ttl_seconds`, `quests.1567679380166156430` |
-| Called from | `runs/inspect/20261113T231616_deepman2/script3.js:232 625075`, `runs/inspect/20261113T231616_deepman2/script3.js:124 559868`, `runs/inspect/20261113T231616_deepman2/script3.js:124 961943`, `runs/inspect/20261111T233723_deepman2/script1280.js:1 anonymous` |
-| rea | `ev_a176bc33e8e5242dfb281174e8f24bd33f236d218437e9f1e0c86e2c1dcf17c4` |
+| Called from | `runs/inspect/20261114T184328_deepman2/script0.js:232 625075`, `runs/inspect/20261114T184328_deepman2/script0.js:124 559868`, `runs/inspect/20261114T184328_deepman2/script0.js:124 961943`, `runs/inspect/20261111T233723_deepman2/script1280.js:1 anonymous` |
+| rea | `ev_f6daff8038b4f477b27b852e31fc1f2f76f7dd725b1883891e74b824ed6f0ac3` |
 
-Seen 5 time(s) in 5 run(s).
+Seen 6 time(s) in 6 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 6: wait 45s | 1 | 200 | 200 ms | 24495 ms | — |
 | inspect | step 1: goto /login | 3 | 200 | 218–317 ms | 35825–138066 ms | — |
 | inspect | step 1: goto /channels/@me | 1 | 200 | 227 ms | 4402 ms | — |
+| inspect | step 9: wait 45s | 1 | 200 | 254 ms | 16568 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261114T184328_deepman2**, step 9: wait 45s: 200, 254 ms
+
+Sent:
+
+```json
+{
+  "query": {
+    "quest_ids": "1567679380166156430",
+    "content": "<messageText>",
+    "client_heartbeat_session_id": "06a269e7-4427-4c9d-8f4b-df5393cfa578"
+  },
+  "body": null
+}
+```
+
+Answered:
+
+```json
+{
+  "quests": {},
+  "request_id": "34f670fc-d8ce-41d5-a036-260046621cbc",
+  "response_ttl_seconds": 1800
+}
+```
 
 **runs/inspect/20261113T231616_deepman2**, step 6: wait 45s: 200, 200 ms
 
@@ -158,118 +184,6 @@ Answered:
     }
   },
   "request_id": "da8d2cc4-5adb-46d1-b8d9-15f5e7609b47",
-  "response_ttl_seconds": 1800
-}
-```
-
-**runs/inspect/20261109T192314_deepman2**, step 1: goto /channels/@me: 200, 227 ms
-
-Sent:
-
-```json
-{
-  "query": {
-    "quest_ids": "1567679380166156430",
-    "content": "<messageText>",
-    "client_heartbeat_session_id": "632d3126-b263-4648-9842-2930fe948640"
-  },
-  "body": null
-}
-```
-
-Answered:
-
-```json
-{
-  "quests": {
-    "1567679380166156430": {
-      "id": "<id:1>",
-      "config": {
-        "id": "<id:1>",
-        "config_version": 2,
-        "starts_at": "2026-11-06T18:00:00+00:00",
-        "expires_at": "2026-11-16T01:00:00+00:00",
-        "features": [
-          15
-        ],
-        "application": {
-          "link": "https://www.roblox.com/games/130739873848552/Basketball-Zero?gsrbx=1&ad_name=QN1F2AFG",
-          "id": "<id:2>",
-          "name": "<name:1>"
-        },
-        "assets": {
-          "hero": "quests/1567679380166156430/1567680260659748964.jpg",
-          "hero_video": "quests/1567679380166156430/1567680322848694384_720.mp4",
-          "quest_bar_hero_blurhash": "XQcKOoirBAWzaSZpYLgGdXs=",
-          "quest_bar_hero": "quests/1567679380166156430/1567680260659748964.jpg",
-          "quest_bar_hero_video": "quests/1567679380166156430/1567680322848694384_720.mp4",
-          "game_tile": "PLACEHOLDER",
-          "logotype": "PLACEHOLDER",
-          "game_tile_light": "quests/1562915304299044884/1562916601886670980.png",
-          "game_tile_dark": "quests/1562915304299044884/1562916601861243000.png",
-          "logotype_light": "quests/1567679380166156430/1567680260676255856.png",
-          "logotype_dark": "quests/1567679380166156430/1567680260676255856.png"
-        },
-        "colors": {
-          "primary": "#4752C4",
-          "secondary": "#000000"
-        },
-        "messages": {
-          "quest_name": "Basketball Zero",
-          "game_title": "Basketball Zero on Roblox",
-          "game_publisher": "ROBLOX"
-        },
-        "task_config_v2": {
-          "tasks": {
-            "PLAY_ON_DESKTOP": {
-              "type": "PLAY_ON_DESKTOP",
-              "target": 900,
-              "applications": [
-                {
-                  "id": "<id:2>"
-                }
-              ]
-            }
-          },
-          "join_operator": "or"
-        },
-        "rewards_config": {
-          "assignment_method": 1,
-          "rewards": [
-            {
-              "type": 4,
-              "sku_id": "1287881739531976815",
-              "messages": {
-                "name": "<name:2>",
-                "name_with_article": "700 Orbs",
-                "redemption_instructions_by_platform": {
-                  "0": "PLACEHOLDER"
-                }
-              },
-              "orb_quantity": 700,
-              "premium_orb_quantity": 840
-            }
-          ],
-          "rewards_expire_at": "2026-12-16T01:00:00+00:00",
-          "platforms": [
-            0
-          ]
-        },
-        "share_policy": "shareable_everywhere",
-        "cta_config": {
-          "link": "https://www.roblox.com/games/130739873848552/Basketball-Zero?gsrbx=1&ad_name=QN1F2AFG",
-          "button_label": "Play Now"
-        }
-      },
-      "user_status": null,
-      "targeted_content": [],
-      "ad_context": null,
-      "preview": false,
-      "traffic_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dMT09JckVnbjRJKy9IVmJtNGUwUk5kbzlVRThnRXZDSU1rWFRWWXNCZDUzTnlKSXBBN0lYSVIybXlRcjVocjAxQ1pGdVhjS1B0Nnc3VlFHbG1QL00zWTMwUEdPZTQ3VW9ISFNDVmRkK3BGcEtYVTR3VVVTVGFHSHd3SGxCejY1b1k1Y2ZMMzJqZXhsamo1bGRWVlNOOXBTZz09In0=",
-      "provenance_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dMa0pNWXkwRjJHUjFQWkZ6dEVWeHlaTXhESGtzWnhZUFVNM1RUU1MvOGpqYVN2ZDdKNTh6ZWxxUlRuSEswcmlVbDVORFd4NmttOFVkemRTYVI4M28yUEJhMUtidXhJR3krU1U2VUp0ZVhFRWVGREhEaDBIM0ordU9QSUxiV2UwTll6WndvL1huZTE0ZE9LWjh3UXpBRGdNVXlUNWZpdFBCWlM4MjdjRThkV241TU5raXJoIn0="
-    }
-  },
-  "request_id": "c3f5e0eb-a21b-4f81-8e7e-725917fc611e",
   "response_ttl_seconds": 1800
 }
 ```

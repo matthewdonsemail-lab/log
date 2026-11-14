@@ -25,6 +25,13 @@ describe('redactDoc', () => {
     expect(out).not.toContain(tail)
   })
 
+  test('LinkedIn profiles, member ids and headlines are taken out, and test dummies are kept', () => {
+    const slug = j('ana', '-ruiz', '-4b7c91')
+    const member = j('ACoA', 'AEnyetUBAf7CS5MtYcM7QQqSeDrj')
+    const out = redactDoc([`goto /in/${slug}/`, `"ids": "List(urn:li:fsd_profile:${member})"`, `"variables": "(memberIdentity:${slug})"`, `"headline": "${j('Founder', ' at a shop')}"`, '/in/janedoe/'].join('\n'))
+    expect(out).toBe(['goto /in/<profile>/', '"ids": "List(urn:li:fsd_profile:<memberId>)"', '"variables": "(memberIdentity:<profile>)"', '"headline": "<messageText>"', '/in/janedoe/'].join('\n'))
+  })
+
   test('emails, phones and IPs inside free text are replaced', () => {
     const out = redactDoc(j('reach ', 'alice', '@', 'gmail', '.com', ' or ', '+44', '7700', '912345', ' from ', '84.', '17.', '43.', '9', ' or ', '100.', '101.', '2.3'))
     expect(out).toBe('reach <email> or <phone> from <ip> or <ip>')

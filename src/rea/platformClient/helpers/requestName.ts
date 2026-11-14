@@ -2,6 +2,8 @@ import { endpointName } from '../../facebookClient/index'
 
 const PARAM_AFTER = new Set(['r', 'u', 'user'])
 
+const KEPT_THEN_PARAM = new Set(['in'])
+
 const NAMED_AFTER = new Set(['communityHoverCard', 'subredditPostingEligibilityModal'])
 
 export function camelOf(text: string): string {
@@ -19,7 +21,7 @@ export function stablePath(path: string): string {
     }
     if (/\d/.test(part) || /^[A-Z]/.test(part) || (/^[A-Za-z]{6}$/.test(part) && /[a-z]/.test(part) && /[A-Z]/.test(part))) continue
     kept.push(part)
-    if (NAMED_AFTER.has(camelOf(part))) i++
+    if (NAMED_AFTER.has(camelOf(part)) || KEPT_THEN_PARAM.has(part)) i++
   }
   return `/${kept.join('/')}`
 }

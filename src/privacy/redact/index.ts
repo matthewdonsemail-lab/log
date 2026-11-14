@@ -51,6 +51,10 @@ const KEY_KINDS: Record<string, KeyKind> = {
   viewerid: 'userId',
   memberid: 'userId',
   recipientid: 'userId',
+  entityurn: 'userId',
+  profileurn: 'userId',
+  memberurn: 'userId',
+  dashentityurn: 'userId',
   participantid: 'userId',
   targetid: 'userId',
   fromid: 'userId',
@@ -73,6 +77,8 @@ const KEY_KINDS: Record<string, KeyKind> = {
   handle: 'username',
   login: 'username',
   vanity: 'username',
+  publicidentifier: 'username',
+  vanityname: 'username',
   email: 'email',
   emailaddress: 'email',
   phone: 'phone',
@@ -83,6 +89,8 @@ const KEY_KINDS: Record<string, KeyKind> = {
   messagetext: 'messageText',
   content: 'messageText',
   snippet: 'messageText',
+  headline: 'messageText',
+  occupation: 'messageText',
   caption: 'messageText',
   fulltext: 'messageText',
   preview: 'messageText',
@@ -110,6 +118,8 @@ const RULE_PLACEHOLDERS: Partial<Record<PrivacyRuleName, string>> = {
   windowsUserPath: '<name>',
   email: '<email>',
   phone: '<phone>',
+  linkedinProfile: '<profile>',
+  linkedinMemberId: '<memberId>',
 }
 
 const PLACEHOLDER = /^<[A-Za-z]+(:\d+)?>$/

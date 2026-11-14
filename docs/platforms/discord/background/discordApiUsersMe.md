@@ -1,6 +1,6 @@
 # discordApiUsersMe
 
-<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log capture docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -10,21 +10,21 @@
 | Path | `discord.com/api/users/@me` |
 | Sends | — |
 | Reads | `message`, `code` |
-| Called from | `runs/inspect/20261113T231616_deepman2/script3.js:232 625075`, `runs/inspect/20261113T231616_deepman2/script3.js:124 559868`, `runs/inspect/20261113T231616_deepman2/script3.js:124 961943`, `runs/inspect/20261111T233723_deepman2/script1280.js:1 anonymous` |
-| rea | `ev_06d14018a02e76dc24a568396b3f288ba32968a4968cbc90f629a371f036836f` |
+| Called from | `runs/inspect/20261114T184328_deepman2/script0.js:232 625075`, `runs/inspect/20261114T184328_deepman2/script0.js:124 559868`, `runs/inspect/20261114T184328_deepman2/script0.js:124 961943`, `runs/inspect/20261111T233723_deepman2/script1280.js:1 anonymous` |
+| rea | `ev_f6daff8038b4f477b27b852e31fc1f2f76f7dd725b1883891e74b824ed6f0ac3` |
 
-Seen 14 time(s) in 9 run(s).
+Seen 16 time(s) in 10 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 1: goto /login | 12 | 200, 401 | 128–397 ms | 1049–7827 ms | — |
+| inspect | step 1: goto /login | 14 | 200, 401 | 126–397 ms | 1049–7827 ms | — |
 | inspect | step 1: goto /channels/@me | 2 | 401 | 280–1147 ms | 1971–10897 ms | — |
 
 ### What it sent and what came back (the newest 2 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261113T231616_deepman2**, step 1: goto /login: 401, 182 ms
+**runs/inspect/20261114T184328_deepman2**, step 1: goto /login: 401, 141 ms
 
 Sent:
 

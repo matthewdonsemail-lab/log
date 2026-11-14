@@ -1,6 +1,6 @@
 # discordApiUsersMeAffinitiesUsers
 
-<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log capture docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -10,10 +10,10 @@
 | Path | `discord.com/api/users/@me/affinities/users` |
 | Sends | — |
 | Reads | `user_affinities` |
-| Called from | `runs/inspect/20261113T231616_deepman2/script3.js:232 625075`, `runs/inspect/20261113T231616_deepman2/script3.js:124 559868`, `runs/inspect/20261113T231616_deepman2/script3.js:124 961943`, `runs/inspect/20261111T233723_deepman2/script1280.js:1 anonymous` |
-| rea | `ev_c5f5b29557358e8f6a7965b15a314a978e20b156a0e17c21d64cba4321fdb7ad` |
+| Called from | `runs/inspect/20261114T184328_deepman2/script0.js:232 625075`, `runs/inspect/20261114T184328_deepman2/script0.js:124 559868`, `runs/inspect/20261114T184328_deepman2/script0.js:124 961943`, `runs/inspect/20261111T233723_deepman2/script1280.js:1 anonymous` |
+| rea | `ev_f6daff8038b4f477b27b852e31fc1f2f76f7dd725b1883891e74b824ed6f0ac3` |
 
-Seen 9 time(s) in 9 run(s).
+Seen 10 time(s) in 10 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -21,10 +21,113 @@ Seen 9 time(s) in 9 run(s).
 | inspect | step 2: snapshot | 1 | 200 | 740 ms | 48694 ms | — |
 | inspect | step 1: goto /login | 6 | 200 | 200–804 ms | 25829–1045767 ms | — |
 | inspect | step 6: wait 45s | 1 | 200 | 209 ms | 22346 ms | — |
+| inspect | step 9: wait 45s | 1 | 200 | 173 ms | 13148 ms | — |
 
-### What it sent and what came back (the newest 2 from our runs)
+### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261114T184328_deepman2**, step 9: wait 45s: 200, 173 ms
+
+Sent:
+
+```json
+null
+```
+
+Answered:
+
+```json
+{
+  "user_affinities": [
+    {
+      "other_user_id": "1434443116663930960",
+      "user_segment": "HFU_MAU",
+      "other_user_segment": "HFU_MAU",
+      "is_friend": true,
+      "dm_probability": 0.865576799397533,
+      "dm_rank": 1,
+      "vc_probability": 0.8464587222067467,
+      "vc_rank": 1,
+      "server_message_probability": 0.011555590954788506,
+      "server_message_rank": 3,
+      "communication_probability": 0.5745303708530227,
+      "communication_rank": 1
+    },
+    {
+      "other_user_id": "1568181084384919620",
+      "user_segment": "HFU_MAU",
+      "other_user_segment": "HFU_MAU",
+      "is_friend": true,
+      "dm_probability": 0.8511721047908763,
+      "dm_rank": 5,
+      "vc_probability": 0.7448869026800492,
+      "vc_rank": 2,
+      "server_message_probability": 0.003987525496744214,
+      "server_message_rank": 11,
+      "communication_probability": 0.5333488443225566,
+      "communication_rank": 2
+    },
+    {
+      "other_user_id": "541647035317747722",
+      "user_segment": "HFU_MAU",
+      "other_user_segment": "HFU_MAU",
+      "is_friend": true,
+      "dm_probability": 0.8606199317141302,
+      "dm_rank": 3,
+      "vc_probability": 0.5405300810220512,
+      "vc_rank": 3,
+      "server_message_probability": 0.006190073983361413,
+      "server_message_rank": 4,
+      "communication_probability": 0.46911336223984756,
+      "communication_rank": 3
+    },
+    {
+      "other_user_id": "1173020076509773965",
+      "user_segment": "HFU_MAU",
+      "other_user_segment": "HFU_MAU",
+      "is_friend": true,
+      "dm_probability": 0.8564165679125413,
+      "dm_rank": 4,
+      "vc_probability": 0.1624031707313787,
+      "vc_rank": 4,
+      "server_message_probability": 0.0030916126171514576,
+      "server_message_rank": 21,
+      "communication_probability": 0.3406371170870238,
+      "communication_rank": 4
+    },
+    {
+      "other_user_id": "1477452679960854578",
+      "user_segment": "HFU_MAU",
+      "other_user_segment": "NON_HFU_MAU",
+      "is_friend": false,
+      "dm_probability": 0.836452860699848,
+      "dm_rank": 8,
+      "vc_probability": 0.07867472876894796,
+      "vc_rank": 5,
+      "server_message_probability": 0.0025637372800829538,
+      "server_message_rank": 70,
+      "communication_probability": 0.305897108916293,
+      "communication_rank": 5
+    },
+    {
+      "other_user_id": "1177427345733324870",
+      "user_segment": "HFU_MAU",
+      "other_user_segment": "HFU_MAU",
+      "is_friend": false,
+      "dm_probability": 0.8505873971995275,
+      "dm_rank": 6,
+      "vc_probability": 0.015431362816817742,
+      "vc_rank": 7,
+      "server_message_probability": 0.01852830931693116,
+      "server_message_rank": 2,
+      "communication_probability": 0.2948490231110921,
+      "communication_rank": 6
+    },
+    "… 90 more"
+  ]
+}
+```
 
 **runs/inspect/20261113T231616_deepman2**, step 6: wait 45s: 200, 209 ms
 

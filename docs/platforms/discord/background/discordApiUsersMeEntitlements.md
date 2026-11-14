@@ -1,6 +1,6 @@
 # discordApiUsersMeEntitlements
 
-<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log capture docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -10,10 +10,10 @@
 | Path | `discord.com/api/users/@me/entitlements` |
 | Sends | — |
 | Reads | — |
-| Called from | `runs/inspect/20261113T231616_deepman2/script3.js:232 625075`, `runs/inspect/20261113T231616_deepman2/script3.js:124 559868`, `runs/inspect/20261113T231616_deepman2/script3.js:124 961943`, `runs/inspect/20261111T233723_deepman2/script1280.js:1 anonymous` |
-| rea | `ev_04e36d30f435d6521f60da8ddf945254e43c8f51b14ebac25b895600ea7014f1` |
+| Called from | `runs/inspect/20261114T184328_deepman2/script0.js:232 625075`, `runs/inspect/20261114T184328_deepman2/script0.js:124 559868`, `runs/inspect/20261114T184328_deepman2/script0.js:124 961943`, `runs/inspect/20261111T233723_deepman2/script1280.js:1 anonymous` |
+| rea | `ev_f6daff8038b4f477b27b852e31fc1f2f76f7dd725b1883891e74b824ed6f0ac3` |
 
-Seen 11 time(s) in 11 run(s).
+Seen 12 time(s) in 12 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -22,10 +22,33 @@ Seen 11 time(s) in 11 run(s).
 | inspect | step 2: snapshot | 1 | 200 | 382 ms | 48639 ms | — |
 | inspect | step 6: wait 45s | 1 | 200 | 177 ms | 22336 ms | — |
 | inspect | step 1: goto /channels/@me | 1 | 200 | 148 ms | 2243 ms | — |
+| inspect | step 9: wait 45s | 1 | 200 | 177 ms | 13133 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261114T184328_deepman2**, step 9: wait 45s: 200, 177 ms
+
+Sent:
+
+```json
+{
+  "query": {
+    "with_sku": "false",
+    "with_application": "false",
+    "entitlement_type": "11",
+    "exclude_ended": "true"
+  },
+  "body": null
+}
+```
+
+Answered:
+
+```json
+[]
+```
 
 **runs/inspect/20261113T231616_deepman2**, step 6: wait 45s: 200, 177 ms
 
@@ -50,28 +73,6 @@ Answered:
 ```
 
 **runs/inspect/20261111T233723_deepman2**, step 1: goto /login: 200, 166 ms
-
-Sent:
-
-```json
-{
-  "query": {
-    "with_sku": "false",
-    "with_application": "false",
-    "entitlement_type": "11",
-    "exclude_ended": "true"
-  },
-  "body": null
-}
-```
-
-Answered:
-
-```json
-[]
-```
-
-**runs/inspect/20261109T192314_deepman2**, step 1: goto /channels/@me: 200, 148 ms
 
 Sent:
 

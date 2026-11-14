@@ -1,6 +1,6 @@
 # discordApiAuthLocationMetadata
 
-<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log capture docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -10,22 +10,22 @@
 | Path | `discord.com/api/auth/location-metadata` |
 | Sends | — |
 | Reads | `consent_required`, `country_code`, `minimum_age`, `promotional_email_opt_in.required`, `promotional_email_opt_in.pre_checked` |
-| Called from | `runs/inspect/20261113T231616_deepman2/script3.js:232 625075`, `runs/inspect/20261113T231616_deepman2/script3.js:124 559868`, `runs/inspect/20261113T231616_deepman2/script3.js:124 961943`, `runs/inspect/20261111T233723_deepman2/script1280.js:1 anonymous` |
-| rea | `ev_49bbe93143d7b9956c1e9dec52e9cd59bb4fddc678612bf899c6e5bde38b2b5c` |
+| Called from | `runs/inspect/20261114T184328_deepman2/script0.js:232 625075`, `runs/inspect/20261114T184328_deepman2/script0.js:124 559868`, `runs/inspect/20261114T184328_deepman2/script0.js:124 961943`, `runs/inspect/20261111T233723_deepman2/script1280.js:1 anonymous` |
+| rea | `ev_f6daff8038b4f477b27b852e31fc1f2f76f7dd725b1883891e74b824ed6f0ac3` |
 
-Seen 11 time(s) in 11 run(s).
+Seen 12 time(s) in 12 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 3: goto /login | 1 | 200 | 321 ms | 5482 ms | — |
-| inspect | step 1: goto /login | 8 | 200 | 147–1094 ms | 1050–7476 ms | — |
+| inspect | step 1: goto /login | 9 | 200 | 147–1094 ms | 1050–7476 ms | — |
 | inspect | step 1: goto /channels/@me | 2 | 200 | 212–688 ms | 1973–10902 ms | — |
 
 ### What it sent and what came back (the newest 2 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261113T231616_deepman2**, step 1: goto /login: 200, 232 ms
+**runs/inspect/20261114T184328_deepman2**, step 1: goto /login: 200, 157 ms
 
 Sent:
 

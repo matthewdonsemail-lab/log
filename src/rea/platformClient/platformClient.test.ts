@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test'
 import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { aliasHost, buildPlatformClientMap, methodNameOf, needlesOf, operationOf, PLATFORM_CLIENT_RULES, readsOf, requestNameOf, slicesFor, stablePath } from './index'
+import { aliasHost, buildPlatformClientMap, readOperationNetwork, methodNameOf, needlesOf, operationOf, PLATFORM_CLIENT_RULES, readsOf, requestNameOf, slicesFor, stablePath } from './index'
 
 const bundle = [
   'function ai(e){return ni({operation:`ExposeVariant`,variables:{input:e}})}',
@@ -15,6 +15,7 @@ describe('reading a platform client', () => {
   test('a request is named by its GraphQL operation, else by its path without ids, subreddits or hashes', () => {
     expect(stablePath('/svc/shreddit/more-comments/r/AskReddit/t3_1x8sr8s')).toBe('/svc/shreddit/more-comments')
     expect(stablePath('/svc/shreddit/partial/XpstDl/crosspost-dialog')).toBe('/svc/shreddit/partial/crosspost-dialog')
+    expect(stablePath('/flagship-web/in/someone-plain/')).toBe('/flagship-web/in')
     expect(stablePath('/svc/shreddit/partial/kvBblQ/mod-content-actions')).toBe('/svc/shreddit/partial/mod-content-actions')
     expect(requestNameOf('www.reddit.com', '/svc/shreddit/notifications-inbox-content/20/route', null)).toBe('svcShredditNotificationsInboxContentRoute')
     expect(requestNameOf('w3-reporting.reddit.com', '/reports', null)).toBe('w3ReportingReports')
@@ -23,6 +24,23 @@ describe('reading a platform client', () => {
     expect(operationOf({ operation: 'ExposeVariant', variables: {} }, '/svc/shreddit/graphql')).toBe('ExposeVariant')
     expect(operationOf({ query: { a: 1 }, body: { operationName: 'ChatRedditors' } }, '/svc/shreddit/graphql')).toBe('ChatRedditors')
     expect(operationOf({ operation: 'X' }, '/svc/shreddit/events')).toBeNull()
+  })
+
+  test('a request with no code in the bundles and no step reading is read by rea from its own calls only', async () => {
+    const outDir = mkdtempSync(join(tmpdir(), 'netRead'))
+    const operation = { name: 'voyagerApiMe', domain: 'background', reaEvidenceId: null } as never as Parameters<typeof readOperationNetwork>[0][number]
+    const read = { name: 'voyagerApiGraphql', domain: 'background', reaEvidenceId: 'ev_already' } as never as Parameters<typeof readOperationNetwork>[0][number]
+    const entry = { startedDateTime: '2026-11-14T00:00:00.000Z', request: { url: 'https://www.linkedin.com/voyager/api/me' } }
+    const calls: string[][] = []
+    const runner = async (args: string[]) => {
+      calls.push(args)
+      return { code: 0, stdout: '{"evidence_id":"ev_0123456789abcdef0123456789abcdef"}', stderr: '' }
+    }
+    await readOperationNetwork([operation, read], new Map([['voyagerApiMe', [entry]], ['voyagerApiGraphql', [entry]]]), outDir, runner as never, () => {})
+    expect(calls.length).toBe(1)
+    expect(calls[0][0]).toBe('inspect-web-network-capture')
+    expect(JSON.parse(readFileSync(calls[0][1], 'utf8')).log.entries).toEqual([entry])
+    expect((operation as { reaEvidenceId: string | null }).reaEvidenceId).toBe('ev_0123456789abcdef0123456789abcdef')
   })
 
   test('an operation is found where it is sent, never in a lookalike or an enum of names', () => {
