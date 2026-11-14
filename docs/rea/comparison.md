@@ -12,8 +12,8 @@ Two questions often get mixed up, and this page keeps them apart. **Programmatic
 | Account check before any browser, including sign-in | `checkRunnable`, `socialAccount.test.ts` (`noProxy` on connect) | |
 | Publish dry run through the state machine | `publish.test.ts`, and a visible run against `python/fixtures/createItem.html` reaching `done` | A live facebook.com run, `--live` past review, a live captcha solve |
 | Proxy required, exit country checked | `python/browser/proxyGate.py`, proxy tests | A live `log proxy assign` |
-| One device, pinned locale, launch self-check, local active hours | `src/camofox/device/`, `src/marketplace/home/` | A CreepJS re-measure on camoufox 0.5.8 / 156.0.1-beta.39 |
-| The monitor decides and never posts | `src/marketplace/monitor/machine.ts` | A signed-in selling scan |
+| One device, pinned locale, launch self-check, local active hours | `src/camofox/device/`, `src/platformKit/home/` | A CreepJS re-measure on camoufox 0.5.8 / 156.0.1-beta.39 |
+| The monitor decides and never posts | `src/facebook/marketplace/monitor/machine.ts` | A signed-in selling scan |
 | Captcha route: CaptchaKraken, then 2Captcha, else a person | `src/captcha/router/` | A live solve |
 | Reading and writing accounts and listings in Twenty | The generated client, `marketplaceFixture()` in tests | A call to a real Twenty during this study |
 

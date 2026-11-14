@@ -5,8 +5,8 @@ import { cancel, intro, isCancel, multiselect, outro, password, select, text } f
 import { buildBrowserCommand } from "../../auth/session/helpers/urls.ts";
 import { DEFAULT_LOCAL_API_URL } from "../../browser/adsPower/types.ts";
 import { userEnvPath } from "../../config/userEnv/index.ts";
-import { LISTING_STATUSES, listListingsWhere } from "../../marketplace/agencyListing/index.ts";
-import { checkRunnable, listFacebookAccounts, toTwentyEnum } from "../../marketplace/socialAccount/index.ts";
+import { LISTING_STATUSES, listListingsWhere } from "../../facebook/marketplace/agencyListing/index.ts";
+import { checkRunnable, listFacebookAccounts, toTwentyEnum } from "../../platformKit/socialAccount/index.ts";
 import { accountsCommand } from "../account/index.ts";
 import { listGroups } from "../../facebook/group/join/index.ts";
 import type { Group } from "../../facebook/group/join/index.ts";

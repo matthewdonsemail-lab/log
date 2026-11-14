@@ -99,9 +99,9 @@ listed near the end.
 | `log flow fromInspect` / `docs` | ✅ 2026-10-20 | 8 flows made from recordings |
 | `log flow run profileSetup` | ✅ 2026-10-19 | Two accounts: done |
 | `log flow run` for the other 8 flows | 🟡 | Never run as flows: groupTabs, groupHeaderMenus, groupPostComments, groupPostDialog, and the four that write (profilePost, profilePhotoPost, postComment, deletePost). They were only recorded. |
-| `log facebook capture --settle` / `--docs` | ✅ 2026-10-22 | 190 requests documented |
+| `log capture settle` / `docs` | ✅ 2026-10-22 | 190 requests documented |
 | `log runs` / `runs prune` | ✅ 2026-10-22 | Pruned 116 analysed runs, 12.5 GB, each one's findings, steps and domains kept |
-| `log facebook capture --har` | 🟡 | Never run live |
+| `log capture har` | 🟡 | Never run live |
 | `log errors` | ✅ 2026-10-22 | |
 | `log graph`, `log launch` | 🟡 | Never run live |
 | `log login` / `logout` / `whoami` | 🟡 | Only a bogus token rejected, 2026-10-18; never a full sign-in |
@@ -149,7 +149,7 @@ The same five steps every time. Nothing is coded before step 2.
 2. **Record it with `log inspect`** in the account's open browser (AdsPower):
    goto, snapshot, and each click or type with `--live` only when asked. Every
    step keeps its snapshot, screenshot, HAR and rea's reading.
-3. **Document the requests** with `log facebook capture --docs`, so every
+3. **Document the requests** with `log capture docs`, so every
    request the page made is in `docs/platforms/facebook/<domain>/`, with what
    it sends and reads.
 4. **Turn the recording into a flow and its machine** with

@@ -75,7 +75,7 @@ const SOURCE_COMMAND_RULES: Readonly<Record<string, number[]>> = {
   proxy: [12, 33, 41, 43, 51, 52],
   adsPower: [42, 44, 78, 84],
   localAccount: [13, 42, 44, 78, 84, 97],
-  facebookCapture: [19, 22, 26, 27, 46, 48, 85],
+  capture: [19, 22, 26, 27, 46, 48, 85],
   facebookAccount: [13, 37, 78],
   facebookAccounts: [13],
   facebookListing: [13, 71, 72],

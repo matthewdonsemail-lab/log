@@ -17,7 +17,7 @@ These are the sources behind the REA research in this folder: REA's own reposito
 
 ## log and the two earlier drivers
 
-- **log:** `python/session/publishSession.py`, `src/marketplace/publish/machine.ts`, `src/marketplace/socialAccount/helpers/checkRunnable.ts`, `src/cli/runner/index.ts`.
+- **log:** `python/session/publishSession.py`, `src/facebook/marketplace/publish/machine.ts`, `src/platformKit/socialAccount/helpers/checkRunnable.ts`, `src/cli/runner/index.ts`.
 - **The earlier Camoufox client:** `domain_camofox/session_manager.py` (`AsyncCamoufox`), `domain_marketplace/form_driver.py`, `domain_marketplace/create.py`, `domain_extraction/response_capture.py`.
 - **The earlier production poster:** `agent/src/adspower.ts` line 210 (`chromium.connectOverCDP`), `agent/src/poster.ts` (the create URL and `setInputFiles`), `src/lib/poster/facebook-poster.ts` (`postToFacebookMarketplace`).
 - **Local studies:** [Sources](../listingPublish/sources.md), the private identity-leak study.

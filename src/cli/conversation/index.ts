@@ -8,10 +8,10 @@ import {
   messagesOf,
   recordThread,
   setLeadStatus,
-} from "../../marketplace/conversation/index.ts";
-import type { LeadStatus } from "../../marketplace/conversation/index.ts";
-import { getListing } from "../../marketplace/agencyListing/index.ts";
-import { findAccount, fromTwentyEnum } from "../../marketplace/socialAccount/index.ts";
+} from "../../facebook/marketplace/conversation/index.ts";
+import type { LeadStatus } from "../../facebook/marketplace/conversation/index.ts";
+import { getListing } from "../../facebook/marketplace/agencyListing/index.ts";
+import { findAccount, fromTwentyEnum } from "../../platformKit/socialAccount/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf, refuseError, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
 import { parseThreads, renderConversation, renderConversations, renderRecorded } from "./helpers/index.ts";

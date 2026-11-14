@@ -1,6 +1,6 @@
 import { cancel, intro, isCancel, outro, password } from "@clack/prompts";
-import { toFacebookAccount } from "../../../marketplace/socialAccount/index.ts";
-import type { SocialAccountRow } from "../../../marketplace/socialAccount/index.ts";
+import { toFacebookAccount } from "../../../platformKit/socialAccount/index.ts";
+import type { SocialAccountRow } from "../../../platformKit/socialAccount/index.ts";
 import { findSlackAccount, SLACK_COOKIE_DOMAIN } from "../../../slack/account/session/index.ts";
 import type { PlatformAccount } from "../../../platformKit/session/index.ts";
 import { TwentyError, upsertLocalAccount } from "../../../twenty/graphql/index.ts";

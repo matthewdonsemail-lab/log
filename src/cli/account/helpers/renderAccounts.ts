@@ -1,7 +1,7 @@
-import { checkRunnable, maskProxyUrl, toFacebookCookies } from "../../../marketplace/socialAccount/index.ts";
-import type { FacebookAccount } from "../../../marketplace/socialAccount/index.ts";
+import { checkRunnable, maskProxyUrl, toFacebookCookies } from "../../../platformKit/socialAccount/index.ts";
+import type { FacebookAccount } from "../../../platformKit/socialAccount/index.ts";
 import { deviceSummary, toDeviceProfile } from "../../../camofox/device/index.ts";
-import { activeWindow, hourLabel } from "../../../marketplace/home/index.ts";
+import { activeWindow, hourLabel } from "../../../platformKit/home/index.ts";
 import { renderTable } from "../../runner/helpers/index.ts";
 
 export function safeAccount(a: FacebookAccount): Record<string, unknown> {

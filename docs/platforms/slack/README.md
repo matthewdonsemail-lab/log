@@ -12,7 +12,7 @@ Slack is a platform of its own: every command is `log slack <command> …`, and 
 | The engine | `python/slackApi/engine.py`, on the shared `python/platformKit/engine.py`; each account's governor is under `~/.logCli/slack/<account>` |
 | The client | `vendor/gabrielSlack` (Easy-Ez/gabriel-slack, MIT, pinned in `UPSTREAM`) |
 | The live watcher | `log slack watch --inbox`, started by the inbox hook for every signed-in account (rule 123) |
-| What Slack's own web client calls | `docs/platforms/slack/<domain>/`, built from inspect runs by `log facebook capture --docs` (rule 85) |
+| What Slack's own web client calls | `docs/platforms/slack/<domain>/`, built from inspect runs by `log capture docs` (rule 85) |
 
 ## The client: gabriel-slack
 

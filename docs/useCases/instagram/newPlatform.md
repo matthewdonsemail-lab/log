@@ -19,7 +19,7 @@ flowchart TD
   s3["4. Open the platform in the account's browser<br/><i>inspectStart</i>"]
   s4["5. The owner signs in by hand in that window; read where it landed<br/><i>inspectDo</i>"]
   s5["6. Save the session, then close the browser so it is written to th…<br/><i>inspectDo</i>"]
-  s6["7. Read every call the platform's client made with rea<br/><i>facebookCapture</i>"]
+  s6["7. Read every call the platform's client made with rea<br/><i>captureDocs</i>"]
   s7["8. Find candidate clients on GitHub, by name and by the exact oper…<br/><i>gh</i>"]
   s8["9. Compare how maintained each is<br/><i>gh</i>"]
   s9["10. Vendor the owner's pick and wire the engine's session check to…<br/><i>UPSTREAM</i>"]
@@ -45,7 +45,7 @@ flowchart TD
 | 4 | Open the platform in the account's browser | `inspectStart` { account, detach: true, url: "<home>", goal } | the gate and self-check passed and the home page is open |
 | 5 | The owner signs in by hand in that window; read where it landed | `inspectDo` { action: "snapshot" } | the platform's own answer shows the account signed in |
 | 6 | Save the session, then close the browser so it is written to the account | `inspectDo` { action: "saveState" }, then `inspectDo` { action: "stop" } | the account's cookies hold the platform's session cookies |
-| 7 | Read every call the platform's client made with rea | `facebookCapture` { docs: true } | `docs/platforms/<platform>/` has a doc per request, each read by rea |
+| 7 | Read every call the platform's client made with rea | `captureDocs` | `docs/platforms/<platform>/` has a doc per request, each read by rea |
 | 8 | Find candidate clients on GitHub, by name and by the exact operations recorded | `gh api search/repositories`, `gh api search/code` for the recorded operation names | a short list, each with stars, licence and what API it speaks |
 | 9 | Compare how maintained each is | `gh api repos/<repo>/commits`, releases, closed issues in the last 30 and 90 days | a table the owner picks from |
 | 10 | Vendor the owner's pick and wire the engine's session check to it | `vendor/<client>` with `UPSTREAM`, `python/<platform>Api/engine.py` ping, the route's library, the platform's spec | the session check passes offline tests and the gates |

@@ -1,4 +1,4 @@
-import type { AgencyListingStatus } from '../../../marketplace/agencyListing/index.ts'
+import type { AgencyListingStatus } from '../agencyListing/index.ts'
 
 export interface MarketplaceAccess {
   title: string | null

@@ -133,7 +133,7 @@ match by role, then name (`skills/flow/SKILL.md`, Deterministic steps).
 A "What happened" with no "Ended on" is not cleared: it stays unknown, for
 SubQ to read (rule 73).
 
-Rebuild Facebook's request docs after a run: `log facebook capture --docs`.
+Rebuild Facebook's request docs after a run: `log capture docs`.
 
 ### Saved flows
 
@@ -167,7 +167,7 @@ log facebook warmup stages log --account <a> --follow                 # the stag
 ```
 
 `--only feedBrowse,sellingVisit` limits it. After recording, rebuild the
-request docs: `log facebook capture --docs`.
+request docs: `log capture docs`.
 
 Doc: `docs/lifecycle.md` (the warm-up section); scripts:
 `src/facebook/warmup/stages/helpers/scripts.ts`.

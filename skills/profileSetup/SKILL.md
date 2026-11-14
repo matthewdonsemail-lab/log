@@ -54,7 +54,7 @@ of its warm-up. This does that for one account, both photos in one run (the owne
 6. Rebuild the Facebook client docs: the profile requests are new.
 
    ```bash
-   log facebook capture --docs
+   log capture docs
    ```
 
 ## Codes

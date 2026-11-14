@@ -58,7 +58,7 @@ and ends within seconds. If not, it **signs in by itself**: it types
 the Twenty email and password, then on the two-step page the current code
 from `totpSecret` (switching to "Authentication app" if Facebook offers
 another method first), and trusts the device. This is the connect machine
-(`marketplace/connect/machine.ts`): each page is printed as its kind and
+(`platformKit/connect/machine.ts`): each page is printed as its kind and
 state; nothing secret is. Every page takes the proven path: the
 cookie banner is accepted, "We suspect automated behaviour" dismissed, login
 captchas solved (CaptchaKraken, then 2Captcha). Only an identity, photo, video

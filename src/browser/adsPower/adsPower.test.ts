@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'bun:test'
 import { createActor, waitFor } from 'xstate'
 import { createBrowserSession } from '../driver/index'
-import { listFacebookAccounts, setAccountStatus } from '../../marketplace/socialAccount/index'
+import { listFacebookAccounts, setAccountStatus } from '../../platformKit/socialAccount/index'
 import { marketplaceFixture } from '../../twenty/graphql/index'
 import { adsPowerDriver } from './index'
 import { AdsPowerError, createAdsPowerClient } from './index'

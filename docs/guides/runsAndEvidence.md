@@ -23,7 +23,9 @@ Each tool's own description carries its full usage, notes, live line and rules; 
 |---|---|---|
 | `errors` | The error catalog | `log errors [--layer <account\|listing\|photo\|form\|captcha\|runtime\|twenty\|proxyVendor\|auth\|profile\|tool>] [--code <code>] [--json] [--markdown]` |
 | `graph` | Print a machine's states and transitions as a Mermaid diagram | `log graph <publish\|monitor>` |
-| `facebookCapture` | Read a run's raw HAR and its scripts with offline rea, settle a run's… | `log facebook capture --har <path> [--out <dir>] [--noRea] [--json]` |
+| `captureHar` | Copy a run's raw HAR and read it and its scripts with offline rea | `log capture har <path> [--out <dir>] [--noRea] [--json]` |
+| `captureSettle` | Settle a run's capture | `log capture settle <runCaptureDir>  (what each run starts in the background: rea reads its capture, split per step)` |
+| `captureDocs` | Every platform's client docs from its runs | `log capture docs [--noRea]  (every run's requests → docs/platforms/<platform>/, one doc per request, rea reading each one's slice: by the platform's modules where it has a module map, otherwise by the call sites its bundles hold for each request)` |
 | `runsList` | Every recorded run | `log runs [list] [--json]   (every recorded run: its size, settled by rea, in the request docs, and why it is kept or that it may go)` |
 | `runsExchanges` | Take every recorded step's internal API calls | `log runs exchanges   (takes every recorded step's internal API calls, what was sent and what came back, out of its HAR into exchanges.json, for every run still on disk; prune does it first too)` |
 | `runsPrune` | Delete each analysed run after taking out its steps' exchanges… | `log runs prune [--before <YYYY-MM-DD>] [--apply]   (deletes each analysed run, started before the day when given, after taking out every step's exchanges, keeping its findings.md, steps.jsonl, settle.json, every step's exchanges.json, reading.json and readingState.json, its goalFindings and its requests by domain; a dry run unless --apply)` |
@@ -50,8 +52,8 @@ an inspect run up to 1.4 GB. On 2026-10-22 they reached 12.5 GB, the disk had
 1. **Analyse** (rule 25): a run may go only when rea settled it
    (`settle.json`: every step read, findings.md written) and the request docs
    hold its requests (`docs/platforms/facebook/operations.json` built after it).
-   - Not settled: `log facebook capture --settle <its capture folder>`.
-   - Not in the docs: `log facebook capture --docs`, then write any request's
+   - Not settled: `log capture settle <its capture folder>`.
+   - Not in the docs: `log capture docs`, then write any request's
      reasoning it asks for.
 2. **Look:** `log runs` lists each run with `may go` or why it is kept (still
    being written, not settled, not in the docs).
@@ -107,7 +109,7 @@ The point of this work: use REA on real captures of our own Facebook client
 to find out what the create page actually does, then score design changes
 with SubQ so the client gets as efficient as it can. The work is based on
 live runs. log-cli already knows much of the flow
-(`docs/listingPublish/`, `src/marketplace/publish/machine.ts`). The
+(`docs/listingPublish/`, `src/facebook/marketplace/publish/machine.ts`). The
 captures test that knowledge and find what it misses.
 
 Why a HAR plus scripts, read offline: `docs/rea/matrix/` and
@@ -178,7 +180,7 @@ notes print
 `log facebook publish` runs these itself. To re-run on any HAR:
 
 ```bash
-log facebook capture --har <path> --out <dir>      # --noRea to only write the files
+log capture har <path> --out <dir>      # --noRea to only write the files
 rea inspect-web-network-capture <absolute>/session.har har --format json
 ```
 
@@ -196,7 +198,7 @@ is read per request instead (step 2b).
 #### 2b. The Facebook client docs (per request, rule 25)
 
 ```bash
-log facebook capture --docs          # run it live (Monitor), every stage prints
+log capture docs          # run it live (Monitor), every stage prints
 ```
 
 1. Every run under `~/.logCli` is split by its `steps.jsonl`; each request
@@ -242,7 +244,7 @@ What rea does per run (`settleInBackground`, its own hidden process):
 For a decision, write `docs/rea/findings/<runId>.md` by hand: the operations the
 create page fired, in order, with timing; the fields each one submits;
 what the page's scripts read from the browser; and every gap against
-`src/marketplace/publish/machine.ts` and `docs/listingPublish/formFill.md`.
+`src/facebook/marketplace/publish/machine.ts` and `docs/listingPublish/formFill.md`.
 Each line names its rea `evidence_id`. Session values aren't copied into
 this file. It holds names, orders and counts.
 
@@ -264,7 +266,7 @@ Record the decision and its evidence ids in the `log.md` entry.
 ### Every action's run feeds the request docs
 
 Every action (inspect, flow, host, warm-up, publish) records the session's
-`session.har` with Facebook's bundles in it, and `log facebook capture --docs`
+`session.har` with Facebook's bundles in it, and `log capture docs`
 reads code slices from all of them: a run that isn't settled yet (a host still
 open) has its bundles taken from its `session.har` and kept as `scripts/`
 (`scriptsFromHar`). The recorder reads each body first, before any header round

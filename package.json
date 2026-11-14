@@ -62,7 +62,7 @@
     "test": "bun test",
     "check:privacy": "node scripts/privacy/checkPrivacy.mjs",
     "check:naming": "node scripts/checks/checkNamingConventions.mjs",
-    "check:facebookClientDocs": "node scripts/checks/checkFacebookClientDocs.mjs",
+    "check:clientDocs": "node scripts/checks/checkClientDocs.mjs",
     "check:browsers": "bun scripts/checks/checkBrowserParity.ts",
     "check:consoleParity": "bun scripts/checks/checkConsoleParity.ts",
     "check:agentHooks": "bun scripts/checks/checkAgentHooks.ts",

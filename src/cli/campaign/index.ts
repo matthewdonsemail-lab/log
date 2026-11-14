@@ -1,6 +1,6 @@
-import { copyVersionsShortfall, getListing, listListingsWhere, toPublishListing } from "../../marketplace/agencyListing/index.ts";
-import { fillCampaign, healCampaign } from "../../marketplace/replacement/index.ts";
-import { listFacebookAccounts } from "../../marketplace/socialAccount/index.ts";
+import { copyVersionsShortfall, getListing, listListingsWhere, toPublishListing } from "../../facebook/marketplace/agencyListing/index.ts";
+import { fillCampaign, healCampaign } from "../../facebook/marketplace/replacement/index.ts";
+import { listFacebookAccounts } from "../../platformKit/socialAccount/index.ts";
 import { renderListingsTable } from "../listing/helpers/index.ts";
 import { publishCommand } from "../publish/index.ts";
 import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuse, refuseError, refuseInput } from "../runner/helpers/index.ts";

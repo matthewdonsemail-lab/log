@@ -48,7 +48,7 @@ The reverse fields are `socialAccount.agencyConversations`, `agencyListing.agenc
 
 ## What recording a thread does
 
-`recordThread` (`src/marketplace/conversation/client.ts`) takes one thread as the inbox showed it and:
+`recordThread` (`src/facebook/marketplace/conversation/client.ts`) takes one thread as the inbox showed it and:
 
 1. **Finds the conversation** by `pairKey`, or creates it as `NEW`.
 2. **Ties it to a listing** on that account: by Facebook listing id first, then by title, but only when exactly one listing has that title. If two listings share a title, it stays unmatched and you link it with `log facebook conversation link`.

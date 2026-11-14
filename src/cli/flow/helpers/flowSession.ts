@@ -9,7 +9,7 @@ import type { CurrentInspect, InspectAction, InspectStepResult } from "../../../
 import { createInspector, formatTraceLine } from "../../../observability/trace/index.ts";
 import type { CommandContext } from "../../runner/types.ts";
 import { browserFor } from "../../../browser/driver/index.ts";
-import type { FacebookAccount } from "../../../marketplace/socialAccount/index.ts";
+import type { FacebookAccount } from "../../../platformKit/socialAccount/index.ts";
 import { watchCheckpoint } from "../../inspect/helpers/watchCheckpoint.ts";
 
 export function commandFor(step: FlowStep): { action: InspectAction; args: string[] } {

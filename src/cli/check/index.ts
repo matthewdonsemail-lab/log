@@ -1,8 +1,8 @@
-import { recordAccountIssue } from "../../marketplace/replacement/index.ts";
+import { recordAccountIssue } from "../../facebook/marketplace/replacement/index.ts";
 import { readCurrentInspect } from "../../browser/inspect/index.ts";
 import * as marketplaceCheck from "../../facebook/marketplace/check/index.ts";
-import { homeOf, outsideActiveHours } from "../../marketplace/home/index.ts";
-import { findAccount } from "../../marketplace/socialAccount/index.ts";
+import { homeOf, outsideActiveHours } from "../../platformKit/home/index.ts";
+import { findAccount } from "../../platformKit/socialAccount/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
 

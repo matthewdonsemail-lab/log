@@ -15,6 +15,7 @@ flowchart TB
     c_proxy["proxy"]
     c_errors["errors"]
     c_graph["graph"]
+    c_capture["capture"]
     c_runs["runs"]
     c_storage["storage"]
     c_timing["timing"]
@@ -70,7 +71,6 @@ flowchart TB
     c_facebookConversations["conversations"]
     c_facebookConversation["conversation"]
     c_facebookMessenger["messenger"]
-    c_facebookCapture["capture"]
   end
   subgraph g_twitter["X"]
     c_twitterSession["session"]
@@ -216,9 +216,9 @@ flowchart TB
   mcp --> c_errors
   cli --> c_graph
   mcp --> c_graph
-  cli --> c_facebookCapture
-  mcp --> c_facebookCapture
-  c_facebookCapture --> live
+  cli --> c_capture
+  mcp --> c_capture
+  c_capture --> live
   cli --> c_runs
   mcp --> c_runs
   cli --> c_storage

@@ -26,4 +26,5 @@ export {
 export { platformNeutralProblems, PLATFORM_NEUTRAL_ZERO } from "./neutral.ts";
 export { stringFlagReparses } from "./flagReparses.ts";
 export { uncodedRefusals } from "./uncodedRefusals.ts";
+export { MARKETPLACE_DIR, MARKETPLACE_OWNERS, marketplaceImports } from "./marketplaceImports.ts";
 export { isShared, platformOfToolName, platformOfTopic, platformsNamed } from "./platformWords.ts";

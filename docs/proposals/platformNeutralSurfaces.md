@@ -16,7 +16,7 @@ Every capability is one thing, with one name, reachable the same way from the CL
 4. Shared tool notes say Facebook (`src/mcp/server/helpers/toolsFromCommands.ts:85-86`).
 5. On a non-Facebook login page the page state is `loginForm`, whose next step is Facebook's auto sign-in.
 6. Signing in is not one capability. The console has `accountSignIn` and `browser*` operations (the browser ones Facebook only in the web UI); the CLI and MCP have `inspectStart` then `inspectDo stop`; the hosted relay has neither.
-7. Closing the browser saves the session without checking it is signed in, so a signed-out browser overwrites a good session (`src/marketplace/socialAccount/client.ts:125-133`). The save's outcome never reaches the caller.
+7. Closing the browser saves the session without checking it is signed in, so a signed-out browser overwrites a good session (`src/platformKit/socialAccount/client.ts:125-133`). The save's outcome never reaches the caller.
 8. Check state lives outside a machine: "running" rows can be left behind (`src/console/accountCheck/machine.ts`), busy is enforced outside the machine, and `proofs`, `busy` and `shared` are module memory.
 9. The console, `sessionsCheck` and `openBrowser` each have their own rule for which accounts may be checked.
 10. The hosted relay lacks `sessionsCheck`, `instagramSessionCheck`, `slackSessionCheck`, and strips `next` from every result (`src/cli/runtime/index.ts:117`).
@@ -77,6 +77,8 @@ Each slice is its own PR onto `main`, small enough to review, with the repo's ho
 - `log capture docs` (shared) replaces `log facebook capture --docs`; `check:clientDocs` replaces `check:facebookClientDocs`; the request-doc template takes the platform's name and its own machines.
 - Move shared code out of `src/marketplace/`: `socialAccount`, `connect`, `account`, `preflight`, `lifecycle` go to `src/platformKit/` or `src/browser/` by what they do. `src/marketplace/` keeps Facebook Marketplace only.
 - Done when: nothing under `src/` outside `src/facebook/` and `src/marketplace/` imports from `src/marketplace/`.
+- **Built.** `capture` is a shared command (platform `any`) with three forms: `log capture har <path>` (`captureHar`), `log capture settle <captureDir>` (`captureSettle`, what `settleInBackground` starts after every run, `SETTLE_ARGS`) and `log capture docs [--noRea]` (`captureDocs`). `log facebook capture …` is refused with the shared form. The old tool names `facebookCapture` and `capture` run `captureDocs` for one release (`RENAMED_SHARED_TOOLS`). `check:clientDocs` (`scripts/checks/checkClientDocs.mjs`) replaces `check:facebookClientDocs`, in `package.json` and lefthook's pre-push. The request-doc template is `requestDocPrompts({ name, evidence, machines })`: the platform's label and every `machine.ts` under `src/<platform>/` (`platformMachines`), for Facebook and every other browser platform alike; before, a platform with no `PLATFORM_CLIENT_RULES` entry (Discord, LinkedIn, Instagram) got Facebook's prompts. The facts block is found by its `<!-- facts:start` prefix (`factsSpan`), so the committed docs, whose first line still names `log facebook capture --docs`, keep their reasoning and facts and get the new line on their next build. The moves, each mechanical with the imports rewritten: `socialAccount`, `account`, `lifecycle`, `home` (active hours and home country, which the browser run and every platform's commands read), `connect` and `preflight` to `src/platformKit/` (`check:browsers` keeps `src/browser/` for the browsers and what every browser shares, and neither is that); the Facebook Marketplace domains (`agencyListing`, `conversation`, `host`, `listing`, `monitor`, `profile`, `publish`, `replacement`) to `src/facebook/marketplace/`, beside `check`, `copy` and `location`. They had to leave `src/marketplace/` too: the Facebook commands that use them live in `src/cli/`, so the "Done when" can't hold while they stay, and rule 2 files platform code under `src/<platform>/<area>/<domain>`. The error catalog's `raisedIn` names, the spec anchors, the docs, the skills and the privacy allowlist name the new folders. The scorecard counts `marketplaceImports` (1). Spec: [runsAndRea.md](../specs/runsAndRea.md) REQ-RUNS-03, 07, 09 and 15; [agnosticScorecard.md](../specs/agnosticScorecard.md).
+- Not built: `src/platformKit/session/client.ts` (slice 15's) still imports `src/marketplace/socialAccount/index.ts`, which only re-exports `src/platformKit/socialAccount/`. Point it at `src/platformKit/socialAccount/index.ts` and delete `src/marketplace/` once slice 15 is merged; `marketplaceImports` then goes to 0. The old name `facebookCapture` with its old fields (`har`, `settle`, `docs`) is refused by `captureDocs` as an unknown field: choosing the form from the fields needs `runToolCall` (slice 14's file). The committed request docs keep the old first line until `log capture docs` is next run (not run here). `findAccount` still prefers Facebook when two platforms keep the same account name (slice 15's).
 
 ### Slice 6: console-only operations get their twins
 
@@ -209,7 +211,7 @@ The evidence, with every file, is in [schemaParityAudit.md](schemaParityAudit.md
 - `logSearch` ranks reads above writes for "who…" questions, treats platform synonyms as platform words, never marks a terminal-only entry `strong`, and groups results by capability.
 - An account on the wrong platform answers `accountPlatformMismatch` with where it was found.
 - A golden set of queries is checked in CI.
-- Files: `src/mcp/catalog/helpers/search.ts`, `src/mcp/catalog/helpers/entries.ts`, `src/platformKit/session/client.ts`, `src/marketplace/socialAccount/client.ts`.
+- Files: `src/mcp/catalog/helpers/search.ts`, `src/mcp/catalog/helpers/entries.ts`, `src/platformKit/session/client.ts`, `src/platformKit/socialAccount/client.ts`.
 
 ### Slices 16 to 19: the right context reaches the model, in every harness
 
@@ -316,7 +318,7 @@ The detail and the quotes are in [sources.md](sources.md).
   - `src/browser/runStore/client.ts:97`
   - `src/cli/inspect/index.ts:158`
   - `src/knowledge/base/helpers/collect.ts:132`
-  - `src/marketplace/account/helpers/accountLabel.ts:4`
+  - `src/platformKit/account/helpers/accountLabel.ts:4`
   - `scripts/checks/checkPlatforms.ts:16`
 - **Removing the aliases next release:** delete `toolAliases.ts`, its test and the alias half of REQ-MCP-21 together.
 

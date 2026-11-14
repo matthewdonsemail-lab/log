@@ -1,9 +1,9 @@
 import { noul } from 'jev-spec'
 import { MET, NOT_VIOLATED } from '../types'
 
-const machine = 'src/marketplace/lifecycle/machine.ts'
-const types = 'src/marketplace/lifecycle/types.ts'
-const steps = 'src/marketplace/lifecycle/helpers/onboardingStep.ts'
+const machine = 'src/platformKit/lifecycle/machine.ts'
+const types = 'src/platformKit/lifecycle/types.ts'
+const steps = 'src/platformKit/lifecycle/helpers/onboardingStep.ts'
 const watch = 'src/cli/inspect/helpers/watchCheckpoint.ts'
 const flowSession = 'src/cli/flow/helpers/flowSession.ts'
 
@@ -11,9 +11,9 @@ export const accountLifecycle = {
   description: 'One browser per account per day, closed only for a logged reason, and a checkpoint page deactivates the account',
   specPath: 'docs/specs/accountLifecycle.md',
   codePaths: [
-    'src/marketplace/lifecycle/machine.ts',
-    'src/marketplace/lifecycle/types.ts',
-    'src/marketplace/lifecycle/helpers/onboardingStep.ts',
+    'src/platformKit/lifecycle/machine.ts',
+    'src/platformKit/lifecycle/types.ts',
+    'src/platformKit/lifecycle/helpers/onboardingStep.ts',
     'src/cli/inspect/helpers/watchCheckpoint.ts',
     'src/cli/inspect/index.ts',
     'src/cli/flow/helpers/flowSession.ts',
