@@ -69,7 +69,7 @@ flowchart LR
   anyB --> b_linkedin
   anyB --> b_slack
   anyB --> b_instagram
-  anyN["Any platform, no browser: launch, console, adsPower, localAccount, proxy, errors, graph, capture, runs, storage, timing, inbox, media, browsers, browser, report, job, mcp, login, logout, whoami, voice, search, kb, runtime, memelord, treg, balance, governor, sessions, chats, messages, watchers, clone, transcribe, new"]
+  anyN["Any platform, no browser: launch, console, credentials, adsPower, localAccount, accounts, proxy, errors, graph, capture, runs, storage, timing, inbox, media, browsers, browser, report, job, mcp, login, logout, whoami, voice, search, kb, runtime, memelord, treg, balance, governor, sessions, chats, messages, watchers, clone, transcribe, new"]
   anyN -.-> twenty
   newP["log new platform name: one more platform, wired whole (rule 83)"] -.-> twenty
   drivers --> api
@@ -105,7 +105,7 @@ Source: [`docs/diagrams/browsers.mmd`](diagrams/browsers.mmd).
 
 - **The account's browser, through the driver:** `facebook host`, `inspect`, `flow`, `<platform> warmup`, `facebook join`, `facebook read`, `facebook poll`, `facebook check`, `reddit read`, `discord read`, `slack read`. They run on whichever browser the account uses: AdsPower when it has a linked profile (`socialAccounts.adsPowerProfileId`), Camoufox otherwise, or what `socialAccounts.browserDriver` says.
 - **Camoufox only, not on the driver yet:** `facebook doctor`, `facebook connect`, `facebook profile`, `facebook scan`, `facebook status`, `facebook watch`, `facebook publish`, `facebook campaign`, `discord watch`, `slack watch`, `instagram watch`. They launch Camoufox themselves (facebook-camofox-client's worker, or the publish, connect and profile sessions), so on an AdsPower account they don't open its AdsPower profile. Moving one onto the driver is moving it into `OPENER_ACTIONS` (`src/browser/run`).
-- **No browser:** `launch`, `console`, `facebook listings`, `facebook listing`, `facebook accounts`, `facebook account`, `adsPower`, `localAccount`, `facebook lifecycle`, `facebook preflight`, `proxy`, `facebook conversations`, `facebook conversation`, `facebook messenger`, `errors`, `graph`, `capture`, `runs`, `storage`, `timing`, `inbox`, `media`, `browsers`, `browser`, `report`, `job`, `mcp`, `login`, `logout`, `whoami`, `twitter session`, `twitter follows`, `twitter dms`, `twitter chat`, `twitter cookies`, `voice`, `search`, `kb`, `runtime`, `memelord`, `treg`, `balance`, `governor`, `sessions`, `chats`, `messages`, `watchers`, `clone`, `transcribe`, `twitter followers`, `twitter notifications`, `twitter reply`, `twitter quote`, `twitter post`, `twitter like`, `twitter list`, `twitter repost`, `twitter follow`, `twitter dm`, `twitter react`, `twitter queue`, `new`, `reddit session`, `reddit post`, `reddit reply`, `reddit vote`, `discord session`, `discord chats`, `discord servers`, `discord channels`, `discord posts`, `discord search`, `discord send`, `discord delete`, `discord react`, `discord voice`, `linkedin session`, `linkedin cookies`, `slack session`, `slack workspaces`, `slack chats`, `slack send`, `slack cookies`, `slack react`, `slack voice`, `instagram session`, `instagram dms`, `instagram send`, `instagram react`, `instagram voice`, `twitter voice`.
+- **No browser:** `launch`, `console`, `credentials`, `facebook listings`, `facebook listing`, `facebook accounts`, `facebook account`, `adsPower`, `localAccount`, `accounts`, `facebook lifecycle`, `facebook preflight`, `proxy`, `facebook conversations`, `facebook conversation`, `facebook messenger`, `errors`, `graph`, `capture`, `runs`, `storage`, `timing`, `inbox`, `media`, `browsers`, `browser`, `report`, `job`, `mcp`, `login`, `logout`, `whoami`, `twitter session`, `twitter follows`, `twitter dms`, `twitter chat`, `twitter cookies`, `voice`, `search`, `kb`, `runtime`, `memelord`, `treg`, `balance`, `governor`, `sessions`, `chats`, `messages`, `watchers`, `clone`, `transcribe`, `twitter followers`, `twitter notifications`, `twitter reply`, `twitter quote`, `twitter post`, `twitter like`, `twitter list`, `twitter repost`, `twitter follow`, `twitter dm`, `twitter react`, `twitter queue`, `new`, `reddit session`, `reddit post`, `reddit reply`, `reddit vote`, `discord session`, `discord chats`, `discord servers`, `discord channels`, `discord posts`, `discord search`, `discord send`, `discord delete`, `discord react`, `discord voice`, `linkedin session`, `linkedin cookies`, `slack session`, `slack workspaces`, `slack chats`, `slack send`, `slack cookies`, `slack react`, `slack voice`, `instagram session`, `instagram dms`, `instagram send`, `instagram react`, `instagram voice`, `twitter voice`.
 - **No browser path at all:** X. Its accounts run on the direct API only (rule 80).
 
 Each browser's capabilities, built or not: [`docs/browsers.md`](browsers.md) (generated, `bun run check:browsers`). AdsPower's setup: [`docs/adsPower.md`](adsPower.md).
@@ -197,9 +197,9 @@ flowchart LR
   agent["Agent (Claude Code, Codex)"]
   matt["matt, in a terminal"]
   shell["Bash / PowerShell / Monitor"]
-  mcp["MCP server log: 232 command tools + saved flows"]
+  mcp["MCP server log: 234 command tools + saved flows"]
   bin["bin/log.ts"]
-  runCli["runCli: 113 commands (COMMANDS)"]
+  runCli["runCli: 115 commands (COMMANDS)"]
   live[("~/.logCli/mcp/day.log: the live log")]
   engine{"commandEngine: DIRECT_ROUTES"}
   direct["Direct-API engine: fbk, twikit, reverseChud, endcord, openLinkedinApi, gabrielSlack, instagrapi (vendor/), the account's saved session, a governor per account"]
@@ -256,12 +256,14 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | [`log launch`](#log-launch) | Start here: a guided menu to set log up (platforms, sign-ins, the account's browser and extensions), add an account, sign it in, check it and connect your agent (and the listing tools when Twenty is set up) | any (none) | `--setup` `--json` | none | none | terminal only: prompts in a terminal (Clack). Call the commands it wraps directly. | PreToolUse, PostToolUse · n/a | no | 30, 38, 39, 40, 41 |
 | [`log console`](#log-console) | The local console: this machine's status, accounts, usage, events, AI client config and settings, as an interactive terminal console, as JSON per screen, or as the web console served on loopback (--web) | any (none) | `[--web]` `[--port <integer 0..65535>]` `[--noOpen]` `[--json]` `[--platform <facebook|twitter|reddit|discord|linkedin|slack|instagram>]` `[--days <1|7|30>]` `[--kind <kind>]` `[--status <recorded|succeeded|failed|unknown>]` `[--page <integer 0..>]` `[--pageSize <integer 1..>]` `[--client <claudeCode|codex|opencode>]` | none | none | `consoleStart`, `consoleConnections`, `consoleUsage`, `consoleEvents`, `consoleAiClients`, `consoleSettings` | PreToolUse, PostToolUse · PostToolUse | no | 47, 134, 163, 168, 172, 30, 38, 39, 40, 41 |
+| [`log credentials`](#log-credentials) | A provider's keys on this machine: save them from masked prompts, checked with the provider first, or read the values that are not secret | any (none) | `--provider <adsPower|typesafe|subq|memelord|fishAudio|inworld|treg|jina|assemblyAi|parallel|twoCaptcha|byteful>` `[--host <url>]` `[--homes <CC,CC|all>]` `[--json]` | none | none | `credentialsRead` | PreToolUse, PostToolUse · PostToolUse | no | 41, 47, 163, 164, 172, 30, 38, 39, 40, 41 |
 | [`log facebook listings`](#log-facebook-listings) | List the Twenty listings, by status, account or campaign | `facebook` first | `[--status <DRAFT|READY|PUBLISHING|UNCONFIRMED|FAILED|BLOCKED|REMOVED|ACCOUNT_LOST|REPLACED|ACTIVE|UNDER_REVIEW|DUPLICATE_TAKEDOWN|DELETED_BY_FB|POLICY_VIOLATION|COMMERCE_BAN|CHECKPOINT_REQUIRED|SOLD|RETRY_EXHAUSTED|UNKNOWN>]` `[--account <accountName>]` `[--campaign <campaignId>]` `[--json]` | none | none | `facebookListings` | PreToolUse, PostToolUse · PostToolUse | no | 30, 38, 39, 40, 41 |
 | [`log facebook listing`](#log-facebook-listing) | Show one Twenty listing, or create one for an account from a JSON file | `facebook` first | `[--json]` `--account <accountName>` `--file <listing.json>` `[--live]` `[--bypass]` `[--now]` `[--apply]` | none | none | `facebookListing`, `facebookListingCreate`, `facebookListingRemove`, `facebookListingRemoveLive`, `facebookListingSweep`, `facebookListingLint` | PreToolUse, PostToolUse · PostToolUse | no | 35, 30, 38, 39, 40, 41 |
 | [`log facebook accounts`](#log-facebook-accounts) | List the FACEBOOK accounts in Twenty: status, home, proxy, and whether each may run | `facebook` first | `[--json]` | none | none | `facebookAccounts` | PreToolUse, PostToolUse · PostToolUse | no | 30, 38, 39, 40, 41 |
 | [`log facebook account`](#log-facebook-account) | Show one account, or set its status (banned/dead/restricted replace its campaign listings) | `facebook` first | `[--json]` `--from <folder>` `[--reason <text>]` `[--detail <text>]` | none | none | `facebookAccountShow`, `facebookAccountResave`, `facebookAccountResetOpens`, `facebookAccountStatus` | PreToolUse, PostToolUse · PostToolUse | no | 35, 30, 38, 39, 40, 41 |
 | [`log adsPower`](#log-adspower) | AdsPower: Local API status, its profiles, and one profile per Twenty account (sync) | any (none) | `[--json]` `[--apply]` `[--account <accountName>]` `[--homes <US,IE,…>]` | none | none | `adsPowerStatus`, `adsPowerProfiles`, `adsPowerSync` | PreToolUse, PostToolUse · PostToolUse | no | 35, 44, 30, 38, 39, 40, 41 |
 | [`log localAccount`](#log-localaccount) | Accounts kept in a local file instead of Twenty: add one, with the account's browser profile, pull every Twenty account in, or list them | any (none) | `[--platform <facebook|twitter|reddit|discord|linkedin|slack|instagram>]` `--account <accountName>` `[--adsPower <profileId>]` `[--proxy <scheme://user:pass@host:port>]` `[--home <CC>]` `[--city <city>]` `[--json]` `[--refresh]` | none | none | `localAccountAdd`, `localAccountList`, `localAccountPull` | PreToolUse, PostToolUse · PostToolUse | no | 35, 44, 30, 38, 39, 40, 41 |
+| [`log accounts`](#log-accounts) | Every social account in this workspace with its platform, status and session state, the list the hosted accountsList answers | any (none) | `[--limit <integer 1..200>]` `[--cursor <n>]` `[--json]` | none | none | `accountsList` | PreToolUse, PostToolUse · PostToolUse | no | 154, 163, 172, 30, 38, 39, 40, 41 |
 | [`log facebook lifecycle`](#log-facebook-lifecycle) | Each account's place in its lifecycle (rule 35): status, state, what onboarding has left; `states` prints the machine | `facebook` first | `[--account <name>]` `[--json]` `[--write]` | none | none | `facebookLifecycle`, `facebookLifecycleStates` | PreToolUse, PostToolUse · PostToolUse | no | 35, 30, 38, 39, 40, 41 |
 | [`log facebook preflight`](#log-facebook-preflight) | Before any browser opens, check each account will get through: home timezone, hours, proxy speed and country, the account's browser and its kernel, launches and host opens left, no session left open, its picture on disk | `facebook` first | `[--account <accountName>]` `[--homes <US,CA,…>]` `[--noProxy]` `[--apply]` `[--json]` | none | none | `facebookPreflight` | PreToolUse, PostToolUse · PostToolUse | no | 35, 79, 30, 38, 39, 40, 41 |
 | [`log facebook doctor`](#log-facebook-doctor) | Check python, facebook-camofox-client, Camoufox, Twenty, and which accounts may run | `facebook` first | `[--json]` | browser | Camoufox only | `facebookDoctor` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 35, 30, 38, 39, 40, 41 |
@@ -294,7 +296,7 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | [`log media`](#log-media) | Turn every image, meme and video into text any model reads, kept in the .db with a small preview, so replies read what was sent | any (none) | `[--json]` `[--wait <number 0..>]` | none | none | `mediaDescriber`, `mediaDescribe`, `mediaStatus`, `mediaView` | PreToolUse, PostToolUse · PostToolUse | no | 26, 41, 138, 105, 137, 30, 38, 39, 40, 41 |
 | [`log browsers`](#log-browsers) | Where every open browser is: its page, the known page state it sits on, the call that resolves it, and what only the owner can clear (rule 35) | any (none) | `[--json]` | none | none | `browsers` | PreToolUse, PostToolUse · PostToolUse | no | 29, 35, 30, 38, 39, 40, 41 |
 | [`log browser`](#log-browser) | One account's live browser: whether it needs a person to sign in, in the window on this machine or inline from a remote runtime | any (none) | `--account <accountName>` `[--json]` | none | none | `browserView` | PreToolUse, PostToolUse · PostToolUse | no | 8, 19, 35, 94, 105, 30, 38, 39, 40, 41 |
-| [`log report`](#log-report) | The numbers behind a report, read from log.db only (who messaged an account and how often, by source), for the MCP report view | any (none) | `--source <twitterDmsBySender>` `[--account <accountName>]` `[--since <dateOrSpan>]` `[--limit <integer>]` `[--json]` | none | none | `reportData` | PreToolUse, PostToolUse · PostToolUse | no | 134, 154, 160, 30, 38, 39, 40, 41 |
+| [`log report`](#log-report) | The numbers behind a report, read from log.db only (who messaged an account and how often, or one person's stored profile, by source), for the MCP report view | any (none) | `--source <twitterDmsBySender|dmsBySender|identityProfile>` `[--platform <facebook|twitter|reddit|discord|linkedin|slack|instagram>]` `[--account <accountName>]` `[--since <dateOrSpan>]` `[--limit <integer 1..200>]` `[--userId <id>]` `[--handle <handle>]` `[--json]` | none | none | `reportData` | PreToolUse, PostToolUse · PostToolUse | no | 134, 154, 160, 30, 38, 39, 40, 41 |
 | [`log job`](#log-job) | Follow or stop a long MCP run: each runs as a job when it outlasts its call's wait | any (none) | `[--afterLine <integer 0..>]` `[--waitMs <integer 0..>]` `[--json]` | none | none | `jobStatus`, `jobCancel`, `jobList` | PreToolUse, PostToolUse · PostToolUse | no | 8, 26, 35, 30, 38, 39, 40, 41 |
 | [`log mcp`](#log-mcp) | This server's MCP sign-ins over OAuth (through Twenty, the owner only): list the clients, revoke them | any (none) | `[--json]` | none | none | terminal only: manages who may sign in to this server's MCP (OAuth through Twenty). matt runs `log mcp clients` or `mcp revoke <clientId\|all>` in a terminal on the server. | PreToolUse, PostToolUse · n/a | no | 35, 47, 167, 30, 38, 39, 40, 41 |
 | [`log login`](#log-login) | Only for a team on Twenty: sign in to its Twenty through its sign-in app (OAuth). Local accounts need no sign-in, and without Twenty set up it says so | any (none) | `--webUrl <url>` `--apiUrl <url>` `--token <accessToken>` `--json` | none | none | terminal only: opens a browser for Twenty OAuth and waits for it. Run `log login` in a terminal. | PreToolUse, PostToolUse · n/a | no | 30, 38, 39, 40, 41 |
@@ -405,8 +407,10 @@ flowchart TB
   subgraph g_any["Any platform"]
     c_launch["launch"]
     c_console["console"]
+    c_credentials["credentials"]
     c_adsPower["adsPower"]
     c_localAccount["localAccount"]
+    c_accounts["accounts"]
     c_inspect["inspect"]
     c_flow["flow"]
     c_proxy["proxy"]
@@ -537,6 +541,8 @@ flowchart TB
   c_launch -.- terminal
   cli --> c_console
   mcp --> c_console
+  cli --> c_credentials
+  mcp --> c_credentials
   cli --> c_facebookListings
   mcp --> c_facebookListings
   cli --> c_facebookListing
@@ -549,6 +555,8 @@ flowchart TB
   mcp --> c_adsPower
   cli --> c_localAccount
   mcp --> c_localAccount
+  cli --> c_accounts
+  mcp --> c_accounts
   cli --> c_facebookLifecycle
   mcp --> c_facebookLifecycle
   cli --> c_facebookPreflight
@@ -1033,6 +1041,16 @@ log console settings [--json]
 Everything is local: no sign-in, no team. Each screen reads the same src/console loader as the web console's /api/console endpoint.
 ```
 
+#### log credentials
+
+A provider's keys on this machine: save them from masked prompts, checked with the provider first, or read the values that are not secret MCP tools: `credentialsRead`, one per form, with named fields.
+
+```text
+log credentials save --provider <adsPower|typesafe|subq|memelord|fishAudio|inworld|treg|jina|assemblyAi|parallel|twoCaptcha|byteful> [--host <url>] [--homes <CC,CC|all>]
+log credentials read --provider <adsPower> [--json]
+save keeps a provider's keys in this machine's settings file, the same save as the console's Settings page: each key is typed in a masked prompt, never passed as a flag or printed, and is checked with the provider before it is written; nothing is written when the provider refuses it. --host and --homes are the browser provider's local API URL and allowed countries (default: what is saved now). read shows a provider's saved values that are not secret, the same read the console's form starts from.
+```
+
 #### log facebook listings
 
 List the Twenty listings, by status, account or campaign MCP tools: `facebookListings`, one per form, with named fields.
@@ -1090,8 +1108,18 @@ Accounts kept in a local file instead of Twenty: add one, with the account's bro
 ```text
 log localAccount add --platform <facebook|twitter|reddit|discord|linkedin|slack> --account <accountName> [--adsPower <profileId>] [--proxy <scheme://user:pass@host:port>] [--home <CC>] [--city <city>]
 log localAccount list [--json]
+log localAccount login --platform <p> --account <accountName>   (saves the account's email and password to the file from two masked prompts, the same save as the console's password sign-in, on a platform that signs in from them; run in a terminal)
 log localAccount pull [--platform <p>] [--refresh] [--json]   (copies every account Twenty has, cookies and login included, into the file; an account already there is kept unless --refresh; each keeps its Twenty id, so listings and groups still find it)
 A local account lives in ~/.logCli/localAccounts.json (LOG_LOCAL_ACCOUNTS moves it), not in Twenty. Every command finds it by its accountName, a local row winning over a Twenty row of the same name, and the session a run captures is saved back to the file. LOG_ACCOUNTS=local leaves Twenty out of accounts entirely.
+```
+
+#### log accounts
+
+Every social account in this workspace with its platform, status and session state, the list the hosted accountsList answers MCP tools: `accountsList`, one per form, with named fields.
+
+```text
+log accounts list [--limit <n>] [--cursor <n>] [--json]
+Every social account in this workspace, on every platform: its platform, account name, status and session state, never a credential. The same list the hosted accountsList answers, read from the local accounts file. --limit is how many to list (default 50, at most 200); a page that leaves accounts out names the --cursor of the next.
 ```
 
 #### log facebook lifecycle
@@ -1438,11 +1466,11 @@ Where the runtime is comes from LOG_BROWSER_VIEW_LOCATION (local or remote), whi
 
 #### log report
 
-The numbers behind a report, read from log.db only (who messaged an account and how often, by source), for the MCP report view MCP tools: `reportData`, one per form, with named fields.
+The numbers behind a report, read from log.db only (who messaged an account and how often, or one person's stored profile, by source), for the MCP report view MCP tools: `reportData`, one per form, with named fields.
 
 ```text
-log report data --source twitterDmsBySender [--account <accountName>] [--since <7d|4w|12h|2026-11-01>] [--limit <n>] [--json]
-The numbers behind a report, read from log.db only: no platform call, no governor use, nothing sent. twitterDmsBySender counts who messaged the account in its one-to-one DMs (the old DM thread and the Chat thread with one person counted as one, a message mirrored into both counted once; group chats left out), most messages first, with each person's first and last message time, the totals and the count per day. It holds only what log.db has: run twitterDms first if the inbox may be behind.
+log report data --source <twitterDmsBySender|dmsBySender|identityProfile> [--platform <p>] [--account <accountName>] [--since <7d|4w|12h|2026-11-01>] [--limit <n>] [--userId <id>] [--handle <handle>] [--json]
+The numbers behind a report, read from log.db only: no platform call, no governor use, nothing sent. The sources are the report tool's (REPORT_SOURCES). twitterDmsBySender counts who messaged the account in its one-to-one DMs (the old DM thread and the Chat thread with one person counted as one, a message mirrored into both counted once; group chats left out), most messages first, with each person's first and last message time, the totals and the count per day. dmsBySender counts the same on the --platform named, for any platform with chats in log.db (reportSourceNoData when it has none). identityProfile reads one person's stored profile on --platform by --userId or --handle (identityProfileMissing when none is stored). Each holds only what log.db has: read the platform's inbox first if it may be behind.
 --account keeps one account (default every account the source covers in log.db). --since keeps messages from that date or span on. --limit is how many people to list, default 20, at most 200; the totals count everyone.
 Show it with the MCP tool report (getGuide({ topic: "ui" })): an MCP Apps host draws it inline, any other host gets markdown with unicode bars.
 ```

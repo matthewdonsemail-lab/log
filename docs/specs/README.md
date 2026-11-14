@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 49 domains, 554 requirements. Each one's anchors are proved against its code by the syntax tree on every commit, push and pull request (`bun run check:specs`). SubQ reads a requirement against its code only when asked (`bun run check:specs --subq`, rule 170). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 49 domains, 556 requirements. Each one's anchors are proved against its code by the syntax tree on every commit, push and pull request (`bun run check:specs`). SubQ reads a requirement against its code only when asked (`bun run check:specs --subq`, rule 170). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -31,6 +31,7 @@ Every log command has one shape: a command that acts on one platform starts with
 - **REQ-COMMAND-19** Every form tool is driven through its command's own run
 - **REQ-COMMAND-20** The reference lists typed flags from the input forms
 - **REQ-COMMAND-21** Every tool has named inputs
+- **REQ-COMMAND-22** Every console operation has a command twin
 
 ## [MCP server](./mcpServer.md)
 
@@ -591,12 +592,13 @@ The knowledge base holds everything an agent should look up before it guesses: A
 
 ## [Local accounts](./localAccounts.md)
 
-Accounts can live in a local file instead of Twenty, on every platform, so log can run everything locally. `log localAccount pull|add|list` (MCP `localAccount`) fills and reads the file, and `LOG_ACCOUNTS=local` leaves Twenty out of accounts entirely. Listings, groups and conversations stay in Twenty. Rule 97, which narrows rule 13 for accounts only.
+Accounts can live in a local file instead of Twenty, on every platform, so log can run everything locally. `log localAccount pull|add|list|login` (MCP `localAccountPull`, `localAccountAdd`, `localAccountList`; `login` is terminal-only) fills and reads the file, and `LOG_ACCOUNTS=local` leaves Twenty out of accounts entirely. Listings, groups and conversations stay in Twenty. Rule 97, which narrows rule 13 for accounts only.
 
 - **REQ-LOCAL-01** Accounts live in one local file
 - **REQ-LOCAL-02** Pull copies every Twenty account in, keeping its Twenty id
 - **REQ-LOCAL-03** Add makes an account Twenty never had
 - **REQ-LOCAL-04** List shows the local accounts
+- **REQ-LOCAL-10** Login saves an account's email and password from masked prompts
 - **REQ-LOCAL-05** A local row wins over Twenty's of the same name
 - **REQ-LOCAL-06** LOG_ACCOUNTS=local leaves Twenty out of accounts
 - **REQ-LOCAL-07** A session a run saves goes back to the file

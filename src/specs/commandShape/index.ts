@@ -12,6 +12,11 @@ const input = 'src/cli/runner/helpers/commandInput.ts'
 const tools = 'src/mcp/server/helpers/toolsFromCommands.ts'
 const roundTrip = 'src/cli/runner/runRoundTrip.test.ts'
 const reparses = 'src/surface/scorecard/helpers/flagReparses.ts'
+const twins = 'src/console/operations/types.ts'
+const parity = 'scripts/checks/checkConsoleParity.ts'
+const credentials = 'src/cli/credentials/index.ts'
+const accounts = 'src/cli/accounts/index.ts'
+const localAccount = 'src/cli/localAccount/index.ts'
 
 export const commandShape = {
   description: 'The shape of every log command: the platform first, old forms refused, the usage and the generated reference',
@@ -31,6 +36,11 @@ export const commandShape = {
     'src/mcp/server/helpers/guardCall.ts',
     'src/cli/runner/runRoundTrip.test.ts',
     'src/surface/scorecard/helpers/flagReparses.ts',
+    'src/console/operations/types.ts',
+    'scripts/checks/checkConsoleParity.ts',
+    'src/cli/credentials/index.ts',
+    'src/cli/accounts/index.ts',
+    'src/cli/localAccount/index.ts',
   ],
   anchors: {
     'REQ-COMMAND-01': [
@@ -96,6 +106,14 @@ export const commandShape = {
       { kind: 'string', file: roundTrip, includes: 'instagramDms.limit' },
     ],
     'REQ-COMMAND-20': [{ kind: 'symbol', file: catalog, name: 'inputFlagsOf' }],
+    'REQ-COMMAND-22': [
+      { kind: 'symbol', file: twins, name: 'CONSOLE_TWINS' },
+      { kind: 'symbol', file: twins, name: 'RUNTIME_TWINS' },
+      { kind: 'symbol', file: parity, name: 'consoleTwinProblems' },
+      { kind: 'symbol', file: credentials, name: 'credentialsCommand' },
+      { kind: 'symbol', file: accounts, name: 'workspaceAccountsCommand' },
+      { kind: 'symbol', file: localAccount, name: 'saveLogin' },
+    ],
   },
   rubrics: {
     'REQ-COMMAND-01': noul('When the first word is a platform, does resolvePlatformForm find the command named by the second word for that platform and return the remaining words as argv, with the platform kept as the first argument when the command platform is byArgument?'),
@@ -117,6 +135,7 @@ export const commandShape = {
     'REQ-COMMAND-17': noul('Does inputSchemaOf emit integer and number with minimum and maximum, arrays for lists, boolean for true-or-false values, pattern and format for shaped strings, and groups and counts only as sentences in property descriptions with no top-level combinator, and does argvOfInput coerce numeric, comma and true-or-false strings and turn typed values back into argv the parser reads the same?'),
     'REQ-COMMAND-18': noul('Is a flag marked approval in required on the live tool and refused by argvOfInput on a live call when missing, and only on commands that refuse --live without --approvedBy?'),
     'REQ-COMMAND-19': noul('Does the round-trip test drive every non-live form tool but its skip list through runCli with stubbed engines, fetch and treg in a temporary home, failing on a parse or input refusal of schema-valid input, and check each bound on both paths?'),
+    'REQ-COMMAND-22': noul('Does CONSOLE_TWINS name, for every entry of CONSOLE_OPERATIONS, the command tools that reach the same operation (credentialsSave and credentialsRead from credentialsCommand, localAccountLogin for the password save, consoleConnections, consoleUsage, consoleEvents, sessionsCheck, sessionsSignIn, browserView, inspectStart, inspectDo), with only browserFrame and browserInput twinned by MCP App tools; does RUNTIME_TWINS name accountsList, the tool workspaceAccountsCommand generates; does consoleTwinProblems fail an operation with no twin, a twin naming no command form or app tool, and a stale entry; and do credentials save and localAccount login refuse with terminalOnly when there is no terminal and call the same saveConsoleCredentials and saveAccountLogin the console calls?'),
     'REQ-COMMAND-20': noul('For a command with input forms, does the catalog list each non-global flag from the forms with its kind or range and whether it is required, adding flags only its usage names?'),
     unspecifiedBehavior: noul('Does the code let a one-platform command run without its platform first, or let the docs check pass a usage, flag or diagram the specification says it refuses, by a route the specification does not describe?'),
   },
@@ -141,6 +160,7 @@ export const commandShape = {
     'REQ-COMMAND-18': MET,
     'REQ-COMMAND-19': MET,
     'REQ-COMMAND-20': MET,
+    'REQ-COMMAND-22': MET,
     unspecifiedBehavior: NOT_VIOLATED,
   },
 }

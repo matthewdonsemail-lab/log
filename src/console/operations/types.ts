@@ -8,6 +8,33 @@ export const BROWSER_OPERATIONS = ["browserState", "browserOpen", "browserFrame"
 export const CONSOLE_OPERATIONS = ["connectionsList", "credentialsSave", "credentialsRead", "accountCheck", "accountSignIn", "signInLinkOpen", "usage", "events", ...BROWSER_OPERATIONS] as const;
 export type ConsoleOperation = (typeof CONSOLE_OPERATIONS)[number];
 
+export interface ConsoleTwin {
+  commands: readonly string[];
+  app?: readonly string[];
+}
+
+export const CONSOLE_TWINS: Readonly<Record<ConsoleOperation, ConsoleTwin>> = {
+  connectionsList: { commands: ["consoleConnections"] },
+  credentialsSave: { commands: ["credentialsSave"] },
+  credentialsRead: { commands: ["credentialsRead"] },
+  accountCheck: { commands: ["sessionsCheck"] },
+  accountSignIn: { commands: ["sessionsSignIn", "localAccountLogin"] },
+  signInLinkOpen: { commands: ["sessionsSignIn"] },
+  usage: { commands: ["consoleUsage"] },
+  events: { commands: ["consoleEvents"] },
+  browserState: { commands: ["browserView"] },
+  browserOpen: { commands: ["inspectStart"] },
+  browserFrame: { commands: [], app: ["browserViewFrame"] },
+  browserInput: { commands: [], app: ["browserViewInput"] },
+  browserAction: { commands: ["inspectDo", "inspectDoLive"] },
+  browserSaveState: { commands: ["inspectDo"] },
+  browserClose: { commands: ["inspectDo"] },
+};
+
+export const RUNTIME_TWINS: Readonly<Record<string, ConsoleTwin>> = {
+  accountsList: { commands: ["accountsList"] },
+};
+
 export const SECRET_ARGS: Readonly<Partial<Record<ConsoleOperation, readonly string[]>>> = {
   credentialsSave: ["values"],
   accountSignIn: ["cookies", "username", "password"],

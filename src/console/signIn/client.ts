@@ -96,7 +96,7 @@ export async function finishConsoleSignIn(account: ConnectionAccount, deps: Cons
   return runSignIn({ account: { id: account.id, name: account.name, platform: account.platform, status: account.status, state: account.state, checkedAt: account.checkedAt, lastCheck: account.lastCheck }, finish: true }, { actors, store });
 }
 
-function passwordSignIn(request: SignInRequest, env: Env): SignInResult {
+export function saveAccountLogin(request: SignInRequest, env: Env = process.env): SignInResult {
   if (!PASSWORD_PLATFORMS.includes(request.platform)) throw new Error("passwordSignInUnavailable");
   const path = localAccountsPath(env);
   const rows = readLocalAccounts(path);
@@ -109,5 +109,5 @@ function passwordSignIn(request: SignInRequest, env: Env): SignInResult {
 
 export async function signInConsoleAccount(input: Record<string, unknown>, env: Env = process.env, deps: ConsoleSignInDeps = {}): Promise<SignInResult> {
   const request = signInRequestOf(input);
-  return request.method === "password" ? passwordSignIn(request, env) : machineSignIn(request, deps);
+  return request.method === "password" ? saveAccountLogin(request, env) : machineSignIn(request, deps);
 }
