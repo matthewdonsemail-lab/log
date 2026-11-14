@@ -1,6 +1,6 @@
 {
-  "builtAt": "2026-11-14T20:33:27.977Z",
-  "runs": 3,
+  "builtAt": "2026-11-14T22:03:22.006Z",
+  "runs": 4,
   "operations": [
     {
       "name": "flagshipWebFeedForyou",
@@ -9,7 +9,7 @@
       "docId": null,
       "doc": "background/flagshipWebFeedForyou.md",
       "reaEvidenceId": "ev_2b7a18c271a4f80536532c2cac14a9478e5ead3403f7631fd1303b375af517a7",
-      "seen": 5
+      "seen": 7
     },
     {
       "name": "flagshipWebIn",
@@ -18,7 +18,25 @@
       "docId": null,
       "doc": "background/flagshipWebIn.md",
       "reaEvidenceId": "ev_2b7a18c271a4f80536532c2cac14a9478e5ead3403f7631fd1303b375af517a7",
-      "seen": 7
+      "seen": 8
+    },
+    {
+      "name": "flagshipWebMessaging",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/flagshipWebMessaging.md",
+      "reaEvidenceId": "ev_cf831086cc41b46b24c8cdc9890a0b7c48a66164bfffc07ab47ec5142571fdc5",
+      "seen": 2
+    },
+    {
+      "name": "flagshipWebMynetwork",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/flagshipWebMynetwork.md",
+      "reaEvidenceId": "ev_37f5d4e0c076b1627fbddbfec22ea0a451fbd8ff421fe4820dcfba2ab5cf8ded",
+      "seen": 1
     },
     {
       "name": "flagshipWebNotifications",
@@ -44,7 +62,7 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/flagshipWebRscActionActionsAppConfig.md",
-      "reaEvidenceId": "ev_38cfc5b696a5280645647ef049d0c12bf870721c67c775bfc0267773183762b5",
+      "reaEvidenceId": "ev_ac6080ad29f23aa605cbe54f1b92979f8e11e2553c29e58f7d70f8349a0eeee1",
       "seen": 7
     },
     {
@@ -54,7 +72,16 @@
       "docId": null,
       "doc": "background/flagshipWebRscActionActionsComponent.md",
       "reaEvidenceId": "ev_c1abdf33053dc1d7030ab762ec70be7a4792316ed5a5874ffa3d4ae200fdfc55",
-      "seen": 25
+      "seen": 33
+    },
+    {
+      "name": "flagshipWebRscActionActionsNavigation",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/flagshipWebRscActionActionsNavigation.md",
+      "reaEvidenceId": "ev_3e36a4a88d9128318fc76c01120d2d604bb9cdb4ba5eeda61aa4e976eac312d6",
+      "seen": 1
     },
     {
       "name": "flagshipWebRscActionActionsPagination",
@@ -62,8 +89,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/flagshipWebRscActionActionsPagination.md",
-      "reaEvidenceId": "ev_10d91e00db1aedd6c9455768dfb9f8012f9823b74a067826b63cecfb509b7f58",
-      "seen": 7
+      "reaEvidenceId": "ev_5cfd2fb233988a083e7a32eaf9b52c9716fd2449612f4b8adb678922b4ffcc9e",
+      "seen": 11
     },
     {
       "name": "flagshipWebRscActionActionsServerRequest",
@@ -72,7 +99,7 @@
       "docId": null,
       "doc": "background/flagshipWebRscActionActionsServerRequest.md",
       "reaEvidenceId": "ev_beea3ff6a23754247201f9854f98467e0eb184892094bdc5ae1088a7bdf55062",
-      "seen": 65
+      "seen": 99
     },
     {
       "name": "flagshipWebRscActionActionsServerStreamRequest",
@@ -81,7 +108,7 @@
       "docId": null,
       "doc": "background/flagshipWebRscActionActionsServerStreamRequest.md",
       "reaEvidenceId": "ev_871fc298a6ca40ab00a951152efd2b3867b8a360a5fceb78097b27f3c9e8f0bc",
-      "seen": 20
+      "seen": 30
     },
     {
       "name": "litmsApiEventsExtTagLoad",
@@ -90,7 +117,7 @@
       "docId": null,
       "doc": "background/litmsApiEventsExtTagLoad.md",
       "reaEvidenceId": "ev_890dffbeab0fd1f58d6ce5b2dba067b19d32ad578ae22676f51f5ebcfa824d94",
-      "seen": 10
+      "seen": 13
     },
     {
       "name": "litmsApiEventsTmsLoad",
@@ -99,7 +126,7 @@
       "docId": null,
       "doc": "background/litmsApiEventsTmsLoad.md",
       "reaEvidenceId": "ev_58484ddf774e72495c809f53697f7f3f99b9fc3d9e0b361a3e3163fec68a59cb",
-      "seen": 8
+      "seen": 10
     },
     {
       "name": "litmsApiMetadata",
@@ -107,8 +134,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/litmsApiMetadata.md",
-      "reaEvidenceId": "ev_dcd6192a07f9e1dc889c5a59cbe07c98ac3583615ab55d9508db461520a10af9",
-      "seen": 8
+      "reaEvidenceId": "ev_766af98e3a50ffaf4e1b39b21de7a4d3d663e2db9759eebd4ca09ec0675adebd",
+      "seen": 9
     },
     {
       "name": "liTscpSct",
@@ -116,8 +143,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/liTscpSct.md",
-      "reaEvidenceId": "ev_dd9ee12db3ca780d8c0cc9b1562a8842f627b09873ce8ae95001b47e733153dc",
-      "seen": 2
+      "reaEvidenceId": "ev_5284e7a729b11853971000cd79fc52c8ea1bab23fbda18c24997ed111053df2a",
+      "seen": 32
     },
     {
       "name": "lix",
@@ -143,8 +170,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/platformLitmsAllowlistVoyagerWebFeed.md",
-      "reaEvidenceId": "ev_914afe55b9058180eb9a7049a5e7d12cec99bae23753520408145b690c5c217b",
-      "seen": 5
+      "reaEvidenceId": "ev_20e22674f7dea99287df8301d13b94bb2bfde00f91caf66fb2061773d49ca888",
+      "seen": 7
     },
     {
       "name": "platformLitmsAllowlistVoyagerWebGlobal",
@@ -152,8 +179,17 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/platformLitmsAllowlistVoyagerWebGlobal.md",
-      "reaEvidenceId": "ev_914afe55b9058180eb9a7049a5e7d12cec99bae23753520408145b690c5c217b",
+      "reaEvidenceId": "ev_20e22674f7dea99287df8301d13b94bb2bfde00f91caf66fb2061773d49ca888",
       "seen": 7
+    },
+    {
+      "name": "platformLitmsAllowlistVoyagerWebMynetwork",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/platformLitmsAllowlistVoyagerWebMynetwork.md",
+      "reaEvidenceId": "ev_20e22674f7dea99287df8301d13b94bb2bfde00f91caf66fb2061773d49ca888",
+      "seen": 2
     },
     {
       "name": "psettingsPolicyNotices",
@@ -180,7 +216,16 @@
       "docId": null,
       "doc": "background/realtimeRealtimefrontendclientconnectivitytracking.md",
       "reaEvidenceId": "ev_8f5b17e622af162b3bea6ae47295b22bd0fd5770008aa3a5e612cb3e8b90d3f6",
-      "seen": 91
+      "seen": 93
+    },
+    {
+      "name": "realtimeRealtimefrontendsubscriptions",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/realtimeRealtimefrontendsubscriptions.md",
+      "reaEvidenceId": "ev_f75930edf809c3098e1d807ab13e028f85966a789879431ed2654432f742733b",
+      "seen": 9
     },
     {
       "name": "realtimeRealtimefrontendtimestamp",
@@ -192,13 +237,31 @@
       "seen": 8
     },
     {
+      "name": "root",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/root.md",
+      "reaEvidenceId": "ev_9c6bf27e1c318663dea9d07e61ac285ed3e88595dc74767d370a6641f6d53479",
+      "seen": 72
+    },
+    {
       "name": "voyagerApiGraphql",
       "domain": "background",
       "kind": "endpoint",
       "docId": null,
       "doc": "background/voyagerApiGraphql.md",
       "reaEvidenceId": "ev_ebb311c92c2fd9b9d68f44d37f3ac6312b93ea7fe007073cf2c6760d9ed28046",
-      "seen": 102
+      "seen": 141
+    },
+    {
+      "name": "voyagerApiIdentityDashProfiles",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/voyagerApiIdentityDashProfiles.md",
+      "reaEvidenceId": "ev_6badcb73ee0c880288495bef39b9b82ae5c53c6333331967f9afa7f150dd91cc",
+      "seen": 1
     },
     {
       "name": "voyagerApiMe",
@@ -215,8 +278,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/voyagerApiMessagingDashPresencestatuses.md",
-      "reaEvidenceId": "ev_33e0da64fb8b95cef4077d523e8b5bcced0715a71770cc3ccf8c343ebae64aa8",
-      "seen": 7
+      "reaEvidenceId": "ev_5b9bbf6c85386a0cb1555b7b9896d42d18ebfa10d6a66b7fd54873190c195d1c",
+      "seen": 10
     },
     {
       "name": "voyagerApiPremiumFeatureaccess",
@@ -251,7 +314,7 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/voyagerApiVoyageridentitydashnotificationcards.md",
-      "reaEvidenceId": "ev_2a17bfb1e836e28fdd8e4317a57bcf86f97dc074232857f685b4e7c446274db3",
+      "reaEvidenceId": "ev_d72b1407b03468b85036db814366db634336f4a274fb76dfd1cea31d46449f4c",
       "seen": 7
     },
     {
@@ -260,8 +323,44 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/voyagerApiVoyagermessagingdashconversationnudges.md",
-      "reaEvidenceId": "ev_7c6a49705fbd56a0f95800c9803fcf302f5c5cfe6ff84603c13f4581519af75c",
-      "seen": 7
+      "reaEvidenceId": "ev_0ef826cb05e19f39f41e2f0a2dd8b1469e44e174f5d12eb85c921686c6b6ca5f",
+      "seen": 11
+    },
+    {
+      "name": "voyagerApiVoyagermessagingdashmessagingbadge",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/voyagerApiVoyagermessagingdashmessagingbadge.md",
+      "reaEvidenceId": "ev_ddff4de309d532f2007cf0e2f772b6542f407dcea17ca5a68a47c53f221fd96a",
+      "seen": 3
+    },
+    {
+      "name": "voyagerApiVoyagermessagingdashmessengerconversations",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/voyagerApiVoyagermessagingdashmessengerconversations.md",
+      "reaEvidenceId": "ev_83fc7a1b641bb587dc255ed3d2b052a70a23cdef60ce130bcbe2e59e9c18e117",
+      "seen": 3
+    },
+    {
+      "name": "voyagerApiVoyagermessagingdashmessengermessagedeliveryacknowledgements",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/voyagerApiVoyagermessagingdashmessengermessagedeliveryacknowledgements.md",
+      "reaEvidenceId": "ev_33af57bedbe0353f5f89a855c5c5a1d699035eebff5c7e0730051b015cde2cca",
+      "seen": 6
+    },
+    {
+      "name": "voyagerApiVoyagermessagingdashmessengermessages",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/voyagerApiVoyagermessagingdashmessengermessages.md",
+      "reaEvidenceId": "ev_5d57b838d06acdca77ae04228159522c29f1aa15d8a970c70184e63d11b4c1ef",
+      "seen": 2
     },
     {
       "name": "voyagerApiVoyagermessagingdashsecondaryinbox",
@@ -269,8 +368,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/voyagerApiVoyagermessagingdashsecondaryinbox.md",
-      "reaEvidenceId": "ev_8659b0c4ae018a379e28ec856575bc0ca5594ca58bfe0fa31b067e7da763234b",
-      "seen": 6
+      "reaEvidenceId": "ev_4e68409b3766c448f9fdffd322b326a6b8f826035dc526aef63ca4ebb00f4a8f",
+      "seen": 10
     },
     {
       "name": "voyagerApiVoyagermessaginggraphqlGraphql",
@@ -278,8 +377,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/voyagerApiVoyagermessaginggraphqlGraphql.md",
-      "reaEvidenceId": "ev_6ff0af4f46043abea737467084493054482f65a87a59bfaea914f1430791d946",
-      "seen": 14
+      "reaEvidenceId": "ev_382acc38c115503959fc71a1465444794e4d45cf9575570dcf8b044697b44c40",
+      "seen": 27
     },
     {
       "name": "voyagerApiVoyagernotificationsdashbadgingitemcounts",
@@ -291,13 +390,22 @@
       "seen": 7
     },
     {
+      "name": "voyagerApiVoyageronboardingdashmemberhandles",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/voyagerApiVoyageronboardingdashmemberhandles.md",
+      "reaEvidenceId": "ev_be0451836bb4ed6363c51bf1be5836f6db0293bdd366fba3282caf61b3256fcc",
+      "seen": 1
+    },
+    {
       "name": "voyagerApiVoyagerorganizationdashpagemailbox",
       "domain": "background",
       "kind": "endpoint",
       "docId": null,
       "doc": "background/voyagerApiVoyagerorganizationdashpagemailbox.md",
       "reaEvidenceId": "ev_41c8cfd9c647f8db687f9317d81557c47a1c59294c7ec06c83685220b8f86c69",
-      "seen": 7
+      "seen": 9
     },
     {
       "name": "voyagerApiVoyagerpremiumdashadvertisebadge",
@@ -306,7 +414,7 @@
       "docId": null,
       "doc": "background/voyagerApiVoyagerpremiumdashadvertisebadge.md",
       "reaEvidenceId": "ev_99f341f871ab6a7fd99a5029ee1e64c2ae5a59824eea1a83c8954a6041b5977d",
-      "seen": 24
+      "seen": 25
     },
     {
       "name": "voyagerApiVoyagerrelationshipsdashmemberrelationships",

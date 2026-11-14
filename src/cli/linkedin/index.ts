@@ -90,4 +90,4 @@ export const linkedinSessionCommand: Command = {
   },
 };
 
-export { linkedinCookiesCommand, linkedinCookiesDeps, linkedinPostCommand, linkedinDeleteCommand, linkedinSuggestionsCommand, linkedinConnectCommand, linkedinLikeCommand, linkedinInboxCommand, linkedinMessagesCommand } from "./helpers/index.ts";
+export { linkedinCookiesCommand, linkedinCookiesDeps, linkedinPostCommand, linkedinDeleteCommand, linkedinSuggestionsCommand, linkedinConnectCommand, linkedinLikeCommand, linkedinRepostCommand, linkedinInboxCommand, linkedinMessagesCommand, linkedinMessageCommand } from "./helpers/index.ts";

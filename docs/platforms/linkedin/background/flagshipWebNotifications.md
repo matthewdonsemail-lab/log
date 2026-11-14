@@ -10,7 +10,7 @@
 | Path | `/flagship-web/notifications` |
 | Sends | — |
 | Reads | — |
-| Called from | `runs/inspect/20261107T161246_<name:1>/script252.js:756 statement`, `runs/inspect/20261107T161246_<name:1>/script252.js:1019 statement`, `runs/inspect/20261107T161246_<name:1>/script252.js:1108 statement`, `runs/inspect/20261107T161246_<name:1>/script252.js:845 statement` |
+| Called from | `runs/chrome/20261114T213510_<name:1>/script10.js:756 statement`, `runs/chrome/20261114T213510_<name:1>/script10.js:1019 statement`, `runs/chrome/20261114T213510_<name:1>/script10.js:1108 statement`, `runs/chrome/20261114T213510_<name:1>/script10.js:845 statement` |
 | rea | `ev_e3519f6e87cd1298cdec3e4d833cff3edb8a91dd0b317c9708d194dc2eb38455` |
 
 Seen 1 time(s) in 1 run(s).

@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | `data.entityUrn`, `data.elements`, `data.paging`, `data.$type`, `included` |
 | Called from | — |
-| rea | `ev_8659b0c4ae018a379e28ec856575bc0ca5594ca58bfe0fa31b067e7da763234b` |
+| rea | `ev_4e68409b3766c448f9fdffd322b326a6b8f826035dc526aef63ca4ebb00f4a8f` |
 
-Seen 6 time(s) in 1 run(s).
+Seen 10 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -23,6 +23,8 @@ Seen 6 time(s) in 1 run(s).
 | inspect | step 6: goto /feed/ | 1 | 200 | 73 ms | 4001 ms | — |
 | inspect | step 12: goto /feed/ | 1 | 200 | 132 ms | 4526 ms | — |
 | inspect | step 25: goto /in/<profile>/ | 1 | 200 | 96 ms | 3403 ms | — |
+| chrome | step 1: the owner's own Chrome, recorded by hand (har4): the feed and messaging open | 2 | 200 | 155–275 ms | 24166–24167 ms | — |
+| chrome | step 8: comment on a post, by hand | 2 | 200 | 97–212 ms | 7500–7501 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

@@ -9,11 +9,11 @@
 | doc_id | — |
 | Path | `/voyager/api/voyagerMessagingGraphQL/graphql` |
 | Sends | — |
-| Reads | — |
+| Reads | `data._recipeType`, `data._type`, `data.messengerConversationsByCategoryQuery`, `data.messengerMessagesBySyncToken`, `data.messengerSeenReceiptsByConversation`, `data.messengerQuickRepliesByConversation` |
 | Called from | — |
-| rea | `ev_6ff0af4f46043abea737467084493054482f65a87a59bfaea914f1430791d946` |
+| rea | `ev_382acc38c115503959fc71a1465444794e4d45cf9575570dcf8b044697b44c40` |
 
-Seen 14 time(s) in 2 run(s).
+Seen 27 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -24,6 +24,8 @@ Seen 14 time(s) in 2 run(s).
 | inspect | step 6: goto /feed/ | 2 | 200 | 84–665 ms | 3330–4000 ms | — |
 | inspect | step 12: goto /feed/ | 2 | 200 | 138–643 ms | 3866–4525 ms | — |
 | inspect | step 25: goto /in/<profile>/ | 2 | 200 | 81–633 ms | 2758–3401 ms | — |
+| chrome | step 1: the owner's own Chrome, recorded by hand (har4): the feed and messaging open | 7 | 200 | 127–580 ms | 23983–24497 ms | — |
+| chrome | step 8: comment on a post, by hand | 6 | 200 | 122–297 ms | 7232–7704 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

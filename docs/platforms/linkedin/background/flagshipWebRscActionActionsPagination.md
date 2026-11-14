@@ -10,10 +10,10 @@
 | Path | `/flagship-web/rsc-action/actions/pagination` |
 | Sends | `pagerId`, `clientArguments`, `paginationRequest` |
 | Reads | — |
-| Called from | `runs/inspect/20261107T170649_<name:1>/script37.js:80 statement`, `runs/inspect/20261107T170649_<name:1>/script60.js:60 statement`, `runs/inspect/20261107T170649_<name:1>/script49.js:66 statement`, `runs/inspect/20261107T170649_<name:1>/script61.js:55 statement` |
-| rea | `ev_10d91e00db1aedd6c9455768dfb9f8012f9823b74a067826b63cecfb509b7f58` |
+| Called from | `runs/inspect/20261107T170649_<name:1>/script37.js:80 statement`, `runs/inspect/20261107T170649_<name:1>/script60.js:60 statement`, `runs/chrome/20261114T213510_<name:1>/script1.js:76 statement`, `runs/chrome/20261114T213510_<name:1>/script46.js:80 statement` |
+| rea | `ev_5cfd2fb233988a083e7a32eaf9b52c9716fd2449612f4b8adb678922b4ffcc9e` |
 
-Seen 7 time(s) in 1 run(s).
+Seen 11 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -23,6 +23,10 @@ Seen 7 time(s) in 1 run(s).
 | inspect | step 6: goto /feed/ | 1 | 200 | 753 ms | 1930 ms | — |
 | inspect | step 12: goto /feed/ | 1 | 0 | 970 ms | 2216 ms | — |
 | inspect | step 21: click e1341 | 1 | 200 | 733 ms | 1588 ms | — |
+| chrome | step 2: send a message, by hand | 1 | 200 | 716 ms | 8862 ms | — |
+| chrome | step 3: react to a post, by hand | 1 | 200 | 876 ms | 9342 ms | — |
+| chrome | step 8: comment on a post, by hand | 1 | 200 | 811 ms | 3043 ms | — |
+| chrome | step 9: open My Network's invitations, by hand | 1 | 200 | 752 ms | 54 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

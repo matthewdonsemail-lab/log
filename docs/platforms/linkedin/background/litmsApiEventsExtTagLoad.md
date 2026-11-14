@@ -8,12 +8,12 @@
 | Kind | endpoint |
 | doc_id | — |
 | Path | `/litms/api/events/ext-tag-load` |
-| Sends | `profileName`, `tags`, `eventType`, `eventSource`, `pageKey`, `controlUrn`, `referrer`, `blockedTags`, `compliance` |
+| Sends | `profileName`, `tags`, `blockedTags`, `compliance`, `eventType`, `eventSource`, `pageKey`, `referrer`, `controlUrn` |
 | Reads | — |
 | Called from | `runs/inspect/20261107T170649_<name:3>/script20.js:1 _fireAuditEvent`, `runs/inspect/20261107T170649_<name:3>/script31.js:460 anonymous` |
 | rea | `ev_890dffbeab0fd1f58d6ce5b2dba067b19d32ad578ae22676f51f5ebcfa824d94` |
 
-Seen 10 time(s) in 3 run(s).
+Seen 13 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -27,6 +27,9 @@ Seen 10 time(s) in 3 run(s).
 | inspect | step 6: goto /feed/ | 1 | 200 | 252 ms | 2664 ms | — |
 | inspect | step 12: goto /feed/ | 1 | 200 | 66 ms | 3592 ms | — |
 | inspect | clearSession: linkedin cookies cleared on 1 domain(s): .linkedin.com | 1 | 200 | 61 ms | 6466 ms | — |
+| chrome | step 2: send a message, by hand | 1 | 200 | 90 ms | 10425 ms | — |
+| chrome | step 7: connect with a member, by hand | 1 | 200 | 56 ms | 12023 ms | — |
+| chrome | step 9: open My Network's invitations, by hand | 1 | 200 | 159 ms | 1552 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

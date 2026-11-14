@@ -1,6 +1,6 @@
 # linkedin
 
-A LinkedIn account: saving its cookies, checking its session, posting or deleting its own posts, inviting people LinkedIn suggests, liking posts, and reading its inbox and conversations.
+A LinkedIn account: saving its cookies, checking its session, posting or deleting its own posts, inviting people LinkedIn suggests, liking and reposting posts, and reading and writing in its conversations.
 
 Written by `bun run docs:build` from the code, the skills and AGENTS.md. Not edited by hand: change the command's usage, its skill or the rule, and rebuild.
 
@@ -10,8 +10,8 @@ When the owner asks for one of these, follow its page step by step.
 
 | Use case | What it is | How the owner asks for it |
 |---|---|---|
-| `getGuide({ useCase: "linkedin/network" })` | Growing a LinkedIn network and reading its inbox | "connect with people on linkedin", "who does linkedin suggest", "read my linkedin messages", "what did <someone> say on linkedin" |
-| `getGuide({ useCase: "linkedin/posts" })` | Posting on LinkedIn, and liking or taking a post down | "post this on linkedin", "put this up on linkedin with the picture", "like <someone>'s post on linkedin", "delete that linkedin post" |
+| `getGuide({ useCase: "linkedin/network" })` | Growing a LinkedIn network, and reading and answering its inbox | "connect with people on linkedin", "who does linkedin suggest", "read my linkedin messages", "what did <someone> say on linkedin", "reply to <someone> on linkedin" |
+| `getGuide({ useCase: "linkedin/posts" })` | Posting on LinkedIn, liking or reposting, and taking a post down | "post this on linkedin", "put this up on linkedin with the picture", "like <someone>'s post on linkedin", "repost that on linkedin", "delete that linkedin post" |
 
 ## The tools in this guide
 
@@ -30,6 +30,10 @@ Each tool's own description carries its full usage, notes, live line and rules; 
 | `linkedinConnectLive` | Send one connection invitation to someone LinkedIn…, live on LinkedIn | `log linkedin connect --account <accountName> --profile <publicId\|profile url> [--approvedBy <who>] [--live] [--json]` |
 | `linkedinLike` | Like one LinkedIn post | `log linkedin like --account <accountName> --post <activityId\|post url> [--approvedBy <who>] [--live] [--json]` |
 | `linkedinLikeLive` | Like one LinkedIn post, live on LinkedIn | `log linkedin like --account <accountName> --post <activityId\|post url> [--approvedBy <who>] [--live] [--json]` |
+| `linkedinRepost` | Repost one LinkedIn post as it is | `log linkedin repost --account <accountName> --post <activityId\|post url> [--approvedBy <who>] [--live] [--json]` |
+| `linkedinRepostLive` | Repost one LinkedIn post as it is, live on LinkedIn | `log linkedin repost --account <accountName> --post <activityId\|post url> [--approvedBy <who>] [--live] [--json]` |
+| `linkedinMessage` | Write in one LinkedIn conversation, one message per line | `log linkedin message --account <accountName> (--with <name\|profileId> \| --conversation <urn>) --text <text> [--asOne] [--approvedBy <who>] [--live] [--json]` |
+| `linkedinMessageLive` | Write in one LinkedIn conversation, one message per…, live on LinkedIn | `log linkedin message --account <accountName> (--with <name\|profileId> \| --conversation <urn>) --text <text> [--asOne] [--approvedBy <who>] [--live] [--json]` |
 | `linkedinInbox` | List the account's newest LinkedIn conversations | `log linkedin inbox --account <accountName> [--json]` |
 | `linkedinMessages` | Read one LinkedIn conversation in full | `log linkedin messages --account <accountName> (--with <name\|profileId\|publicId> \| --conversation <urn>) [--json]` |
 
@@ -44,5 +48,6 @@ Each by its number and first line. The full text is in AGENTS.md (`log://agents`
 - **Rule 40.** Do not propose physical infrastructure unless the owner asks.
 - **Rule 41.** Paid work must stay within the authorized task and spend.
 - **Rule 73.** For an unknown platform state, collate the goal, account/runtime, action, sent requests, answers, timing and page evidence.
+- **Rule 90.** Preserve platform message splitting: draft lines send as separate messages unless the owner explicitly requests the supported asOne behavior.
 - **Rule 94.** Every platform call goes through Log and its governor, never a scratch client with account tokens/cookies.
 - **Rule 137.** Preserve current context-aware voice and AI-artifact gates for messages sent as the owner.

@@ -1,8 +1,8 @@
-# Growing a LinkedIn network and reading its inbox
+# Growing a LinkedIn network, and reading and answering its inbox
 
-Invite the people LinkedIn suggests on My Network, slowly, and read the account's conversations, from its own session with no browser.
+Invite the people LinkedIn suggests on My Network, slowly, and read and answer the account's conversations, from its own session with no browser.
 
-How the owner asks for it: "connect with people on linkedin", "who does linkedin suggest", "read my linkedin messages", "what did <someone> say on linkedin"
+How the owner asks for it: "connect with people on linkedin", "who does linkedin suggest", "read my linkedin messages", "what did <someone> say on linkedin", "reply to <someone> on linkedin"
 
 ## Run it from a fresh context
 
@@ -19,13 +19,15 @@ flowchart TD
   s3["3. Invite one person<br/><i>linkedinConnectLive</i>"]
   s4["4. List the inbox<br/><i>linkedinInbox</i>"]
   s5["5. Read one conversation<br/><i>linkedinMessages</i>"]
-  s6["6. Tell the owner what came back<br/><i>the reply to the owner</i>"]
+  s6["6. Answer them, when asked: show the owner the draft first<br/><i>linkedinMessage, linkedinMessageLive</i>"]
+  s7["7. Tell the owner what came back<br/><i>the reply to the owner</i>"]
   s0 --> s1
   s1 --> s2
   s2 --> s3
   s3 --> s4
   s4 --> s5
   s5 --> s6
+  s6 --> s7
 ```
 <!-- /stepsDiagram -->
 
@@ -37,11 +39,14 @@ flowchart TD
 | 3 | Invite one person | `linkedinConnectLive` { account, profile, approvedBy: "<owner>", confirmLive: true } | LinkedIn sets the invitation to Pending |
 | 4 | List the inbox | `linkedinInbox` { account } | the 20 newest conversations, who wrote last and when |
 | 5 | Read one conversation | `linkedinMessages` { account, with } or { account, conversation } | every message in it, attachments and voice messages marked |
-| 6 | Tell the owner what came back | the reply to the owner | who was invited, or what they said, with times |
+| 6 | Answer them, when asked: show the owner the draft first | `linkedinMessage` { account, with, text }, then `linkedinMessageLive` { account, with, text, approvedBy: "<owner>", confirmLive: true } | LinkedIn names a new message with each line's text |
+| 7 | Tell the owner what came back | the reply to the owner | who was invited, or what they said, with times |
 
 ## What the runs taught
 
 - **Only people LinkedIn suggests.** Connect sends the request My Network's own Connect button sends, read out of the page for that person. Someone not suggested is `profileNotSuggested`.
 - **Slow on purpose.** One invitation a run, 15 minutes apart, at most 5 in 24 hours (`connectTooSoon`, `connectDailyCap`). The pace is checked before the governor counts a write, so a refused one costs nothing.
 - **LinkedIn's "invitation not sent" is a stop.** It is `connectRefused` and counts as a throttle: nothing more goes out until the owner says so (rule 94).
+- **One message per line.** A draft on several lines goes out as that many messages, each with LinkedIn's typing signal first; `asOne` sends it as one. The first line LinkedIn doesn't confirm stops the rest.
+- **Only existing conversations.** A first message to someone the account has never written to isn't built.
 - **Reading marks nothing seen.** The inbox and a conversation are read with the calls the web client makes to list and open them, and none of the calls that mark a conversation seen.

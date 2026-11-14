@@ -19,7 +19,7 @@ from platformKit import media
 
 PLATFORM = "linkedin"
 LIBRARY = "vendor/openLinkedinApi"
-WRITES: tuple[str, ...] = ("post", "deletePost", "connect", "like")
+WRITES: tuple[str, ...] = ("post", "deletePost", "connect", "like", "repost", "message")
 CONNECT_GAP_S = 15 * 60
 CONNECTS_PER_DAY = 5
 SESSION_COOKIES = ("li_at", "JSESSIONID")
@@ -328,6 +328,34 @@ async def like(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
     return await asyncio.to_thread(share_run, cookies, browser, lambda r: r.like(activity), Reactions, "reactions")
 
 
+async def repost(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
+    from linkedinApi.reactions import Reactions, activity_of
+
+    browser = browser_of(spec)
+    missing = identity_missing(cookies, browser)
+    if missing:
+        return missing
+    activity = activity_of(str(spec.get("post") or ""))
+    if not activity:
+        return {"ok": False, "code": "invalidArgs", "detail": "repost needs the post's activity id or its feed/update URL"}
+    return await asyncio.to_thread(share_run, cookies, browser, lambda r: r.repost(activity), Reactions, "reactions")
+
+
+async def message(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
+    from linkedinApi.messaging import Messaging
+
+    browser = browser_of(spec)
+    missing = identity_missing(cookies, browser)
+    if missing:
+        return missing
+    conversation = str(spec.get("conversation") or "").strip()
+    with_whom = str(spec.get("with") or "").strip()
+    parts = [str(p) for p in spec.get("parts") or [] if str(p).strip()]
+    if bool(conversation) == bool(with_whom) or not parts:
+        return {"ok": False, "code": "invalidArgs", "detail": "message needs its parts and one of with (a name or profile id) or conversation (its urn)"}
+    return await asyncio.to_thread(share_run, cookies, browser, lambda m: m.send(parts, conversation, with_whom), Messaging, "messaging")
+
+
 async def inbox(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
     from linkedinApi.messaging import Messaging
 
@@ -355,7 +383,7 @@ async def messages(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, A
     return out
 
 
-ACTIONS = {"ping": ping, "scripts": scripts, "post": post, "deletePost": delete_post, "mentions": mentions, "suggestions": suggestions, "connectPace": connect_check, "connect": connect, "like": like, "inbox": inbox, "messages": messages}
+ACTIONS = {"ping": ping, "scripts": scripts, "post": post, "deletePost": delete_post, "mentions": mentions, "suggestions": suggestions, "connectPace": connect_check, "connect": connect, "like": like, "repost": repost, "message": message, "inbox": inbox, "messages": messages}
 
 
 if __name__ == "__main__":

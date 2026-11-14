@@ -10,10 +10,10 @@
 | Path | `platform.linkedin.com/litms/allowlist/voyager-web-feed` |
 | Sends | — |
 | Reads | `pageKey`, `controlUrn` |
-| Called from | `runs/inspect/20261107T170649_<name:1>/script72.js:1 statement`, `runs/inspect/20261106T014139_<name:1>/script26.js:1 statement`, `runs/inspect/20261107T161246_<name:1>/script148.js:1 statement`, `runs/inspect/20261107T170649_<name:1>/script20.js:1 v` |
-| rea | `ev_914afe55b9058180eb9a7049a5e7d12cec99bae23753520408145b690c5c217b` |
+| Called from | `runs/inspect/20261107T170649_<name:1>/script72.js:1 statement`, `runs/inspect/20261106T014139_<name:1>/script26.js:1 statement`, `runs/chrome/20261114T213510_<name:1>/script52.js:1 statement`, `runs/chrome/20261114T213510_<name:1>/script23.js:1 statement` |
+| rea | `ev_20e22674f7dea99287df8301d13b94bb2bfde00f91caf66fb2061773d49ca888` |
 
-Seen 5 time(s) in 1 run(s).
+Seen 7 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -22,6 +22,7 @@ Seen 5 time(s) in 1 run(s).
 | inspect | step 5: goto /feed/ | 1 | 200 | 1 ms | 1936 ms | — |
 | inspect | step 6: goto /feed/ | 1 | 200 | 1 ms | 1966 ms | — |
 | inspect | step 12: goto /feed/ | 1 | 200 | 1 ms | 2271 ms | — |
+| chrome | step 2: send a message, by hand | 2 | 304, 200 | 3–111 ms | 8270–8335 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

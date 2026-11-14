@@ -13,7 +13,7 @@
 | Called from | `runs/inspect/20261107T170649_<name:1>/script50.js:2336 anonymous`, `runs/inspect/20261107T161246_<name:1>/script30.js:383 statement`, `runs/inspect/20261107T161246_<name:1>/script48.js:345 statement`, `runs/inspect/20261107T161246_<name:1>/script57.js:609 statement` |
 | rea | `ev_c1abdf33053dc1d7030ab762ec70be7a4792316ed5a5874ffa3d4ae200fdfc55` |
 
-Seen 25 time(s) in 2 run(s).
+Seen 33 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -25,6 +25,9 @@ Seen 25 time(s) in 2 run(s).
 | inspect | POST 0 /flagship-web/rsc-action/actions/pagination (759 ms) | 1 | 0 | 639 ms | 521 ms | — |
 | inspect | step 25: goto /in/<profile>/ | 5 | 0, 200 | 312–581 ms | 1141–1260 ms | — |
 | inspect | step 31: press Escape | 1 | 0 | 782 ms | 1150 ms | — |
+| chrome | step 1: the owner's own Chrome, recorded by hand (har4): the feed and messaging open | 2 | 200 | 184–233 ms | 21982–22061 ms | — |
+| chrome | step 5: comment on a post, by hand | 5 | 200 | 370–1621 ms | 6183–6426 ms | — |
+| chrome | step 6: open the add-a-note invite, by hand | 1 | 200 | 183 ms | 425 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

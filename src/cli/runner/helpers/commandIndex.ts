@@ -114,6 +114,8 @@ export const COMMAND_INDEX: CommandIndexEntry[] = [
   { name: "suggestions", platform: "linkedin", module: "src/cli/linkedin/index.ts", exportName: "linkedinSuggestionsCommand" },
   { name: "connect", platform: "linkedin", module: "src/cli/linkedin/index.ts", exportName: "linkedinConnectCommand" },
   { name: "like", platform: "linkedin", module: "src/cli/linkedin/index.ts", exportName: "linkedinLikeCommand" },
+  { name: "repost", platform: "linkedin", module: "src/cli/linkedin/index.ts", exportName: "linkedinRepostCommand" },
+  { name: "message", platform: "linkedin", module: "src/cli/linkedin/index.ts", exportName: "linkedinMessageCommand" },
   { name: "inbox", platform: "linkedin", module: "src/cli/linkedin/index.ts", exportName: "linkedinInboxCommand" },
   { name: "messages", platform: "linkedin", module: "src/cli/linkedin/index.ts", exportName: "linkedinMessagesCommand" },
   { name: "session", platform: "slack", module: "src/cli/slack/index.ts", exportName: "slackSessionCommand" },

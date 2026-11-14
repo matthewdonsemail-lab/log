@@ -27,9 +27,9 @@ flowchart LR
   e_endcord --> api
   p_discord -->|"browser: the any-platform commands"| b_discord["Discord's browser path: no proxy: this machine's own exit, the profile's timezone follows it (rule 84)"]
   b_discord --> drivers
-  p_linkedin["LinkedIn (LINKEDIN): 9 commands of its own"]
+  p_linkedin["LinkedIn (LINKEDIN): 11 commands of its own"]
   twenty --> p_linkedin
-  p_linkedin -->|"direct API: linkedin session, linkedin cookies, linkedin post, linkedin delete, linkedin suggestions, linkedin connect, linkedin like, linkedin inbox, linkedin messages"| e_openLinkedinApi["openLinkedinApi (vendor/openLinkedinApi): the saved session, a governor per account"]
+  p_linkedin -->|"direct API: linkedin session, linkedin cookies, linkedin post, linkedin delete, linkedin suggestions, linkedin connect, linkedin like, linkedin repost, linkedin message, linkedin inbox, linkedin messages"| e_openLinkedinApi["openLinkedinApi (vendor/openLinkedinApi): the saved session, a governor per account"]
   e_openLinkedinApi --> api
   p_linkedin -->|"browser: the any-platform commands"| b_linkedin["LinkedIn's browser path: no proxy: this machine's own exit, the profile's timezone follows it (rule 84)"]
   b_linkedin --> drivers
