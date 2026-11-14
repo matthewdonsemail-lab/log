@@ -10,26 +10,26 @@ export const SESSION: SessionEvent[] = [
   {
     kind: 'tool',
     name: 'twitterDms',
-    args: '{ account: "you", waiting: true, limit: "50" }',
+    args: '{ account: "you", waiting: true, limit: 50 }',
     result: ['@you, 6 conversations waiting on a reply, newest first', '1. @dana_builds · 2h ago · unread, waiting on you', '2. @leo_ops · 5h ago · unread, waiting on you', '+ 2 opened with no reply (followUpDue)'],
   },
   { kind: 'assistant', text: '6 people are waiting on you, and 2 more opened your last message but didn’t reply. Reading each thread in full before drafting anything.' },
   {
     kind: 'tool',
     name: 'twitterDms',
-    args: '{ account: "you", with: "dana_builds", limit: "30" }',
+    args: '{ account: "you", with: "dana_builds", limit: 30 }',
     result: ['you: saw your launch thread, the onboarding bit was clean', '@dana_builds: thanks man! 3 weeks of rewrites lol', '@dana_builds: what are you building at the moment?'],
   },
   {
     kind: 'tool',
     name: 'twitterDms',
-    args: '{ account: "you", with: "leo_ops", limit: "30" }',
+    args: '{ account: "you", with: "leo_ops", limit: 30 }',
     result: ['@leo_ops: just hit our first 10 paying clients', '@leo_ops: hiring is the next headache', 'X Chat opened with the saved PIN, 4 messages merged'],
   },
   {
     kind: 'tool',
     name: 'twitterDms',
-    args: '{ account: "you", with: "priya_ships", limit: "30" }',
+    args: '{ account: "you", with: "priya_ships", limit: 30 }',
     result: ['@priya_ships: moved to lisbon last week, still unpacking', 'governor: 9/500 requests and 0 writes today'],
   },
   { kind: 'assistant', text: 'Reply now: Dana (asked what you’re building), Leo (10 clients, hiring next), Priya (just moved). Follow-ups: Sam, Ory. Skip: one crypto pitch and one bot.' },
@@ -105,10 +105,10 @@ export const SESSION: SessionEvent[] = [
   {
     kind: 'tool',
     name: 'twitterFollowers',
-    args: '{ account: "you", limit: "200", json: true }',
+    args: '{ account: "you", limit: 200, json: true }',
     result: ['200 followers read, 63 never messaged', 'governor: 31/500 requests and 6 writes today'],
   },
-  { kind: 'tool', name: 'twitterFollows', args: '{ account: "you", handles: "mira_ugc,tomfounds,…" }', result: ['20 checked: mutual 14, only they follow 6, errors 0'] },
+  { kind: 'tool', name: 'twitterFollows', args: '{ account: "you", handles: ["mira_ugc", "tomfounds", "…"] }', result: ['20 checked: mutual 14, only they follow 6, errors 0'] },
   {
     kind: 'assistant',
     text: 'Picked 20 from the niche map who follow you and you’ve never talked to. Each opener forwards one of their own recent posts plus one line about it. No pitch, no ask.',
@@ -163,7 +163,7 @@ export const SESSION: SessionEvent[] = [
   {
     kind: 'tool',
     name: 'twitterDms',
-    args: '{ account: "you", waiting: true, limit: "20" }',
+    args: '{ account: "you", waiting: true, limit: 20 }',
     result: ['@you, 1 conversation waiting on a reply', '1. @mira_ugc · 4m ago: haha yeah that one took forever', '   what you working on?'],
   },
   {

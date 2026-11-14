@@ -3,8 +3,8 @@ import { MET, NOT_VIOLATED } from '../types'
 
 const budget = 'src/browser/run/helpers/launchBudget.ts'
 const run = 'src/browser/run/client.ts'
-const hours = 'src/marketplace/home/helpers/activeHours.ts'
-const homeTypes = 'src/marketplace/home/types.ts'
+const hours = 'src/platformKit/home/helpers/activeHours.ts'
+const homeTypes = 'src/platformKit/home/types.ts'
 const publish = 'src/cli/publish/index.ts'
 const inspect = 'src/cli/inspect/index.ts'
 const account = 'src/cli/account/index.ts'
@@ -15,13 +15,13 @@ export const launchBudget = {
   codePaths: [
     'src/browser/run/client.ts',
     'src/browser/run/helpers/launchBudget.ts',
-    'src/marketplace/home/helpers/activeHours.ts',
-    'src/marketplace/home/types.ts',
+    'src/platformKit/home/helpers/activeHours.ts',
+    'src/platformKit/home/types.ts',
     'src/cli/live/index.ts',
     'src/cli/publish/index.ts',
     'src/cli/account/index.ts',
     'src/cli/account/helpers/resetOpens.ts',
-    'src/marketplace/host/helpers/progress.ts',
+    'src/facebook/marketplace/host/helpers/progress.ts',
   ],
   anchors: {
     'REQ-LAUNCH-01': [
@@ -65,7 +65,7 @@ export const launchBudget = {
       { kind: 'symbol', file: budget, name: 'recordLaunchReset' },
       { kind: 'string', file: budget, includes: 'launchReset' },
       { kind: 'symbol', file: 'src/cli/account/helpers/resetOpens.ts', name: 'resetAccountOpens' },
-      { kind: 'symbol', file: 'src/marketplace/host/helpers/progress.ts', name: 'resetHostOpens' },
+      { kind: 'symbol', file: 'src/facebook/marketplace/host/helpers/progress.ts', name: 'resetHostOpens' },
     ],
     'REQ-LAUNCH-11': [{ kind: 'symbol', file: budget, name: 'lastLaunchReset' }],
     'REQ-LAUNCH-12': [{ kind: 'string', file: account, includes: 'resetOpens' }],

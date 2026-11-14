@@ -21,8 +21,8 @@ Read a path as **library, then domain, then role**:
 
 | Path | What it is |
 | --- | --- |
-| `marketplace/listing` | Facebook Marketplace listings: types, the listing machine, the data client |
-| `marketplace/account` | The Facebook accounts the listings are published from |
+| `facebook/marketplace/listing` | Facebook Marketplace listings: types, the listing machine, the data client |
+| `platformKit/account` | The Facebook accounts the listings are published from |
 | `cli/runner` | The command registry, dispatcher and shared CLI helpers (args, tables, usage) |
 | `cli/listing` | `log facebook listings` and `log facebook listing <id>` |
 | `cli/account` | `log facebook accounts` |

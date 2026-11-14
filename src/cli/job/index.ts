@@ -1,11 +1,11 @@
 import { DEFAULT_STATUS_WAIT_MS, jobView, listJobs, readJob, requestCancel, waitForJob } from "../../mcp/jobs/index.ts";
 import type { JobView } from "../../mcp/jobs/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";
+import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
 
 export const JOB_USAGE = [
   "Usage: log job status <jobId> [--afterLine <n>] [--waitMs <ms>] [--json]   (a long MCP run: its status, the lines after afterLine, and its result once it ends; waits up to waitMs, default 10000, for something new)",
-  "       log job cancel <jobId>   (stops it at its next browser step; never once Publish is clicked, rule 10)",
+  "       log job cancel <jobId>   (stops it at its next browser step; never once Publish is clicked, rule 8)",
   "       log job list [--json]   (the latest jobs)",
 ].join("\n");
 
@@ -18,8 +18,8 @@ export const JOB_INPUT: CommandInput = {
       summary: "A long run's status, the lines after afterLine, and its result once it ends",
       positionals: [JOB_ID],
       flags: [
-        { name: "afterLine", kind: "integer", description: "How many progress lines you already have (the last call's afterLine)" },
-        { name: "waitMs", kind: "integer", description: "How long to wait for a new line or the end, in ms (default 10000, at most 50000)" },
+        { name: "afterLine", kind: "integer", min: 0, description: "How many progress lines you already have (the last call's afterLine)" },
+        { name: "waitMs", kind: "integer", min: 0, description: "How long to wait for a new line or the end, in ms (default 10000, at most 50000)" },
         JSON_FLAG,
       ],
     },
@@ -35,7 +35,6 @@ export function renderJob(view: JobView): string {
   return [head, ...lines, ...tail].join("\n");
 }
 
-const int = (value: string | true | undefined, fallback: number) => (typeof value === "string" && /^\d+$/.test(value) ? Number(value) : fallback);
 
 export const jobCommand: Command = {
   usage: JOB_USAGE,
@@ -47,23 +46,23 @@ export const jobCommand: Command = {
   args: "status <jobId> [--afterLine <n>] [--waitMs <ms>] | cancel <jobId> | list",
   async run(_context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(JOB_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log job: ${parsed.error}\n${JOB_USAGE}` };
+    if (!parsed.ok) return refuseInput("job", parsed.error, JOB_USAGE);
     const [sub, id, ...rest] = parsed.positionals;
-    if (rest.length) return { code: 1, stderr: `log job: unexpected argument "${rest[0]}"\n${JOB_USAGE}` };
+    if (rest.length) return { code: 1, error: "inputInvalid", stderr: `log job: unexpected argument "${rest[0]}"\n${JOB_USAGE}` };
     if (sub === "list") {
       const views = listJobs().slice(0, 20).map((r) => jobView(r, Number.MAX_SAFE_INTEGER));
       if (parsed.flags["json"]) return { code: 0, stdout: JSON.stringify({ jobs: views }, null, 2) };
       return { code: 0, stdout: views.length ? views.map((v) => `${v.id}  ${v.status.padEnd(9)}  ${v.tool}${v.account ? `  ${v.account}` : ""}  ${v.startedAt}`).join("\n") : "No jobs yet." };
     }
-    if (!id) return { code: 1, stderr: `log job: the job's id is needed\n${JOB_USAGE}` };
+    if (!id) return { code: 1, error: "inputInvalid", stderr: `log job: the job's id is needed\n${JOB_USAGE}` };
     if (sub === "cancel") {
       const verdict = requestCancel(id);
       if (!verdict.ok) return { code: 1, stderr: `log job cancel: ${verdict.message}` };
       return { code: 0, stdout: `Job ${id} (${verdict.record.tool}) will stop at its next browser step. Follow it with log job status ${id}.` };
     }
-    if (sub !== "status") return { code: 1, stderr: `log job: pick status, cancel or list\n${JOB_USAGE}` };
+    if (sub !== "status") return { code: 1, error: "inputInvalid", stderr: `log job: pick status, cancel or list\n${JOB_USAGE}` };
     if (!readJob(id)) return { code: 1, stderr: `log job status: no job ${id}` };
-    const view = await waitForJob(id, int(parsed.flags["afterLine"], 0), int(parsed.flags["waitMs"], DEFAULT_STATUS_WAIT_MS));
+    const view = await waitForJob(id, numberOf(parsed, "afterLine") ?? 0, numberOf(parsed, "waitMs") ?? DEFAULT_STATUS_WAIT_MS);
     if (!view) return { code: 1, stderr: `log job status: no job ${id}` };
     if (parsed.flags["json"]) return { code: 0, stdout: JSON.stringify({ job: view }, null, 2) };
     return { code: 0, stdout: renderJob(view) };

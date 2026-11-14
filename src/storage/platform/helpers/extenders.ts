@@ -1,4 +1,4 @@
-import type { EventInput, ExtenderContext, InteractionRow, PlatformExtender } from '../types'
+import type { EventInput, ExtenderContext, IdentityProfileRow, InteractionRow, PlatformExtender } from '../types'
 import { makeExtender } from './base'
 import { isBareId, textOf } from './ids'
 
@@ -37,6 +37,14 @@ function slackInteraction(event: EventInput): InteractionRow | null {
   return { interactionKey: `slack:${event.account}:${event.eventId}`, kind: 'reaction', actorUserId: actor, targetRef: textOf(event.payload.ts), targetText: null, text: textOf(event.payload.reaction), at: event.sourceAt || event.receivedAt }
 }
 
+function twitterNotificationProfile(event: EventInput): IdentityProfileRow | null {
+  if (event.type !== 'notification') return null
+  const userId = textOf(event.payload.userId)
+  const followers = event.payload.followers
+  if (!userId || typeof followers !== 'number' || !Number.isFinite(followers)) return null
+  return { platform: 'twitter', userId, bio: null, avatarHash: null, followerCount: followers, verified: null, extra: null, fetchedAt: event.receivedAt }
+}
+
 export const twitterExtender = makeExtender({
   platform: 'twitter',
   chatKind: (e) => (e.conversationId.startsWith('g') ? 'group' : 'dm'),
@@ -48,6 +56,7 @@ export const twitterExtender = makeExtender({
     const userId = textOf(e.payload.userId)
     return userId ? [{ platform: 'twitter', userId, handle: textOf(e.payload.handle), displayName: textOf(e.payload.name) }] : []
   },
+  toProfile: twitterNotificationProfile,
 })
 
 export const discordExtender = makeExtender({

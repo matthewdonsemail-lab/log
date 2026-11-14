@@ -384,7 +384,8 @@ app.ontoolinput = (params) => {
 };
 app.ontoolresult = (result) => {
   const answer = result as ToolAnswer;
-  const view = (answer.structuredContent?.json as View | undefined) ?? null;
+  const given = (answer.structuredContent?.view ?? answer.structuredContent?.json) as View | undefined;
+  const view = given && typeof given.phase === "string" ? given : null;
   if (view) {
     state.account = view.account;
     adopt(view);

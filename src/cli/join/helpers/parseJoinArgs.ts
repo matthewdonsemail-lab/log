@@ -1,4 +1,30 @@
-import { parseArgs } from "../../runner/helpers/index.ts";
+import { JSON_FLAG, parseArgs, parserSpecOf } from "../../runner/helpers/index.ts";
+import type { CommandInput } from "../../runner/types.ts";
+
+export const JOIN_INPUT: CommandInput = {
+  forms: [
+    {
+      words: ["group"],
+      liveEffect: "write",
+      summary: "Join a Facebook group as one account, in its open browser: read its gate; live presses Join, or with fill and submit sends the answers",
+      positionals: [],
+      flags: [
+        { name: "account", kind: "string", required: true, description: "The Facebook account that joins" },
+        { name: "group", kind: "string", required: true, description: "The group's url, id or name" },
+        { name: "show", kind: "boolean", description: "Only read the group's saved record; nothing opens" },
+        { name: "answer", kind: "boolean", description: "Save answers to the group's questions to its record, never sent; give them with set" },
+        { name: "set", kind: "pairs", description: "An answer per question number, as n=option label or text (with answer)" },
+        { name: "agree", kind: "boolean", description: "Agree to the group's rules (with answer)" },
+        { name: "fill", kind: "boolean", description: "Put the saved answers into the group's dialog, step by step" },
+        { name: "submit", kind: "boolean", description: "Press Submit after a live fill" },
+        { name: "live", kind: "boolean", live: true, description: "Press Join, or fill the dialog, on Facebook, only when the owner asked (rule 8)" },
+        { name: "bypass", kind: "boolean", bypass: true, description: "Outside the account's waking hours, only when the owner asked (rule 86)" },
+        JSON_FLAG,
+      ],
+      groups: [{ rule: "atMostOne", names: ["show", "answer", "fill"] }],
+    },
+  ],
+};
 
 export const JOIN_TARGETS = ["group"] as const;
 export type JoinTarget = (typeof JOIN_TARGETS)[number];
@@ -8,7 +34,7 @@ export type ParseJoinArgsResult =
   | { ok: false; error: string };
 
 export function parseJoinArgs(argv: string[]): ParseJoinArgsResult {
-  const parsed = parseArgs(argv, { boolean: ["json", "live", "show", "answer", "agree", "fill", "submit", "bypass"], valued: ["account", "group"] });
+  const parsed = parseArgs(argv, parserSpecOf(JOIN_INPUT));
   if (!parsed.ok) return parsed;
   if (parsed.flags.live && (parsed.flags.show || parsed.flags.answer)) return { ok: false, error: "--show and --answer only use Twenty: they take no --live" };
   if (parsed.flags.submit && !(parsed.flags.fill && parsed.flags.live)) return { ok: false, error: "--submit presses Submit after a fill: it needs --fill --live" };

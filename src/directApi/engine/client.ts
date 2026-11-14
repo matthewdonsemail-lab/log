@@ -4,10 +4,10 @@ import { homedir, tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { commandBrowser } from '../../browser/run/index'
 import { commandWordOfKey, isPlatform, PLATFORM_LABELS, PLATFORMS } from '../../cli/runner/helpers/platforms'
-import { homeOf, outsideActiveHours } from '../../marketplace/home/index'
-import { parseProxyUrl } from '../../marketplace/socialAccount/index'
-import type { FacebookAccount } from '../../marketplace/socialAccount/index'
-import { setStatusAndReplace } from '../../marketplace/replacement/index'
+import { homeOf, outsideActiveHours } from '../../platformKit/home/index'
+import { parseProxyUrl } from '../../platformKit/socialAccount/index'
+import type { FacebookAccount } from '../../platformKit/socialAccount/index'
+import { setStatusAndReplace } from '../../facebook/marketplace/replacement/index'
 import { accountStore } from '../../twenty/graphql/index'
 import type { TwentyClient } from '../../twenty/graphql/index'
 import { accountHasSession, cookiesOf, lastJsonLine, netscape, sessionStateOf } from './helpers/index'
@@ -23,7 +23,7 @@ function localClock(iso: string): string {
   return `${at.getMonth() + 1}/${at.getDate()} ${pad(at.getHours())}:${pad(at.getMinutes())} matt's time`
 }
 export const DIRECT_ROUTES: Readonly<Record<string, DirectRoute>> = {
-  read: { platform: 'facebook', library: 'fbk', only: false, surface: 'groups', method: 'feed_read', when: 'read group without --live on a numeric group id', seam: 'directRead' },
+  facebookRead: { platform: 'facebook', library: 'fbk', only: false, surface: 'groups', method: 'feed_read', when: 'read group without --live on a numeric group id', seam: 'directRead' },
   twitterSession: { platform: 'twitter', library: 'twikit', only: true, surface: 'account', method: 'ping', when: 'session check', seam: 'directTwitter' },
   twitterFollows: { platform: 'twitter', library: 'twikit', only: true, surface: 'friendships', method: 'show', when: 'follows read', seam: 'directTwitter' },
   twitterFollowers: { platform: 'twitter', library: 'twikit', only: true, surface: 'friendships', method: 'followers', when: 'followers read', seam: 'directTwitter' },
@@ -86,10 +86,10 @@ export const DIRECT_ROUTES: Readonly<Record<string, DirectRoute>> = {
   instagramWatch: { platform: 'instagram', library: 'instagrapi', only: true, surface: 'websocket', method: 'realtime_connect', when: 'watch (Instagram pushes each DM over its realtime MQTT, edge-mqtt.facebook.com, nothing polled)', seam: 'directInstagramLive' }
 }
 
-export function commandEngine(command: string): CommandEngine {
+export function commandEngine(command: string, name: string = command): CommandEngine {
   const route = DIRECT_ROUTES[command]
   if (route) return route.only ? 'directApiOnly' : 'directApiFirst'
-  return commandBrowser(command) === 'none' ? 'none' : 'browser'
+  return commandBrowser(name) === 'none' ? 'none' : 'browser'
 }
 
 export function engineHead(route: DirectRoute): string {

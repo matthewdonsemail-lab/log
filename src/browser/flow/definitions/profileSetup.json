@@ -1,6 +1,7 @@
 {
   "name": "profileSetup",
-  "summary": "Give an account its profile picture, cover photo and name, as recorded on Lancaster 2026-10-19 (rule 28): profile picture menu, Choose profile picture, Upload Photo, Save; Add Cover Photo, Upload photo, Save changes; Accounts Center name, Review change, Done.",
+  "platform": "facebook",
+  "summary": "Give an account its profile picture, cover photo and name, as recorded on Lancaster 2026-10-19 (rule 35): profile picture menu, Choose profile picture, Upload Photo, Save; Add Cover Photo, Upload photo, Save changes; Accounts Center name, Review change, Done.",
   "params": [
     {
       "name": "profilePhoto",

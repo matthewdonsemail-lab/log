@@ -1,4 +1,5 @@
 import { readScreen } from '../../../rea/inspectMap/helpers/readScreen'
+import { flowPlatform } from './flowPlatform'
 import { dialogOf } from './dialogOf'
 import type { FlowAction, FlowDefinition, FlowParam, FlowStep } from '../types'
 
@@ -133,7 +134,8 @@ export function flowFromRecording(
       recorded
     })
   })
-  return { name, summary, params, steps, source: { ...source, builtAt: new Date().toISOString() } }
+  const platform = flowPlatform({ steps })
+  return { name, ...(platform ? { platform } : {}), summary, params, steps, source: { ...source, builtAt: new Date().toISOString() } }
 }
 
 export function fillStep(step: FlowStep, values: Record<string, string>): FlowStep {

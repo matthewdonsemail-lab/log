@@ -24,7 +24,7 @@ describe("catalog", () => {
       expect(e.tool === null).toBe(e.terminalOnly !== null);
     }
     const connect = commandEntry(COMMANDS.find((c) => c.name === "connect")!);
-    expect(connect).toMatchObject({ tool: "connect", longRunning: true });
+    expect(connect).toMatchObject({ tool: "facebookConnect", longRunning: true });
     expect(connect.flags.map((f) => f.name)).toContain("noPrompt");
     expect(connect.hooks).toEqual({ cli: ["PreToolUse", "PostToolUse"], mcp: ["PostToolUse"] });
     expect(commandEntry(COMMANDS.find((c) => c.name === "launch")!)).toMatchObject({ tool: null, hooks: { mcp: [] }, browser: "none" });

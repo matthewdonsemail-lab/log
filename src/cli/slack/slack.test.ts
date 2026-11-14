@@ -48,7 +48,7 @@ describe("log slack session check", () => {
   test("an account of another platform is refused before the engine is called", async () => {
     const r = await run(["slack", "session", "check", "--account", "galwayOne"]);
     expect(r.code).toBe(1);
-    expect(r.err).toContain("accountNotFound");
+    expect(r.err).toContain("accountPlatformMismatch");
     expect(r.calls).toEqual([]);
   });
 
@@ -158,8 +158,8 @@ describe("the Slack watch and the d cookie", () => {
 
 describe("the hooks on Slack", () => {
   test("a hand-run log slack command is refused and pointed at its MCP tool, the cookie prompt is not", () => {
-    expect(liveLogVerdict("Bash", 'log slack send --account mattSlack --chat sam --text "yo"').deny).toContain("rule 106");
-    expect(liveLogVerdict("Bash", "bun bin/log.ts slack read --account mattSlack --chat sam").deny).toContain("rule 106");
+    expect(liveLogVerdict("Bash", 'log slack send --account mattSlack --chat sam --text "yo"').deny).toContain("rule 163");
+    expect(liveLogVerdict("Bash", "bun bin/log.ts slack read --account mattSlack --chat sam").deny).toContain("rule 163");
     expect(liveLogVerdict("Bash", "log slack cookies save --account mattSlack").deny).toBeNull();
   });
 });

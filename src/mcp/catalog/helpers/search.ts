@@ -1,4 +1,5 @@
-import { PLATFORM_LABELS, PLATFORMS } from "../../../cli/runner/helpers/platforms.ts";
+import { commandKey, isPlatform, PLATFORM_LABELS, PLATFORMS } from "../../../cli/runner/helpers/platforms.ts";
+import { CAPABILITIES } from "../../../platformKit/capability/helpers/table.ts";
 import type { CatalogEntry, SearchHit, SearchResult } from "../types.ts";
 
 const STOP_WORDS = new Set(["a", "an", "the", "to", "of", "for", "on", "in", "and", "or", "my", "me", "i", "it", "is", "be", "with", "from", "by", "at", "as", "do", "how", "can", "want", "please", "some", "all", "one", "this", "that", "what", "who", "log"]);
@@ -22,7 +23,19 @@ const SYNONYMS: Readonly<Record<string, string[]>> = {
   meme: ["memelord"],
   memes: ["memelord"],
   members: ["members", "read"],
+  upvote: ["vote"],
+  downvote: ["vote"],
+  retweet: ["repost"],
+  followed: ["followers", "notifications"],
+  liked: ["notifications"],
+  messaged: ["dms", "read", "waiting"],
+  signed: ["session"],
+  accounts: ["account", "sessions"],
 };
+
+export const PLATFORM_HINTS: Readonly<Record<string, string>> = { tweet: "twitter", tweets: "twitter", retweet: "twitter", subreddit: "reddit", subreddits: "reddit", upvote: "reddit", downvote: "reddit" };
+
+const NOT_A_JOB = new Set(["latest", "recent"]);
 
 const PLATFORM_WORDS = new Set<string>([...PLATFORMS, ...Object.values(PLATFORM_LABELS).map((l) => l.toLowerCase()), "x", "fb", "ig", "insta"]);
 
@@ -36,6 +49,18 @@ export function wordsOf(text: string): string[] {
 
 export function queryWords(query: string): string[] {
   return [...new Set(wordsOf(query).filter((w) => !STOP_WORDS.has(w)))];
+}
+
+export function asksWho(query: string): boolean {
+  return /\bwho\b/i.test(query);
+}
+
+export function capabilityOfEntry(entry: CatalogEntry): string {
+  const key = commandKey(entry.command);
+  const words = (entry.form?.words ?? []).join(" ");
+  const bound = CAPABILITIES.find((d) => Object.values(d.platforms).some((b) => b?.command === key && b.words.join(" ") === words));
+  if (bound) return `${bound.noun}.${bound.verb}`;
+  return [entry.command.name, ...(entry.form?.words ?? [])].join(".");
 }
 
 interface Doc {
@@ -58,16 +83,16 @@ function docOf(entry: CatalogEntry): Doc {
   };
 }
 
-function matches(word: string, candidate: string): boolean {
-  if (word === candidate) return true;
-  if (word.length >= 4 && candidate.startsWith(word)) return true;
-  if (candidate.length >= 4 && word.startsWith(candidate)) return true;
-  return false;
+function matches(word: string, candidate: string): number {
+  if (word === candidate || word === `${candidate}s` || candidate === `${word}s`) return 1;
+  if (word.length >= 4 && candidate.startsWith(word)) return 0.8;
+  if (candidate.length >= 4 && word.startsWith(candidate)) return 0.8;
+  return 0;
 }
 
 function termScore(doc: Doc, term: string): number {
   let best = 0;
-  for (const field of doc.fields) if (field.words.some((w) => matches(term, w))) best = Math.max(best, field.weight);
+  for (const field of doc.fields) for (const w of field.words) best = Math.max(best, field.weight * matches(term, w));
   return best;
 }
 
@@ -75,6 +100,7 @@ function platformOfWord(word: string): string | null {
   if (word === "x") return "twitter";
   if (word === "fb") return "facebook";
   if (word === "ig" || word === "insta") return "instagram";
+  if (word in PLATFORM_HINTS) return PLATFORM_HINTS[word];
   return PLATFORMS.find((p) => p === word || PLATFORM_LABELS[p].toLowerCase() === word) ?? null;
 }
 
@@ -82,7 +108,8 @@ export function searchCatalog(entries: readonly CatalogEntry[], query: string, l
   const words = queryWords(query);
   const docs = entries.map(docOf);
   const platforms = words.map(platformOfWord).filter((p): p is string => p !== null);
-  const terms = words.filter((w) => !PLATFORM_WORDS.has(w));
+  const terms = words.filter((w) => !PLATFORM_WORDS.has(w) && !NOT_A_JOB.has(w));
+  const who = asksWho(query);
   const rarity = new Map(terms.map((t) => [t, Math.log(1 + docs.length / (1 + docs.filter((d) => termScore(d, t) > 0 || (SYNONYMS[t] ?? []).some((s) => termScore(d, s) > 0)).length))]));
   const scored: SearchHit[] = docs.map((doc) => {
     const matched: string[] = [];
@@ -90,7 +117,7 @@ export function searchCatalog(entries: readonly CatalogEntry[], query: string, l
     let score = 0;
     for (const term of terms) {
       const direct = termScore(doc, term);
-      const viaSynonym = Math.max(0, ...(SYNONYMS[term] ?? []).map((s) => termScore(doc, s) * 0.8));
+      const viaSynonym = Math.max(0, ...(SYNONYMS[term] ?? []).map((s) => termScore(doc, s) * 0.6));
       const best = Math.max(direct, viaSynonym);
       if (best > 0) {
         matched.push(term);
@@ -98,15 +125,23 @@ export function searchCatalog(entries: readonly CatalogEntry[], query: string, l
       } else missed.push(term);
     }
     if (platforms.includes(doc.platform)) score += 2;
+    if (!platforms.length && isPlatform(doc.platform)) score *= 0.9;
+    if (doc.entry.recorded) score /= 2;
     return { entry: doc.entry, score, matched, missed };
   });
   const onPlatform = (h: SearchHit) => !platforms.length || platforms.includes(h.entry.platform) || h.entry.platform === "any" || h.entry.platform === "byArgument";
   const ranked = scored
     .filter((h) => onPlatform(h) && h.score > 0 && (h.matched.length > 0 || terms.length === 0))
-    .sort((a, b) => b.matched.length - a.matched.length || b.score - a.score || a.entry.id.localeCompare(b.entry.id));
+    .sort((a, b) => b.matched.length - a.matched.length || Number(Boolean(a.entry.terminalOnly)) - Number(Boolean(b.entry.terminalOnly)) || (who ? Number(b.entry.effect === "read") - Number(a.entry.effect === "read") : 0) || b.score - a.score || a.entry.id.localeCompare(b.entry.id));
   const most = ranked.filter((h) => h.matched.length * 2 >= terms.length);
   if (!most.length) return { query, verdict: "none", hits: [], near: ranked.slice(0, 3) };
-  return { query, verdict: terms.length && most[0].missed.length === 0 ? "strong" : "closest", hits: most.slice(0, limit), near: [] };
+  const strong = terms.length > 0 && most[0].missed.length === 0 && !most[0].entry.terminalOnly;
+  return { query, verdict: strong ? "strong" : "closest", hits: byCapability(most.slice(0, limit)), near: [] };
+}
+
+export function byCapability(hits: readonly SearchHit[]): SearchHit[] {
+  const order = [...new Set(hits.map((h) => capabilityOfEntry(h.entry)))];
+  return order.flatMap((capability) => hits.filter((h) => capabilityOfEntry(h.entry) === capability));
 }
 
 function distance(a: string, b: string): number {

@@ -37,7 +37,7 @@ changes.
 Set a status by hand with
 `log facebook account status <name> <STATUS> [--reason <code>]`. Runs set it
 themselves from what the page shows (`statusForIssue` in
-`marketplace/socialAccount`). Proxy problems never change an account's status:
+`platformKit/socialAccount`). Proxy problems never change an account's status:
 they are a setup problem, not the account's.
 
 ### What DEACTIVATED does

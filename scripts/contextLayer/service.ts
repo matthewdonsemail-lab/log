@@ -1,7 +1,8 @@
 #!/usr/bin/env bun
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import { join } from 'node:path'
-import { hookAnswer, hookOutput } from '../../src/contextLayer/hook/index'
+import { contextOutput, hookHostOf, hostBody } from '../../src/agentHooks/harness/index'
+import { hookAnswer } from '../../src/contextLayer/hook/index'
 import type { HookInput } from '../../src/contextLayer/hook/index'
 import { CODE_CHECK_MS, CONTEXT_PORT, forgetService, HOST, labelledPath, logTiming, readService, serviceStarted, SOURCE_CHECK_MS, startService, writeService } from '../../src/contextLayer/service/index'
 import { codeStamp } from '../../src/mcp/freshness/index.ts'
@@ -82,7 +83,7 @@ async function handle(request: Request): Promise<Response> {
         input = JSON.parse((await request.text()) || '{}') as HookInput
       } catch {}
       const result = await hookAnswer(input, route)
-      const body = hookOutput(result)
+      const body = contextOutput(result.event, result.text, hookHostOf(['--host', url.searchParams.get('host') ?? '']))
       logTiming({ event: result.event, provider: 'contextLayer', ms: performance.now() - started, chars: result.text.length, outcome: result.outcome })
       return new Response(body, { headers: { 'content-type': 'application/json' } })
     }
@@ -93,7 +94,8 @@ async function handle(request: Request): Promise<Response> {
       const answered = await answerEvent(eventPath[1] as HookEvent, raw, repo, route)
       const chars = JSON.stringify(answered.body ?? '').length
       logTiming({ event: answered.event, provider: 'hookEvent', ms: performance.now() - started, chars, outcome: answered.timings.map((t) => `${t.hook}${t.ok ? '' : '!'}:${Math.round(t.ms)}`).join(',') })
-      return answered.body ? Response.json(answered.body) : new Response('', { status: 200 })
+      const body = hostBody(hookHostOf(['--host', url.searchParams.get('host') ?? '']), answered.event, answered.body)
+      return body ? Response.json(body) : new Response('', { status: 200 })
     }
     if (url.pathname !== '/route' || request.method !== 'POST') return new Response('not found', { status: 404 })
     const { prompt } = (await request.json()) as { prompt?: string }

@@ -1,15 +1,16 @@
-import { blockedListings, sweepBlockedListings } from "../../marketplace/replacement/index.ts";
+import { blockedListings, sweepBlockedListings } from "../../facebook/marketplace/replacement/index.ts";
 import { readFileSync } from "node:fs";
 import { loadFlow } from "../../browser/flow/index.ts";
-import { setListingStatus } from "../../marketplace/agencyListing/index.ts";
+import { setListingStatus } from "../../facebook/marketplace/agencyListing/index.ts";
 import { runFlow } from "../flow/index.ts";
-import { fromTwentyEnum, listFacebookAccounts, findAccount, toTwentyEnum } from "../../marketplace/socialAccount/index.ts";
-import { countryMismatch, createSlot, getListing, LISTING_STATUSES, listListingsWhere } from "../../marketplace/agencyListing/index.ts";
-import type { AgencyListing } from "../../marketplace/agencyListing/index.ts";
-import type { ListingFilter } from "../../marketplace/agencyListing/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../runner/helpers/index.ts";
+import { fromTwentyEnum, listFacebookAccounts, findAccount, toTwentyEnum } from "../../platformKit/socialAccount/index.ts";
+import { countryMismatch, createSlot, getListing, LISTING_STATUSES, listListingsWhere } from "../../facebook/marketplace/agencyListing/index.ts";
+import type { AgencyListing } from "../../facebook/marketplace/agencyListing/index.ts";
+import type { ListingFilter } from "../../facebook/marketplace/agencyListing/index.ts";
+import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
 import { listingFromJson, renderListingDetail, renderListingsTable } from "./helpers/index.ts";
+import { liveThroughAction } from "../../platformKit/action/index.ts";
 
 export * from "./helpers/index.ts";
 
@@ -49,13 +50,13 @@ export const listingsCommand: Command = {
   args: "[--status <s>] [--account <name>] [--campaign <id>] [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(LISTINGS_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log facebook listings: ${parsed.error}\n${LISTINGS_USAGE}` };
-    if (parsed.positionals.length > 0) return { code: 1, stderr: `log facebook listings: unexpected argument "${parsed.positionals[0]}"\n${LISTINGS_USAGE}` };
+    if (!parsed.ok) return refuseInput("facebook listings", parsed.error, LISTINGS_USAGE);
+    if (parsed.positionals.length > 0) return { code: 1, error: "inputInvalid", stderr: `log facebook listings: unexpected argument "${parsed.positionals[0]}"\n${LISTINGS_USAGE}` };
     const filters: ListingFilter[] = [];
     const status = parsed.flags["status"];
     if (typeof status === "string") {
       if (!(LISTING_STATUSES as readonly string[]).includes(fromTwentyEnum(status))) {
-        return { code: 1, stderr: `log facebook listings: status must be one of ${LISTING_STATUSES.map(toTwentyEnum).join(", ")}` };
+        return { code: 1, error: "inputInvalid", stderr: `log facebook listings: status must be one of ${LISTING_STATUSES.map(toTwentyEnum).join(", ")}` };
       }
       filters.push({ status: { eq: toTwentyEnum(fromTwentyEnum(status)) as never } });
     }
@@ -87,12 +88,12 @@ export const LISTING_INPUT: CommandInput = {
       ],
     },
     {
-      words: ["remove"], effect: "browser",
+      words: ["remove"], effect: "browser", liveEffect: "delete",
       summary: "Delete a listing on Facebook from its account's Selling page, then set it REMOVED in Twenty (the row stays); a dry run unless live",
       positionals: [{ name: "listing", kind: "string", required: true, description: "The agencyListing id, or the Facebook listing id" }],
       flags: [
-        { name: "live", kind: "boolean", live: true, description: "Delete it on Facebook, only when matt asked (rule 8)" },
-        { name: "bypass", kind: "boolean", bypass: true, description: "Outside the account's waking hours, only when matt asked (rule 20)" },
+        { name: "live", kind: "boolean", live: true, description: "Delete it on Facebook, only when the owner asked (rule 8)" },
+        { name: "bypass", kind: "boolean", bypass: true, description: "Outside the account's waking hours, only when the owner asked (rule 20)" },
         { name: "now", kind: "boolean", description: "Skip the 10-minute launch gap only (rule 24)" },
         JSON_FLAG,
       ],
@@ -101,7 +102,7 @@ export const LISTING_INPUT: CommandInput = {
       words: ["sweep"], effect: "write",
       summary: "Mark every listing of a blocked account ACCOUNT_LOST (a dry run unless --apply)",
       positionals: [],
-      flags: [{ name: "apply", kind: "boolean", description: "Write ACCOUNT_LOST to Twenty and hand campaign copies to another account" }, JSON_FLAG],
+      flags: [{ name: "apply", kind: "boolean", live: true, description: "Write ACCOUNT_LOST to Twenty and hand campaign copies to another account" }, JSON_FLAG],
     },
     {
       words: ["lint"],
@@ -112,7 +113,7 @@ export const LISTING_INPUT: CommandInput = {
   ],
 };
 
-export const listingCommand: Command = {
+export const listingCommand: Command = liveThroughAction<Command>({
   usage: LISTING_USAGE,
   platform: "facebook",
   name: "listing",
@@ -122,11 +123,11 @@ export const listingCommand: Command = {
   args: "<id> | create --account <name> --file <listing.json> | lint --file <listing.json> | remove <id> [--live] [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(LISTING_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log facebook listing: ${parsed.error}\n${LISTING_USAGE}` };
+    if (!parsed.ok) return refuseInput("facebook listing", parsed.error, LISTING_USAGE);
     const [key, extra] = parsed.positionals;
     if (key === "lint") {
       const file = parsed.flags["file"];
-      if (typeof file !== "string") return { code: 1, stderr: `log facebook listing lint: --file is required\n${LISTING_USAGE}` };
+      if (typeof file !== "string") return { code: 1, error: "inputInvalid", stderr: `log facebook listing lint: --file is required\n${LISTING_USAGE}` };
       let raw: unknown;
       try {
         raw = JSON.parse(readFileSync(file, "utf8"));
@@ -157,7 +158,7 @@ export const listingCommand: Command = {
     if (key === "create") {
       const account = parsed.flags["account"];
       const file = parsed.flags["file"];
-      if (typeof account !== "string" || typeof file !== "string") return { code: 1, stderr: `log facebook listing create: --account and --file are required\n${LISTING_USAGE}` };
+      if (typeof account !== "string" || typeof file !== "string") return { code: 1, error: "inputInvalid", stderr: `log facebook listing create: --account and --file are required\n${LISTING_USAGE}` };
       let raw: unknown;
       try {
         raw = JSON.parse(readFileSync(file, "utf8"));
@@ -178,8 +179,8 @@ export const listingCommand: Command = {
       }
     }
     if (parsed.flags["account"] !== undefined || parsed.flags["file"] !== undefined) return { code: 1, stderr: `log facebook listing: --account and --file are for \`log facebook listing create\`\n${LISTING_USAGE}` };
-    if (key === undefined) return { code: 1, stderr: `log facebook listing: a listing id is required\n${LISTING_USAGE}` };
-    if (extra !== undefined) return { code: 1, stderr: `log facebook listing: unexpected argument "${extra}"\n${LISTING_USAGE}` };
+    if (key === undefined) return { code: 1, error: "inputInvalid", stderr: `log facebook listing: a listing id is required\n${LISTING_USAGE}` };
+    if (extra !== undefined) return { code: 1, error: "inputInvalid", stderr: `log facebook listing: unexpected argument "${extra}"\n${LISTING_USAGE}` };
     try {
       const listing = await getListing(context.twenty, key);
       if (!listing) return refuse("listing", "listingNotFound", key);
@@ -190,7 +191,7 @@ export const listingCommand: Command = {
       return refuseError("listing", error);
     }
   },
-};
+}, ["live", "apply"]);
 
 export const REMOVABLE_STATUSES = ["active", "underReview", "unconfirmed", "sold", "duplicateTakedown"] as const;
 

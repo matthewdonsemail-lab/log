@@ -2,7 +2,7 @@
 
 Publish one Marketplace listing in the account's open AdsPower browser: set the Marketplace location (City, State written out), open Create, two photos, title, price, category Miscellaneous, condition New, description, Next, Publish, close the Boost offer. Recorded on Bethlehem 2026-10-22 (listing <id:1>, held for review).
 
-Built by `log flow fromInspect` from the recording `~/.logCli/runs/inspect/20261022T110738_<userId:1>` (account <userId:1>). Run it on any account with `log flow run marketplaceListingPublish --account <a> --live`, or over MCP as the tool `flowMarketplaceListingPublish` (rule 31).
+Built by `log flow fromInspect` from the recording `~/.logCli/runs/inspect/20261022T110738_<userId:1>` (account <userId:1>). Run it on any account with `log flow run marketplaceListingPublish --account <a> --live`, or over MCP as the tool `facebookFlowMarketplaceListingPublish` (rule 31).
 
 ## Params
 

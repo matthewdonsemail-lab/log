@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { marketplaceFixture } from "../../twenty/graphql/index.ts";
 import type { TwitterEngineRun, TwitterEngineSpec, TwitterSessionAnswer } from "../../twitter/account/session/index.ts";
@@ -95,5 +95,68 @@ describe("log twitter notifications", () => {
     expect((await h.run(["twitter", "notifications", "--account", "xTwo", "--pages", "0"])).err).toContain("notificationQueryInvalid");
     expect((await h.run(["twitter", "notifications", "--account", "xTwo", "--limit", "0"])).err).toContain("limitInvalid");
     expect(h.calls).toEqual([]);
+  });
+});
+
+function unrolled(storePath: string, spec: TwitterEngineSpec, userIds: string[]): TwitterSessionAnswer {
+  const store = JSON.parse(readFileSync(storePath, "utf8")) as NotificationStore;
+  const kind = spec.kind!;
+  let newRows = 0;
+  for (const id of userIds) {
+    const key = `${kind}:${id}:${spec.postId}`;
+    if (store.rows[key]) continue;
+    store.rows[key] = { key, kind, at: null, userId: id, handle: `user${id}`, postId: spec.postId!, postUrl: `https://x.com/xTwo/status/${spec.postId}`, source: "engagements" };
+    newRows += 1;
+  }
+  store.engagements = { ...store.engagements, [spec.postId!]: { ...store.engagements?.[spec.postId!], [kind]: { cursor: null, done: true, pages: 1, seen: userIds.length, added: newRows, syncedAt: "2026-11-01T13:30:00Z" } } };
+  writeFileSync(storePath, JSON.stringify(store));
+  return { ok: true, postId: spec.postId, kind, engagerSync: { postId: spec.postId!, kind, pages: 1, newRows, resumed: false, done: true, stoppedBy: "end", counts: { fromNotifications: 0, addedByUnroll: newRows, total: newRows }, syncedAt: "2026-11-01T13:30:00Z" } };
+}
+
+describe("log twitter notifications unrolls a post's likers and reposters", () => {
+  test("--post reads the feed, then that post's likers and reposters, and says per post what came from notifications and what unrolling added", async () => {
+    const h = harness((spec) => (spec.action === "notifications" ? SYNCED : unrolled(h.storePath, spec, spec.kind === "like" ? ["2", "8", "9"] : ["6"])));
+    const r = await h.run(["twitter", "notifications", "--account", "xTwo", "--post", "900", "--type", "likes"]);
+    expect(r.code).toBe(0);
+    expect(h.calls).toEqual([
+      { action: "notifications", screenName: "xTwo" },
+      { action: "postEngagers", screenName: "xTwo", postId: "900", kind: "like", pages: 5 },
+      { action: "postEngagers", screenName: "xTwo", postId: "900", kind: "repost", pages: 5 },
+    ]);
+    expect(r.out).toContain("3 likes on post 900: 3 like");
+    expect(r.out).toContain("  post 900: likers 1 from notifications + 2 added by unrolling = 3 (read to the end); reposters 0 from notifications + 1 added by unrolling = 1 (read to the end)");
+    expect(r.out).not.toContain("stopped before the end");
+    expect(r.out).toContain("unknown time · like · @user8");
+    expect(r.err).toContain("post 900 likers: 1 page read, 2 added, read to the end");
+    const kept = JSON.parse((await h.run(["twitter", "notifications", "--account", "xTwo", "--stored", "--post", "900", "--type", "likes", "--json"])).out);
+    expect(kept.engagerPosts).toMatchObject([{ postId: "900", likes: { fromNotifications: 1, addedByUnroll: 2, total: 3, state: "readToTheEnd" } }]);
+    expect(kept.rows.filter((x: TwitterNotification) => x.userId === "2")).toHaveLength(1);
+    expect(h.calls).toHaveLength(3);
+  });
+
+  test("a 429 on the reposters stops the run, says so plainly, exits 1 and still shows what the likers read kept; --json carries the same", async () => {
+    const script = (h: ReturnType<typeof harness>) => (spec: TwitterEngineSpec): TwitterSessionAnswer =>
+      spec.action === "notifications" ? SYNCED : spec.kind === "like" ? unrolled(h.storePath, spec, ["8"]) : { ok: false, code: "rateLimited", event: "throttled", detail: "X answered 429 to a page of the reposters of post 900", postId: "900", kind: "repost" };
+    const h: ReturnType<typeof harness> = harness((spec) => script(h)(spec));
+    const r = await h.run(["twitter", "notifications", "--account", "xTwo", "--post", "900"]);
+    expect(r.code).toBe(1);
+    expect(h.calls.map((c) => c.kind ?? c.action)).toEqual(["notifications", "like", "repost"]);
+    expect(r.out).toContain("rateLimited (loggedIn): X answered 429 to a page of the reposters");
+    expect(r.out).toContain("likers 1 from notifications + 1 added by unrolling = 2 (read to the end); reposters 0 from notifications + 0 added by unrolling = 0 (not unrolled)");
+    expect(r.out).toContain("the unroll stopped before the end at post 900: rateLimited: X answered 429");
+    const answer = JSON.parse((await h.run(["twitter", "notifications", "--account", "xTwo", "--post", "900", "--json"])).out);
+    expect(answer).toMatchObject({ ok: false, code: "rateLimited", notificationSync: { mode: "newest" }, unroll: { state: "stopped", stoppedBeforeTheEnd: true, stop: { stage: "reposters", code: "rateLimited", postId: "900" }, posts: [{ postId: "900", likes: { total: 2, state: "readToTheEnd" }, reposts: { state: "notUnrolled" } }] } });
+  });
+
+  test("--full unrolls each of the account's posts with an aggregated like, and --stored --post says a post is not unrolled yet", async () => {
+    const h = harness((spec) => (spec.action === "notifications" ? SYNCED : unrolled(h.storePath, spec, ["8"])));
+    const before = await h.run(["twitter", "notifications", "--account", "xTwo", "--stored", "--post", "900"]);
+    expect(before.out).toContain("post 900: likers 1 from notifications + 0 added by unrolling = 1 (not unrolled)");
+    const store = JSON.parse(readFileSync(h.storePath, "utf8")) as NotificationStore;
+    store.rows["like:2:900"]!.message = "alice and 3 others liked your post";
+    writeFileSync(h.storePath, JSON.stringify(store));
+    const r = await h.run(["twitter", "notifications", "--account", "xTwo", "--full", "--json"]);
+    expect(h.calls).toEqual([{ action: "notifications", screenName: "xTwo", full: true }, { action: "postEngagers", screenName: "xTwo", postId: "900", kind: "like", pages: 5 }]);
+    expect(JSON.parse(r.out).unroll).toMatchObject({ state: "done", stoppedBeforeTheEnd: false, pagesRead: 1, posts: [{ postId: "900", likes: { fromNotifications: 1, addedByUnroll: 1, total: 2 } }] });
   });
 });

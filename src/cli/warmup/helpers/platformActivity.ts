@@ -3,8 +3,8 @@ import { join } from "node:path";
 import { createActor, fromPromise, toPromise } from "xstate";
 import { readCurrentInspect } from "../../../browser/inspect/index.ts";
 import type { InspectAction } from "../../../browser/inspect/index.ts";
-import { homeOf, outsideActiveHours } from "../../../marketplace/home/index.ts";
-import { checkRunnable, findAccount } from "../../../marketplace/socialAccount/index.ts";
+import { homeOf, outsideActiveHours } from "../../../platformKit/home/index.ts";
+import { checkRunnable, findAccount } from "../../../platformKit/socialAccount/index.ts";
 import { createInspector, formatTraceLine } from "../../../observability/trace/index.ts";
 import { answerWaitOf, DEFAULT_SESSION, describeSession, FACEBOOK_ACTIVITIES, parseRange, planSession, WARMUP_PLATFORMS, warmupActivityMachine } from "../../../facebook/warmup/activities/index.ts";
 import type { ActivityStep, PlatformActivity, ReelSessionOptions, StepReply } from "../../../facebook/warmup/activities/index.ts";
@@ -20,11 +20,11 @@ export const PLATFORM_USAGE = [
   "       log <platform> warmup <activity> [--account <a>] [--live] [--likes] [--bypass] [--now]   (record: the account's browser opened primed with the activity, each step checked, the outline written)",
   "       log <platform> warmup <activity> plan [--json]   (the activity's steps and what each must do)",
   "       log <platform> warmup persona --account <a> [--newPersona] [--seed <n>]   (the account's behaviour profile and real viewer, from the datasets; no browser, no SubQ)",
-  "       log facebook warmup reel plan [--reels 8-20] [--watch 4-25] [--skip 0.6] [--comments 0.3] [--profile 0.15] [--likes] [--seed <n>] [--json]   (a drawn Reels session)",
-  "       log facebook warmup reel run --account <a> [reel plan flags] [--live] [--likes] [--bypass]   (a drawn session, stopped at the first step that doesn't do what it should)",
-  "       log facebook warmup reel run --account <a> --persona [--newPersona] [--reels 8-20] [--trafficMb 1024] [--live] [--likes] [--bypass]   (the persona's For you feed: SubQ reads each reel, the orderer plans it from the pack and real viewer, rule 50)",
-  "       log facebook warmup feed run --account <a> --persona [--posts 8-15] [--trafficMb 1024] [--live] [--likes] [--bypass]   (the home feed post by post: SubQ reads each post, a glance or a read and a like where the persona would, then Marketplace and listings)",
-  `  Platforms: ${WARMUP_PLATFORMS.join(", ")}. Facebook activities: ${[...Object.keys(FACEBOOK_ACTIVITIES), "stages"].join(", ")}.`,
+  "       log <platform> warmup reel plan [--reels 8-20] [--watch 4-25] [--skip 0.6] [--comments 0.3] [--profile 0.15] [--likes] [--seed <n>] [--json]   (a drawn Reels session)",
+  "       log <platform> warmup reel run --account <a> [reel plan flags] [--live] [--likes] [--bypass]   (a drawn session, stopped at the first step that doesn't do what it should)",
+  "       log <platform> warmup reel run --account <a> --persona [--newPersona] [--reels 8-20] [--trafficMb 1024] [--live] [--likes] [--bypass]   (the persona's For you feed: SubQ reads each reel, the orderer plans it from the pack and real viewer)",
+  "       log <platform> warmup feed run --account <a> --persona [--posts 8-15] [--trafficMb 1024] [--live] [--likes] [--bypass]   (the home feed post by post: SubQ reads each post, a glance or a read and a like where the persona would, then the listings pages)",
+  `  Platforms: ${WARMUP_PLATFORMS.map((p) => `${p} (${[...Object.keys(FACEBOOK_ACTIVITIES), "stages"].join(", ")})`).join(", ")}.`,
 ].join("\n");
 
 export function sessionOptions(flags: Record<string, string | true>): { ok: true; options: ReelSessionOptions } | { ok: false; error: string } {
@@ -58,7 +58,7 @@ function actor(context: CommandContext, current: NonNullable<ReturnType<typeof r
 export async function runPlatformActivity(context: CommandContext, positionals: string[], flags: Record<string, string | true>): Promise<CommandResult> {
   const [platform, activityName, sub = "record"] = positionals;
   if (activityName === "persona") {
-    if (typeof flags.account !== "string") return { code: 1, stderr: `log facebook warmup: --account is required\n${PLATFORM_USAGE}` };
+    if (typeof flags.account !== "string") return { code: 1, error: "inputInvalid", stderr: `log facebook warmup: --account is required\n${PLATFORM_USAGE}` };
     try {
       const account = await findAccount(context.twenty, flags.account);
       const seed = typeof flags.seed === "string" ? Number(flags.seed) : undefined;
@@ -96,8 +96,8 @@ export async function runPlatformActivity(context: CommandContext, positionals: 
     const glanced = steps.filter((s) => s.step.id === "glance").length;
     return { code: 0, stdout: [`Warm-up ${platform} ${activity.activity}, a session (seed ${seed}): ${reels} reels, ${glanced} skipped after a glance, ${reels - glanced} watched, ${steps.length} steps${built.options.likes ? "" : ", no likes (add --likes, rule 8)"}.`, ...describeSession(steps)].join("\n") };
   }
-  if (sub !== "record" && sub !== "run") return { code: 1, stderr: `log facebook warmup ${platform} ${activity.activity}: pick plan, record or run\n${PLATFORM_USAGE}` };
-  if (typeof flags.account !== "string") return { code: 1, stderr: `log facebook warmup: --account is required\n${PLATFORM_USAGE}` };
+  if (sub !== "record" && sub !== "run") return { code: 1, error: "inputInvalid", stderr: `log facebook warmup ${platform} ${activity.activity}: pick plan, record or run\n${PLATFORM_USAGE}` };
+  if (typeof flags.account !== "string") return { code: 1, error: "inputInvalid", stderr: `log facebook warmup: --account is required\n${PLATFORM_USAGE}` };
 
   try {
     const account = await findAccount(context.twenty, flags.account);

@@ -26,7 +26,7 @@ Say: **"go on docs/useCases/inbox/governorReset.md for <platform> <account or al
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
 | 1 | Read the counts | `governorShow` { platform } | each account's requests, writes, this hour and any cooldown |
-| 2 | Reset the accounts the owner named, back to 0 | `governorReset` { platform, account, by: "matt", reason: "<what the owner said>" } | each account reads 0 and names its log.db ledger row |
+| 2 | Reset the accounts the owner named, back to 0 | `governorReset` { platform, account, by: "<owner>", reason: "<what the owner said>" } | each account reads 0 and names its log.db ledger row |
 | 3 | Confirm it is in the db | `governorShow` { platform } | each account shows 0 requests and its last reset as a ledger row |
 | 4 | Tell the owner the count before and after, and carry on with what was blocked | the reply to the owner | the owner knows each account is back to 0 |
 

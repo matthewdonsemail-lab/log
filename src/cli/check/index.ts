@@ -1,9 +1,9 @@
-import { recordAccountIssue } from "../../marketplace/replacement/index.ts";
+import { recordAccountIssue } from "../../facebook/marketplace/replacement/index.ts";
 import { readCurrentInspect } from "../../browser/inspect/index.ts";
 import * as marketplaceCheck from "../../facebook/marketplace/check/index.ts";
-import { homeOf, outsideActiveHours } from "../../marketplace/home/index.ts";
-import { findAccount } from "../../marketplace/socialAccount/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";
+import { homeOf, outsideActiveHours } from "../../platformKit/home/index.ts";
+import { findAccount } from "../../platformKit/socialAccount/index.ts";
+import { JSON_FLAG, parseArgs, parserSpecOf, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
 
 export const CHECK_USAGE = [
@@ -18,7 +18,7 @@ export const CHECK_INPUT: CommandInput = {
       positionals: [],
       flags: [
         { name: "account", kind: "string", required: true, description: "The account whose browser is open (`inspectStart` opens it)" },
-        { name: "bypass", kind: "boolean", bypass: true, description: "Outside the account's waking hours, only when matt asked (rule 20)" },
+        { name: "bypass", kind: "boolean", bypass: true, description: "Outside the account's waking hours, only when the owner asked (rule 20)" },
         JSON_FLAG,
       ],
     },
@@ -29,16 +29,17 @@ export const checkCommand: Command = {
   usage: CHECK_USAGE,
   platform: "facebook",
   name: "check",
+  longRunning: true,
   effect: "browser",
   input: CHECK_INPUT,
   summary: "Check one account in its open browser: may it still sell, each listing's state on Selling (into Twenty), and its seller inbox's chats",
   args: "--account <a> [--bypass] [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(CHECK_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log facebook check: ${parsed.error}\n${CHECK_USAGE}` };
-    if (parsed.positionals.length) return { code: 1, stderr: `log facebook check: unexpected argument "${parsed.positionals[0]}"\n${CHECK_USAGE}` };
+    if (!parsed.ok) return refuseInput("facebook check", parsed.error, CHECK_USAGE);
+    if (parsed.positionals.length) return { code: 1, error: "inputInvalid", stderr: `log facebook check: unexpected argument "${parsed.positionals[0]}"\n${CHECK_USAGE}` };
     const ref = parsed.flags["account"];
-    if (typeof ref !== "string") return { code: 1, stderr: `log facebook check: --account is needed\n${CHECK_USAGE}` };
+    if (typeof ref !== "string") return { code: 1, error: "inputInvalid", stderr: `log facebook check: --account is needed\n${CHECK_USAGE}` };
     let account;
     try {
       account = await findAccount(context.twenty, ref);

@@ -1,6 +1,6 @@
 ---
 name: xPosting
-description: Run an X account the way matt runs @matthewsoldit, from any account. Add the account to Twenty with `log twitter cookies save` (masked prompt, checked with X), give it a copy style, then post originals by the social posting playbook (Cap, Parakeet, FilmCraft, the X discipline) and reach people through `log twitter` replies, quotes, likes, dms and the queue. Use to set up an X account, to post or reply on X, and when adding a new X workflow, copy style or editing rule.
+description: Run an X account the way the owner runs @matthewsoldit, from any account. Add the account to Twenty with `log twitter cookies save` (masked prompt, checked with X), give it a copy style, then post originals by the social posting playbook (Cap, Parakeet, FilmCraft, the X discipline) and reach people through `log twitter` replies, quotes, likes, dms and the queue. Use to set up an X account, to post or reply on X, and when adding a new X workflow, copy style or editing rule.
 ---
 
 # xPosting
@@ -45,17 +45,17 @@ the replies to its comments, the quote an hour later, and the DMs to the people 
 
 ## 3. Reaching people: `log twitter`
 
-**Send what X's own client sends (rule 113).** Every GraphQL call uses
+**Send what X's own client sends.** Every GraphQL call uses
 X's live operation ids and feature switches, read from X's signed-in
 client with `log twitter session webClient --account <a>` into
 `~/.logCli/twitter/xOperations.json`. Run it again when X ships a new
 main.js. What X's composer sends is in `docs/platforms/x/compose.md`.
 
-**The account stays live in context (rule 115).** While its X Chat watch
+**The account stays live in context.** While its X Chat watch
 runs, the account reads X's own badge counts every 2 minutes, the way
 x.com does, and reads the new notifications when the count rises. Each
 Claude session gets what is new in a `>>> X LIVE` block. A reply, quote
-or mention there is someone talking to matt: read them and answer.
+or mention there is someone talking to the owner: read them and answer.
 How it works: `docs/platforms/x/live.md`.
 
 **Full context before every message (rule 109).** Before you write to
@@ -63,8 +63,8 @@ anyone, and again right before it goes out, know everything between them
 and the account at that moment, never only the dm thread:
 
 - `twitterDms` { account, with: "<handle>" } gives their whole thread (old
-  DMs and X Chat, read from X itself, so it also holds what matt sent them
-  from his phone or anywhere outside log) **and** what they did on the
+  DMs and X Chat, read from X itself, so it also holds what the owner sent them
+  from the owner's phone or anywhere outside log) **and** what they did on the
   account's posts: likes, retweets, replies (with what they said), quotes,
   mentions and follows, newest first, from a fresh notifications read.
 - Draft from all of it. Someone who already retweeted gets thanked for it,
@@ -83,8 +83,8 @@ The parts every page uses:
 - **Finding:** treg's X search, profile and posts reads (rule 53). X itself is never used to search.
 - **One send:** `log twitter reply|quote|like|dm --account <handle> …` is a
   dry run. `--live --approvedBy <who>` sends it. A dm drafted on several
-  lines goes out one message per line, with matt's usual gap between them,
-  and the queue sends dms the same way (rule 90); `--asOne` only when matt
+  lines goes out one message per line, with the owner's usual gap between them,
+  and the queue sends dms the same way (rule 90); `--asOne` only when the owner
   asks. A drop stops the rest, and nothing is resent (rule 94).
 - **Reading the inbox:** `log twitter dms --account <handle>` syncs: the
   first read takes the whole inbox once (about 20 s) and keeps it in
@@ -100,28 +100,28 @@ The parts every page uses:
   approve → plan → run → run --live`. It spaces sends at random, at least
   minGap apart, and any refusal from X stops the run with the item pending
   (rule 94, [docs/specs/xQueue.md](../../docs/specs/xQueue.md)). Before any DM
-  it drops people the account has already talked to on X Chat (rule 87).
+  it drops people the account has already talked to on X Chat (rule 109).
 - **One session per account (rule 105):** every X call goes through the
   account's one engine host (`python/twitterApi/host.py`). The first call starts
   it; every call after, from the CLI, MCP, hooks, the queue or the X Chat watch,
   is answered by that same session (one client, one connection, one transaction
   key), one call at a time: a send 4 to 11 s after the last call, a read 0.8
-  to 2.5 s (rules 104, 110). The answer's
+  to 2.5 s. The answer's
   `xSession` names it (pid, since, calls), and the hook's account line shows it.
   A second session can't start. If the host can't be reached the call is
   refused (`xSessionHostDown`) and nothing is sent: read
   `~/.logCli/twitter/<account>/host.log`, never work around it. More than one
-  send goes through the queue, never a hand-rolled loop (rule 104). The whole
+  send goes through the queue, never a hand-rolled loop (rule 105). The whole
   contract: [docs/specs/xSession.md](../../docs/specs/xSession.md).
 - **Pacing:** 240 writes a day per account, kept by the account's governor.
   `--force` goes past it only when the owner says so (rule 86). See
   [docs/specs/writeBudgets.md](../../docs/specs/writeBudgets.md).
 
-## 3b. The growth loop (how matt grows @matthewsoldit)
+## 3b. The growth loop (how the owner grows @matthewsoldit)
 
-What worked for matt (`log kb show memory:-buzz/listeningkit-real-state`): a
+What worked for the owner (`log kb show memory:-buzz/listeningkit-real-state`): a
 text post about treg ("$10 -> 30 conversations") did 205K views and 1,182
-likes, and his followers went from 308 to 352 in four days. He then turned
+likes, and the account's followers went from 308 to 352 in four days. The owner then turned
 the attention into conversations. Every account runs the same loop, in this
 order:
 
@@ -132,7 +132,7 @@ order:
 | 3 | About 1 hour after | Quote a matching trend, never before your own post | playbook "Riding a trend", `log twitter quote` |
 | 4 | The next days | DM the people who liked or reposted it, opening with one of their own tweets, then one informal line | `docs/useCases/twitter/engagerDms.md` (the cold DM way), queue `action: dm` |
 | 5 | Every day | Reply to people posting about your topic, one line about their post backed by your own fact, inside the account's 240 writes a day | `docs/useCases/twitter/topicReplies.md`, the queue's `limit` |
-| 6 | Always | Answer whoever writes back. Never send a cold template to someone you already talk to | `log twitter dms --account <a> [--with <handle>]`, `chat watch` (needs the X Chat PIN), rule 87 |
+| 6 | Always | Answer whoever writes back. Never send a cold template to someone you already talk to | `log twitter dms --account <a> [--with <handle>]`, `chat watch` (needs the X Chat PIN), rule 109 |
 | 7 | Weekly | Score the followers (treg profiles and their posts), and talk to the best ones by hand | `docs/useCases/twitter/followers.md`, treg `anyapi.x.user.profile` |
 | 8 | Always | Leads from posts and DMs go into Twenty | `agencyProspects` |
 
@@ -155,9 +155,9 @@ ask a real question in the post instead. A cold DM opens the cold DM way
 (their own tweet first). The plan's DM opener is for someone who has
 already commented.
 
-**Voice.** `log voice` gates drafts against matt's own writing. Its guide
-and his saved conversations are on matt's machine, so on any other account it
-judges by matt's voice. For an account of your own, write in its
+**Voice.** `log voice` gates drafts against the owner's own writing. Its guide
+and the owner's saved conversations are on the owner's machine, so on any other account it
+judges by the owner's voice. For an account of your own, write in its
 `copyStyle`, and keep each line about the other person's post.
 
 ## 4. Copy styles
@@ -167,7 +167,7 @@ Every send and every queue check holds its copy to the account's
 
 | Style | Rules |
 | --- | --- |
-| `house` | matt's: lowercase only, no commas, semicolons, full stops, em or en dashes. URLs are exempt |
+| `house` | The owner's: lowercase only, no commas, semicolons, full stops, em or en dashes. URLs are exempt |
 
 To give an account another style, set `copyStyle` in Twenty, or pass
 `--style` to `cookies save`. A send names the style that failed and why.
@@ -190,7 +190,7 @@ Add each new piece in the same place every time, so every account gets it:
   when and how to post): change the social posting playbook, in the repo and
   the Twenty note together. Then link anything new from section 2 here.
 - **A new X command:** `src/cli/twitter/helpers/<name>.ts` on the direct-API
-  engine (`DIRECT_ROUTES`, `COMMAND_RULES`), never a browser (rule 80).
+  engine (`DIRECT_ROUTES`, `COMMAND_RULES`), never a browser.
 
 Then run `log kb sync`. This skill, the use cases and the docs go into
 Twenty's knowledge base and its Redis search, and every agent finds them

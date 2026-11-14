@@ -3,7 +3,7 @@ import { platformStateRoot } from "../../directApi/engine/index.ts";
 import { discordGate, findDiscordAccount } from "../../discord/account/session/index.ts";
 import { benchmark, buildIndex, linearScan, loadConversations, localEmbedder, openIndex, saveConversations, search, twitterConversationOf, updateIndex } from "../../search/conversations/index.ts";
 import type { Conversation, ConversationAttachment, Embedder, SearchHit } from "../../search/conversations/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";
+import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandContext, CommandInput } from "../runner/types.ts";
 import { openTwitterAccount } from "../twitter/helpers/account.ts";
 
@@ -18,7 +18,7 @@ const FILTERS = [
   { name: "platform", kind: "string", description: "Only this platform's conversations (twitter, discord)" },
   { name: "account", kind: "string", description: "Only this account's conversations" },
   { name: "with", kind: "string", description: "Only conversations with this handle" },
-  { name: "after", kind: "string", description: "Only chunks from this day on, YYYY-MM-DD" },
+  { name: "after", kind: "string", format: "date", description: "Only chunks from this day on, YYYY-MM-DD" },
 ] as const;
 
 export const SEARCH_INPUT: CommandInput = {
@@ -27,7 +27,7 @@ export const SEARCH_INPUT: CommandInput = {
       words: [],
       summary: "Search every conversation by keyword and meaning at once, fused with reciprocal rank fusion",
       positionals: [{ name: "query", kind: "string", required: true, description: "What to look for, in plain words" }],
-      flags: [{ name: "limit", kind: "string", description: "How many hits, default 10, at most 100" }, ...FILTERS, JSON_FLAG],
+      flags: [{ name: "limit", kind: "integer", min: 1, max: 100, description: "How many hits, default 10, at most 100" }, ...FILTERS, JSON_FLAG],
     },
     {
       words: ["index"],
@@ -39,7 +39,7 @@ export const SEARCH_INPUT: CommandInput = {
       words: ["bench"],
       summary: "Time realistic queries on the built index, cold and warm, with p50, p95 and p99 beside a linear scan",
       positionals: [],
-      flags: [{ name: "rounds", kind: "string", description: "Warm rounds over the queries, default 20" }, JSON_FLAG],
+      flags: [{ name: "rounds", kind: "integer", min: 1, max: 1000, description: "Warm rounds over the queries, default 20, at most 1000" }, JSON_FLAG],
     },
   ],
 };
@@ -139,7 +139,7 @@ export const searchCommand: Command = {
     const sub = first === "index" || first === "bench" ? first : "query";
     const form = SEARCH_INPUT.forms[sub === "index" ? 1 : sub === "bench" ? 2 : 0];
     const parsed = parseArgs(sub === "query" ? argv : argv.slice(1), parserSpecOf({ forms: [{ ...form, words: [] }] }));
-    if (!parsed.ok) return { code: 1, stderr: `log search: ${parsed.error}\n${SEARCH_USAGE}` };
+    if (!parsed.ok) return refuseInput("search", parsed.error, SEARCH_USAGE);
     const json = parsed.flags["json"] === true;
     const embedder = searchDeps.embedder();
     try {
@@ -157,8 +157,7 @@ export const searchCommand: Command = {
       const index = await openIndex(embedder);
       try {
         if (sub === "bench") {
-          const rounds = Number(parsed.flags["rounds"] ?? 20);
-          if (!Number.isInteger(rounds) || rounds < 1 || rounds > 1000) return { code: 1, stderr: "log search bench: --rounds is a whole number from 1 to 1000" };
+          const rounds = numberOf(parsed, "rounds") ?? 20;
           const conversations = loadConversations();
           const scan: number[] = [];
           for (const q of BENCH_QUERIES) {
@@ -174,10 +173,8 @@ export const searchCommand: Command = {
         }
         const query = parsed.positionals.join(" ").trim();
         if (!query) return { code: 1, stderr: `log search: say what to look for\n${SEARCH_USAGE}` };
-        const limit = Number(parsed.flags["limit"] ?? 10);
-        if (!Number.isInteger(limit) || limit < 1 || limit > 100) return { code: 1, stderr: "log search: --limit is a whole number from 1 to 100" };
-        const after = parsed.flags["after"];
-        if (after !== undefined && (typeof after !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(after))) return { code: 1, stderr: "log search: --after takes a day, YYYY-MM-DD" };
+        const limit = numberOf(parsed, "limit") ?? 10;
+        const after = typeof parsed.flags["after"] === "string" ? parsed.flags["after"] : undefined;
         const pick = (name: string) => (typeof parsed.flags[name] === "string" ? (parsed.flags[name] as string) : undefined);
         const started = performance.now();
         const hits = await search(index, query, { limit, platform: pick("platform"), account: pick("account"), with: pick("with"), after });

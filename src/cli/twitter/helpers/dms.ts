@@ -9,7 +9,7 @@ import { lastWordOf, personKeyOf } from "../../../inbox/lastWord/index.ts";
 import type { LastWord } from "../../../inbox/lastWord/index.ts";
 import { loadConversations, saveConversations, twitterConversationOf } from "../../../search/conversations/index.ts";
 import { localAccountId, twitterStateRoot } from "../../../directApi/engine/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../../runner/helpers/index.ts";
+import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuse, refuseError, refuseInput } from "../../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../../runner/types.ts";
 import { activityLine, activityOf, dropMirrors, followUpDue, mergeThreads, ONE_INBOX_NOTE, openedNoReply, reactedOnly, storedThreads, waitingOnYou } from "../../../twitter/dm/person/index.ts";
 import { notificationsFresh, notificationStorePath, readNotificationStore } from "../../../twitter/notification/feed/index.ts";
@@ -39,12 +39,12 @@ export const DMS_INPUT: CommandInput = {
       positionals: [],
       flags: [
         { name: "account", kind: "string", required: true, description: "The TWITTER socialAccount's accountName (its handle)" },
-        { name: "limit", kind: "string", description: "How many conversations, or messages with --conversation, to show (default 20, at most 200)" },
+        { name: "limit", kind: "integer", min: 1, max: 200, refusal: "limitInvalid", description: "How many conversations, or messages with --conversation, to show (default 20, at most 200)" },
         { name: "waiting", kind: "boolean", description: "Only the conversations whose last message isn't the account's" },
         { name: "with", kind: "string", description: "A handle, to read that person's thread without looking up its id" },
         { name: "conversation", kind: "string", description: "One conversation's id, to read its messages" },
         { name: "full", kind: "boolean", description: "Read the whole inbox again instead of only what is new since the last read" },
-        { name: "force", kind: "boolean", description: "Read past the account's governor (its pause, hourly and daily caps) for this call, only when matt asked (rule 86)" },
+        { name: "force", kind: "boolean", description: "Read past the account's governor (its pause, hourly and daily caps) for this call, only when the owner asked (rule 86)" },
         JSON_FLAG,
       ],
     },
@@ -151,12 +151,10 @@ export const dmsCommand: Command = {
   args: "--account <a> [--limit <n>] [--waiting] [--with <handle>] [--conversation <id>] [--force] [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(DMS_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log twitter dms: ${parsed.error}\n${DMS_USAGE}` };
+    if (!parsed.ok) return refuseInput("twitter dms", parsed.error, DMS_USAGE);
     const ref = parsed.flags["account"];
-    if (typeof ref !== "string") return { code: 1, stderr: `log twitter dms: --account is needed\n${DMS_USAGE}` };
-    const rawLimit = parsed.flags["limit"];
-    const limit = typeof rawLimit === "string" ? Number(rawLimit) : 20;
-    if (!Number.isInteger(limit) || limit < 1 || limit > 200) return refuse("twitter dms", "limitInvalid", "--limit is a whole number from 1 to 200");
+    if (typeof ref !== "string") return { code: 1, error: "inputInvalid", stderr: `log twitter dms: --account is needed\n${DMS_USAGE}` };
+    const limit = numberOf(parsed, "limit") ?? 20;
     const conversation = parsed.flags["conversation"];
     if (conversation !== undefined && (typeof conversation !== "string" || !/^[\dg]+(?:[-:]\d+)?$/.test(conversation))) return refuse("twitter dms", "conversationInvalid", "--conversation is X's conversation id (digits, or two user ids joined by a dash)");
     const withHandle = parsed.flags["with"];

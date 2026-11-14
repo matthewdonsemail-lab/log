@@ -468,7 +468,7 @@ const CHATGPT_PLAYS: Play[] = [
 const CHATGPT_SESSION: SessionEvent[] = [
   { kind: 'user', text: 'what are people on r/smallbusiness asking for this week?' },
   GUIDE_CALL,
-  { kind: 'tool', name: 'redditReadPosts', args: '{ account: "you", subreddit: "smallbusiness", days: "7" }', result: ['this week’s posts, 7 asking for a booking website', 'u/sparkleclean: Need a website that takes bookings. Where do I even start?'] },
+  { kind: 'tool', name: 'redditReadPosts', args: '{ account: "you", subreddit: "smallbusiness", days: 7 }', result: ['this week’s posts, 7 asking for a booking website', 'u/sparkleclean: Need a website that takes bookings. Where do I even start?'] },
   { kind: 'tool', name: 'redditReadPost', args: '{ account: "you", post: "1oq…k2" }', result: ['2 vans, losing jobs because people can’t book online', 'u/vanlife_dan: just use wix lol'] },
   { kind: 'assistant', text: 'The top ask this week is a website that takes bookings (7 posts), then more leads without ads. The best thread is u/sparkleclean, losing jobs with no online booking. Want a reply?' },
   { kind: 'user', text: 'yes, value first, no link' },
@@ -867,8 +867,21 @@ const HERMES: HarnessSetup = {
   connect: [
     { label: 'Hermes', line: `mcp_servers › log › url: ${HOSTED_MCP} · auth: oauth` },
     { label: 'Hermes on your machine', line: 'mcp_servers › log › command: logMcp' },
+    { label: 'Hermes plugin', line: 'hermes plugins install listeningkit-log --enable' },
   ],
   routes: [
+    {
+      id: 'plugin',
+      label: 'With the log plugin for Hermes',
+      best: 'Best when log and Hermes run on the same machine: every play as a skill, a log tab in the dashboard, and the router that names the play before each answer.',
+      steps: [
+        { text: 'Install log and sign in your accounts:', code: `${LOG_INSTALL}\nlog launch --setup` },
+        { text: 'Install the plugin from the Hermes catalog. It starts logMcp, adds every log play as a skill, and asks before anything is sent:', code: 'hermes plugins install listeningkit-log --enable' },
+        { text: 'For the router, pick Hermes in log launch --setup, then turn on the hook it installed. Before each answer it tells Hermes which play you asked for and who is waiting on you:', code: 'hermes plugins enable logHooks' },
+        { text: 'Open hermes dashboard: the log tab shows who is waiting on a reply, every account’s session and today’s sends against its limit. Ask Hermes copies a ready prompt for that conversation.' },
+      ],
+      sources: [{ label: 'log: the Hermes plugin', href: 'https://github.com/matthewdonsemail-lab/log/blob/main/hermesPlugin/README.md' }, { label: 'Hermes Agent docs: plugins', href: 'https://hermes-agent.nousresearch.com/docs/user-guide/features/plugins' }],
+    },
     {
       id: 'hosted',
       label: 'Through your log workspace',

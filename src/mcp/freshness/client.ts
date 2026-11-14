@@ -118,7 +118,7 @@ export function staleServerLine(root: string, file = serverStampFile(), stampNow
     if (proxy.waitingOn) return `>>> The log MCP server has newer code waiting and reloads by itself the moment ${proxy.waitingOn} finishes, with no restart of Claude Code (rule 167).`;
     return null;
   }
-  return `>>> The log MCP server (pid ${started.pid}, started ${started.startedAt.slice(0, 16)}Z) is running older code than the checkout: log-cli changed at ${new Date(now).toISOString().slice(0, 16)}Z. Its tool descriptions and rules are stale until it restarts: tell matt to restart the Claude app or start a new chat (in a terminal claude, reconnect the log server with /mcp). Its calls still run the checkout's engine. Never work around it with a hand-run \`log …\` command (rule 106).`;
+  return `>>> The log MCP server (pid ${started.pid}, started ${started.startedAt.slice(0, 16)}Z) is running older code than the checkout: log-cli changed at ${new Date(now).toISOString().slice(0, 16)}Z. Its tool descriptions and rules are stale until it restarts: the owner restarts the Claude app or starts a new chat (in a terminal claude, reconnects the log server with /mcp). Its calls still run the checkout's engine. A hand-run \`log …\` command is never the way around it (rule 163).`;
 }
 
 const LOCAL_PATHS = ["src", "python", "vendor", "bin", "scripts", "package.json"];
@@ -134,5 +134,5 @@ export function uncommittedFiles(root: string, run: (args: string[]) => string =
 export function localChangesLine(root: string, files: string[] = uncommittedFiles(root)): string | null {
   if (files.length === 0) return null;
   const shown = files.slice(0, 12).join(", ") + (files.length > 12 ? ` and ${files.length - 12} more` : "");
-  return `>>> UNCOMMITTED LOCAL CHANGES in log-cli's code (${files.length}): ${shown}. They aren't committed, may be someone else's work in progress, and the running engine and MCP already run them. Before changing code, read what each one changed (git diff); never overwrite, revert, stage, publish or ship them as your own without matt (rule 106).`;
+  return `>>> UNCOMMITTED LOCAL CHANGES in log-cli's code (${files.length}): ${shown}. They aren't committed, may be someone else's work in progress, and the running engine and MCP already run them. Before changing code, read what each one changed (git diff); never overwrite, revert, stage, publish or ship them as your own without the owner (rule 4).`;
 }

@@ -1,6 +1,7 @@
 #!/usr/bin/env bun
 import { join } from 'node:path'
 import { answerEvent } from '../../src/agentHooks/answers/index'
+import { clipContext, contextOf } from '../../src/agentHooks/harness/index'
 import { chatNameVerdict } from '../../src/agentHooks/chatNames/index'
 import { liveLogVerdict } from '../../src/agentHooks/liveLog/index'
 import { askRoute, readService, startService } from '../../src/contextLayer/service/index'
@@ -27,7 +28,7 @@ const route = (prompt: string) => askRoute(prompt, service)
 
 if (event === 'SessionStart') {
   const answered = await answerEvent('SessionStart', raw, repo, route)
-  const additionalContext = answered.body?.hookSpecificOutput?.additionalContext
+  const additionalContext = clipContext(contextOf(answered.body), 'antigravity')
   const output = {
     injectSteps: additionalContext
       ? [
@@ -44,7 +45,7 @@ if (event === 'SessionStart') {
   const prompt = typeof input.lastUserInput === 'string' ? input.lastUserInput : ''
   const payload = JSON.stringify({ hook_event_name: 'UserPromptSubmit', prompt })
   const answered = await answerEvent('UserPromptSubmit', payload, repo, route)
-  const additionalContext = answered.body?.hookSpecificOutput?.additionalContext
+  const additionalContext = clipContext(contextOf(answered.body), 'antigravity')
   const output = {
     injectSteps: additionalContext
       ? [
@@ -85,7 +86,7 @@ if (event === 'SessionStart') {
 } else if (event === 'Stop') {
   const answered = await answerEvent('Stop', raw, repo, route)
   if (answered.body?.decision === 'block') {
-    const reason = typeof answered.body.reason === 'string' ? answered.body.reason : 'A browser sits on a state log-cli can resolve (rule 54).'
+    const reason = typeof answered.body.reason === 'string' ? answered.body.reason : 'A browser sits on a state log-cli can resolve (rule 35).'
     process.stdout.write(JSON.stringify({ decision: 'continue', reason }))
   } else {
     process.stdout.write(JSON.stringify({ decision: 'allow' }))

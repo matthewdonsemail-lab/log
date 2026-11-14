@@ -2,18 +2,16 @@
 
 Generative UI in the chat: the report tool, where you write a small React view against log's kit (in the spirit of Lynx workspaces) and log draws it with data from log.db, or send just data for a starter view; text everywhere else.
 
-Written by `bun run docs:build` from the code, the skills and AGENTS.md (rule 55). Not edited by hand: change the command's usage, its skill or the rule, and rebuild.
-
-## Current scope
-
-This guide describes the current command implementation. Legacy storage names and deferred features in procedure text do not define the native hosted schema. Active rules 171, 172 and 175 govern the target: existing private workspace log.db, central identity/team authorization and minimal routing metadata, with no required Twenty or agency/CRM model. Preserve current execution gates while migrating legacy dependencies explicitly.
+Written by `bun run docs:build` from the code, the skills and AGENTS.md. Not edited by hand: change the command's usage, its skill or the rule, and rebuild.
 
 ## The tools in this guide
 
-| Tool | What it does |
-|---|---|
-| `report` | Show a view |
-| `reportData` | The numbers behind a report, from log.db only |
+Each tool's own description carries its full usage, notes, live line and rules; `logGet` gives its exact inputs and a call that works.
+
+| Tool | What it does | Usage |
+|---|---|---|
+| `report` | Show a view |  |
+| `reportData` | The numbers behind a report, from log.db only | `log report data --source <twitterDmsBySender\|dmsBySender\|identityProfile> [--platform <p>] [--account <accountName>] [--since <7d\|4w\|12h\|2026-11-01>] [--limit <n>] [--userId <id>] [--handle <handle>] [--json]` |
 
 ## The work, step by step: report
 
@@ -39,6 +37,22 @@ This draws the starter view, which shows:
 - a table of people with their 30-day activity, when they last wrote and what they said
 
 log.db holds only what has been read. If the inbox may be behind, read it with `twitterDms` first (rule 160).
+
+### The data sources
+
+Each entry in `data` names one `source`. Every source reads log.db only, with no platform call.
+
+| `source` | Inputs | What it hands the view |
+| --- | --- | --- |
+| `twitterDmsBySender` | `account?`, `since?`, `limit?` | Who messaged the X account in one-to-one DMs: people, counts, activity, latest message |
+| `dmsBySender` | `platform`, `account?`, `since?`, `limit?` | The same, for any platform with chats in log.db. A platform with none is refused with `reportSourceNoData` |
+| `identityProfile` | `platform`, and `userId` or `handle` | One person: name, handle, bio, follower count, verified, `extra` (location, following, posts, premium and so on) and the avatar as a data URI. Drawn as a person card with no code. A person with no stored profile is refused with `identityProfileMissing` |
+
+```json
+{ "title": "Who is this", "data": { "person": { "source": "identityProfile", "platform": "twitter", "handle": "fakeBird" } } }
+```
+
+Profiles are kept when a session check or `twitterFollowers` sees them; nothing fetches a profile just to draw it.
 
 ### Your own view
 
@@ -70,7 +84,7 @@ export default function App({ data, title, subtitle }) {
 }
 ```
 
-- **Imports:** only from `"log"` and `"react"`. End with `export default function App({ data, title, subtitle })`.
+- **Imports:** only from `"log"` and `"react"`, at the top. `import()` is refused with `viewImportRefused`. End with `export default function App({ data, title, subtitle })`.
 - **Layout:**
   - `Page { title, subtitle, actions }`
   - `Card { title, actions, pad }`; use `pad={false}` around a `Table`
@@ -86,7 +100,7 @@ export default function App({ data, title, subtitle }) {
   - `LineChart { series: [{ name, values }], labels }`
   - `Sparkline { values, width }`
 - **People and words:**
-  - `Avatar { name, size }`
+  - `Avatar { name, size, src }`, `src` a `data:image/` URI such as a profile's `avatar`
   - `Quote`
   - `Icon { name }`, with Font Awesome 6 names in camelCase (`xTwitter`, `discord`, `message`, `users`, `clock`)
 - **Detail:**
@@ -121,52 +135,18 @@ In an MCP Apps host the person already sees the view, so say what it means in a 
   - the widget that runs the view in the chat (`widget.tsx`)
   - the server side that compiles with sucrase and renders the text version (`server.tsx`)
   - the starter views (`starters/`)
+- **Data:** the sources are one registry, `REPORT_SOURCES` in `src/mcp/apps/report/helpers/sources.ts`. A new source is one entry there: its input schema, its reader, its starter and its text.
 - **What the page loads:** the page is self-contained, with React, the kit and Geist inlined, so it loads nothing from the internet.
 
-## Every tool, in full
+## The rules these tools fall under
 
-### `report`
+Each by its number and first line. The full text is in AGENTS.md (`log://agents`); the core rules are in full in `getGuide({ topic: "logMcpInstructions" })`.
 
-Generative UI: show the person a view you build for their question, drawn in the chat. Plain and readable by default, in the spirit of Lynx workspaces.
-One call: { title, data: { dms: { source: "twitterDmsBySender", since?: "30d", account?, limit? } } } reads log.db and draws a starter view (headline stats, messages per day, who messages most, a table of people with activity and their latest message).
-Your own view: add code, a React component in JSX. import { Page, Card, Grid, Row, Stack, Stat, Badge, Table, Bars, BarChart, LineChart, Sparkline, Avatar, Quote, Icon, Tabs, Details, Empty, Query, Time, fmt, rel, useTool, useData } from "log". End with export default function App({ data, title, subtitle }) { return <Page title={title}>…</Page> }.
-Components: Page { title, subtitle, actions }, Card { title, actions, pad }, Grid { min }, Row/Stack { gap }, Stat { label, value, hint, tone }, Badge { tone: neutral|good|bad|warn|accent }, Table { rows, columns: [{ key, title, render, align, width }], limit }, Bars { data: [{ label, value }], unit } for ranked lists, BarChart { data: [{ label, value }] } for columns, LineChart { series: [{ name, values }], labels }, Sparkline { values, width }, Avatar { name, size }, Quote, Icon { name } (Font Awesome 6 names in camelCase: xTwitter, discord, message, users, clock, fire…), Time { value } (relative), fmt(n). Plain CSS works with the --sb-* variables (--sb-text, --sb-muted, --sb-accent, --sb-surface).
-Interaction (from Lynx): Routes { routes: { "/": Overview, "/person/:handle": Person } } with Link { to } and BackLink for list-to-detail pages; AskButton { prompt } and FollowUps { prompts } put a question into the chat; askAgent(text); Pointable { about } and tellAgent(text) tell the agent what the person is looking at; ErrorNote offers Ask the agent to fix it; Button, Input, Select, Textarea, Field, Modal, useAction(fn) for forms; Markdown; FullscreenButton; downloadCsv(name, rows); openExternal(url). End overviews with 2 or 3 FollowUps. A send never happens from the view: AskButton prompts go through the chat and its gates.
-Data: data.<name> from the data field is there at once. useTool(name, args) calls a log read tool live from the view and returns { data, loading, error, reload }; wrap it in Query. Only call read tools.
-Shown inline in MCP Apps hosts (Claude, ChatGPT, Cursor); other hosts (Claude Code, Codex) get the same view as text. A view that doesn't compile is refused with reportFieldInvalid and the line to fix.
-Before first using this tool in a session, load its guide: getGuide({ topic: "ui" }) (Generative UI in the chat: the report tool, where you write a small React view against log's kit (in the spirit of Lynx workspaces) and log draws it with data from log.db, or send just data for a starter view; text everywhere else).
-AGENTS.md (log://agents): rules 134, 154, 160, 178, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
-
-### `reportData`
-
-The numbers behind a report, from log.db only: who messaged an X account in DMs and how many messages, per person and per day.
-The numbers behind a report, read from log.db only (who messaged an X account and how often), for the MCP report view
-log report data --source twitterDmsBySender [--account <accountName>] [--since <7d|4w|12h|2026-11-01>] [--limit <n>] [--json]
-The numbers behind a report, read from log.db only: no platform call, no governor use, nothing sent. twitterDmsBySender counts who messaged the X account in its one-to-one DMs (old DM thread and X Chat thread with one person counted as one, a message mirrored into both counted once; group chats left out), most messages first, with each person's first and last message time, the totals and the count per day. It holds only what log.db has: run twitterDms first if the inbox may be behind.
---account keeps one X account (default every X account in log.db). --since keeps messages from that date or span on. --limit is how many people to list, default 20, at most 200; the totals count everyone.
-Show it with the MCP tool report (getGuide({ topic: "ui" })): an MCP Apps host draws it inline, any other host gets markdown with unicode bars.
-Fill the named fields; each value goes through whole.
-Before first using this tool in a session, load its guide: getGuide({ topic: "ui" }) (Generative UI in the chat: the report tool, where you write a small React view against log's kit (in the spirit of Lynx workspaces) and log draws it with data from log.db, or send just data for a starter view; text everywhere else).
-AGENTS.md (log://agents): rules 134, 154, 160, 178, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
-
-## The rules these tools fall under, in full
-
-From the current AGENTS.md (`log://agents`). Historical citations are consolidated; archived instructions do not override the active scope.
-
-**Rule 30.** 2026-10-19 · Complete the authorized task. Do not repeatedly request confirmation already given. Distinguish implemented behavior, proposed contracts and unverified assumptions.
-
-**Rule 38.** 2026-10-19 · Do not introduce discussions of Meta/Facebook rules, terms, eligibility or account ownership unless Matt raises them.
-
-**Rule 39.** 2026-10-19 · Use only the scope, options and intent Matt stated or implied. Do not add unrelated alternatives to research, comparisons, plans or implementation.
-
-**Rule 40.** 2026-10-19 · Do not propose physical infrastructure unless Matt asks. His available implementation scope is hosted/cloud environments and the tools already selected.
-
-**Rule 41.** 2026-10-19 · Paid work must stay within the authorized task and spend. Ask before adding a paid operation he did not authorize; do not substitute a new paid provider implicitly.
-
-**Rule 134.** 2026-11-04 · Existing workspace log.db is the native private record/coordination foundation. Preserve events, stable identities, chats/messages, attachments/interactions, claims/owners/cursors, queues/jobs, media/search and records/state. Keep current WAL/migration/version semantics and transaction boundaries; unknown events retain source payload and are surfaced for analysis. Only proven projections are rebuildable.
-
-**Rule 154.** 2026-11-05 · Show people/chats by meaningful names and handles; keep routing ids internal unless needed for the specific technical artifact. Do not show a person as a bare UUID.
-
-**Rule 160.** 2026-11-07 · Answer eligible chat reads from log.db when the owner is live, caught up and the needed history is present/backfilled. Otherwise fill the missing scope once through the owner. A refused catch-up is a refusal, never a reason to bypass it with another live read. Report the read source.
-
-**Rule 178.** 2026-11-13 · Real people's names, handles, DMs and money never go in tracked files: this repo is public. Anecdotes are anonymised, or marked `<!-- private -->` … `<!-- /private -->` so the site and skill sync drop them (the source stays public, so a private block still holds no real names), and `check:privacy` must pass on every commit and push.
+- **Rule 30.** Complete the authorized task.
+- **Rule 38.** Do not introduce discussions of Meta/Facebook rules, terms, eligibility or account ownership unless the owner raises them.
+- **Rule 39.** Use only the scope, options and intent the owner stated or implied.
+- **Rule 40.** Do not propose physical infrastructure unless the owner asks.
+- **Rule 41.** Paid work must stay within the authorized task and spend.
+- **Rule 134.** Existing workspace log.db is the native private record/coordination foundation.
+- **Rule 154.** Show people/chats by meaningful names and handles; keep routing ids internal unless needed for the specific technical artifact.
+- **Rule 160.** Answer eligible chat reads from log.db when the owner is live, caught up and the needed history is present/backfilled.

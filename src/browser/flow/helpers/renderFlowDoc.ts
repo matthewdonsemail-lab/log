@@ -1,4 +1,5 @@
 import type { AnswerCheck, FlowDefinition } from '../types'
+import { flowToolName } from './flowPlatform'
 
 export function checkText(check: AnswerCheck): string {
   const want = check.present ? 'present' : check.home ? (check.home === 'uid' ? "the account's id" : `the account's home ${check.home}`) : check.sent ? `what we sent as \`${check.sent}\`` : `\`${JSON.stringify(check.is)}\``
@@ -11,7 +12,7 @@ export function renderFlowDoc(flow: FlowDefinition, requestDoc: (name: string) =
     '',
     flow.summary,
     '',
-    `Built by \`log flow fromInspect\` from the recording \`${flow.source.runDir}\` (account ${flow.source.account}). Run it on any account with \`log flow run ${flow.name} --account <a> --live\`, or over MCP as the tool \`${toolName(flow.name)}\` (rule 31).`,
+    `Built by \`log flow fromInspect\` from the recording \`${flow.source.runDir}\` (account ${flow.source.account}). Run it on any account with \`log flow run ${flow.name} --account <a> --live\`, or over MCP as the tool \`${flowToolName(flow)}\` (rule 31).`,
     '',
     '## Params',
     ''
@@ -37,6 +38,3 @@ export function renderFlowDoc(flow: FlowDefinition, requestDoc: (name: string) =
   return out.join('\n')
 }
 
-export function toolName(flow: string): string {
-  return `flow${flow[0].toUpperCase()}${flow.slice(1)}`
-}

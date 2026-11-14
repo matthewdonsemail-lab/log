@@ -1,5 +1,5 @@
 import { callWaterfall, msText, reportLines, timingStats } from "../../observability/timing/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";
+import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
 
 export const TIMING_USAGE = [
@@ -15,8 +15,8 @@ export const TIMING_INPUT: CommandInput = {
       positionals: [],
       flags: [
         { name: "tool", kind: "string", description: "Only this tool (its MCP name, e.g. twitterDms, or a terminal run's words, e.g. cli twitter dms)" },
-        { name: "hours", kind: "string", description: "How far back, in hours (default 24)" },
-        { name: "stages", kind: "string", description: "How many stages to show per tool, slowest share first (default 8)" },
+        { name: "hours", kind: "number", description: "How far back, in hours (default 24), more than 0" },
+        { name: "stages", kind: "number", description: "How many stages to show per tool, slowest share first (default 8), more than 0" },
         { name: "call", kind: "string", description: "One call's id, to show it as a waterfall" },
         JSON_FLAG,
       ],
@@ -24,10 +24,9 @@ export const TIMING_INPUT: CommandInput = {
   ],
 };
 
-function positive(value: unknown, fallback: number): number | null {
+function positive(value: number | undefined, fallback: number): number | null {
   if (value === undefined) return fallback;
-  const n = Number(value);
-  return Number.isFinite(n) && n > 0 ? n : null;
+  return value > 0 ? value : null;
 }
 
 export const timingCommand: Command = {
@@ -40,8 +39,8 @@ export const timingCommand: Command = {
   args: "[--tool <name>] [--hours <n>] [--stages <n>] [--call <callId>] [--json]",
   async run(_context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(TIMING_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log timing: ${parsed.error}\n${TIMING_USAGE}` };
-    if (parsed.positionals.length) return { code: 1, stderr: `log timing: unexpected argument "${parsed.positionals[0]}"\n${TIMING_USAGE}` };
+    if (!parsed.ok) return refuseInput("timing", parsed.error, TIMING_USAGE);
+    if (parsed.positionals.length) return { code: 1, error: "inputInvalid", stderr: `log timing: unexpected argument "${parsed.positionals[0]}"\n${TIMING_USAGE}` };
     const json = Boolean(parsed.flags["json"]);
     const call = parsed.flags["call"];
     if (typeof call === "string" && call) {
@@ -49,8 +48,8 @@ export const timingCommand: Command = {
       if (!lines.length) return { code: 1, stderr: `log timing: no call "${call}" is stored (callTimingMissing): its id is on the ▶ and ■ lines in the live log, and timings are kept 90 days` };
       return { code: 0, stdout: json ? JSON.stringify({ call, lines }, null, 2) : lines.join("\n") };
     }
-    const hours = positive(parsed.flags["hours"], 24);
-    const stages = positive(parsed.flags["stages"], 8);
+    const hours = positive(numberOf(parsed, "hours"), 24);
+    const stages = positive(numberOf(parsed, "stages"), 8);
     if (hours === null || stages === null) return { code: 1, stderr: `log timing: --hours and --stages take a positive number\n${TIMING_USAGE}` };
     const tool = typeof parsed.flags["tool"] === "string" ? String(parsed.flags["tool"]) : undefined;
     const stats = timingStats({ tool, sinceMs: Date.now() - hours * 3600000 });

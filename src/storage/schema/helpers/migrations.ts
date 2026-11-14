@@ -96,6 +96,11 @@ export const JOB_TABLES: readonly string[] = [
   'CREATE TABLE IF NOT EXISTS jobLines (jobId TEXT NOT NULL, n INTEGER NOT NULL, at TEXT NOT NULL, source TEXT NOT NULL, line TEXT NOT NULL, PRIMARY KEY (jobId, n)) WITHOUT ROWID',
 ]
 
+export const IDENTITY_PROFILE_TABLES: readonly string[] = [
+  'CREATE TABLE IF NOT EXISTS identityProfiles (platform TEXT NOT NULL, userId TEXT NOT NULL, bio TEXT, avatarHash TEXT REFERENCES blobs (hash), followerCount INTEGER, verified INTEGER, extra TEXT CHECK (extra IS NULL OR json_valid(extra)), fetchedAt TEXT NOT NULL, PRIMARY KEY (platform, userId)) WITHOUT ROWID',
+  'CREATE INDEX IF NOT EXISTS identityProfilesByFetchedAt ON identityProfiles (fetchedAt)',
+]
+
 export const MIN_READER_VERSION = 1
 
 export const MIGRATIONS: readonly Migration[] = [
@@ -157,6 +162,7 @@ export const MIGRATIONS: readonly Migration[] = [
   {
     version: 8,
     name: 'stableIdentities',
+    creates: ['accounts', 'handleAliases', 'handleAliasesByUser', 'identityMerges'],
     apply(handle) {
       for (const statement of IDENTITY_TABLES) handle.exec(statement)
     },
@@ -189,6 +195,7 @@ export const MIGRATIONS: readonly Migration[] = [
   {
     version: 12,
     name: 'queueTables',
+    creates: ['queues', 'queueLog', 'queueLogByName', 'queueIncoming', 'queueIncomingWaiting', 'queueLocks', 'queueNudges'],
     apply(handle) {
       for (const statement of QUEUE_TABLES) handle.exec(statement)
     },
@@ -196,6 +203,7 @@ export const MIGRATIONS: readonly Migration[] = [
   {
     version: 13,
     name: 'jobTables',
+    creates: ['jobs', 'jobsByAccount', 'jobsByStart', 'jobLines'],
     apply(handle) {
       for (const statement of JOB_TABLES) handle.exec(statement)
     },
@@ -211,6 +219,7 @@ export const MIGRATIONS: readonly Migration[] = [
   {
     version: 15,
     name: 'records',
+    creates: ['records', 'recordsByKind'],
     apply(handle) {
       handle.exec('CREATE TABLE IF NOT EXISTS records (seq INTEGER PRIMARY KEY, kind TEXT NOT NULL, key TEXT, at TEXT NOT NULL, body TEXT NOT NULL, source TEXT NOT NULL)')
       handle.exec('CREATE INDEX IF NOT EXISTS recordsByKind ON records (kind, key, seq)')
@@ -219,6 +228,7 @@ export const MIGRATIONS: readonly Migration[] = [
   {
     version: 16,
     name: 'state',
+    creates: ['state'],
     apply(handle) {
       handle.exec('CREATE TABLE IF NOT EXISTS state (scope TEXT NOT NULL, key TEXT NOT NULL, body TEXT NOT NULL, updatedAt INTEGER NOT NULL, PRIMARY KEY (scope, key)) WITHOUT ROWID')
     },
@@ -235,6 +245,7 @@ export const MIGRATIONS: readonly Migration[] = [
   {
     version: 18,
     name: 'operations',
+    creates: ['operations', 'operationsByState'],
     apply(handle) {
       handle.exec(`CREATE TABLE IF NOT EXISTS operations (
         id TEXT PRIMARY KEY,
@@ -261,6 +272,14 @@ export const MIGRATIONS: readonly Migration[] = [
         UNIQUE (teamId, idempotencyKey)
       )`)
       handle.exec('CREATE INDEX IF NOT EXISTS operationsByState ON operations (state, updatedAt)')
+    },
+  },
+  {
+    version: 19,
+    name: 'identityProfiles',
+    creates: ['identityProfiles', 'identityProfilesByFetchedAt'],
+    apply(handle) {
+      for (const statement of IDENTITY_PROFILE_TABLES) handle.exec(statement)
     },
   },
 ]

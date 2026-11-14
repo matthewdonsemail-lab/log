@@ -1,12 +1,12 @@
 import { cancel, intro, isCancel, outro, password } from "@clack/prompts";
-import { toFacebookAccount } from "../../../marketplace/socialAccount/index.ts";
-import type { SocialAccountRow } from "../../../marketplace/socialAccount/index.ts";
+import { toFacebookAccount } from "../../../platformKit/socialAccount/index.ts";
+import type { SocialAccountRow } from "../../../platformKit/socialAccount/index.ts";
 import { findSlackAccount, SLACK_COOKIE_DOMAIN } from "../../../slack/account/session/index.ts";
 import type { PlatformAccount } from "../../../platformKit/session/index.ts";
 import { TwentyError, upsertLocalAccount } from "../../../twenty/graphql/index.ts";
 import { shouldPrompt } from "../../launch/helpers/index.ts";
 import type { LaunchTTY } from "../../launch/helpers/index.ts";
-import { parseArgs, parserSpecOf, refuse, refuseError } from "../../runner/helpers/index.ts";
+import { parseArgs, parserSpecOf, refuse, refuseError, refuseInput } from "../../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../../runner/types.ts";
 
 export const SLACK_COOKIES_USAGE = [
@@ -68,6 +68,7 @@ export const slackCookiesCommand: Command = {
   usage: SLACK_COOKIES_USAGE,
   platform: "slack",
   name: "cookies",
+  terminalOnly: "asks for a Slack account's session cookie (d) in a Clack prompt (masked) and checks it with Slack before saving. Run `log slack cookies save --account <name>` in a terminal.",
   effect: "write",
   summary: "Add or refresh a Slack account locally: its d cookie from a masked prompt, checked against Slack",
   input: SLACK_COOKIES_INPUT,
@@ -75,17 +76,17 @@ export const slackCookiesCommand: Command = {
   async run(context, argv) {
     if (argv[0] !== "save") return { code: 1, stderr: `log slack cookies: save is the only subcommand\n${SLACK_COOKIES_USAGE}` };
     const parsed = parseArgs(argv.slice(1), parserSpecOf({ forms: [{ ...SLACK_COOKIES_INPUT.forms[0], words: [] }] }));
-    if (!parsed.ok) return { code: 1, stderr: `log slack cookies: ${parsed.error}\n${SLACK_COOKIES_USAGE}` };
+    if (!parsed.ok) return refuseInput("slack cookies", parsed.error, SLACK_COOKIES_USAGE);
     const accountName = String(parsed.flags["account"] ?? "").trim();
-    if (!/^[A-Za-z0-9_.\-]{2,64}$/.test(accountName)) return { code: 1, stderr: `log slack cookies save: --account must be a name of letters, digits, _ . or -\n${SLACK_COOKIES_USAGE}` };
+    if (!/^[A-Za-z0-9_.\-]{2,64}$/.test(accountName)) return { code: 1, error: "inputInvalid", stderr: `log slack cookies save: --account must be a name of letters, digits, _ . or -\n${SLACK_COOKIES_USAGE}` };
     const workspace = typeof parsed.flags["workspace"] === "string" ? parsed.flags["workspace"].trim() : "";
     if (!context.directSlack) return { code: 1, stderr: "log slack cookies save: the direct-API engine isn't wired in this context" };
-    if (!shouldPrompt(false, slackCookiesDeps.tty())) {
+    if (!context.cookiePrompts && !shouldPrompt(false, slackCookiesDeps.tty())) {
       return { code: 1, stderr: "log slack cookies save: the d cookie is typed in a Clack prompt, so it needs an interactive terminal: run it there (it is never passed as a flag)" };
     }
     try {
       const found = await existing(context, accountName);
-      const prompts = slackCookiesDeps.prompts;
+      const prompts = context.cookiePrompts ?? slackCookiesDeps.prompts;
       prompts.intro(`log slack cookies save — ${accountName}${found ? " (already saved: its d cookie is replaced)" : " (new, saved locally)"}`);
       const value = await prompts.password({ message: "d (slack.com cookie, starts with xoxd-)", mask: "•", validate: (v) => (isSlackD(v) ? undefined : "paste the d cookie's value only, xoxd- and the rest") });
       if (isCancel(value) || !isSlackD(value)) {

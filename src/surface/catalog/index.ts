@@ -1,14 +1,14 @@
 import { commandKey } from "../../cli/runner/helpers/platforms.ts";
 import { AGENT_HOOKS, MCP_SERVER_NAME } from "../../agentHooks/registry/index.ts";
 import type { AgentHook, HookEvent } from "../../agentHooks/registry/index.ts";
-import { toolName } from "../../browser/flow/index.ts";
+import { flowToolName } from "../../browser/flow/index.ts";
 import { commandBrowser } from "../../browser/run/index.ts";
 import { commandEngine } from "../../directApi/engine/index.ts";
 import type { FlowDefinition } from "../../browser/flow/index.ts";
-import type { Command } from "../../cli/runner/types.ts";
+import type { Command, CommandInput, FlagSpec } from "../../cli/runner/types.ts";
 import { COMMAND_RULES, EVERY_TOOL_RULES } from "../../mcp/server/helpers/agentRules.ts";
-import { commandTools, commandWords, LONG_RUNNING } from "../../mcp/server/helpers/toolsFromCommands.ts";
-import { TERMINAL_ONLY } from "../../mcp/server/types.ts";
+import { commandTools, commandWords } from "../../mcp/server/helpers/toolsFromCommands.ts";
+import { isLongRunning } from "../../platformKit/gates/helpers/commandGates.ts";
 import type { CommandEntry, Flag, FlowEntry } from "./types.ts";
 
 export type { CommandEntry, Flag, FlowEntry } from "./types.ts";
@@ -32,6 +32,43 @@ export function flagsOf(usage: string): Flag[] {
   return [...flags.values()];
 }
 
+function valueOf(spec: FlagSpec, fromUsage: string | null): string | null {
+  const range = spec.min !== undefined || spec.max !== undefined ? ` ${spec.min ?? ""}..${spec.max ?? ""}` : "";
+  switch (spec.kind) {
+    case "boolean":
+      return null;
+    case "integer":
+    case "number":
+      return `${spec.kind}${range}`;
+    case "booleanValue":
+      return "true|false";
+    case "enum":
+      return (spec.values ?? []).join("|");
+    case "pairs":
+      return "key=value";
+    case "list":
+      return `${fromUsage ?? "value"},…`;
+    default:
+      return spec.format ?? fromUsage ?? "text";
+  }
+}
+
+export function inputFlagsOf(input: CommandInput, usage: string): Flag[] {
+  const fromUsage = new Map(flagsOf(usage).map((f) => [f.name, f]));
+  const flags = new Map<string, Flag>();
+  for (const form of input.forms) {
+    for (const spec of form.flags) {
+      if (spec.global) continue;
+      const known = flags.get(spec.name);
+      const required = Boolean(spec.required);
+      if (known) known.required = known.required && required;
+      else flags.set(spec.name, { name: spec.name, value: valueOf(spec, fromUsage.get(spec.name)?.value ?? null), required, typed: true });
+    }
+  }
+  for (const flag of fromUsage.values()) if (!flags.has(flag.name)) flags.set(flag.name, flag);
+  return [...flags.values()];
+}
+
 const TOOL_EVENTS: HookEvent[] = ["PreToolUse", "PostToolUse"];
 
 export function hooksOn(tool: string, hooks: readonly AgentHook[] = AGENT_HOOKS): HookEvent[] {
@@ -44,20 +81,20 @@ export function sessionHooks(hooks: readonly AgentHook[] = AGENT_HOOKS): AgentHo
 }
 
 export function commandEntry(command: Command): CommandEntry {
-  const terminalOnly = TERMINAL_ONLY[command.name] ?? null;
+  const terminalOnly = command.terminalOnly ?? null;
   const tools = commandTools([command]).map((t) => t.tool);
   return {
     name: command.name,
     key: commandKey(command),
     summary: command.summary,
     usage: usageLines(command.usage),
-    flags: flagsOf(command.usage),
+    flags: command.input ? inputFlagsOf(command.input, command.usage) : flagsOf(command.usage),
     tool: terminalOnly ? null : tools.join(", "),
     typed: command.input !== undefined,
     terminalOnly,
-    longRunning: LONG_RUNNING.has(command.name),
+    longRunning: isLongRunning(command),
     browser: commandBrowser(command.name),
-    engine: commandEngine(commandKey(command)),
+    engine: commandEngine(commandKey(command), command.name),
     platform: command.platform,
     words: commandWords(command),
     rules: [...(COMMAND_RULES[commandKey(command)] ?? []), ...EVERY_TOOL_RULES],
@@ -72,7 +109,7 @@ export function catalog(commands: readonly Command[]): CommandEntry[] {
 export function flowEntries(flows: readonly FlowDefinition[]): FlowEntry[] {
   return flows.map((flow) => ({
     name: flow.name,
-    tool: toolName(flow.name),
+    tool: flowToolName(flow),
     summary: flow.summary,
     params: flow.params.map((p) => p.name),
     steps: flow.steps.map((s) => s.id.replace(/^s\d+_/, "")),

@@ -1,6 +1,6 @@
 ---
 name: listingCreative
-description: Make a listing's photos as a scene, an action, a before and an after, in the composition of winning junk removal creatives, generate each frame once, then show them inside the iPhone Photos viewer with the town in the title and faces scribbled out in red. Use when matt asks for new creatives, photos for a listing, a before/after, or to "put them in the camera roll".
+description: Make a listing's photos as a scene, an action, a before and an after, in the composition of winning junk removal creatives, generate each frame once, then show them inside the iPhone Photos viewer with the town in the title and faces scribbled out in red. Use when the owner asks for new creatives, photos for a listing, a before/after, or to "put them in the camera roll".
 ---
 
 # listingCreative
@@ -14,8 +14,8 @@ line, from real Craigslist and Marketplace junk removal listings),
 
 ## Hard boundaries
 
-- **matt's concept comes first.** Never judge or replace his creatives; build on
-  them. Report what the winners show as data, never as a verdict on his work.
+- **The owner's concept comes first.** Never judge or replace the owner's creatives; build on
+  them. Report what the winners show as data, never as a verdict on that work.
 - **No text and no logos inside a generated image.** No letters, numbers, brand
   names, signs, number plates or printed paper. Every prompt says so and every
   avoid list repeats it.
@@ -23,12 +23,12 @@ line, from real Craigslist and Marketplace junk removal listings),
   model draw a Photos app screen into the picture (Verizon, a clock, a date bar).
   Prompt the photo only; the phone around it is `photosViewer.html`.
 - **No vehicles in any frame.** No car, truck, pickup, trailer or dumpster,
-  parked in the background or part of the job (matt, 2026-10-23: every made shot
+  parked in the background or part of the job (the owner, 2026-10-23: every made shot
   with a car in it came out wrong). The action is the crew carrying things out,
   a dolly at most. Every prompt says "no cars, trucks or trailers anywhere in the
   frame" and every avoid list repeats it.
-- **Generate each frame once, then show matt.** Never regenerate on your own
-  judgement. Generation costs money (rule 41): ask before anything he didn't say.
+- **Generate each frame once, then show the owner.** Never regenerate on your own
+  judgement. Generation costs money (rule 41): ask before anything the owner didn't say.
 
 ## The rubric: scene, action, before, after
 
@@ -69,7 +69,7 @@ credits) and `viewer.json` (below). A new frame goes in `raw/`; `ios/` and
 ## The phone: Photos viewer, place and scribbles
 
 `python/creative/photosViewer.html` is the iOS 26 Photos viewer, matched to a
-screenshot of matt's phone: status bar, glass back button, the title pill
+screenshot of the owner's phone: status bar, glass back button, the title pill
 (the town, then date and time), the ••• button, the photo fitted to the width
 on black, the filmstrip with the current photo larger, and the share, heart,
 info, edit and trash controls. It renders at 1179 × 2556, a real iPhone
@@ -109,7 +109,7 @@ so nothing is downloaded.
 
 ## Checking
 
-Show matt every frame (a sheet of all of them, plus one at full size), then
+Show the owner every frame (a sheet of all of them, plus one at full size), then
 crop each scribble and look at it before saying the faces are covered. SubQ can
 then score the made frames against the winners, the same way
 `subqReading.json` was made.

@@ -5,7 +5,7 @@ import { join } from 'node:path'
 import { toolsFromCommands } from '../../mcp/server/helpers/toolsFromCommands'
 import { COMMANDS } from '../../cli/runner/index'
 import { commandEngine, directGate, engineContext, engineLine, localEngineStates, outcomeOf, writeLocalSession, writesPerDayOf } from './index'
-import type { FacebookAccount } from '../../marketplace/socialAccount/index'
+import type { FacebookAccount } from '../../platformKit/socialAccount/index'
 
 const account = {
   accountName: 'a1',
@@ -22,15 +22,15 @@ const account = {
 
 describe('the engine is declared in code', () => {
   test('read runs on the direct API first, a browser command on the browser, and the rest on none', () => {
-    expect(commandEngine('read')).toBe('directApiFirst')
-    expect(commandEngine('join')).toBe('browser')
+    expect(commandEngine('facebookRead', 'read')).toBe('directApiFirst')
+    expect(commandEngine('facebookJoin', 'join')).toBe('browser')
     expect(commandEngine('errors')).toBe('none')
-    expect(engineLine('join')).toBeNull()
+    expect(engineLine('facebookJoin')).toBeNull()
   })
 
   test("no MCP description carries the engine line: the library behind a call gives the agent nothing to act on", () => {
     const tools = toolsFromCommands(COMMANDS.filter((c) => c.name === 'read'))
-    for (const name of ['readGroup', 'readGroupLive']) expect(tools.find((t) => t.name === name)!.description).not.toContain('Engine: the direct-API engine')
+    for (const name of ['facebookReadGroup', 'facebookReadGroupLive']) expect(tools.find((t) => t.name === name)!.description).not.toContain('Engine: the direct-API engine')
   })
 })
 

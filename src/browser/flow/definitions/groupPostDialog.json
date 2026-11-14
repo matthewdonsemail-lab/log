@@ -1,5 +1,6 @@
 {
   "name": "groupPostDialog",
+  "platform": "facebook",
   "summary": "On a group's Discussion feed, open a post in its dialog with Leave a comment (the comment box takes focus, nothing is typed) and close it",
   "params": [
     {

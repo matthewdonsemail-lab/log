@@ -9,7 +9,7 @@ The point of this work: use REA on real captures of our own Facebook client
 to find out what the create page actually does, then score design changes
 with SubQ so the client gets as efficient as it can. The work is based on
 live runs. log-cli already knows much of the flow
-(`docs/listingPublish/`, `src/marketplace/publish/machine.ts`). The
+(`docs/listingPublish/`, `src/facebook/marketplace/publish/machine.ts`). The
 captures test that knowledge and find what it misses.
 
 Why a HAR plus scripts, read offline: `docs/rea/matrix/` and
@@ -19,13 +19,13 @@ Why a HAR plus scripts, read offline: `docs/rea/matrix/` and
 
 1. **Captures are raw (rule 19).** The HAR keeps every cookie, header,
    token and body. Nothing is stripped, because the analysis needs it. It
-   stays on matt's development machine in the run folder
+   stays on the owner's development machine in the run folder
    (`~/.logCli/publish/<run>/<browser>`) and is never committed.
-2. **Captures come from every browser action (rule 22)**: inspect, flow,
-   host, warm-up, `connect`, `scan`, `status`, each `watch` check and
-   `log facebook publish` (dry run unless `--live`, rule 10). There is no flag
-   to skip it. Those runs follow the launch rules as they are:
-   headed (11), proxy in country (12), self-check (17), waking hours (18).
+2. **Captures come from every browser action (rule 19)**: inspect, flow,
+   host, warm-up, `facebookConnect`, `facebookScan`, `facebookStatus`, each
+   `facebookWatch` check and `log facebook publish` (dry run unless `--live`,
+   rule 8). There is no flag to skip it. Those runs follow the launch rules
+   as they are (rule 35): headed, proxy in country, self-check, waking hours.
 3. **REA reads files, never the window.** No CDP, no attach. The rea
    commands that need a live target (`inspect-web-page`,
    `analyze-web-bundle`, `observe-web-*`, `export-web-scripts`) aren't
@@ -47,8 +47,8 @@ Why a HAR plus scripts, read offline: `docs/rea/matrix/` and
 
 ### 1. Capture (live)
 
-Any action records one. Through the MCP, `mcp__log__connect` / `scan` /
-`publish` do the same.
+Any action records one. Through the MCP, `mcp__log__facebookConnect` /
+`facebookScan` / `facebookPublish` do the same.
 
 ```bash
 log facebook connect --account <a> --noPrompt   # the login, step by step
@@ -80,7 +80,7 @@ notes print
 `log facebook publish` runs these itself. To re-run on any HAR:
 
 ```bash
-log facebook capture --har <path> --out <dir>      # --noRea to only write the files
+log capture har <path> --out <dir>      # --noRea to only write the files
 rea inspect-web-network-capture <absolute>/session.har har --format json
 ```
 
@@ -95,10 +95,10 @@ is read per request instead (step 2b).
   values of the auth headers and cookies it knows in its own output. The
   HAR still has them. Keep the `evidence_id`.
 
-### 2b. The Facebook client docs (per request, rules 25 and 27)
+### 2b. The Facebook client docs (per request, rule 25)
 
 ```bash
-log facebook capture --docs          # run it live (Monitor), every stage prints
+log capture docs          # run it live (Monitor), every stage prints
 ```
 
 1. Every run under `~/.logCli` is split by its `steps.jsonl`; each request
@@ -121,7 +121,7 @@ log facebook capture --docs          # run it live (Monitor), every stage prints
    push while any is unwritten, unread by rea, or older than a run.
 5. Every other platform with a browser path (Reddit) is documented the same
    way under `docs/platforms/<platform>/`, its calls named by GraphQL
-   operation or path and its code found in its own bundles (rule 85).
+   operation or path and its code found in its own bundles.
 
 What the recording, the docs build and the docs gate must do is in
 [docs/specs/runsAndRea.md](../../docs/specs/runsAndRea.md).
@@ -144,7 +144,7 @@ What rea does per run (`settleInBackground`, its own hidden process):
 For a decision, write `docs/rea/findings/<runId>.md` by hand: the operations the
 create page fired, in order, with timing; the fields each one submits;
 what the page's scripts read from the browser; and every gap against
-`src/marketplace/publish/machine.ts` and `docs/listingPublish/formFill.md`.
+`src/facebook/marketplace/publish/machine.ts` and `docs/listingPublish/formFill.md`.
 Each line names its rea `evidence_id`. Session values aren't copied into
 this file. It holds names, orders and counts.
 
@@ -166,7 +166,7 @@ Record the decision and its evidence ids in the `log.md` entry.
 ## Every action's run feeds the request docs
 
 Every action (inspect, flow, host, warm-up, publish) records the session's
-`session.har` with Facebook's bundles in it, and `log facebook capture --docs`
+`session.har` with Facebook's bundles in it, and `log capture docs`
 reads code slices from all of them: a run that isn't settled yet (a host still
 open) has its bundles taken from its `session.har` and kept as `scripts/`
 (`scriptsFromHar`). The recorder reads each body first, before any header round

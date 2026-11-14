@@ -23,6 +23,12 @@ pre-commit:
     platforms:
       run: bun run check:platforms
 
+    agnostic:
+      run: bun run check:agnostic
+
+    platformNeutral:
+      run: bun run check:platformNeutral
+
     layout:
       run: bun run check:layout
 
@@ -87,6 +93,12 @@ pre-push:
     platforms:
       run: bun run check:platforms
 
+    agnostic:
+      run: bun run check:agnostic
+
+    platformNeutral:
+      run: bun run check:platformNeutral
+
     naming:
       run: bun run check:naming
 
@@ -126,5 +138,5 @@ pre-push:
     test:
       run: bun test
 
-    facebookClientDocs:
-      run: bun run check:facebookClientDocs
+    clientDocs:
+      run: bun run check:clientDocs

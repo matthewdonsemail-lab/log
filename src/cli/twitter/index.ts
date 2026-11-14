@@ -1,11 +1,11 @@
 import { findTwitterAccount, recordTwitterSession, twitterGate } from "../../twitter/account/session/index.ts";
 import type { TwitterSessionAnswer } from "../../twitter/account/session/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../runner/helpers/index.ts";
+import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
 
 export const SESSION_USAGE = [
   "Usage: log twitter session check --account <accountName> [--json]",
-  "       log twitter session webClient --account <accountName> [--json]   (loads x.com/home through the account's one X session, as twikit already does to sign its calls, and saves the page and every script it lists from abs.twimg.com to ~/.logCli/twitter/<account>/webClient/<time>, reads spaced 0.8 to 2.5 s, so rea can read X's own signed-in client: what its composer sends; rule 113)",
+  "       log twitter session webClient --account <accountName> [--json]   (loads x.com/home through the account's one X session, as twikit already does to sign its calls, and saves the page and every script it lists from abs.twimg.com to ~/.logCli/twitter/<account>/webClient/<time>, reads spaced 0.8 to 2.5 s, so rea can read X's own signed-in client: what its composer sends; rule 105)",
   "Checks that X still accepts the account's saved session, on the direct-API engine (no browser, no proxy: X accounts call X directly, rule 80). Sends nothing.",
   "X's own answer decides: the session check's HTTP status (401 or 403 loggedOut, 200 or 404 loggedIn), then the account's profile read (suspended or locked: restricted). The result goes to socialAccounts.sessionState, and X's refreshed cookies are merged back into the row.",
 ].join("\n");
@@ -52,11 +52,11 @@ export const sessionCommand: Command = {
   args: "check|webClient --account <a> [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(SESSION_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log twitter session: ${parsed.error}\n${SESSION_USAGE}` };
+    if (!parsed.ok) return refuseInput("twitter session", parsed.error, SESSION_USAGE);
     const word = parsed.positionals[0];
     if ((word !== "check" && word !== "webClient") || parsed.positionals.length > 1) return { code: 1, stderr: `log twitter session: give check or webClient\n${SESSION_USAGE}` };
     const ref = parsed.flags["account"];
-    if (typeof ref !== "string") return { code: 1, stderr: `log twitter session check: --account is needed\n${SESSION_USAGE}` };
+    if (typeof ref !== "string") return { code: 1, error: "inputInvalid", stderr: `log twitter session check: --account is needed\n${SESSION_USAGE}` };
     try {
       const account = await findTwitterAccount(context.twenty, ref);
       const gate = twitterGate(account);

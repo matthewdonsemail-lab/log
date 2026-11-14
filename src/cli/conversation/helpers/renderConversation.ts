@@ -1,4 +1,4 @@
-import type { Conversation, Message, RecordThreadResult, ScannedThread } from "../../../marketplace/conversation/index.ts";
+import type { Conversation, Message, RecordThreadResult, ScannedThread } from "../../../facebook/marketplace/conversation/index.ts";
 
 const when = (iso: string | null) => (iso ? iso.replace("T", " ").slice(0, 16) : "-");
 

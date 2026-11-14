@@ -4,14 +4,14 @@ export type ConnectionPlatform = 'twitter' | 'facebook' | 'discord' | 'slack' | 
 const accountStatuses = ['active', 'warming', 'limited', 'paused', 'needsLogin', 'checkpoint', 'restricted', 'banned', 'dead', 'deactivated'] as const
 type AccountStatus = typeof accountStatuses[number]
 const sessionStates = ['loggedIn', 'loggedOut', 'restricted', 'checkpoint', 'unknown', 'shadowSuspect', 'accountWarning'] as const
-export type CheckState = 'running' | 'succeeded' | 'signInNeeded' | 'stopped' | 'unavailable' | 'unknown'
+export type CheckState = 'signedIn' | 'signInNeeded' | 'stopped' | 'unknown' | 'checking' | 'skipped'
 export type SignInKind = 'cookies' | 'connect' | 'browser'
 export type LaunchOutcome = { phase: string; retryAt: string | null; code: string }
 export type LocalConnection = { id: string; name: string; homeCountry: string | null; proxyProvider: 'twoCaptcha' | 'byteful' | 'unknown' | null; platform: ConnectionPlatform; status: AccountStatus | 'unknown'; state: typeof sessionStates[number]; checkedAt: string | null; signIn: SignInKind; lastCheck: { state: CheckState; checkedAt: string; launchOutcome?: LaunchOutcome } | null }
 export type SavedKeyField = { id: string; label: string; secret: boolean; required: boolean; inputType: 'url' | 'password' | 'text'; hasValue: boolean; masked: string | null }
 export type ExtensionConnection = { key: string; state: 'configured' | 'notConfigured' | 'unavailable'; fields: SavedKeyField[]; persisted: boolean }
 export type LocalConnections = { accounts: LocalConnection[]; extensions: ExtensionConnection[] }
-export type SignInRequest = { platform: string; method: 'cookies' | 'password'; account: string; cookies?: string; username?: string; password?: string }
+export type SignInRequest = { platform: string; method: 'cookies' | 'password' | 'browser'; account: string; cookies?: string; username?: string; password?: string }
 export type SignInAnswer = { signedIn: boolean; next: 'none' | 'browserCheck'; accountId: string; detail: string; connections: LocalConnections }
 
 export const KEY_MASK = '••••••••••••••••'
@@ -27,7 +27,7 @@ function record(value: unknown): Record<string, unknown> {
 function lastCheckOf(value: unknown): LocalConnection['lastCheck'] {
   if (!value) return null
   const check = record(value)
-  if (!['running', 'succeeded', 'signInNeeded', 'stopped', 'unavailable', 'unknown'].includes(String(check.state)) || !date(check.checkedAt)) throw new Error('consoleResponseInvalid')
+  if (!['signedIn', 'signInNeeded', 'stopped', 'unknown', 'checking', 'skipped'].includes(String(check.state)) || !date(check.checkedAt)) throw new Error('consoleResponseInvalid')
   const last: NonNullable<LocalConnection['lastCheck']> = { state: check.state as CheckState, checkedAt: check.checkedAt as string }
   if (check.launchOutcome) {
     const outcome = record(check.launchOutcome)
@@ -88,6 +88,12 @@ export async function readConnectionKeys(target: ConsoleTarget, provider: string
   const values = record(record(await consoleRequest(target, { local: '/api/console/credentials/read', hosted: '/console/credentials/read', method: 'POST' }, { body: { provider }, signal })).values)
   if (Object.entries(values).some(([name, value]) => !/^[A-Z][A-Z0-9_]+$/.test(name) || typeof value !== 'string' || value.length > 8192)) throw new Error('consoleResponseInvalid')
   return values as Record<string, string>
+}
+
+export async function openSignInLink(target: ConsoleTarget, token: string): Promise<{ accountId: string; connections: LocalConnections }> {
+  const body = record(await consoleRequest(target, { local: '/api/console/signInLink', hosted: '/console/signInLink', method: 'POST' }, { body: { token } }))
+  if (typeof body.accountId !== 'string') throw new Error('consoleResponseInvalid')
+  return { accountId: body.accountId, connections: parseConnections(body.connections) }
 }
 
 export async function checkConnection(target: ConsoleTarget, accountId: string): Promise<LocalConnections> {

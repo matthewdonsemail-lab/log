@@ -2,15 +2,16 @@ import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { cancel, confirm, intro, isCancel, outro } from "@clack/prompts";
 import { platformStateRoot } from "../../../directApi/engine/index.ts";
+import type { CopiedRequest } from "../../../linkedin/account/browser/types.ts";
 import { COPIED_REQUEST_PROBLEMS, copiedRequestProblem, parseCopiedRequest, requestFromHar, saveBrowser } from "../../../linkedin/account/browser/index.ts";
-import { toFacebookAccount } from "../../../marketplace/socialAccount/index.ts";
-import type { SocialAccountRow } from "../../../marketplace/socialAccount/index.ts";
+import { toFacebookAccount } from "../../../platformKit/socialAccount/index.ts";
+import type { SocialAccountRow } from "../../../platformKit/socialAccount/index.ts";
 import { findLinkedinAccount } from "../../../linkedin/account/session/index.ts";
 import type { PlatformAccount } from "../../../platformKit/session/index.ts";
 import { TwentyError } from "../../../twenty/graphql/index.ts";
 import { shouldPrompt } from "../../launch/helpers/index.ts";
 import type { LaunchTTY } from "../../launch/helpers/index.ts";
-import { parseArgs, parserSpecOf, refuse, refuseError } from "../../runner/helpers/index.ts";
+import { parseArgs, parserSpecOf, refuse, refuseError, refuseInput } from "../../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../../runner/types.ts";
 
 export const LINKEDIN_COOKIES_USAGE = [
@@ -98,6 +99,7 @@ export const linkedinCookiesCommand: Command = {
   usage: LINKEDIN_COOKIES_USAGE,
   platform: "linkedin",
   name: "cookies",
+  terminalOnly: "asks for a LinkedIn account's session cookies in a Clack prompt (masked) and checks them with LinkedIn before saving. Run `log linkedin cookies save --account <publicId>` in a terminal.",
   effect: "write",
   summary: "Add or refresh a LinkedIn account in Twenty: every cookie and the browser's headers from a request copied as cURL, checked against LinkedIn",
   input: LINKEDIN_COOKIES_INPUT,
@@ -105,20 +107,20 @@ export const linkedinCookiesCommand: Command = {
   async run(context, argv) {
     if (argv[0] !== "save") return { code: 1, stderr: `log linkedin cookies: save is the only subcommand\n${LINKEDIN_COOKIES_USAGE}` };
     const parsed = parseArgs(argv.slice(1), parserSpecOf({ forms: [{ ...LINKEDIN_COOKIES_INPUT.forms[0], words: [] }] }));
-    if (!parsed.ok) return { code: 1, stderr: `log linkedin cookies: ${parsed.error}\n${LINKEDIN_COOKIES_USAGE}` };
+    if (!parsed.ok) return refuseInput("linkedin cookies", parsed.error, LINKEDIN_COOKIES_USAGE);
     const raw = parsed.flags["account"];
     const publicId = typeof raw === "string" ? publicIdOf(raw) : "";
-    if (!/^[A-Za-z0-9\-_%]{3,100}$/.test(publicId)) return { code: 1, stderr: `log linkedin cookies save: --account must be the profile's public id (linkedin.com/in/<publicId>)\n${LINKEDIN_COOKIES_USAGE}` };
+    if (!/^[A-Za-z0-9\-_%]{3,100}$/.test(publicId)) return { code: 1, error: "inputInvalid", stderr: `log linkedin cookies save: --account must be the profile's public id (linkedin.com/in/<publicId>)\n${LINKEDIN_COOKIES_USAGE}` };
     if (!context.directLinkedin) return { code: 1, stderr: "log linkedin cookies save: the direct-API engine isn't wired in this context" };
     const harPath = typeof parsed.flags["har"] === "string" ? (parsed.flags["har"] as string) : null;
-    if (!harPath && !shouldPrompt(false, linkedinCookiesDeps.tty())) {
+    if (!harPath && !context.cookiePrompts && !shouldPrompt(false, linkedinCookiesDeps.tty())) {
       return { code: 1, stderr: "log linkedin cookies save: the copied request is read after a Clack prompt, so it needs an interactive terminal: run it there (cookies are never passed as flags)" };
     }
     try {
       const found = await existing(context, publicId);
       const quiet = { intro: () => {}, outro: () => {}, cancel: () => {}, confirm: async () => true };
-      const prompts = harPath ? quiet : linkedinCookiesDeps.prompts;
-      let request;
+      const prompts = harPath ? quiet : context.cookiePrompts ?? linkedinCookiesDeps.prompts;
+      let request: CopiedRequest | null;
       if (harPath) {
         let har: string;
         try {
@@ -129,18 +131,33 @@ export const linkedinCookiesCommand: Command = {
         request = requestFromHar(har);
         if (!request) return refuse("linkedin cookies save", "linkedinRequestUnusable", "that file isn't a HAR");
         context.err(`${publicId}: the session and browser headers read from a www.linkedin.com request in the recording`);
+      } else if (context.cookiePrompts) {
+        const asked = context.cookiePrompts;
+        asked.intro(`log linkedin cookies save — ${publicId}${found ? " (already in Twenty: its cookies are replaced)" : " (new in Twenty)"}`);
+        const ask = async (message: string, valid: (v: unknown) => boolean, hint: string) => {
+          const value = await asked.password({ message, validate: (v) => (valid(v) ? undefined : hint) });
+          return isCancel(value) || !valid(value) ? null : (value as string).trim();
+        };
+        const liAt = await ask("li_at (linkedin.com cookie)", isLiAt, "paste the li_at cookie's value only");
+        const jsessionId = liAt ? await ask("JSESSIONID (linkedin.com cookie, starts with ajax:)", isJsessionId, "paste the JSESSIONID value, ajax: and the digits") : null;
+        if (!liAt || !jsessionId) {
+          asked.cancel("Nothing saved.");
+          return { code: 1, stderr: "log linkedin cookies save: cancelled, nothing saved" };
+        }
+        request = { url: null, cookies: { li_at: liAt, JSESSIONID: jsessionId }, browser: null };
       } else {
-        prompts.intro(`log linkedin cookies save — ${publicId}${found ? " (already in Twenty: its cookies are replaced)" : " (new in Twenty)"}`);
-        const ready = await prompts.confirm({ message: "In Chrome signed in to linkedin.com: DevTools, Network, right-click any www.linkedin.com request, Copy, Copy as cURL. Copied it?" });
+        linkedinCookiesDeps.prompts.intro(`log linkedin cookies save — ${publicId}${found ? " (already in Twenty: its cookies are replaced)" : " (new in Twenty)"}`);
+        const ready = await linkedinCookiesDeps.prompts.confirm({ message: "In Chrome signed in to linkedin.com: DevTools, Network, right-click any www.linkedin.com request, Copy, Copy as cURL. Copied it?" });
         if (isCancel(ready) || ready !== true) {
-          prompts.cancel("Nothing saved.");
+          linkedinCookiesDeps.prompts.cancel("Nothing saved.");
           return { code: 1, stderr: "log linkedin cookies save: cancelled, nothing saved" };
         }
         request = parseCopiedRequest(linkedinCookiesDeps.clipboard.read());
         linkedinCookiesDeps.clipboard.clear();
       }
-      const problem = copiedRequestProblem(request);
-      if (problem || !request?.browser) {
+      const fromConsole = !harPath && Boolean(context.cookiePrompts);
+      const problem = fromConsole ? null : copiedRequestProblem(request);
+      if (!request || problem || (!fromConsole && !request.browser)) {
         prompts.cancel(`${COPIED_REQUEST_PROBLEMS[problem ?? "noUserAgent"]}. Nothing saved.`);
         return refuse("linkedin cookies save", "linkedinRequestUnusable", COPIED_REQUEST_PROBLEMS[problem ?? "noUserAgent"]);
       }
@@ -150,7 +167,7 @@ export const linkedinCookiesCommand: Command = {
       }
       const jsessionId = request.cookies["JSESSIONID"]!.trim();
       const cookies: Record<string, string> = { ...request.cookies, JSESSIONID: jsessionId.startsWith('"') ? jsessionId : `"${jsessionId}"` };
-      saveBrowser(linkedinCookiesDeps.stateRoot(), publicId, request.browser);
+      if (request.browser) saveBrowser(linkedinCookiesDeps.stateRoot(), publicId, request.browser);
       const probe = toFacebookAccount({ id: found?.id ?? "new", accountName: publicId, name: publicId, platform: "LINKEDIN", cookies } as SocialAccountRow);
       context.err(`${publicId}: checking the cookies with LinkedIn on the direct-API engine before saving`);
       const run = context.directLinkedin(probe, { action: "ping" });
@@ -170,7 +187,7 @@ export const linkedinCookiesCommand: Command = {
       if (found) await context.twenty.update("socialAccounts", found.id, fields as never);
       else await context.twenty.create("socialAccounts", { name: label, accountName: publicId, platform: "LINKEDIN", ...fields } as never);
       prompts.outro(`Saved to Twenty. ${publicId} is loggedIn.`);
-      return { code: 0, stdout: `log linkedin cookies save: ${publicId} ${found ? "updated" : "added"} in Twenty as a LINKEDIN socialAccount, loggedIn as ${signedInAs}${run.answer.userId ? ` (${run.answer.userId})` : ""}, cookies <set> (${Object.keys(cookies).length} of them), browser ${request.browser.secChUaPlatform ?? "?"} saved.` };
+      return { code: 0, stdout: `log linkedin cookies save: ${publicId} ${found ? "updated" : "added"} in Twenty as a LINKEDIN socialAccount, loggedIn as ${signedInAs}${run.answer.userId ? ` (${run.answer.userId})` : ""}, cookies <set> (${Object.keys(cookies).length} of them), browser ${request?.browser ? `${request.browser.secChUaPlatform ?? "?"} saved` : "not given"}.` };
     } catch (error) {
       return refuseError("linkedin cookies save", error);
     }

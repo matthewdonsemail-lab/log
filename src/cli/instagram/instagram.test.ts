@@ -45,7 +45,7 @@ describe("log instagram session check", () => {
   test("an account of another platform is refused before the engine is called", async () => {
     const r = await run(["instagram", "session", "check", "--account", "galwayOne"]);
     expect(r.code).toBe(1);
-    expect(r.err).toContain("accountNotFound");
+    expect(r.err).toContain("accountPlatformMismatch");
     expect(r.calls).toEqual([]);
   });
 
@@ -99,7 +99,7 @@ describe("log instagram dms", () => {
   });
 
   test("a limit out of range is refused before the engine is called", async () => {
-    const r = await run(["instagram", "dms", "--account", "instagramOne", "--limit", "500"]);
+    const r = await run(["instagram", "dms", "--account", "instagramOne", "--limit", "150"]);
     expect(r.code).toBe(1);
     expect(r.err).toContain("--limit must be 1 to 100");
     expect(r.calls).toEqual([]);

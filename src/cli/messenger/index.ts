@@ -1,8 +1,8 @@
 import { cancel, intro, isCancel, outro, password } from "@clack/prompts";
-import { findAccount } from "../../marketplace/socialAccount/index.ts";
+import { findAccount } from "../../platformKit/socialAccount/index.ts";
 import { shouldPrompt } from "../launch/helpers/index.ts";
 import type { LaunchTTY } from "../launch/helpers/index.ts";
-import { parseArgs } from "../runner/helpers/index.ts";
+import { parseArgs, refuseInput } from "../runner/helpers/index.ts";
 import type { Command } from "../runner/types.ts";
 
 export const MESSENGER_USAGE = [
@@ -29,16 +29,17 @@ export const messengerCommand: Command = {
   usage: MESSENGER_USAGE,
   platform: "facebook",
   name: "messenger",
+  terminalOnly: "asks the owner for the Messenger PIN in a Clack prompt (masked). The owner runs `log facebook messenger pin --account <a>` in a terminal.",
   effect: "write",
   summary: "Messenger's PIN for the account's encrypted chats: asked in a Clack prompt, kept in Twenty, never printed",
   args: "pin --account <name> [--show]",
   async run(context, argv) {
     const parsed = parseArgs(argv, { boolean: ["show"], valued: ["account"] });
-    if (!parsed.ok) return { code: 1, stderr: `log facebook messenger: ${parsed.error}\n${MESSENGER_USAGE}` };
+    if (!parsed.ok) return refuseInput("facebook messenger", parsed.error, MESSENGER_USAGE);
     const [sub, ...rest] = parsed.positionals;
     if (sub !== "pin" || rest.length > 0) return { code: 1, stderr: `log facebook messenger: pin is the only subcommand\n${MESSENGER_USAGE}` };
     const ref = parsed.flags["account"];
-    if (typeof ref !== "string") return { code: 1, stderr: `log facebook messenger pin: --account is needed\n${MESSENGER_USAGE}` };
+    if (typeof ref !== "string") return { code: 1, error: "inputInvalid", stderr: `log facebook messenger pin: --account is needed\n${MESSENGER_USAGE}` };
     let account;
     try {
       account = await findAccount(context.twenty, ref);

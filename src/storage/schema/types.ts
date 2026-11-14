@@ -3,6 +3,7 @@ import type { Database } from 'bun:sqlite'
 export interface Migration {
   version: number
   name: string
+  creates?: readonly string[]
   apply(handle: Database): void
 }
 
@@ -17,4 +18,5 @@ export interface AppliedMigration {
   version: number
   name: string
   appliedAt: string
+  repaired?: readonly string[]
 }

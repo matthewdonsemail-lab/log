@@ -3,7 +3,7 @@ export const REPORT_TOOL = "report";
 export const REPORT_GUIDE = "ui";
 export const REPORT_BLOCK_TYPES = ["heading", "text", "stat", "barChart", "lineChart", "table", "personList", "callout"] as const;
 export type ReportBlockType = (typeof REPORT_BLOCK_TYPES)[number];
-export const REPORT_REFUSALS = ["reportBlockUnknown", "reportFieldInvalid", "reportTooLarge", "reportSeriesMismatch", "reportColumnUnknown"] as const;
+export const REPORT_REFUSALS = ["reportBlockUnknown", "reportFieldInvalid", "reportTooLarge", "reportSeriesMismatch", "reportColumnUnknown", "reportSourceNoData", "identityProfileMissing"] as const;
 export type ReportRefusal = (typeof REPORT_REFUSALS)[number];
 
 export const REPORT_LIMITS = {

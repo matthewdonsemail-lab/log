@@ -1,7 +1,8 @@
 import { createAdsPowerClient } from "../../browser/adsPower/index.ts";
 import { adsPowerHomes, homesOf, remarkAccountId, syncProfiles } from "../../browser/adsPower/index.ts";
-import { parseArgs, refuseError } from "../runner/helpers/index.ts";
-import type { Command } from "../runner/types.ts";
+import { JSON_FLAG, parseArgs, parserSpecOf, refuseError, refuseInput } from "../runner/helpers/index.ts";
+import type { Command, CommandInput } from "../runner/types.ts";
+import { liveThroughAction } from "../../platformKit/action/index.ts";
 
 export const ADS_POWER_USAGE = [
   "Usage: log adsPower status",
@@ -9,18 +10,37 @@ export const ADS_POWER_USAGE = [
   "       log adsPower sync [--apply] [--account <accountName>] [--homes <US,IE>] [--json]   (dry run unless --apply; a DEACTIVATED account, or one whose home isn't in --homes or LOG_ADSPOWER_HOMES, gives its profile back first)",
 ].join("\n");
 
-export const adsPowerCommand: Command = {
+export const ADS_POWER_INPUT: CommandInput = {
+  forms: [
+    { words: ["status"], effect: "read", summary: "Whether the AdsPower Local API answers", positionals: [], flags: [] },
+    { words: ["profiles"], effect: "read", summary: "Every AdsPower profile, and which account each belongs to", positionals: [], flags: [JSON_FLAG] },
+    {
+      words: ["sync"],
+      summary: "One AdsPower profile per account: release, make and link them (a dry run unless apply)",
+      positionals: [],
+      flags: [
+        { name: "apply", kind: "boolean", live: true, description: "Release, make and link the profiles; without it a dry run that changes nothing" },
+        { name: "account", kind: "string", description: "Only this account" },
+        { name: "homes", kind: "list", pattern: "^[A-Za-z]{2}$", takes: "two-letter country codes", description: "Only accounts whose home country is one of these (default LOG_ADSPOWER_HOMES)" },
+        JSON_FLAG,
+      ],
+    },
+  ],
+};
+
+export const adsPowerCommand: Command = liveThroughAction<Command>({
   usage: ADS_POWER_USAGE,
   platform: "any",
   name: "adsPower",
   effect: "write",
+  input: ADS_POWER_INPUT,
   summary: "AdsPower: Local API status, its profiles, and one profile per Twenty account (sync)",
   args: "<status|profiles|sync> [--apply] [--account <a>] [--homes <US,IE>] [--json]",
   async run(context, argv) {
-    const parsed = parseArgs(argv, { boolean: ["json", "apply"], valued: ["account", "homes"] });
-    if (!parsed.ok) return { code: 1, stderr: `log adsPower: ${parsed.error}\n${ADS_POWER_USAGE}` };
+    const parsed = parseArgs(argv, parserSpecOf(ADS_POWER_INPUT));
+    if (!parsed.ok) return refuseInput("adsPower", parsed.error, ADS_POWER_USAGE);
     const [action, extra] = parsed.positionals;
-    if (!action || extra !== undefined || !["status", "profiles", "sync"].includes(action)) return { code: 1, stderr: `log adsPower: pick status, profiles or sync\n${ADS_POWER_USAGE}` };
+    if (!action || extra !== undefined || !["status", "profiles", "sync"].includes(action)) return { code: 1, error: "inputInvalid", stderr: `log adsPower: pick status, profiles or sync\n${ADS_POWER_USAGE}` };
     const adsPower = context.adsPower ?? createAdsPowerClient();
     try {
       if (action === "status") {
@@ -49,4 +69,4 @@ export const adsPowerCommand: Command = {
       return refuseError("adsPower", error);
     }
   },
-};
+}, ["apply"]);

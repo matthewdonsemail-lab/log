@@ -1,10 +1,18 @@
 import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../../runner/helpers/index.ts";
 import type { Command, CommandInput, FlagSpec } from "../../runner/types.ts";
 import { governorLine, openTwitterAccount } from "./account.ts";
+import { confirmAnswer, passGate, rethrowFailure, runAction } from "../../../platformKit/action/index.ts";
+import type { TwitterEngineRun } from "../../../twitter/account/session/index.ts";
+
+async function actOnX(act: () => Promise<TwitterEngineRun>): Promise<TwitterEngineRun> {
+  const acted = await runAction<null, TwitterEngineRun>({ gate: passGate, act, confirm: (run) => confirmAnswer(run.answer) });
+  rethrowFailure(acted);
+  return acted.answer!;
+}
 
 const ACCOUNT: FlagSpec = { name: "account", kind: "string", required: true, description: "The TWITTER socialAccount's accountName (its handle) whose lists these are" };
-const APPROVED_BY: FlagSpec = { name: "approvedBy", kind: "string", description: "Who approved it: needed with --live (rule 8)" };
-const LIVE: FlagSpec = { name: "live", kind: "boolean", live: true, description: "Make the change on X, only when matt asked (rule 8); without it a dry run contacts nothing" };
+const APPROVED_BY: FlagSpec = { name: "approvedBy", kind: "string", approval: true, description: "Who approved it: needed with --live (rule 8)" };
+const LIVE: FlagSpec = { name: "live", kind: "boolean", live: true, description: "Make the change on X, only when the owner asked (rule 8); without it a dry run contacts nothing" };
 
 export const LIST_USAGE = [
   "Usage: log twitter list show --account <accountName> [--json]",
@@ -21,7 +29,7 @@ export const LIST_INPUT: CommandInput = {
       effect: "write",
       summary: "Make an X list on the account; a dry run unless --live",
       positionals: [],
-      flags: [ACCOUNT, { name: "name", kind: "string", required: true, description: "The list's name, as matt gave it" }, { name: "description", kind: "string", description: "The list's description" }, { name: "private", kind: "boolean", description: "Make the list private (default public)" }, APPROVED_BY, LIVE, JSON_FLAG],
+      flags: [ACCOUNT, { name: "name", kind: "string", required: true, description: "The list's name, as the owner gave it" }, { name: "description", kind: "string", description: "The list's description" }, { name: "private", kind: "boolean", description: "Make the list private (default public)" }, APPROVED_BY, LIVE, JSON_FLAG],
     },
     {
       words: ["add"],
@@ -29,6 +37,7 @@ export const LIST_INPUT: CommandInput = {
       summary: "Put one person on one of the account's X lists; a dry run unless --live",
       positionals: [],
       flags: [ACCOUNT, { name: "list", kind: "string", required: true, description: "The list's name or id (log twitter list show)" }, { name: "handle", kind: "string", description: "The person's handle" }, { name: "userId", kind: "string", description: "The person's numeric X user id" }, APPROVED_BY, LIVE, JSON_FLAG],
+      groups: [{ rule: "atLeastOne", names: ["handle", "userId"], refusal: "listInvalid" }],
     },
   ],
 };
@@ -56,7 +65,7 @@ export const listCommand: Command = {
     const label = `twitter list ${word}`;
     const parsed = parseArgs(argv.slice(1), parserSpecOf({ forms: [{ ...form, words: [] }] }));
     if (!parsed.ok) return { code: 1, stderr: `log ${label}: ${parsed.error}\n${LIST_USAGE}` };
-    if (parsed.positionals.length) return { code: 1, stderr: `log ${label}: takes no words after ${word}, only flags\n${LIST_USAGE}` };
+    if (parsed.positionals.length) return { code: 1, error: "inputInvalid", stderr: `log ${label}: takes no words after ${word}, only flags\n${LIST_USAGE}` };
     const str = (name: string) => (typeof parsed.flags[name] === "string" ? String(parsed.flags[name]).trim() : "");
     const live = parsed.flags["live"] === true;
     const approvedBy = str("approvedBy");
@@ -77,7 +86,7 @@ export const listCommand: Command = {
         const name = str("name");
         const already = lists.find((l) => l.name.toLowerCase() === name.toLowerCase());
         if (!live) return { code: 0, stdout: already ? `log ${label}: dry run: @${account.accountName} already has the list "${already.name}" (${already.id}); nothing would be made.` : `log ${label}: dry run: @${account.accountName} would make the ${parsed.flags["private"] ? "private" : "public"} list "${name}". Nothing was contacted. --live --approvedBy <who> makes it (rule 8).` };
-        const run = await engine({ action: "listCreate", name, ...(str("description") ? { description: str("description") } : {}), private: parsed.flags["private"] === true, live: true, approvedBy });
+        const run = await actOnX(() => engine({ action: "listCreate", name, ...(str("description") ? { description: str("description") } : {}), private: parsed.flags["private"] === true, live: true, approvedBy }));
         const made = (run.answer as unknown as Record<string, unknown>).list as ListRow | undefined;
         const code = run.answer.ok ? 0 : 1;
         if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", library: "twikit", account: account.accountName, approvedBy, ...run.answer }, null, 2) };
@@ -89,7 +98,7 @@ export const listCommand: Command = {
       if (!target) return refuse(label, "listInvalid", `@${account.accountName} has no list "${said}": ${lists.map((l) => l.name).join(", ") || "none yet"}`);
       const who = str("handle") ? `@${str("handle").replace(/^@/, "")}` : str("userId");
       if (!live) return { code: 0, stdout: `log ${label}: dry run: @${account.accountName} would put ${who} on "${target.name}" (${target.id}). Nothing was contacted. --live --approvedBy <who> adds them (rule 8).` };
-      const run = await engine({ action: "listAdd", listId: target.id, ...(str("userId") ? { userId: str("userId") } : { screenName: str("handle").replace(/^@/, "") }), live: true, approvedBy });
+      const run = await actOnX(() => engine({ action: "listAdd", listId: target.id, ...(str("userId") ? { userId: str("userId") } : { screenName: str("handle").replace(/^@/, "") }), live: true, approvedBy }));
       const code = run.answer.ok ? 0 : 1;
       if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", library: "twikit", account: account.accountName, approvedBy, ...run.answer }, null, 2) };
       const governor = governorLine(run);

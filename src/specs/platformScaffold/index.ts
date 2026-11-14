@@ -20,7 +20,7 @@ export const platformScaffold = {
     'scripts/checks/checkPlatforms.ts',
     'src/cli/runner/helpers/platforms.ts',
     'src/browser/inspect/helpers/parseInspectAction.ts',
-    'src/marketplace/socialAccount/helpers/checkRunnable.ts',
+    'src/platformKit/socialAccount/helpers/checkRunnable.ts',
     'src/browser/adsPower/helpers/planSync.ts',
     'src/browser/adsPower/helpers/profileRequest.ts',
   ],
@@ -75,7 +75,7 @@ export const platformScaffold = {
       { kind: 'symbol', file: PLATFORMS, name: 'hostOnPlatforms' },
       { kind: 'symbol', file: 'src/browser/inspect/helpers/parseInspectAction.ts', name: 'parseInspectAction' },
     ],
-    'REQ-PLATFORM-12': [{ kind: 'symbol', file: 'src/marketplace/socialAccount/helpers/checkRunnable.ts', name: 'checkRunnable' }],
+    'REQ-PLATFORM-12': [{ kind: 'symbol', file: 'src/platformKit/socialAccount/helpers/checkRunnable.ts', name: 'checkRunnable' }],
     'REQ-PLATFORM-13': [
       { kind: 'symbol', file: 'src/browser/adsPower/helpers/planSync.ts', name: 'planSync' },
       { kind: 'symbol', file: 'src/browser/adsPower/helpers/profileRequest.ts', name: 'profileRequest' },

@@ -8,11 +8,11 @@ import {
   messagesOf,
   recordThread,
   setLeadStatus,
-} from "../../marketplace/conversation/index.ts";
-import type { LeadStatus } from "../../marketplace/conversation/index.ts";
-import { getListing } from "../../marketplace/agencyListing/index.ts";
-import { findAccount, fromTwentyEnum } from "../../marketplace/socialAccount/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf, refuseError } from "../runner/helpers/index.ts";
+} from "../../facebook/marketplace/conversation/index.ts";
+import type { LeadStatus } from "../../facebook/marketplace/conversation/index.ts";
+import { getListing } from "../../facebook/marketplace/agencyListing/index.ts";
+import { findAccount, fromTwentyEnum } from "../../platformKit/socialAccount/index.ts";
+import { JSON_FLAG, parseArgs, parserSpecOf, refuseError, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
 import { parseThreads, renderConversation, renderConversations, renderRecorded } from "./helpers/index.ts";
 
@@ -48,8 +48,8 @@ export const conversationsCommand: Command = {
   args: "[--account <name>] [--listing <id>] [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(CONVERSATIONS_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log facebook conversations: ${parsed.error}\n${CONVERSATIONS_USAGE}` };
-    if (parsed.positionals.length) return { code: 1, stderr: `log facebook conversations: unexpected argument "${parsed.positionals[0]}"\n${CONVERSATIONS_USAGE}` };
+    if (!parsed.ok) return refuseInput("facebook conversations", parsed.error, CONVERSATIONS_USAGE);
+    if (parsed.positionals.length) return { code: 1, error: "inputInvalid", stderr: `log facebook conversations: unexpected argument "${parsed.positionals[0]}"\n${CONVERSATIONS_USAGE}` };
     try {
       const account = typeof parsed.flags["account"] === "string" ? await findAccount(context.twenty, parsed.flags["account"]) : null;
       const listing = typeof parsed.flags["listing"] === "string" ? parsed.flags["listing"] : undefined;
@@ -89,7 +89,7 @@ export const conversationCommand: Command = {
   args: "<show|read|lead|link|record> [id] [STATUS] [--listing <id>] [--account <name> --file <json>]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(CONVERSATION_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log facebook conversation: ${parsed.error}\n${CONVERSATION_USAGE}` };
+    if (!parsed.ok) return refuseInput("facebook conversation", parsed.error, CONVERSATION_USAGE);
     const [action, id, value] = parsed.positionals;
     try {
       if (action === "record") {
@@ -112,7 +112,7 @@ export const conversationCommand: Command = {
         }
         return { code: 0, stdout: parsed.flags["json"] ? JSON.stringify({ results }, null, 2) : renderRecorded(results) };
       }
-      if (!id || !["show", "read", "lead", "link"].includes(action ?? "")) return { code: 1, stderr: `log facebook conversation: pick show, read, lead, link or record\n${CONVERSATION_USAGE}` };
+      if (!id || !["show", "read", "lead", "link"].includes(action ?? "")) return { code: 1, error: "inputInvalid", stderr: `log facebook conversation: pick show, read, lead, link or record\n${CONVERSATION_USAGE}` };
       const conversation = await getConversation(context.twenty, id);
       if (!conversation) return { code: 1, stderr: `log facebook conversation: no conversation ${id} (log facebook conversations lists them)` };
       if (action === "show") {

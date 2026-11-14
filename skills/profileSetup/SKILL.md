@@ -1,17 +1,17 @@
 ---
 name: profileSetup
-description: Give a Facebook account its profile picture and cover photo with `log facebook profile setup` (rule 28). Dry run first to read the profile page and check its controls from the recording, then --live when matt asks. Use when setting up a new account's profile, when matt says "profile photo", "cover photo", "background profile", or when an upload step stops with profileControlNotFound.
+description: Give a Facebook account its profile picture and cover photo with `log facebook profile setup`. Dry run first to read the profile page and check its controls from the recording, then --live when the owner asks. Use when setting up a new account's profile, when the owner says "profile photo", "cover photo", "background profile", or when an upload step stops with profileControlNotFound.
 ---
 
 # profileSetup
 
 A new account gets a real-looking profile photo and a cover photo on days 1-2
-of its warm-up. This does that for one account, both photos in one run (matt's choice).
+of its warm-up. This does that for one account, both photos in one run (the owner's choice).
 
 ## Hard boundaries
 
-1. **Dry run first, `--live` only when matt asks** (rules 8, 28). Over MCP,
-   `--live` is `profileLive`, with `confirmLive: true`.
+1. **Dry run first, `--live` only when the owner asks** (rule 8). Over MCP,
+   `--live` is `facebookProfileLive`, with `confirmLive: true`.
 2. **Read before clicking** (rule 25). The upload clicks in
    `python/session/profileSession.py` were written before the page was seen. The dry
    run writes every button, link and file input the profile page has to
@@ -20,8 +20,8 @@ of its warm-up. This does that for one account, both photos in one run (matt's c
 3. **Only the two photos change.** With `profileName` set, the dry run also reads
    the name page (`nameFound.txt`); the rename itself is built from an inspect
    recording first (rule 29). Bio and every other field stay read-only.
-4. **It is a launch** (rule 24): it counts against the 8 a day, 10 minutes
-   apart, and needs waking hours (rule 18), the proxy gate (12) and a saved
+4. **It is a launch** (rule 35): it counts against the 8 a day, 10 minutes
+   apart, and needs waking hours, the proxy gate and a saved
    session (`log facebook connect` first).
 5. **Run it live** (rule 26): through Monitor, every machine state prints.
 
@@ -47,14 +47,14 @@ of its warm-up. This does that for one account, both photos in one run (matt's c
    If the picture or cover control isn't the one the patterns match, fix the
    pattern in `python/session/profileSession.py` and its test, commit, and dry run
    again after the launch gap.
-5. When matt says go: `--live`. The machine uploads the profile photo, then
+5. When the owner says go: `--live`. The machine uploads the profile photo, then
    the cover; any failed step stops the run (nothing is retried on
    Facebook). A failed step saves `<item>Failed.txt` with what the page had.
    On success `profileSetAt` is set in Twenty.
-6. Rebuild the Facebook client docs (rule 27): the profile requests are new.
+6. Rebuild the Facebook client docs: the profile requests are new.
 
    ```bash
-   log facebook capture --docs
+   log capture docs
    ```
 
 ## Codes

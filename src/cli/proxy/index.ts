@@ -1,9 +1,9 @@
 import { countryName, slowFacebookMs } from "../../browser/proxy/index.ts";
 import type { ProxyCheck } from "../../browser/proxy/index.ts";
 import { prepareRun } from "../../browser/run/index.ts";
-import { distanceKm, homeOf } from "../../marketplace/home/index.ts";
-import { findAccount, listFacebookAccounts, maskProxyUrl, recordProxyCheck } from "../../marketplace/socialAccount/index.ts";
-import type { FacebookAccount } from "../../marketplace/socialAccount/index.ts";
+import { distanceKm, homeOf } from "../../platformKit/home/index.ts";
+import { findAccount, listFacebookAccounts, maskProxyUrl, recordProxyCheck } from "../../platformKit/socialAccount/index.ts";
+import type { FacebookAccount } from "../../platformKit/socialAccount/index.ts";
 import {
   buildProxyUrl,
   gatewayHost,
@@ -20,8 +20,8 @@ import { bytefulCredentials, getCreditCents, getResidentialSummary, pickCity, re
 import type { BytefulCredentials } from "../../proxyVendor/byteful/index.ts";
 import { parseVendor } from "../../proxyVendor/vendor/index.ts";
 import { openAccount } from "../live/index.ts";
-import { parseArgs, refuse, refuseError } from "../runner/helpers/index.ts";
-import type { Command, CommandContext, CommandResult } from "../runner/types.ts";
+import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuse, refuseError, refuseInput } from "../runner/helpers/index.ts";
+import type { Command, CommandContext, CommandInput, CommandResult } from "../runner/types.ts";
 
 export const MAX_PROXY_KM = 100;
 
@@ -148,19 +148,48 @@ async function assignOne(
   return saveFirstGood(context, account, centre, next, where);
 }
 
+export const PROXY_INPUT: CommandInput = {
+  forms: [
+    { words: ["check"], summary: "Check an account's proxy: where it exits and how fast Facebook loads through it; the answer is saved on the account", positionals: [], flags: [{ name: "account", kind: "string", required: true, description: "The account whose proxy to check" }, JSON_FLAG] },
+    {
+      words: ["assign"],
+      summary: "Give an account (or every account without one) a proxy from a provider in its home city, checked before it is saved",
+      positionals: [],
+      flags: [
+        { name: "account", kind: "string", description: "The account to give a proxy" },
+        { name: "missing", kind: "boolean", description: "Every account that has no proxy yet" },
+        { name: "vendor", kind: "enum", values: ["twoCaptcha", "byteful"], description: "The provider (default twoCaptcha)" },
+        { name: "city", kind: "string", description: "A city other than the account's home city" },
+        { name: "region", kind: "string", description: "The city's state or region, when its name is in more than one" },
+        { name: "anyCity", kind: "boolean", description: "Anywhere in the home country" },
+        { name: "minutes", kind: "integer", min: 1, max: 120, description: "How long a 2Captcha session sticks, in minutes (default 120)" },
+        { name: "socks5", kind: "boolean", description: "A SOCKS5 proxy instead of HTTP" },
+      ],
+      groups: [
+        { rule: "atLeastOne", names: ["account", "missing"] },
+        { rule: "atMostOne", names: ["account", "missing"] },
+        { rule: "atMostOne", names: ["city", "anyCity"] },
+      ],
+    },
+    { words: ["balance"], effect: "read", summary: "Each proxy provider's traffic and balance", positionals: [], flags: [JSON_FLAG] },
+    { words: ["static"], effect: "read", summary: "The provider's static ISP IPs on the account, and where each is", positionals: [], flags: [JSON_FLAG] },
+  ],
+};
+
 export const proxyCommand: Command = {
   usage: PROXY_USAGE,
   platform: "any",
   name: "proxy",
   effect: "write",
+  input: PROXY_INPUT,
   summary: "Check an account's proxy, give it one from a provider (2Captcha, Byteful) in its home city, or see providers' traffic",
   args: "<check|assign|balance|static> [--account <name>] [--vendor twoCaptcha|byteful] [...]",
   async run(context, argv) {
-    const parsed = parseArgs(argv, { boolean: ["json", "missing", "anyCity", "socks5"], valued: ["account", "city", "region", "minutes", "vendor"] });
-    if (!parsed.ok) return { code: 1, stderr: `log proxy: ${parsed.error}\n${PROXY_USAGE}` };
+    const parsed = parseArgs(argv, parserSpecOf(PROXY_INPUT));
+    if (!parsed.ok) return refuseInput("proxy", parsed.error, PROXY_USAGE);
     const [action, extra] = parsed.positionals;
     if (!action || extra !== undefined || !["check", "assign", "balance", "static"].includes(action)) {
-      return { code: 1, stderr: `log proxy: pick check, assign, balance or static\n${PROXY_USAGE}` };
+      return { code: 1, error: "inputInvalid", stderr: `log proxy: pick check, assign, balance or static\n${PROXY_USAGE}` };
     }
 
     if (action === "balance") {
@@ -252,8 +281,7 @@ export const proxyCommand: Command = {
     if (action === "assign") {
       const creds = twoCaptchaCredentials();
       if ("missing" in creds) return refuse("proxy assign", "twoCaptchaNotConfigured", creds.missing);
-      const minutes = parsed.flags["minutes"] === undefined ? 120 : Number(parsed.flags["minutes"]);
-      if (!Number.isInteger(minutes) || minutes < 1 || minutes > 120) return { code: 1, stderr: "log proxy assign: --minutes must be 1 to 120 (2Captcha's sticky limit)" };
+      const minutes = numberOf(parsed, "minutes") ?? 120;
       try {
         let accounts: FacebookAccount[];
         if (parsed.flags["missing"]) {

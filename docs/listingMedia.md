@@ -41,7 +41,7 @@ The profile picture and cover photo work the same way (`socialAccounts.profilePh
 
 ## Checks before publishing
 
-`validateListing` (`src/marketplace/publish/helpers/validateListing.ts`) refuses a listing before any browser opens when:
+`validateListing` (`src/facebook/marketplace/publish/helpers/validateListing.ts`) refuses a listing before any browser opens when:
 
 - it has no photo (Facebook's Next button stays disabled without one);
 - it has more than 10 photos;

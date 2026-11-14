@@ -68,7 +68,9 @@ describe("the console browser check on the runtime", () => {
     calls = [];
     live = view("signInRequired");
     await expect(runConsoleOperation("browserAction", { accountId: seller, action: "resolve", generation: "c".repeat(32) }, { callTool })).rejects.toThrow("browserGenerationChanged");
-    await runConsoleOperation("browserAction", { accountId: seller, action: "resolve", generation: "a".repeat(32) }, { callTool });
+    await expect(runConsoleOperation("browserAction", { accountId: seller, action: "resolve", generation: "a".repeat(32) }, { callTool })).rejects.toThrow("liveNotConfirmed");
+    expect(calls).toEqual([]);
+    await runConsoleOperation("browserAction", { accountId: seller, action: "resolve", generation: "a".repeat(32), confirmLive: true }, { callTool });
     expect(calls).toEqual(["inspectDoLive signIn live"]);
   });
 
@@ -79,7 +81,7 @@ describe("the console browser check on the runtime", () => {
     expect(verified.view).toMatchObject({ phase: "verified", canComplete: true });
     await expect(runConsoleOperation("browserSaveState", { accountId: seller, revision: "d".repeat(64) }, { callTool })).rejects.toThrow("browserStateChanged");
     const saved = (await runConsoleOperation("browserSaveState", { accountId: seller }, { callTool })) as { connections: { accounts: { id: string; lastCheck: { state: string } | null }[] } };
-    expect(saved.connections.accounts.find((account) => account.id === seller)?.lastCheck?.state).toBe("succeeded");
+    expect(saved.connections.accounts.find((account) => account.id === seller)?.lastCheck?.state).toBe("signedIn");
     await runConsoleOperation("browserClose", { accountId: seller }, { callTool });
     expect(calls).toEqual(["inspectDo snapshot", "inspectDo saveState", "inspectDo stop"]);
   });

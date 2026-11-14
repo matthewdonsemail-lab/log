@@ -2,30 +2,44 @@ import { dirname, join } from "node:path";
 import { createActor, fromPromise, toPromise } from "xstate";
 import type { ProfileSession, ProfileStep } from "../../camofox/session/index.ts";
 import { preparePhotos } from "../../media/photo/index.ts";
-import { profileMachine } from "../../marketplace/profile/index.ts";
-import type { ProfileActOutput, ProfileActorInputs, ProfileNameOutput, ProfileOutput, ProfilePhotosOutput, ProfileReadOutput } from "../../marketplace/profile/index.ts";
-import { fetchProxyUrl, markProfileSet } from "../../marketplace/socialAccount/index.ts";
+import { profileMachine } from "../../facebook/marketplace/profile/index.ts";
+import type { ProfileActOutput, ProfileActorInputs, ProfileNameOutput, ProfileOutput, ProfilePhotosOutput, ProfileReadOutput } from "../../facebook/marketplace/profile/index.ts";
+import { fetchProxyUrl, markProfileSet } from "../../platformKit/socialAccount/index.ts";
 import { createInspector, formatTraceLine } from "../../observability/trace/index.ts";
 import { openAccount, withNote, withRun } from "../live/index.ts";
-import { parseArgs, refuseError } from "../runner/helpers/index.ts";
-import type { Command } from "../runner/types.ts";
+import { BYPASS_FLAG, FACEBOOK_ACCOUNT_FLAG } from "../live/index.ts";
+import { JSON_FLAG, parseArgs, parserSpecOf, refuseError, refuseInput } from "../runner/helpers/index.ts";
+import type { Command, CommandInput } from "../runner/types.ts";
 import { renderProfile, summarizeProfile } from "./helpers/index.ts";
 
 export * from "./helpers/index.ts";
 
 export const PROFILE_USAGE = "Usage: log facebook profile setup --account <accountName> [--live] [--bypass] [--json]";
 
+export const PROFILE_INPUT: CommandInput = {
+  forms: [
+    {
+      words: ["setup"],
+      summary: "Set a Facebook account's profile picture and cover photo from its account record (a dry run unless live)",
+      positionals: [],
+      flags: [FACEBOOK_ACCOUNT_FLAG, { name: "live", kind: "boolean", live: true, description: "Upload them on Facebook, only when the owner asked (rule 8)" }, BYPASS_FLAG, JSON_FLAG],
+    },
+  ],
+};
+
 export const profileCommand: Command = {
   usage: PROFILE_USAGE,
   platform: "facebook",
   name: "profile",
+  longRunning: true,
   effect: "browser",
-  summary: "Set an account's profile picture and cover photo from Twenty (dry run unless --live, rule 28)",
+  input: PROFILE_INPUT,
+  summary: "Set an account's profile picture and cover photo from its account record (dry run unless --live, rule 35)",
   args: "setup --account <name> [--live] [--bypass] [--json]",
   async run(context, argv) {
-    const parsed = parseArgs(argv, { boolean: ["live", "bypass", "json"], valued: ["account"] });
-    if (!parsed.ok) return { code: 1, stderr: `log facebook profile: ${parsed.error}\n${PROFILE_USAGE}` };
-    if (parsed.positionals[0] !== "setup" || parsed.positionals.length > 1) return { code: 1, stderr: `log facebook profile: expected "setup"\n${PROFILE_USAGE}` };
+    const parsed = parseArgs(argv, parserSpecOf(PROFILE_INPUT));
+    if (!parsed.ok) return refuseInput("facebook profile", parsed.error, PROFILE_USAGE);
+    if (parsed.positionals[0] !== "setup" || parsed.positionals.length > 1) return { code: 1, error: "inputInvalid", stderr: `log facebook profile: expected "setup"\n${PROFILE_USAGE}` };
     const live = Boolean(parsed.flags["live"]);
     const opened = await openAccount(context, "profile", PROFILE_USAGE, parsed.flags["account"], "run", Boolean(parsed.flags["bypass"]));
     if (!("run" in opened)) return opened;

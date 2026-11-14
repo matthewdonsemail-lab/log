@@ -8,7 +8,7 @@ import { isAudio } from "../../platformKit/media/index.ts";
 import type { MessageAttachment } from "../../platformKit/media/index.ts";
 import { loadConversations, saveConversations, updateIndex } from "../../search/conversations/index.ts";
 import type { Conversation } from "../../search/conversations/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../runner/helpers/index.ts";
+import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandContext, CommandInput } from "../runner/types.ts";
 import { searchDeps } from "../search/index.ts";
 import { openTwitterAccount } from "../twitter/helpers/account.ts";
@@ -154,7 +154,7 @@ export const transcribeCommand: Command = {
     const sub = argv[0] === "file" ? "file" : "all";
     const form = TRANSCRIBE_INPUT.forms[sub === "file" ? 1 : 0];
     const parsed = parseArgs(sub === "file" ? argv.slice(1) : argv, parserSpecOf({ forms: [{ ...form, words: [] }] }));
-    if (!parsed.ok) return { code: 1, stderr: `log transcribe: ${parsed.error}\n${TRANSCRIBE_USAGE}` };
+    if (!parsed.ok) return refuseInput("transcribe", parsed.error, TRANSCRIBE_USAGE);
     const json = parsed.flags["json"] === true;
     try {
       if (sub === "file") {
@@ -166,7 +166,7 @@ export const transcribeCommand: Command = {
         if (!answer.ok) return refuse("transcribe", answer.code, `${answer.status ? `HTTP ${answer.status}: ` : ""}${answer.error}`);
         return { code: 0, stdout: json ? JSON.stringify(answer, null, 2) : `log transcribe: ${basename(path)} (${answer.cached ? "cached" : "transcribed"}, ${Math.round(answer.transcript.seconds ?? 0)} s, ${answer.transcript.languageCode ?? "?"}):\n${answer.transcript.text}` };
       }
-      if (parsed.positionals.length) return { code: 1, stderr: `log transcribe: takes no words, only flags (or file <path>)\n${TRANSCRIBE_USAGE}` };
+      if (parsed.positionals.length) return { code: 1, error: "inputInvalid", stderr: `log transcribe: takes no words, only flags (or file <path>)\n${TRANSCRIBE_USAGE}` };
       const platform = typeof parsed.flags["platform"] === "string" ? parsed.flags["platform"] : undefined;
       const only = typeof parsed.flags["account"] === "string" ? parsed.flags["account"] : undefined;
       let conversations = loadConversations();

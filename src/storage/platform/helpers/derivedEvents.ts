@@ -1,4 +1,4 @@
-import type { EventInsert } from '../types'
+import type { EventInsert, IdentityProfileFields } from '../types'
 import { derivedEventId } from './time'
 
 export function attachmentsSeenEvent(target: { platform: string; account: string; conversationId: string }, messageKey: string, attachments: readonly Record<string, unknown>[], platformMessageId: string | null = null): EventInsert {
@@ -24,4 +24,8 @@ export function identityLearnedEvent(platform: string, account: string, userId: 
 
 export function accountIdentifiedEvent(platform: string, account: string, userId: string, at: string, source = 'session'): EventInsert {
   return { eventId: derivedEventId('accountIdentified', [platform, account, userId]), platform, account, conversationId: '', type: 'accountIdentified', with: '', text: '', box: '', payload: { userId }, sourceAt: '', receivedAt: at, source, known: true }
+}
+
+export function profileSeenEvent(platform: string, account: string, userId: string, fields: IdentityProfileFields, at: string, source = 'derived'): EventInsert {
+  return { eventId: derivedEventId('profileSeen', [platform, userId, JSON.stringify(fields)]), platform, account, conversationId: '', type: 'profileSeen', with: '', text: '', box: '', payload: { userId, ...fields }, sourceAt: '', receivedAt: at, source, known: true }
 }

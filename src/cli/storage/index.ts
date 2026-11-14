@@ -1,8 +1,9 @@
 import { openDatabase } from "../../storage/schema/index.ts";
 import { countsOf, rebuildDerived, verifyDerived } from "../../storage/platform/index.ts";
 import type { VerifyResult } from "../../storage/platform/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";
+import { JSON_FLAG, parseArgs, parserSpecOf, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
+import { liveThroughAction } from "../../platformKit/action/index.ts";
 
 export const STORAGE_USAGE = [
   "Usage: log storage verify [--json]   (replays every event in ~/.logCli/log.db into a scratch copy and compares each typed table, row by row, with the live one; nothing is changed)",
@@ -18,7 +19,7 @@ export const STORAGE_INPUT: CommandInput = {
       effect: "write",
       summary: "Clear the typed tables and replay every event into them, in one transaction (a verify unless --apply)",
       positionals: [],
-      flags: [{ name: "apply", kind: "boolean", description: "Rebuild the live tables (without it, it only verifies)" }, JSON_FLAG],
+      flags: [{ name: "apply", kind: "boolean", live: true, description: "Rebuild the live tables (without it, it only verifies)" }, JSON_FLAG],
     },
   ],
 };
@@ -28,7 +29,7 @@ export function verifyLines(result: VerifyResult): string[] {
   return [result.ok ? "Every typed table is what the events derive." : `>>> DIFFERS: ${result.differs.join(", ")} hold rows the events don't derive. \`log storage rebuild --apply\` replaces them with what the events say.`, ...rows];
 }
 
-export const storageCommand: Command = {
+export const storageCommand: Command = liveThroughAction<Command>({
   usage: STORAGE_USAGE,
   platform: "any",
   name: "storage",
@@ -38,7 +39,7 @@ export const storageCommand: Command = {
   args: "verify|rebuild [--apply] [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(STORAGE_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log storage: ${parsed.error}\n${STORAGE_USAGE}` };
+    if (!parsed.ok) return refuseInput("storage", parsed.error, STORAGE_USAGE);
     const [sub, ...rest] = parsed.positionals;
     if (!sub || rest.length || !["verify", "rebuild"].includes(sub)) return { code: 1, stderr: `log storage: say verify or rebuild\n${STORAGE_USAGE}` };
     const handle = openDatabase();
@@ -56,4 +57,4 @@ export const storageCommand: Command = {
     if (json) return { code: result.ok ? 0 : 1, stdout: JSON.stringify(result, null, 2) };
     return { code: result.ok ? 0 : 1, stdout: [`log storage ${sub}:`, ...verifyLines(result)].join("\n") };
   },
-};
+}, ["apply"]);

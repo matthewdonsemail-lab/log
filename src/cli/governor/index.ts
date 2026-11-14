@@ -3,13 +3,13 @@ import type { GovernorCount, GovernorResetResult } from "../../directApi/governo
 import { writesPerDayOf } from "../../directApi/engine/index.ts";
 import { ledgerRows } from "../../storage/ledger/index.ts";
 import { PLATFORMS } from "../runner/helpers/platforms.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";
+import { JSON_FLAG, parseArgs, parserSpecOf, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandInput, FlagSpec } from "../runner/types.ts";
 
 export const GOVERNOR_USAGE = [
   "Usage: log governor show [--platform <p>] [--json]",
-  "       log governor reset --platform <p> --account <accountName|all> --by matt [--reason <text>] [--json]",
-  "Every platform account's governor counts what it sent X, Discord, Slack, Instagram, Reddit, LinkedIn or Facebook today: requests (500 a day), writes and this hour's requests. show reads them. reset puts an account's requests, writes and hour count back to 0, only when matt says so (rule 168): the count is written back, read again to prove it holds, and the reset is a row in log.db's ledger (kind governorReset) with who said it and what the count was. A cooldown after a block is kept: nothing resumes on a blocked account until matt says so (rule 94), and the platform's own answer still decides (rule 73).",
+  "       log governor reset --platform <p> --account <accountName|all> --by <who> [--reason <text>] [--json]",
+  "Every platform account's governor counts what it sent X, Discord, Slack, Instagram, Reddit, LinkedIn or Facebook today: requests (500 a day), writes and this hour's requests. show reads them. reset puts an account's requests, writes and hour count back to 0, only when the owner says so (rule 168): the count is written back, read again to prove it holds, and the reset is a row in log.db's ledger (kind governorReset) with who said it and what the count was. A cooldown after a block is kept: nothing resumes on a blocked account until matt says so (rule 94), and the platform's own answer still decides (rule 73).",
 ].join("\n");
 
 const PLATFORM: FlagSpec = { name: "platform", kind: "enum", values: PLATFORMS, description: "The platform" };
@@ -20,9 +20,9 @@ export const GOVERNOR_INPUT: CommandInput = {
     {
       words: ["reset"],
       effect: "write",
-      summary: "Put a platform account's governor count (requests, writes, this hour) back to 0, recorded in log.db, only when matt says so (rule 168)",
+      summary: "Put a platform account's governor count (requests, writes, this hour) back to 0, recorded in log.db, only when the owner says so (rule 168)",
       positionals: [],
-      flags: [{ ...PLATFORM, required: true }, { name: "account", kind: "string", required: true, description: "The account's accountName, or all for every account on that platform" }, { name: "by", kind: "string", required: true, description: "Who said to reset it: matt" }, { name: "reason", kind: "string", description: "What matt said, written to the ledger" }, JSON_FLAG],
+      flags: [{ ...PLATFORM, required: true }, { name: "account", kind: "string", required: true, description: "The account's accountName, or all for every account on that platform" }, { name: "by", kind: "string", required: true, description: "Who said to reset it: the owner" }, { name: "reason", kind: "string", description: "What the owner said, written to the ledger" }, JSON_FLAG],
     },
   ],
 };
@@ -47,13 +47,13 @@ export const governorCommand: Command = {
   name: "governor",
   effect: "read",
   input: GOVERNOR_INPUT,
-  summary: "Read every platform account's governor count, and put one back to 0 when matt says so, recorded in log.db",
+  summary: "Read every platform account's governor count, and put one back to 0 when the owner says so, recorded in log.db",
   args: "show|reset [--platform <p>] [--account <a|all>] [--by <who>] [--reason <text>]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(GOVERNOR_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log governor: ${parsed.error}\n${GOVERNOR_USAGE}` };
+    if (!parsed.ok) return refuseInput("governor", parsed.error, GOVERNOR_USAGE);
     const [sub = "show", ...rest] = parsed.positionals;
-    if (rest.length || !["show", "reset"].includes(sub)) return { code: 1, stderr: `log governor: pick show or reset\n${GOVERNOR_USAGE}` };
+    if (rest.length || !["show", "reset"].includes(sub)) return { code: 1, error: "inputInvalid", stderr: `log governor: pick show or reset\n${GOVERNOR_USAGE}` };
     const json = parsed.flags["json"] === true;
     const str = (name: string) => (typeof parsed.flags[name] === "string" ? String(parsed.flags[name]).trim() : "");
     const platform = str("platform");
@@ -64,7 +64,7 @@ export const governorCommand: Command = {
     }
     const account = str("account");
     const by = str("by");
-    if (!platform || !account || !by) return { code: 1, stderr: `log governor reset: --platform, --account and --by are needed\n${GOVERNOR_USAGE}` };
+    if (!platform || !account || !by) return { code: 1, error: "inputInvalid", stderr: `log governor reset: --platform, --account and --by are needed\n${GOVERNOR_USAGE}` };
     const accounts = account === "all" ? governorAccounts(platform) : [account];
     const missing = accounts.filter((a) => !countOf(platform, a));
     if (!accounts.length || missing.length) return { code: 1, stderr: `log governor reset: ${platform} has no governor count for ${missing.length ? missing.join(", ") : "any account"}\n${GOVERNOR_USAGE}` };

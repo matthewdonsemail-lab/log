@@ -1,12 +1,16 @@
 import { isPlatform } from "../../../cli/runner/helpers/platforms.ts";
+import { currentToolName } from "../../server/helpers/toolAliases.ts";
 import type { Command, FlagSpec, InputForm, PositionalSpec } from "../../../cli/runner/types.ts";
-import { guideOfCommand } from "../../server/helpers/guides.ts";
-import { argsLiveFlags, commandTools, LONG_RUNNING } from "../../server/helpers/toolsFromCommands.ts";
+import { FLOWS_GUIDE, guideOfCommand } from "../../server/helpers/guides.ts";
+import { flowTool } from "../../server/helpers/toolsFromFlows.ts";
+import { flowPlatform } from "../../../browser/flow/index.ts";
+import type { FlowDefinition } from "../../../browser/flow/index.ts";
+import { argsLiveFlags, commandTools } from "../../server/helpers/toolsFromCommands.ts";
 import type { CommandTool } from "../../server/helpers/toolsFromCommands.ts";
-import { TERMINAL_ONLY } from "../../server/types.ts";
+import { isLongRunning } from "../../../platformKit/gates/helpers/commandGates.ts";
 import type { CatalogEntry, CatalogInput, InputType } from "../types.ts";
 
-const TYPE_OF: Readonly<Record<string, InputType>> = { string: "string", integer: "integer", boolean: "boolean", enum: "enum", pairs: "pairs", rest: "list" };
+const TYPE_OF: Readonly<Record<string, InputType>> = { string: "string", integer: "integer", number: "number", boolean: "boolean", booleanValue: "boolean", enum: "enum", pairs: "pairs", rest: "list", list: "list" };
 
 function inputOf(spec: FlagSpec | PositionalSpec, positional: boolean): CatalogInput {
   return { name: spec.name, type: TYPE_OF[spec.kind] ?? "string", required: Boolean(spec.required), note: spec.description, values: spec.values ?? [], positional };
@@ -58,7 +62,7 @@ function entryOf(plain: CommandTool, live: CommandTool | undefined): CatalogEntr
     inputs,
     liveInputs,
     bypass: form ? form.flags.some((f) => f.bypass) : /--bypass\b/.test(command.usage),
-    longRunning: LONG_RUNNING.has(command.name),
+    longRunning: isLongRunning(command),
     guide: guideOfCommand(command),
     terminalOnly: null,
   };
@@ -66,7 +70,7 @@ function entryOf(plain: CommandTool, live: CommandTool | undefined): CatalogEntr
 
 function terminalEntries(commands: readonly Command[]): CatalogEntry[] {
   return commands
-    .filter((command) => command.name in TERMINAL_ONLY)
+    .filter((command) => command.terminalOnly)
     .flatMap((command) =>
       (command.input?.forms ?? [null]).map((form): CatalogEntry => ({
         id: catalogIdOf(command, form),
@@ -83,7 +87,7 @@ function terminalEntries(commands: readonly Command[]): CatalogEntry[] {
         bypass: false,
         longRunning: false,
         guide: guideOfCommand(command),
-        terminalOnly: TERMINAL_ONLY[command.name],
+        terminalOnly: command.terminalOnly ?? null,
       })),
     );
 }
@@ -96,7 +100,37 @@ export function catalogOf(commands: readonly Command[]): CatalogEntry[] {
   return [...callable, ...terminalEntries(commands)];
 }
 
+export function flowEntries(commands: readonly Command[], flows: readonly FlowDefinition[]): CatalogEntry[] {
+  const command = commands.find((c) => c.name === "flow" && c.input);
+  const form = command?.input?.forms.find((f) => f.words.join(" ") === "run") ?? null;
+  if (!command || !form) return [];
+  return flows.map((flow): CatalogEntry => {
+    const platform = flowPlatform(flow);
+    const params = flow.params.map((p): CatalogInput => ({ name: p.name, type: "string", required: true, note: `${p.description}${p.kind === "file" ? " (a URL or a local path)" : ""}`, values: [], positional: false }));
+    const own = (name: string) => form.flags.find((f) => f.name === name);
+    const optional = ["bypass", "now", "proxyMs"].flatMap((name) => (own(name) ? [inputOf(own(name)!, false)] : []));
+    return {
+      id: [...(platform ? [platform] : []), "flow", flow.name].join("."),
+      tool: flowTool(flow),
+      liveTool: flowTool(flow, true),
+      command,
+      form: null,
+      platform: platform ?? "any",
+      summary: flow.summary,
+      usage: [`log flow run ${flow.name} --account <a> ${flow.params.map((p) => `--set ${p.name}=…`).join(" ")}`.trimEnd()],
+      effect: "read",
+      inputs: [{ name: "account", type: "string", required: true, note: "The account it runs on", values: [], positional: false }, ...params, ...optional],
+      liveInputs: [],
+      bypass: true,
+      longRunning: true,
+      guide: FLOWS_GUIDE,
+      terminalOnly: null,
+      recorded: true,
+    };
+  });
+}
+
 export function entryById(entries: readonly CatalogEntry[], id: string): CatalogEntry | null {
-  const wanted = id.trim();
+  const wanted = currentToolName(id.trim());
   return entries.find((e) => e.id === wanted) ?? entries.find((e) => (e.tool && e.tool === wanted) || e.liveTool === wanted) ?? entries.find((e) => e.id.toLowerCase() === wanted.toLowerCase()) ?? null;
 }

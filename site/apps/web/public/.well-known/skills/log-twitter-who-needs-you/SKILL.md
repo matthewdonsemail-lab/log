@@ -26,8 +26,8 @@ Say: **"go on docs/useCases/twitter/whoNeedsYou.md"**, and which account. The ag
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
 | 1 | Who wrote last and is waiting: already in context at session start, read from the local inbox store, nothing fetched | the SessionStart hook | the list is in context |
-| 2 | Bring the inbox up to date: the first read takes everything once, every read after only what is new (about 5 s) | `twitterDms` { account, limit: "60" } | every conversation, newest first, with who spoke last |
-| 3 | Shortlist: everyone waiting on the owner, plus anyone recent the owner wrote to who answered | `twitterDms` { account, waiting: true, limit: "60" } | a shortlist of handles |
+| 2 | Bring the inbox up to date: the first read takes everything once, every read after only what is new (about 5 s) | `twitterDms` { account, limit: 60 } | every conversation, newest first, with who spoke last |
+| 3 | Shortlist: everyone waiting on the owner, plus anyone recent the owner wrote to who answered | `twitterDms` { account, waiting: true, limit: 60 } | a shortlist of handles |
 | 4 | Read each shortlisted person in full, old DM thread and X Chat merged, one person at a time | `twitterDms` { account, with: "<handle>" } | their whole thread, oldest first |
 | 5 | What the conversation is about beyond the thread: earlier talk about the same thing anywhere | `search` { query, with: "<handle>" } | the matches, with when |
 | 6 | Who they are: their bio, role and reach, and whether they're in Twenty | [treg](https://treg.to/?ref=matthewdonse-aebsh)'s X profile read, Twenty | one line per person |

@@ -4,6 +4,8 @@ import type { Platform } from "../../cli/runner/helpers/platforms.ts";
 export interface Flag {
   name: string;
   value: string | null;
+  required?: boolean;
+  typed?: boolean;
 }
 
 export interface CommandEntry {

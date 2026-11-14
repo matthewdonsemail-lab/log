@@ -37,8 +37,11 @@ export interface LogTool {
 export const TOOL_RESULT_SCHEMA = {
   type: "object",
   properties: {
-    exit: { type: "integer", description: "The command's exit code: 0 done, 1 refused or failed (the reason is in stderr), 2 runtime, -1 still running as a job (see job)" },
+    exit: { type: "integer", description: "The command's exit code: 0 done, 1 refused or failed (the reason is in stderr), 2 runtime, 5 a queue run that stopped before its end, -1 still running as a job (see job)" },
     ok: { type: "boolean", description: "exit is 0" },
+    code: { type: ["string", "null"], description: "The error catalog code of a refusal or failure (log errors --code <code> explains it), or null when it worked or is still running. A refusal with no code of its own is commandFailed" },
+    platform: { type: ["string", "null"], description: "The platform the call ran on, or null for a shared tool that names none" },
+    capability: { type: ["string", "null"], description: "What the call does, the same words on every platform (the command and its form, e.g. session.check, send, read), or null for the catalog and guide tools" },
     stdout: { type: "string", description: "What the command printed" },
     stderr: { type: "string", description: "Its errors and refusals, with the error catalog code" },
     log: { type: "array", items: { type: "string" }, description: "Its progress lines, in order (rule 26)" },
@@ -51,17 +54,17 @@ export const TOOL_RESULT_SCHEMA = {
     browsers: {
       type: "array",
       items: { type: "object" },
-      description: "Every open browser after the call: account, step, url, the known page state it sits on (id, what, person), the failed step, its resolver call (next) and what only matt can clear (needsMatt) (rules 54-55)",
+      description: "Every open browser after the call: account, step, url, the known page state it sits on (id, what, person), the failed step, its resolver call (next) and what only the owner can clear (needsMatt) (rules 54-55)",
     },
     next: { description: "The tool call that resolves the first open browser's known state ({ tool, input }), or null: call it, do not stop (rule 54)" },
-    needsMatt: { description: "What only matt can clear (a video selfie, an ID, a disabled account, a PIN not in Twenty), or null: stop that account and tell him" },
+    needsMatt: { description: "What only the owner can clear (a video selfie, an ID, a disabled account, a PIN not in Twenty), or null: stop that account and tell the owner" },
     job: {
       type: "object",
       properties: { id: { type: "string" }, status: { type: "string" }, afterLine: { type: "integer" } },
       description: "A long run is a job: its id, its status (running, completed, failed, cancelled, lost) and how many progress lines are in so far. exit -1 means it is still running: follow it with jobStatus { jobId, afterLine }",
     },
   },
-  required: ["exit", "ok", "stdout", "stderr", "log", "progress", "browsers", "next", "needsMatt"],
+  required: ["exit", "ok", "code", "platform", "capability", "stdout", "stderr", "log", "progress", "browsers", "next", "needsMatt"],
 } as const;
 
 export interface ProgressLine {
@@ -70,9 +73,15 @@ export interface ProgressLine {
   line: string;
 }
 
-export interface ToolResult {
+export interface ResultIdentity {
+  platform: string | null;
+  capability: string | null;
+}
+
+export interface ToolResult extends ResultIdentity {
   exit: number;
   ok: boolean;
+  code: string | null;
   stdout: string;
   stderr: string;
   log: string[];
@@ -84,19 +93,4 @@ export interface ToolResult {
   job?: { id: string; status: string; afterLine: number };
 }
 
-export const TERMINAL_ONLY: Readonly<Record<string, string>> = {
-  launch: "prompts in a terminal (Clack). Call the commands it wraps directly.",
-  login: "opens a browser for Twenty OAuth and waits for it. Run `log login` in a terminal.",
-  mcp: "manages who may sign in to this server's MCP (OAuth through Twenty). matt runs `log mcp clients` or `mcp revoke <clientId|all>` in a terminal on the server.",
-  chat: "asks matt for the X Chat PIN in a Clack prompt (masked). He runs `log twitter chat pin --account <a>` in a terminal.",
-  cookies: "asks for an account's session cookies in a Clack prompt (masked) and checks them with the platform before saving: an X account's auth_token, ct0 and twid, a LinkedIn account's, or a Slack account's d. Run `log twitter cookies save --account <handle>`, `log linkedin cookies save --account <publicId>` or `log slack cookies save --account <name>` in a terminal.",
-  runtime: "pairs this workspace with hosted log and keeps its outbound bridge open as a long-lived service. Run `log runtime init --origin <url>`, `log runtime pair --token <t>` and `log runtime connect` in the workspace's terminal or its service manager.",
-  secrets: "asks for a Discord account's email, password and 2FA secret in a Clack prompt (masked). Run `log discord secrets --account <a>` in a terminal.",
-  messenger: "asks matt for the Messenger PIN in a Clack prompt (masked). He runs `log facebook messenger pin --account <a>` in a terminal.",
-};
-
-export const NO_PROMPT: Readonly<Record<string, string>> = {
-  connect: "--noPrompt",
-};
-
-export type GuardResult = { ok: true; argv: string[] } | { ok: false; message: string };
+export type GuardResult = { ok: true; argv: string[]; note?: string } | { ok: false; message: string; code: string };

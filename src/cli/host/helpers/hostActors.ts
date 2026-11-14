@@ -6,13 +6,13 @@ import { stepExchangesAt } from "../../../subq/stepReading/helpers/stepExchanges
 import type { FlowStep } from "../../../browser/flow/index.ts";
 import type { InspectAction, InspectStepResult } from "../../../browser/inspect/index.ts";
 import type { PreparedRun } from "../../../browser/run/index.ts";
-import { classifySignal } from "../../../marketplace/account/index.ts";
-import { activeWindow, homeOf, hoursUntilOpen, localClock, outsideActiveHours } from "../../../marketplace/home/index.ts";
-import type { LifecycleActorInputs, StepOutcome, WarmupActivity } from "../../../marketplace/lifecycle/index.ts";
-import { fetchProxyUrl, saveSession } from "../../../marketplace/socialAccount/index.ts";
+import { classifySignal } from "../../../platformKit/account/index.ts";
+import { activeWindow, homeOf, hoursUntilOpen, localClock, outsideActiveHours } from "../../../platformKit/home/index.ts";
+import type { LifecycleActorInputs, StepOutcome, WarmupActivity } from "../../../platformKit/lifecycle/index.ts";
+import { fetchProxyUrl, saveSession } from "../../../platformKit/socialAccount/index.ts";
 import { preparePhotos } from "../../../media/photo/index.ts";
 import { join } from "node:path";
-import type { FacebookAccount } from "../../../marketplace/socialAccount/index.ts";
+import type { FacebookAccount } from "../../../platformKit/socialAccount/index.ts";
 import { ACTIVITY_SCRIPTS, NOTED_ISSUES } from "../../../facebook/warmup/stages/index.ts";
 import * as marketplaceCheck from "../../../facebook/marketplace/check/index.ts";
 import { homePlace, placeProblem } from "../../../facebook/marketplace/location/index.ts";
@@ -214,7 +214,7 @@ export function hostActors(context: CommandContext, account: FacebookAccount, br
       const home = (account.homeCity ?? "").toLowerCase();
       if (where && where.city.toLowerCase() === home) return ok(`${where.city} ${where.postalCode}`);
       const place = await placeFor(context, account);
-      if (!place) return error("noPlaceName", `the Marketplace location is ${where?.city ?? "unknown"}; its home ${account.homeCity ?? "city"} (${account.homeCountry ?? "?"}) has no region in CITY_REGIONS, and no listing of this account has a locationQuery: add the city's state to CITY_REGIONS (src/marketplace/home/types.ts)`);
+      if (!place) return error("noPlaceName", `the Marketplace location is ${where?.city ?? "unknown"}; its home ${account.homeCity ?? "city"} (${account.homeCountry ?? "?"}) has no region in CITY_REGIONS, and no listing of this account has a locationQuery: add the city's state to CITY_REGIONS (src/platformKit/home/types.ts)`);
       const problem = placeProblem(place);
       if (problem) return error(problem.code, problem.detail);
       if (!input.live) return error("needsLive", `the Marketplace location is ${where?.city ?? "unknown"}, not ${account.homeCity}: --live sets it to ${place}`);

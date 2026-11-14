@@ -13,13 +13,13 @@ src/platformKit/                what every platform's account session shares (fi
 src/scaffold/platform/          `log new platform <name>`: writes and wires in a new platform
 src/directApi/engine/           DIRECT_ROUTES, commandEngine, the direct-API engine runner and governors
 src/twenty/graphql/             the generated Twenty client (generated/), its seam, and an in-memory Twenty for tests
-src/marketplace/socialAccount/  accounts in Twenty, and the check that an account may run (checkRunnable)
-src/marketplace/agencyListing/  listings in Twenty, writing run results back, dashboard sync
-src/marketplace/replacement/    losing an account, replacements, campaign fill
-src/marketplace/publish/        the XState publish machine
-src/marketplace/monitor/        the XState listing monitor and relist rules
-src/marketplace/lifecycle/      each account's lifecycle machine
-src/marketplace/listing/        the listing status machine, ported from an earlier dashboard (with its seed)
+src/platformKit/socialAccount/  accounts in Twenty, and the check that an account may run (checkRunnable)
+src/facebook/marketplace/agencyListing/  listings in Twenty, writing run results back, dashboard sync
+src/facebook/marketplace/replacement/    losing an account, replacements, campaign fill
+src/facebook/marketplace/publish/        the XState publish machine
+src/facebook/marketplace/monitor/        the XState listing monitor and relist rules
+src/platformKit/lifecycle/      each account's lifecycle machine
+src/facebook/marketplace/listing/        the listing status machine, ported from an earlier dashboard (with its seed)
 src/warmup/                     what every platform's warm-up draws from: persona/, viewer/
 src/browser/driver/             the browser-agnostic session machine and capability list
 src/browser/camoufox/           Camoufox's driver and capability row

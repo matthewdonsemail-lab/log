@@ -45,7 +45,7 @@ class FakePage:
         self.mouse = FakeMouse(self)
         self.keyboard = FakeKeyboard(self)
 
-    async def evaluate(self, _script):
+    async def evaluate(self, _script, *_args):
         return dict(self.signals)
 
     async def screenshot(self, **_options):

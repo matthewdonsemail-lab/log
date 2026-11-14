@@ -2,9 +2,11 @@ import type { Command } from "../../cli/runner/types.ts";
 import { rulesLine } from "../server/helpers/agentRules.ts";
 import { guideLine } from "../server/helpers/guides.ts";
 import { annotationsOf } from "../server/helpers/toolAnnotations.ts";
+import { PLAY_HANDLE } from "../server/helpers/toolsFromCommands.ts";
 import { TOOL_RESULT_SCHEMA } from "../server/types.ts";
 import type { LogTool, LogToolInput } from "../server/types.ts";
-import { catalogOf, didYouMean, entryById, helpLines, renderGet, renderSearch, renderUnknownId, searchCatalog } from "./helpers/index.ts";
+import type { FlowDefinition } from "../../browser/flow/index.ts";
+import { capabilityOfEntry, catalogOf, didYouMean, flowEntries, entryById, helpLines, renderGet, renderSearch, renderUnknownId, searchCatalog } from "./helpers/index.ts";
 import { CALL_TOOL, CATALOG_GUIDE, GET_TOOL, SEARCH_LIMIT, SEARCH_LIMIT_MAX, SEARCH_TOOL } from "./types.ts";
 import type { CallRefusal, CallTarget, CatalogEntry } from "./types.ts";
 
@@ -13,12 +15,10 @@ export * from "./types.ts";
 
 const cache = new WeakMap<readonly Command[], CatalogEntry[]>();
 
-export function catalog(commands: readonly Command[]): CatalogEntry[] {
-  const held = cache.get(commands);
-  if (held) return held;
-  const built = catalogOf(commands);
-  cache.set(commands, built);
-  return built;
+export function catalog(commands: readonly Command[], flows: readonly FlowDefinition[] = []): CatalogEntry[] {
+  const held = cache.get(commands) ?? catalogOf(commands);
+  cache.set(commands, held);
+  return flows.length ? [...held, ...flowEntries(commands, flows)] : held;
 }
 
 export function isCatalogTool(name: string): boolean {
@@ -72,7 +72,7 @@ export function catalogTools(): LogTool[] {
       title: "Run a log command by its id",
       description: [
         `Run a command by its id with its inputs, exactly as ${GET_TOOL} lists them. It goes through the same checks as the command's own tool: an unknown input is refused by name with the ones it takes, and nothing runs.`,
-        "Read-only unless live: true, which needs confirmLive: true and only when matt asked for this live run (rules 8, 10). Outside an account's hours only with confirmBypass: true, when matt asked (rule 20). A long run comes back as a job past waitMs: follow it with jobStatus.",
+        "Read-only unless live: true, which needs confirmLive: true and only when the owner asked for this live run (rule 8). Outside an account's hours only with confirmBypass: true, when the owner asked (rule 35). A long run comes back as a job past waitMs: follow it with jobStatus.",
         ...tail(CALL_TOOL),
       ].join("\n"),
       annotations: annotationsOf("write", true, "Run a log command by its id"),
@@ -81,10 +81,11 @@ export function catalogTools(): LogTool[] {
         properties: {
           id: { type: "string", description: `The command's id from ${SEARCH_TOOL} or ${GET_TOOL}` },
           inputs: { type: "object", description: `The command's inputs by name, as ${GET_TOOL} lists them` },
-          live: { type: "boolean", description: "Run the live form that acts on the platform; only when matt asked" },
-          confirmLive: { type: "boolean", description: "Set true only when matt asked for this live run" },
-          confirmBypass: { type: "boolean", description: "Set true only when matt asked for a run outside the account's local waking hours (rule 20)" },
+          live: { type: "boolean", description: "Run the live form that acts on the platform; only when the owner asked" },
+          confirmLive: { type: "boolean", description: "Set true only when the owner asked for this live run" },
+          confirmBypass: { type: "boolean", description: "Set true only when the owner asked for a run outside the account's local waking hours (rule 20)" },
           waitMs: { type: "integer", description: "How long this call waits for a long run, in ms (default 20000, at most 50000); past it the run comes back as a job" },
+          playHandle: PLAY_HANDLE,
         },
         required: ["id"],
         additionalProperties: false,
@@ -99,7 +100,7 @@ export function searchAnswer(entries: readonly CatalogEntry[], input: LogToolInp
   if (!query) return { ok: false, text: [`${SEARCH_TOOL}: query is needed, in plain words`, ...helpLines([`${SEARCH_TOOL} {"query":"send a dm on x"}`])].join("\n"), json: null };
   const asked = typeof input?.limit === "number" && Number.isInteger(input.limit) ? input.limit : SEARCH_LIMIT;
   const result = searchCatalog(entries, query, Math.min(Math.max(1, asked), SEARCH_LIMIT_MAX));
-  const row = (h: (typeof result.hits)[number]) => ({ id: h.entry.id, summary: h.entry.summary, live: Boolean(h.entry.liveTool), terminalOnly: Boolean(h.entry.terminalOnly), matched: h.matched, missed: h.missed });
+  const row = (h: (typeof result.hits)[number]) => ({ id: h.entry.id, capability: capabilityOfEntry(h.entry), summary: h.entry.summary, live: Boolean(h.entry.liveTool), terminalOnly: Boolean(h.entry.terminalOnly), matched: h.matched, missed: h.missed });
   return { ok: true, text: renderSearch(result), json: { query, verdict: result.verdict, results: result.hits.map(row), near: result.near.map(row) } };
 }
 
@@ -127,7 +128,7 @@ export function resolveCall(entries: readonly CatalogEntry[], input: LogToolInpu
   const unknown = Object.keys(given).filter((name) => !accepted.includes(name));
   if (unknown.length) {
     const liveOnly = unknown.filter((name) => entry.liveInputs.some((i) => i.name === name));
-    const why = liveOnly.length && !live ? `${liveOnly.join(", ")} ${liveOnly.length === 1 ? "is" : "are"} only for the live run (live: true with confirmLive: true, only when matt asked)` : `${entry.id} takes ${accepted.join(", ") || "no inputs"}`;
+    const why = liveOnly.length && !live ? `${liveOnly.join(", ")} ${liveOnly.length === 1 ? "is" : "are"} only for the live run (live: true with confirmLive: true, only when the owner asked)` : `${entry.id} takes ${accepted.join(", ") || "no inputs"}`;
     return { ok: false, message: `${CALL_TOOL}: unknownInput ${unknown.join(", ")}: ${why}. Nothing was run.\n${helpLines([`${GET_TOOL} {"id":"${entry.id}"}`]).join("\n")}` };
   }
   const passed: Record<string, unknown> = { ...given };

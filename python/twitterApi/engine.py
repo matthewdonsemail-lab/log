@@ -22,7 +22,7 @@ from platformKit import reactions
 from platformKit import timing
 
 SECRET_KEYS = ("auth_token", "ct0", "twid", "kdt", "att", "password", "cookie")
-READS = ("ping", "follows", "inbox", "followers", "notifications", "webClient", "xchatContacts", "xchatUnlock", "xchatWatch", "lists")
+READS = ("ping", "follows", "inbox", "followers", "notifications", "postEngagers", "webClient", "xchatContacts", "xchatUnlock", "xchatWatch", "lists")
 WRITES = ("reply", "quote", "like", "repost", "dm", "follow", "post", "react", "listCreate", "listAdd", "xchatVoice")
 ACTIONS = READS + WRITES
 
@@ -221,7 +221,7 @@ def live_operations_of(main_js: str, home_html: str) -> dict[str, Any]:
     return {"operations": operations, "featureValues": values}
 
 
-LIVE_CHUNKS = re.compile(r"DirectMessages|directMessagesData|loader\.MessageHandler|NotificationHandler|bundle\.Notifications|bundle\.Chat\b|XChatEmbed")
+LIVE_CHUNKS = re.compile(r"DirectMessages|directMessagesData|loader\.MessageHandler|NotificationHandler|bundle\.Notifications|bundle\.Chat\b|XChatEmbed|bundle\.TweetActivity")
 
 
 def chunk_urls_of(home_html: str) -> dict[str, str]:
@@ -1104,6 +1104,7 @@ def follower_of(user: Any) -> dict[str, Any]:
         "canDm": bool(getattr(user, "can_dm", False)),
         "protected": bool(getattr(user, "protected", False)),
         "createdAt": getattr(user, "created_at", None),
+        "pictureUrl": getattr(user, "profile_image_url", None),
     }
 
 
@@ -1177,6 +1178,55 @@ async def notifications(client: Any, cookies: dict[str, str], spec: dict[str, An
         held = read_store(path) or {"rows": {}}
         return {**base, "ok": False, "code": "governorBlocked", "detail": f"the governor stopped the notifications read between pages: {e}; {len(held['rows'])} rows are kept"}
     return {**base, "ok": True, "notificationSync": sync}
+
+
+ENGAGER_OPERATIONS = {"like": "Favoriters", "repost": "Retweeters"}
+ENGAGER_NOUNS = {"like": "likers", "repost": "reposters"}
+ENGAGER_CALL_PAGES = 5
+ENGAGER_CALL_PAGES_MAX = 50
+
+
+async def post_engagers(client: Any, cookies: dict[str, str], spec: dict[str, Any], governor: Any) -> dict[str, Any]:
+    from governor import GovernorBlockedError
+    from twikit.client import gql
+    from twikit.errors import TooManyRequests
+
+    from twitterApi.notifications import ENGAGER_PAGE_SIZE, engager_counts, read_store, unroll_engagers
+
+    me = own_user_id(cookies) or ""
+    path = notifications_path(str(spec["account"]))
+    post_id = str(spec["postId"])
+    kind = str(spec["kind"])
+    noun = ENGAGER_NOUNS[kind]
+    operation = ENGAGER_OPERATIONS[kind]
+    base = {"loginState": "loggedIn", "userId": me, "storePath": str(path), "postId": post_id, "kind": kind}
+    if operation not in (gql.LIVE_OPERATIONS.get("operations") or {}):
+        return {**base, "ok": False, "code": "engagersOperationUnknown", "detail": f"X's live {operation} operation isn't in xOperations.json, so the {noun} of post {post_id} weren't asked for and X was not called. Run log twitter session webClient for this account, then read again"}
+    max_pages = max(1, min(int(spec.get("pages") or ENGAGER_CALL_PAGES), ENGAGER_CALL_PAGES_MAX))
+    read = client.get_favoriters if kind == "like" else client.get_retweeters
+
+    async def fetch(cursor: str | None) -> Any:
+        return await read(post_id, ENGAGER_PAGE_SIZE, cursor)
+
+    async def pace() -> None:
+        import random
+        await asyncio.sleep(random.uniform(*READ_SPACING_SECONDS))
+        if governor is not None:
+            governor.before_request(is_mutation=False, quiet=True)
+
+    def log(line: str) -> None:
+        print(f"postEngagers: {line}", file=sys.stderr, flush=True)
+
+    def kept() -> int:
+        return engager_counts(read_store(path) or {"rows": {}}, post_id, kind)["total"]
+
+    try:
+        sync = await unroll_engagers(fetch, pace, path, me, spec.get("screenName"), post_id, kind, max_pages, log)
+    except TooManyRequests as e:
+        return {**base, "ok": False, "code": "rateLimited", "event": "throttled", "detail": f"X answered 429 to a page of the {noun} of post {post_id}: the read stopped there, {kept()} {noun} of it are kept and its place is held ({redact(e, cookies)[:160]})", "rateLimitReset": getattr(e, "rate_limit_reset", None)}
+    except GovernorBlockedError as e:
+        return {**base, "ok": False, "code": "governorBlocked", "detail": f"the governor stopped the read of the {noun} of post {post_id} between pages: {e}; {kept()} {noun} of it are kept and its place is held"}
+    return {**base, "ok": True, "engagerSync": sync}
 
 
 LIVE_WRITER: contextvars.ContextVar[Any] = contextvars.ContextVar("liveWriter", default=None)
@@ -1682,6 +1732,8 @@ def refusal_of(spec: dict[str, Any]) -> dict[str, Any] | None:
         return {"ok": False, "code": "mediaInvalid", "detail": "post: a media file isn't there"}
     if action in ("reply", "quote", "dm", "post") and not str(spec.get("text") or "").strip():
         return {"ok": False, "code": "textMissing", "detail": f"{action} needs its text"}
+    if action == "postEngagers" and not (re.fullmatch(r"\d+", str(spec.get("postId") or "")) and spec.get("kind") in ENGAGER_OPERATIONS):
+        return {"ok": False, "code": "targetMissing", "detail": "postEngagers needs the post's id and a kind of like or repost"}
     if action == "follows" and not spec.get("handles"):
         return {"ok": False, "code": "targetMissing", "detail": "follows needs the handles to check"}
     return None
@@ -1704,6 +1756,8 @@ async def act(client: Any, cookies: dict[str, str], spec: dict[str, Any], govern
         return await followers(client, cookies, max(1, min(int(spec.get("limit") or 200), 4000)))
     if action == "notifications":
         return await notifications(client, cookies, spec, governor)
+    if action == "postEngagers":
+        return await post_engagers(client, cookies, spec, governor)
     if action == "webClient":
         return await web_client(client, spec)
     if action == "xchatContacts":

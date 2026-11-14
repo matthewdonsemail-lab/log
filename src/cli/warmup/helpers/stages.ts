@@ -1,8 +1,8 @@
 import { createActor, fromPromise, toPromise } from "xstate";
 import { FLOWS_DIR, flowFromRecording, loadFlow, pageProblem, readRecordedCommands, saveFlow, writeFlowDoc } from "../../../browser/flow/index.ts";
 import type { ErrorCode } from "../../../errors/catalog/index.ts";
-import { recordAccountIssue } from "../../../marketplace/replacement/index.ts";
-import type { FacebookAccount } from "../../../marketplace/socialAccount/index.ts";
+import { recordAccountIssue } from "../../../facebook/marketplace/replacement/index.ts";
+import type { FacebookAccount } from "../../../platformKit/socialAccount/index.ts";
 import { ACTIVITY_SCRIPTS, appendStageLog, pickActivities, readStageLog, renderStageLogLine, SCRIPTS_IN_ORDER, stageLogPath, warmupMachine } from "../../../facebook/warmup/stages/index.ts";
 import type { ActivityOutcome, StageLogLine, WarmupActivity } from "../../../facebook/warmup/stages/index.ts";
 import { createInspector, formatTraceLine } from "../../../observability/trace/index.ts";
@@ -13,10 +13,10 @@ import type { CommandContext, CommandResult } from "../../runner/types.ts";
 export const stagesDeps = { flowsDir: FLOWS_DIR };
 
 export const STAGES_USAGE = [
-  "       log facebook warmup stages plan",
-  "       log facebook warmup stages record --account <accountName> [--only feedBrowse,marketplaceBrowse] [--likes] [--bypass] [--now]",
-  "       log facebook warmup stages run --account <accountName> [--only …] [--likes] [--gapSeconds <n>] [--bypass] [--now]",
-  "       log facebook warmup stages log [--account <accountName>] [--lines <n>] [--follow [--seconds <n>]]",
+  "       log <platform> warmup stages plan",
+  "       log <platform> warmup stages record --account <accountName> [--only feedBrowse,marketplaceBrowse] [--likes] [--bypass] [--now]",
+  "       log <platform> warmup stages run --account <accountName> [--only …] [--likes] [--gapSeconds <n>] [--bypass] [--now]",
+  "       log <platform> warmup stages log [--account <accountName>] [--lines <n>] [--follow [--seconds <n>]]",
 ].join("\n");
 
 const runName = (dir: string) => dir.split(/[\\/]/).filter(Boolean).pop() ?? dir;
@@ -40,7 +40,7 @@ export async function runStages(context: CommandContext, sub: string | undefined
 
   if (sub === "log") return showStageLog(context, flags);
 
-  if (sub !== "record" && sub !== "run") return { code: 1, stderr: `log facebook warmup stages: pick plan, record, run or log\n${STAGES_USAGE}` };
+  if (sub !== "record" && sub !== "run") return { code: 1, error: "inputInvalid", stderr: `log facebook warmup stages: pick plan, record, run or log\n${STAGES_USAGE}` };
   const picked = pickActivities(typeof flags["only"] === "string" ? flags["only"] : undefined);
   if (!picked.ok) return { code: 1, stderr: `log facebook warmup: ${picked.error}` };
   if (sub === "run") {
@@ -50,7 +50,7 @@ export async function runStages(context: CommandContext, sub: string | undefined
     }
   }
   const gapSeconds = flags["gapSeconds"] === undefined ? 10 : Number(flags["gapSeconds"]);
-  if (!Number.isFinite(gapSeconds) || gapSeconds < 0 || gapSeconds > 36_000) return { code: 1, stderr: "log facebook warmup: --gapSeconds must be 0 to 36000" };
+  if (!Number.isFinite(gapSeconds) || gapSeconds < 0 || gapSeconds > 36_000) return { code: 1, error: "inputInvalid", stderr: "log facebook warmup: --gapSeconds must be 0 to 36000" };
 
   const opened = await openAccount(context, "warmup", STAGES_USAGE, flags["account"], "run", Boolean(flags["bypass"]), true, Boolean(flags["now"]));
   if (!("run" in opened)) return opened;

@@ -140,7 +140,7 @@ describe("settleInBackground", () => {
     const dir = mkdtempSync(join(tmpdir(), "logSettle"));
     try {
       expect(settleInBackground(dir)).toBeNull();
-      const result = await runCapture(["--settle", dir], async () => ({ code: 0, stdout: "", stderr: "" }));
+      const result = await runCapture(["settle", dir], async () => ({ code: 0, stdout: "", stderr: "" }));
       expect(result.code).toBe(0);
       expect(JSON.parse(readFileSync(join(dir, "settle.json"), "utf8"))).toMatchObject({ note: null });
     } finally {

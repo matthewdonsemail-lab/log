@@ -1,7 +1,13 @@
 import { findRedditAccount, recordRedditSession, redditGate } from "../../reddit/account/session/index.ts";
 import type { PlatformAnswer } from "../../platformKit/session/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../runner/helpers/index.ts";
+import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuse, refuseError, refuseGated, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandInput, FlagSpec } from "../runner/types.ts";
+import { watermarkLine, watermarkReadingOf } from "../../twitter/copy/watermark/index.ts";
+import { gateDeps } from "../twitter/helpers/voice.ts";
+import { guardSend } from "../../inbox/claims/index.ts";
+import type { SendGuard } from "../../inbox/claims/index.ts";
+import { confirmAnswer, rethrowFailure, runAction } from "../../platformKit/action/index.ts";
+import type { PlatformEngineRun } from "../../platformKit/session/index.ts";
 
 export const REDDIT_SESSION_USAGE = [
   "Usage: log reddit session check --account <accountName> [--json]",
@@ -38,10 +44,10 @@ export const redditSessionCommand: Command = {
   args: "check --account <a> [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(REDDIT_SESSION_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log reddit session: ${parsed.error}\n${REDDIT_SESSION_USAGE}` };
+    if (!parsed.ok) return refuseInput("reddit session", parsed.error, REDDIT_SESSION_USAGE);
     if (parsed.positionals[0] !== "check" || parsed.positionals.length > 1) return { code: 1, stderr: `log reddit session: give check\n${REDDIT_SESSION_USAGE}` };
     const ref = parsed.flags["account"];
-    if (typeof ref !== "string") return { code: 1, stderr: `log reddit session check: --account is needed\n${REDDIT_SESSION_USAGE}` };
+    if (typeof ref !== "string") return { code: 1, error: "inputInvalid", stderr: `log reddit session check: --account is needed\n${REDDIT_SESSION_USAGE}` };
     try {
       const account = await findRedditAccount(context.twenty, ref);
       const gate = redditGate(account);
@@ -91,7 +97,7 @@ export const REDDIT_READ_INPUT: CommandInput = {
       flags: [
         REDDIT_ACCOUNT_FLAG,
         { name: "subreddit", kind: "string", required: true, description: "The subreddit, with or without r/" },
-        { name: "days", kind: "string", description: "How many days back, default 7" },
+        { name: "days", kind: "number", max: 365, description: "How many days back, default 7, at most 365" },
         { name: "linksTo", kind: "string", description: "Keep only posts linking to this host (github.com), ranked by score then comments" },
         JSON_FLAG,
       ],
@@ -109,7 +115,7 @@ export const REDDIT_READ_INPUT: CommandInput = {
       flags: [
         REDDIT_ACCOUNT_FLAG,
         { name: "url", kind: "string", required: true, description: "The post's link (its permalink)" },
-        { name: "limit", kind: "string", description: "How many comments, default 50" },
+        { name: "limit", kind: "integer", min: 1, max: 500, description: "How many comments, default 50, at most 500" },
         JSON_FLAG,
       ],
     },
@@ -171,17 +177,18 @@ export const redditReadCommand: Command = {
   usage: REDDIT_READ_USAGE,
   platform: "reddit",
   name: "read",
+  longRunning: true,
   effect: "read",
   input: REDDIT_READ_INPUT,
   summary: "Find subreddits, and read a subreddit's newest posts with their links, through the account's direct-API engine",
   args: "subreddits --account <a> --query <words> | posts --account <a> --subreddit <name> [--days <n>] [--linksTo <host>] [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(REDDIT_READ_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log reddit read: ${parsed.error}\n${REDDIT_READ_USAGE}` };
+    if (!parsed.ok) return refuseInput("reddit read", parsed.error, REDDIT_READ_USAGE);
     const form = parsed.positionals[0];
     if (!["subreddits", "posts", "home", "post"].includes(form ?? "") || parsed.positionals.length > 1) return { code: 1, stderr: `log reddit read: give subreddits, posts, home or post\n${REDDIT_READ_USAGE}` };
     const ref = parsed.flags["account"];
-    if (typeof ref !== "string") return { code: 1, stderr: `log reddit read: --account is needed\n${REDDIT_READ_USAGE}` };
+    if (typeof ref !== "string") return { code: 1, error: "inputInvalid", stderr: `log reddit read: --account is needed\n${REDDIT_READ_USAGE}` };
     const json = Boolean(parsed.flags["json"]);
     try {
       const account = await findRedditAccount(context.twenty, ref);
@@ -191,7 +198,7 @@ export const redditReadCommand: Command = {
       const now = context.now?.() ?? new Date();
       if (form === "subreddits") {
         const query = parsed.flags["query"];
-        if (typeof query !== "string" || !query.trim()) return { code: 1, stderr: `log reddit read subreddits: --query is needed\n${REDDIT_READ_USAGE}` };
+        if (typeof query !== "string" || !query.trim()) return { code: 1, error: "inputInvalid", stderr: `log reddit read subreddits: --query is needed\n${REDDIT_READ_USAGE}` };
         context.err(`${account.accountName}: looking up subreddits for "${query}"`);
         const run = context.directReddit(account, { action: "subreddits", query });
         for (const line of await recordRedditSession(context.twenty, account, run, now)) context.err(line);
@@ -213,10 +220,8 @@ export const redditReadCommand: Command = {
       }
       if (form === "post") {
         const url = parsed.flags["url"];
-        if (typeof url !== "string" || !url.trim()) return { code: 1, stderr: `log reddit read post: --url is needed\n${REDDIT_READ_USAGE}` };
-        const limitFlag = parsed.flags["limit"];
-        const limit = typeof limitFlag === "string" ? Number(limitFlag) : 50;
-        if (!Number.isInteger(limit) || limit < 1 || limit > 500) return { code: 1, stderr: "log reddit read post: --limit is a number of comments, 1 to 500" };
+        if (typeof url !== "string" || !url.trim()) return { code: 1, error: "inputInvalid", stderr: `log reddit read post: --url is needed\n${REDDIT_READ_USAGE}` };
+        const limit = numberOf(parsed, "limit") ?? 50;
         context.err(`${account.accountName}: reading ${url} and its comments`);
         const run = context.directReddit(account, { action: "post", url, limit });
         for (const line of await recordRedditSession(context.twenty, account, run, now)) context.err(line);
@@ -238,10 +243,9 @@ export const redditReadCommand: Command = {
         };
       }
       const subreddit = parsed.flags["subreddit"];
-      if (typeof subreddit !== "string" || !subreddit.trim()) return { code: 1, stderr: `log reddit read posts: --subreddit is needed\n${REDDIT_READ_USAGE}` };
-      const daysFlag = parsed.flags["days"];
-      const days = typeof daysFlag === "string" ? Number(daysFlag) : 7;
-      if (!Number.isFinite(days) || days <= 0 || days > 365) return { code: 1, stderr: "log reddit read posts: --days is a number of days, 1 to 365" };
+      if (typeof subreddit !== "string" || !subreddit.trim()) return { code: 1, error: "inputInvalid", stderr: `log reddit read posts: --subreddit is needed\n${REDDIT_READ_USAGE}` };
+      const days = numberOf(parsed, "days") ?? 7;
+      if (days <= 0) return { code: 1, stderr: "log reddit read posts: --days is a number of days, 1 to 365" };
       const linksTo = parsed.flags["linksTo"];
       const host = typeof linksTo === "string" && linksTo.trim() ? linksTo.trim() : undefined;
       context.err(`${account.accountName}: reading r/${subreddit}'s newest posts back ${days} days`);
@@ -265,10 +269,10 @@ export const redditReadCommand: Command = {
   },
 };
 
-const APPROVED_BY_FLAG: FlagSpec = { name: "approvedBy", kind: "string", description: "Who approved it: needed with --live (rule 8)" };
+const APPROVED_BY_FLAG: FlagSpec = { name: "approvedBy", kind: "string", approval: true, description: "Who approved it: needed with --live (rule 8)" };
 
 function liveFlag(what: string): FlagSpec {
-  return { name: "live", kind: "boolean", live: true, description: `${what} on Reddit, only when matt asked (rule 8); without it a dry run sends nothing` };
+  return { name: "live", kind: "boolean", live: true, description: `${what} on Reddit, only when the owner asked (rule 8); without it a dry run sends nothing` };
 }
 
 interface RedditWrite {
@@ -281,6 +285,7 @@ interface RedditWrite {
   spec: (flags: Record<string, unknown>) => { fields: Record<string, unknown> } | { error: string };
   plan: (fields: Record<string, unknown>) => string;
   done: (answer: Record<string, unknown>) => string;
+  copy?: (fields: Record<string, unknown>) => { text: string; chat: string };
 }
 
 function text(flags: Record<string, unknown>, name: string): string {
@@ -300,15 +305,18 @@ function redditWriteCommand(write: RedditWrite): Command {
     async run(context, argv) {
       const parsed = parseArgs(argv, parserSpecOf(write.input));
       if (!parsed.ok) return { code: 1, stderr: `log reddit ${write.name}: ${parsed.error}\n${write.usage}` };
-      if (parsed.positionals.length) return { code: 1, stderr: `log reddit ${write.name}: takes no words, only flags\n${write.usage}` };
+      if (parsed.positionals.length) return { code: 1, error: "inputInvalid", stderr: `log reddit ${write.name}: takes no words, only flags\n${write.usage}` };
       const ref = text(parsed.flags, "account");
-      if (!ref) return { code: 1, stderr: `log reddit ${write.name}: --account is needed\n${write.usage}` };
+      if (!ref) return { code: 1, error: "inputInvalid", stderr: `log reddit ${write.name}: --account is needed\n${write.usage}` };
       const built = write.spec(parsed.flags);
       if ("error" in built) return { code: 1, stderr: `log reddit ${write.name}: ${built.error}\n${write.usage}` };
       const live = parsed.flags["live"] === true;
       const approvedBy = text(parsed.flags, "approvedBy");
       if (live && !approvedBy) return refuse(`reddit ${write.name}`, "notApproved", "--live needs --approvedBy <who> (rule 8)");
       const json = Boolean(parsed.flags["json"]);
+      const copy = write.copy?.(built.fields) ?? null;
+      const watermark = copy ? watermarkReadingOf(copy.text) : null;
+      if (watermark?.level === "artifacts") return refuse(`reddit ${write.name}`, "aiArtifacts", `the copy carries what AI chat interfaces leave in text: ${watermark.findings.filter((f) => f.deterministic).map((f) => `${f.label} ×${f.count}`).join(", ")}`);
       try {
         const account = await findRedditAccount(context.twenty, ref);
         const gate = redditGate(account);
@@ -319,8 +327,32 @@ function redditWriteCommand(write: RedditWrite): Command {
           return { code: 0, stdout: `log reddit ${write.name}: dry run: ${account.accountName} would ${plan}. Nothing was sent. --live --approvedBy <who> does it (rule 8).` };
         }
         if (!context.directReddit) return { code: 1, stderr: `log reddit ${write.name}: the direct-API engine isn't wired in this context` };
-        context.err(`${account.accountName}: ${plan}, approved by ${approvedBy}, on the direct-API engine`);
-        const run = context.directReddit(account, { action: write.action, live: true, approvedBy, ...built.fields });
+        if (watermark) context.err(`${account.accountName}: ${watermarkLine(watermark)}`);
+        const engine = context.directReddit;
+        let guard: SendGuard | null = null;
+        const acted = await runAction<null, PlatformEngineRun>({
+          gate: async () => {
+            if (!copy) return { ok: true, held: null };
+            const voiced = await gateDeps.gate(context, { platform: "reddit", account: account.accountName, to: copy.chat, text: copy.text, conversationId: copy.chat });
+            if (!voiced.ok) return { ok: false, code: "voiceGateFailed", detail: voiced.refused };
+            context.err(voiced.line);
+            const claimed = guardSend({ platform: "reddit", account: account.accountName, conversationId: copy.chat });
+            if (!claimed.ok) return { ok: false, code: "chatClaimedElsewhere", detail: claimed.refused };
+            guard = claimed;
+            if (claimed.part(0, copy.text) === "lost") return { ok: false, code: "chatClaimLost", detail: "the claim on this thread was lost before it was sent, so nothing was sent" };
+            return { ok: true, held: null };
+          },
+          act: async () => {
+            context.err(`${account.accountName}: ${plan}, approved by ${approvedBy}, on the direct-API engine`);
+            return engine(account, { action: write.action, live: true, approvedBy, ...built.fields });
+          },
+          confirm: (run) => confirmAnswer(run.answer),
+        });
+        const held = guard as SendGuard | null;
+        if (held?.ok) held.done(acted.outcome === "done" ? "sent" : "failed", copy ? copy.text.slice(0, 300) : undefined);
+        if (acted.stage === "gating") return refuseGated(`reddit ${write.name}`, acted, "voiceGateFailed");
+        rethrowFailure(acted);
+        const run = acted.answer!;
         for (const line of await recordRedditSession(context.twenty, account, run, context.now?.() ?? new Date())) context.err(line);
         const answer = run.answer as typeof run.answer & Record<string, unknown>;
         if (!answer.ok) return { code: 1, stderr: `log reddit ${write.name}: ${answer.code}: ${answer.detail ?? ""}. Nothing is retried (rule 94).` };
@@ -365,6 +397,7 @@ export const redditPostCommand = redditWriteCommand({
   usage: REDDIT_POST_USAGE,
   input: REDDIT_POST_INPUT,
   summary: "Post a text post to a subreddit through the account's direct-API engine; a dry run unless --live",
+  copy: (fields) => ({ text: [fields.title, fields.text].filter((part) => typeof part === "string" && part).join("\n"), chat: `r/${String(fields.subreddit)}` }),
   args: "--account <a> --subreddit <name> --title <title> [--text <markdown>] [--flair <flair>] [--approvedBy <who>] [--live] [--json]",
   spec: (flags) => {
     const subreddit = text(flags, "subreddit").replace(/^\/?r\//, "");
@@ -410,6 +443,7 @@ export const redditReplyCommand = redditWriteCommand({
   usage: REDDIT_REPLY_USAGE,
   input: REDDIT_REPLY_INPUT,
   summary: "Comment on a Reddit post or reply to one of its comments through the account's direct-API engine; a dry run unless --live",
+  copy: (fields) => ({ text: String(fields.text ?? ""), chat: String(fields.commentId || fields.url) }),
   args: "--account <a> --url <permalink> --text <text> [--comment <t1_id>] [--approvedBy <who>] [--live] [--json]",
   spec: (flags) => {
     const url = text(flags, "url");
@@ -441,12 +475,13 @@ const REDDIT_VOTE_INPUT: CommandInput = {
       flags: [
         REDDIT_ACCOUNT_FLAG,
         { name: "url", kind: "string", description: "The post's link (its permalink), to vote on the post" },
-        { name: "target", kind: "string", description: "A post (t3_…) or comment (t1_…) id, instead of --url" },
+        { name: "target", kind: "string", pattern: "^[tT][13]_[a-zA-Z0-9]+$", takes: "a t3_ post or t1_ comment id", description: "A post (t3_…) or comment (t1_…) id, instead of --url" },
         { name: "direction", kind: "enum", values: ["up", "down", "none"], description: "up (the default), down, or none to take a vote back" },
         APPROVED_BY_FLAG,
         liveFlag("Vote"),
         JSON_FLAG,
       ],
+      groups: [{ rule: "atLeastOne", names: ["url", "target"] }],
     },
   ],
 };

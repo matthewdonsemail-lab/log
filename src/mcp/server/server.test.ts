@@ -2,13 +2,14 @@ import { describe, expect, test } from "bun:test";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { COMMANDS } from "../../cli/runner/index.ts";
+import { toolBaseName } from "../../cli/runner/helpers/platforms.ts";
 import { marketplaceFixture } from "../../twenty/graphql/index.ts";
 import { mkdtempSync, readFileSync, readdirSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import type { WorkerClient } from "../../camofox/worker/index.ts";
 import { emitLog } from "../../observability/processLog/index.ts";
-import { commandTools, createLogMcpServer, formatLogLine, guardCall, parseEnvText, runToolCall, savedFlows, TERMINAL_ONLY, toolsFromCommands, toolsFromFlows } from "./index.ts";
+import { commandTools, createLogMcpServer, formatLogLine, guardCall, parseEnvText, runToolCall, savedFlows, toolsFromCommands, toolsFromFlows } from "./index.ts";
 import { readJob } from "../jobs/index.ts";
 
 async function connected() {
@@ -26,11 +27,13 @@ function textOf(result: Awaited<ReturnType<Client["callTool"]>>): string {
 describe("toolsFromCommands", () => {
   test("every command has a tool except the terminal-only ones, one per form when it declares its input", () => {
     const entries = commandTools(COMMANDS);
-    for (const command of COMMANDS) expect(entries.some((t) => t.command === command)).toBe(!(command.name in TERMINAL_ONLY));
+    for (const command of COMMANDS) expect(entries.some((t) => t.command === command)).toBe(!command.terminalOnly);
     const names = toolsFromCommands(COMMANDS).map((tool) => tool.name);
-    expect(names).toEqual(expect.arrayContaining(["publish", "publishLive", "connect", "inspectStart", "inspectDo", "inspectDoLive", "hostStartLive", "joinLive", "warmupLive", "accountShow", "runsPrune", "listing", "listingCreate"]));
-    expect(names).not.toContain("accountsLive");
-    expect(names).not.toContain("connectLive");
+    expect(names).toEqual(expect.arrayContaining(["facebookPublish", "facebookPublishLive", "facebookConnect", "inspectStart", "inspectDo", "inspectDoLive", "facebookHostStartLive", "facebookJoinGroupLive", "warmupLive", "facebookAccountShow", "runsPrune", "facebookListing", "facebookListingCreate"]));
+    expect(names).not.toContain("facebookAccountsLive");
+    expect(names).not.toContain("accounts");
+    expect(names).not.toContain("check");
+    expect(names).not.toContain("facebookConnectLive");
     expect(names).not.toContain("launch");
     expect(names).not.toContain("inspect");
     expect(new Set(names).size).toBe(names.length);
@@ -49,10 +52,10 @@ describe("toolsFromCommands", () => {
     const stepLive = tools.find((t) => t.name === "inspectDoLive")!;
     expect(stepLive.inputSchema.properties).not.toHaveProperty("live");
     expect(stepLive.inputSchema.required).toEqual(["action", "confirmLive"]);
-    const hostLive = tools.find((t) => t.name === "hostStartLive")!;
+    const hostLive = tools.find((t) => t.name === "facebookHostStartLive")!;
     expect(Object.keys(hostLive.inputSchema.properties)).toEqual(expect.arrayContaining(["live", "likes", "confirmLive"]));
-    expect(tools.find((t) => t.name === "accounts")!.inputSchema.properties).not.toHaveProperty("confirmLive");
-    for (const tool of tools.filter((t) => t.name !== "campaign" && "args" in t.inputSchema.properties)) expect(COMMANDS.find((c) => c.name === tool.name)?.input).toBeUndefined();
+    expect(tools.find((t) => t.name === "facebookAccounts")!.inputSchema.properties).not.toHaveProperty("confirmLive");
+    for (const tool of tools.filter((t) => t.name !== "facebookCampaign" && "args" in t.inputSchema.properties)) expect(COMMANDS.find((c) => toolBaseName(c) === tool.name)?.input).toBeUndefined();
   });
 });
 
@@ -91,10 +94,10 @@ describe("annotations and live tools", () => {
 
   test("reads are read-only, a browser on Facebook is open-world, a prune is destructive", () => {
     const of = (name: string) => tools.find((t) => t.name === name)!.annotations;
-    expect(of("accounts")).toMatchObject({ readOnlyHint: true, destructiveHint: false, openWorldHint: false });
-    expect(of("accountShow")).toMatchObject({ readOnlyHint: true });
-    expect(of("accountStatus")).toMatchObject({ readOnlyHint: false, destructiveHint: false, openWorldHint: false });
-    expect(of("check")).toMatchObject({ readOnlyHint: false, destructiveHint: false, openWorldHint: true });
+    expect(of("facebookAccounts")).toMatchObject({ readOnlyHint: true, destructiveHint: false, openWorldHint: false });
+    expect(of("facebookAccountShow")).toMatchObject({ readOnlyHint: true });
+    expect(of("facebookAccountStatus")).toMatchObject({ readOnlyHint: false, destructiveHint: false, openWorldHint: false });
+    expect(of("facebookCheck")).toMatchObject({ readOnlyHint: false, destructiveHint: false, openWorldHint: true });
     expect(of("inspectDo")).toMatchObject({ readOnlyHint: false, destructiveHint: false, openWorldHint: true });
     expect(of("runsPrune")).toMatchObject({ readOnlyHint: false, destructiveHint: true });
     expect(of("runsList")).toMatchObject({ readOnlyHint: true });
@@ -103,22 +106,22 @@ describe("annotations and live tools", () => {
 
 describe("guardCall", () => {
   test("live needs confirmLive, on typed and args tools alike", () => {
-    expect(guardCall("publish", { listing: "a", live: true }, COMMANDS)).toEqual({ ok: false, message: "publish never acts on Facebook: live is `publishLive`, only when matt asked (rule 8)" });
-    expect(guardCall("publishLive", { listing: "a" }, COMMANDS).ok).toBe(false);
-    expect(guardCall("campaign", { args: ["run", "--campaign", "c", "--live=true"] }, COMMANDS).ok).toBe(false);
-    expect(guardCall("publishLive", { listing: "a", confirmLive: true }, COMMANDS)).toEqual({ ok: true, argv: ["facebook", "publish", "--listing=a", "--live"] });
-    expect(guardCall("publishLive", { listing: "a", live: true, confirmLive: true }, COMMANDS)).toEqual({ ok: true, argv: ["facebook", "publish", "--listing=a", "--live"] });
+    expect(guardCall("facebookPublish", { listing: "a", live: true }, COMMANDS)).toEqual({ ok: false, code: "inputInvalid", message: "facebookPublish never acts on Facebook: live is `facebookPublishLive`, only when the owner asked (rule 8)" });
+    expect(guardCall("facebookPublishLive", { listing: "a" }, COMMANDS).ok).toBe(false);
+    expect(guardCall("facebookCampaign", { args: ["run", "--campaign", "c", "--live=true"] }, COMMANDS).ok).toBe(false);
+    expect(guardCall("facebookPublishLive", { listing: "a", confirmLive: true }, COMMANDS)).toEqual({ ok: true, argv: ["facebook", "publish", "--listing=a", "--live"] });
+    expect(guardCall("facebookPublishLive", { listing: "a", live: true, confirmLive: true }, COMMANDS)).toEqual({ ok: true, argv: ["facebook", "publish", "--listing=a", "--live"] });
     expect(guardCall("inspectDoLive", { action: "click", values: ["e12"] }, COMMANDS).ok).toBe(false);
-    expect(guardCall("hostStartLive", { account: "a", confirmLive: true }, COMMANDS).ok).toBe(false);
-    expect(guardCall("hostStartLive", { account: "a", likes: true, confirmLive: true }, COMMANDS)).toEqual({ ok: true, argv: ["facebook", "host", "start", "--account=a", "--likes"] });
+    expect(guardCall("facebookHostStartLive", { account: "a", confirmLive: true }, COMMANDS).ok).toBe(false);
+    expect(guardCall("facebookHostStartLive", { account: "a", likes: true, confirmLive: true }, COMMANDS)).toEqual({ ok: true, argv: ["facebook", "host", "start", "--account=a", "--likes"] });
     expect(guardCall("warmup", { args: ["facebook", "reel", "run", "--account", "a", "--likes"] }, COMMANDS).ok).toBe(false);
     expect(guardCall("warmupLive", { args: ["facebook", "reel", "run", "--account", "a"], confirmLive: true }, COMMANDS).ok).toBe(false);
-    expect(guardCall("warmupLive", { args: ["facebook", "reel", "run", "--account", "a", "--likes"], confirmLive: true }, COMMANDS)).toEqual({ ok: true, argv: ["facebook", "warmup", "reel", "run", "--account", "a", "--likes"] });
+    expect(guardCall("warmupLive", { args: ["facebook", "reel", "run", "--account", "a", "--likes"], confirmLive: true }, COMMANDS)).toMatchObject({ ok: true, argv: ["facebook", "warmup", "reel", "run", "--account", "a", "--likes"] });
   });
 
   test("bypass needs confirmBypass", () => {
-    expect(guardCall("check", { account: "a", bypass: true }, COMMANDS).ok).toBe(false);
-    expect(guardCall("check", { account: "a", bypass: true, confirmBypass: true }, COMMANDS)).toEqual({ ok: true, argv: ["facebook", "check", "--account=a", "--bypass"] });
+    expect(guardCall("facebookCheck", { account: "a", bypass: true }, COMMANDS).ok).toBe(false);
+    expect(guardCall("facebookCheck", { account: "a", bypass: true, confirmBypass: true }, COMMANDS)).toEqual({ ok: true, argv: ["facebook", "check", "--account=a", "--bypass"] });
   });
 
   test("a typed call becomes the argv the terminal would run, each value whole", () => {
@@ -126,30 +129,33 @@ describe("guardCall", () => {
       ok: true,
       argv: ["inspect", "do", "type", "e7", "Full house clear-out, \"everything\" = gone\nSame day", "--live"],
     });
-    expect(guardCall("accountStatus", { account: "bethlehem", status: "PAUSED", reason: "setByHand" }, COMMANDS)).toEqual({ ok: true, argv: ["facebook", "account", "status", "bethlehem", "PAUSED", "--reason=setByHand"] });
-    expect(guardCall("runsPrune", { apply: true }, COMMANDS)).toEqual({ ok: true, argv: ["runs", "prune", "--apply"] });
+    expect(guardCall("facebookAccountStatus", { account: "bethlehem", status: "PAUSED", reason: "setByHand" }, COMMANDS)).toEqual({ ok: true, argv: ["facebook", "account", "status", "bethlehem", "PAUSED", "--reason=setByHand"] });
+    expect(guardCall("runsPrune", { apply: true }, COMMANDS)).toMatchObject({ ok: false, code: "inputInvalid" });
+    expect(guardCall("runsPruneLive", { confirmLive: true }, COMMANDS)).toEqual({ ok: true, argv: ["runs", "prune", "--apply"] });
     expect(guardCall("inspectStart", { account: "a", detach: true, proxyMs: 4000 }, COMMANDS)).toEqual({ ok: true, argv: ["inspect", "start", "--account=a", "--detach", "--proxyMs=4000"] });
   });
 
   test("a typed call with a missing, unknown or wrong field never runs", () => {
-    expect(guardCall("check", {}, COMMANDS)).toEqual({ ok: false, message: "check: account is needed" });
-    expect(guardCall("check", { account: "a", bogus: 1 }, COMMANDS)).toEqual({ ok: false, message: 'check: unknown field "bogus"' });
-    expect(guardCall("accountStatus", { account: "a", status: "NOPE" }, COMMANDS).ok).toBe(false);
+    expect(guardCall("facebookCheck", {}, COMMANDS)).toEqual({ ok: false, code: "inputInvalid", message: "facebookCheck: account is needed" });
+    expect(guardCall("facebookCheck", { account: "a", bogus: 1 }, COMMANDS)).toEqual({ ok: false, code: "inputInvalid", message: 'facebookCheck: unknown field "bogus"' });
+    expect(guardCall("facebookAccountStatus", { account: "a", status: "NOPE" }, COMMANDS).ok).toBe(false);
     expect(guardCall("inspectDo", { action: "teleport" }, COMMANDS).ok).toBe(false);
-    expect(guardCall("hostStart", { account: "a", gapSeconds: "5" }, COMMANDS).ok).toBe(false);
-    expect(guardCall("listings", { args: ["--json"] }, COMMANDS).ok).toBe(false);
+    expect(guardCall("facebookHostStart", { account: "a", gapSeconds: "five" }, COMMANDS).ok).toBe(false);
+    expect(guardCall("facebookListings", { args: ["--json"] }, COMMANDS).ok).toBe(false);
   });
 
   test("connect always runs --noPrompt, so it never reads the MCP channel", () => {
-    expect(guardCall("connect", { args: ["--account", "x"] }, COMMANDS)).toEqual({ ok: true, argv: ["facebook", "connect", "--account", "x", "--noPrompt"] });
-    expect(guardCall("connect", { args: ["--account", "x", "--noPrompt"] }, COMMANDS)).toEqual({ ok: true, argv: ["facebook", "connect", "--account", "x", "--noPrompt"] });
+    expect(guardCall("facebookConnect", { args: ["--account", "x"] }, COMMANDS)).toMatchObject({ ok: true, argv: ["facebook", "connect", "--account", "x", "--noPrompt"] });
+    expect(guardCall("facebookConnect", { account: "x" }, COMMANDS)).toEqual({ ok: true, argv: ["facebook", "connect", "--account=x", "--noPrompt"] });
+    expect(guardCall("facebookConnect", { account: "x", noPrompt: true }, COMMANDS)).toEqual({ ok: true, argv: ["facebook", "connect", "--account=x", "--noPrompt"] });
+    expect(guardCall("facebookConnect", { args: ["--account", "x", "--noPrompt"] }, COMMANDS)).toMatchObject({ ok: true, argv: ["facebook", "connect", "--account", "x", "--noPrompt"] });
   });
 
   test("terminal-only, unknown and malformed calls are refused", () => {
     expect(guardCall("launch", {}, COMMANDS).ok).toBe(false);
     expect(guardCall("bogus", {}, COMMANDS).ok).toBe(false);
-    expect(guardCall("connect", { args: [1 as unknown as string] }, COMMANDS).ok).toBe(false);
-    expect(guardCall("listings", undefined, COMMANDS)).toEqual({ ok: true, argv: ["facebook", "listings"] });
+    expect(guardCall("facebookConnect", { args: [1 as unknown as string] }, COMMANDS).ok).toBe(false);
+    expect(guardCall("facebookListings", undefined, COMMANDS)).toEqual({ ok: true, argv: ["facebook", "listings"] });
   });
 });
 
@@ -163,13 +169,13 @@ describe("log MCP server", () => {
   test("lists the tools over MCP", async () => {
     const client = await connected();
     const { tools } = await client.listTools();
-    expect(tools.map((tool) => tool.name)).toContain("listings");
-    expect(tools.find((tool) => tool.name === "publish")?.description).toContain("dry run unless --live");
+    expect(tools.map((tool) => tool.name)).toContain("facebookListings");
+    expect(tools.find((tool) => tool.name === "facebookPublish")?.description).toContain("dry run unless --live");
   });
 
   test("runs a command against Twenty and returns its output", async () => {
     const client = await connected();
-    const result = await client.callTool({ name: "listings", arguments: { json: true } });
+    const result = await client.callTool({ name: "facebookListings", arguments: { json: true } });
     expect(result.isError).toBe(false);
     expect((result.structuredContent as { json: { listings: unknown[] } }).json.listings).toHaveLength(8);
     expect(textOf(result).startsWith("Browsers: none open.\n")).toBe(true);
@@ -178,7 +184,7 @@ describe("log MCP server", () => {
 
   test("a failing command is an error result with its stderr", async () => {
     const client = await connected();
-    const result = await client.callTool({ name: "listings", arguments: { campaign: "nope" } });
+    const result = await client.callTool({ name: "facebookListings", arguments: { campaign: "nope" } });
     expect(result.isError).toBe(false);
     const refused = await client.callTool({ name: "errors", arguments: { code: "notACode" } });
     expect(refused.isError).toBe(true);
@@ -187,7 +193,7 @@ describe("log MCP server", () => {
 
   test("a live publish without confirmLive never reaches the command", async () => {
     const client = await connected();
-    const result = await client.callTool({ name: "publishLive", arguments: { listing: "x" } });
+    const result = await client.callTool({ name: "facebookPublishLive", arguments: { listing: "x" } });
     expect(result.isError).toBe(true);
     expect(textOf(result)).toContain("confirmLive");
   });
@@ -203,12 +209,12 @@ describe("live logs", () => {
       return doctorReply;
     }) as unknown as WorkerClient;
     const seen: string[] = [];
-    const result = await runToolCall("doctor", { args: ["--json"] }, { twenty: marketplaceFixture(), worker }, (tool, stream, line) => seen.push(`${tool} ${stream} ${line}`));
+    const result = await runToolCall("facebookDoctor", { args: ["--json"] }, { twenty: marketplaceFixture(), worker }, (tool, stream, line) => seen.push(`${tool} ${stream} ${line}`));
     const text = (result.content as { text: string }[])[0].text;
     expect(text).toContain("log:\nOpening Camoufox through the proxy\nAuto-login: typed the email and password (try 1).");
-    expect(seen[0]).toMatch(/^doctor out ▶ log facebook doctor --json  \(job job\w+\)  \(call [0-9a-f]{12}\)$/);
-    expect(seen).toContain("doctor worker Auto-login: typed the email and password (try 1).");
-    expect(seen.at(-1)).toMatch(/^doctor out ■ exit 0 in [\d.]+ m?s \(call [0-9a-f]{12}: timing \{ call: "[0-9a-f]{12}" \} shows where the time went\)$/);
+    expect(seen[0]).toMatch(/^facebookDoctor out ▶ log facebook doctor --json  \(job job\w+\)  \(call [0-9a-f]{12}\)$/);
+    expect(seen).toContain("facebookDoctor worker Auto-login: typed the email and password (try 1).");
+    expect(seen.at(-1)).toMatch(/^facebookDoctor out ■ exit 0 in [\d.]+ m?s \(call [0-9a-f]{12}: timing \{ call: "[0-9a-f]{12}" \} shows where the time went\)$/);
   });
 
   test("a call the client cancelled runs to its end, says so, and keeps its answer as a job", async () => {
@@ -236,12 +242,12 @@ describe("live logs", () => {
       const client = new Client({ name: "test", version: "0.0.0" });
       const [clientSide, serverSide] = InMemoryTransport.createLinkedPair();
       await Promise.all([server.connect(serverSide), client.connect(clientSide)]);
-      await client.callTool({ name: "doctor", arguments: { args: ["--json"] } });
+      await client.callTool({ name: "facebookDoctor", arguments: { args: ["--json"] } });
       const [file] = readdirSync(dir);
       expect(file).toMatch(/^\d{4}-\d{2}-\d{2}\.log$/);
       const lines = readFileSync(join(dir, file), "utf8");
-      expect(lines).toContain("doctor worker | Logged in.");
-      expect(lines).toContain("doctor out    | ■ exit 0 in ");
+      expect(lines).toContain("facebookDoctor worker | Logged in.");
+      expect(lines).toContain("facebookDoctor out    | ■ exit 0 in ");
     } finally {
       rmSync(dir, { recursive: true, force: true });
     }
@@ -255,16 +261,16 @@ describe("live logs", () => {
 describe("readMembers", () => {
   test("is its own tool with named fields, no live twin, and bypass needs confirmBypass", () => {
     const names = toolsFromCommands(COMMANDS).map((t) => t.name);
-    expect(names).toContain("readMembers");
-    expect(names).toContain("readGroup");
-    expect(names).toContain("readGroupLive");
+    expect(names).toContain("facebookReadMembers");
+    expect(names).toContain("facebookReadGroup");
+    expect(names).toContain("facebookReadGroupLive");
     expect(names).not.toContain("readMembersLive");
-    const tool = toolsFromCommands(COMMANDS).find((t) => t.name === "readMembers")!;
+    const tool = toolsFromCommands(COMMANDS).find((t) => t.name === "facebookReadMembers")!;
     expect(tool.inputSchema.required).toEqual(["account", "group", "count"]);
     expect(Object.keys(tool.inputSchema.properties)).toEqual(expect.arrayContaining(["secondsPerScroll", "maxScrolls", "owners", "bypass", "confirmBypass", "waitMs"]));
-    expect(guardCall("readMembers", { account: "a", group: "junkremovalwinners", count: 30, secondsPerScroll: 10 }, COMMANDS)).toEqual({ ok: true, argv: ["facebook", "read", "members", "--account=a", "--group=junkremovalwinners", "--count=30", "--secondsPerScroll=10"] });
-    expect(guardCall("readMembers", { account: "a", group: "g", count: 30, bypass: true }, COMMANDS).ok).toBe(false);
-    expect(guardCall("readMembers", { account: "a", group: "g", count: 30, bypass: true, confirmBypass: true }, COMMANDS).ok).toBe(true);
-    expect(guardCall("readMembers", { account: "a", group: "g", count: 30, live: true }, COMMANDS).ok).toBe(false);
+    expect(guardCall("facebookReadMembers", { account: "a", group: "junkremovalwinners", count: 30, secondsPerScroll: 10 }, COMMANDS)).toEqual({ ok: true, argv: ["facebook", "read", "members", "--account=a", "--group=junkremovalwinners", "--count=30", "--secondsPerScroll=10"] });
+    expect(guardCall("facebookReadMembers", { account: "a", group: "g", count: 30, bypass: true }, COMMANDS).ok).toBe(false);
+    expect(guardCall("facebookReadMembers", { account: "a", group: "g", count: 30, bypass: true, confirmBypass: true }, COMMANDS).ok).toBe(true);
+    expect(guardCall("facebookReadMembers", { account: "a", group: "g", count: 30, live: true }, COMMANDS).ok).toBe(false);
   });
 });

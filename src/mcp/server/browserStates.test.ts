@@ -26,7 +26,7 @@ describe("where every open browser is, in every tool result (rules 54-55)", () =
 
   test("Messenger's Create PIN runs the recorded flow when the PIN is in Twenty, and is matt's when it isn't", () => {
     const text = "- heading \"Create a PIN to access your chats on any device\" [ref=e3]";
-    expect(browserView(at("https://www.facebook.com/messages/", text, { messengerPin: true })).next).toEqual({ tool: "flowMessengerPinCreateLive", input: { account: "bethlehem", confirmLive: true } });
+    expect(browserView(at("https://www.facebook.com/messages/", text, { messengerPin: true })).next).toEqual({ tool: "facebookFlowMessengerPinCreateLive", input: { account: "bethlehem", confirmLive: true } });
     const without = browserView(at("https://www.facebook.com/messages/", text));
     expect(without.next).toBeNull();
     expect(without.needsMatt).toContain("messenger pin");
@@ -66,13 +66,13 @@ describe("where every open browser is, in every tool result (rules 54-55)", () =
     const text = (result.content as { text: string }[])[0].text;
     expect(text.split("\n")[0]).toContain("bethlehem on https://www.facebook.com/");
     expect(result.structuredContent).toMatchObject({ next: { tool: "inspectDoLive" }, needsMatt: null, browsers: [{ account: "bethlehem", state: { id: "rememberPassword" } }] });
-    const refused = await runToolCall("check", {}, {}, () => {}, () => views);
+    const refused = await runToolCall("facebookCheck", {}, {}, () => {}, () => views);
     expect(refused.isError).toBe(true);
     expect(refused.structuredContent).toMatchObject({ next: { tool: "inspectDoLive" } });
   });
 
   test("progress carries every streamed line with its time", async () => {
-    const result = await runToolCall("accounts", {}, { twenty: marketplaceFixture() }, () => {}, () => []);
+    const result = await runToolCall("facebookAccounts", {}, { twenty: marketplaceFixture() }, () => {}, () => []);
     const progress = (result.structuredContent as { progress: { at: string; source: string; line: string }[] }).progress;
     expect(progress.length).toBeGreaterThan(0);
     for (const p of progress) expect(Number.isNaN(Date.parse(p.at))).toBe(false);

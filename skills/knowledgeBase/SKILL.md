@@ -1,11 +1,11 @@
 ---
 name: knowledgeBase
-description: Find and keep context in the knowledge base (rule 93). `log kb search "<query>"` searches every rule, skill, doc, infra note, Claude memory file, page state, account and agent note by keyword and meaning at once; `log kb remember "<text>"` saves what a session learned; `log kb sync` refreshes it. Use before guessing at how something works, where a login lives, what an account is doing or what an earlier session found, and at the end of a session that learned something new.
+description: Find and keep context in the knowledge base. `log kb search "<query>"` searches every rule, skill, doc, infra note, Claude memory file, page state, account and agent note by keyword and meaning at once; `log kb remember "<text>"` saves what a session learned; `log kb sync` refreshes it. Use before guessing at how something works, where a login lives, what an account is doing or what an earlier session found, and at the end of a session that learned something new.
 ---
 
 # knowledgeBase
 
-The knowledge base is one place for everything log-cli knows: matt's rules,
+The knowledge base is one place for everything log-cli knows: the owner's rules,
 the skills, the docs, the infra notes, every agent's memory files, the known
 page states, the accounts, and the notes agents save. Twenty holds it, Redis
 searches it.
@@ -53,13 +53,13 @@ searches it.
 
 ## Commands
 
-Agents call the MCP tools, never a hand-run `log kb …` (rule 106):
+Agents call the MCP tools, never a hand-run `log kb …` (rule 163):
 
 ```
 kbSearch { query: "why did the tunnel go down" }               best articles, keyword + meaning
-kbSearch { query: "messenger pin", kind: "pageState", limit: "3" }
+kbSearch { query: "messenger pin", kind: "pageState", limit: 3 }
 kbShow { key: "rule:73" }                                      one article in full
-kbRemember { text: "…", tags: "infra,server" }                 a note, in Twenty and Redis at once
+kbRemember { text: "…", tags: ["infra", "server"] }                 a note, in Twenty and Redis at once
 kbSync {}                                                      refresh from every source (Monitor it, rule 26)
 kbSync { noAccounts: true }                                    without reading log-cli's Twenty
 ```
@@ -86,5 +86,5 @@ Save it before the session ends, in one or two plain sentences with where it
 came from:
 
 ```
-kbRemember { text: "Twenty v2.49 signs API keys with a key encrypted by ENCRYPTION_KEY; a changed ENCRYPTION_KEY gives 'No encryption key matches keyId'. Fixed 2026-10-27 by restoring the Oct 21 secrets.", title: "Twenty API keys need the original ENCRYPTION_KEY", tags: "twenty,server" }
+kbRemember { text: "Twenty v2.49 signs API keys with a key encrypted by ENCRYPTION_KEY; a changed ENCRYPTION_KEY gives 'No encryption key matches keyId'. Fixed 2026-10-27 by restoring the Oct 21 secrets.", title: "Twenty API keys need the original ENCRYPTION_KEY", tags: ["twenty", "server"] }
 ```

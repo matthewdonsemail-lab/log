@@ -1,6 +1,8 @@
 {
   "name": "profilePost",
+  "platform": "facebook",
   "summary": "Post text on the account's own profile: open the composer, type the text, Post, wait for ComposerStoryCreateMutation. Writes on Facebook (--live).",
+  "effect": "write",
   "params": [
     {
       "name": "text",

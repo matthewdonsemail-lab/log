@@ -1,10 +1,11 @@
-import { copyVersionsShortfall, getListing, listListingsWhere, toPublishListing } from "../../marketplace/agencyListing/index.ts";
-import { fillCampaign, healCampaign } from "../../marketplace/replacement/index.ts";
-import { listFacebookAccounts } from "../../marketplace/socialAccount/index.ts";
+import { copyVersionsShortfall, getListing, listListingsWhere, toPublishListing } from "../../facebook/marketplace/agencyListing/index.ts";
+import { fillCampaign, healCampaign } from "../../facebook/marketplace/replacement/index.ts";
+import { listFacebookAccounts } from "../../platformKit/socialAccount/index.ts";
 import { renderListingsTable } from "../listing/helpers/index.ts";
 import { publishCommand } from "../publish/index.ts";
-import { parseArgs, refuse, refuseError } from "../runner/helpers/index.ts";
-import type { Command } from "../runner/types.ts";
+import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuse, refuseError, refuseInput } from "../runner/helpers/index.ts";
+import type { Command, CommandInput, FlagSpec } from "../runner/types.ts";
+import { liveThroughAction } from "../../platformKit/action/index.ts";
 
 export const CAMPAIGN_USAGE = [
   "Usage: log facebook campaign fill --campaign <agencyCampaignId> --from <agencyListingId> --accounts <n>",
@@ -13,20 +14,45 @@ export const CAMPAIGN_USAGE = [
   "       log facebook campaign show --campaign <agencyCampaignId> [--json]",
 ].join("\n");
 
-export const campaignCommand: Command = {
+const CAMPAIGN: FlagSpec = { name: "campaign", kind: "string", required: true, description: "The agencyCampaign id" };
+
+export const CAMPAIGN_INPUT: CommandInput = {
+  forms: [
+    {
+      words: ["fill"],
+      effect: "write",
+      summary: "Put one ad on N accounts in the campaign's place, each with its own copy version",
+      positionals: [],
+      flags: [CAMPAIGN, { name: "from", kind: "string", required: true, description: "The agencyListing id of the ad" }, { name: "accounts", kind: "integer", required: true, min: 1, description: "How many accounts carry it" }],
+    },
+    { words: ["heal"], effect: "write", summary: "Hand each ACCOUNT_LOST listing in the campaign to another account", positionals: [], flags: [CAMPAIGN] },
+    {
+      words: ["run"],
+      liveEffect: "write",
+      summary: "Publish the campaign's READY listings (a dry run unless live)",
+      positionals: [],
+      flags: [CAMPAIGN, { name: "live", kind: "boolean", live: true, description: "Publish them on Facebook, only when the owner asked (rule 8)" }, { name: "bypass", kind: "boolean", bypass: true, description: "Outside the accounts' waking hours, only when the owner asked (rule 86)" }],
+    },
+    { words: ["show"], effect: "read", summary: "The campaign's listings and the account each is on", positionals: [], flags: [CAMPAIGN, JSON_FLAG] },
+  ],
+};
+
+export const campaignCommand: Command = liveThroughAction<Command>({
   usage: CAMPAIGN_USAGE,
   platform: "facebook",
   name: "campaign",
+  longRunning: true,
   effect: "browser",
+  input: CAMPAIGN_INPUT,
   summary: "Put one ad on N accounts in one place, replace lost accounts, publish the campaign",
   args: "<fill|heal|run|show> --campaign <id> [...]",
   async run(context, argv) {
-    const parsed = parseArgs(argv, { boolean: ["live", "json", "bypass"], valued: ["campaign", "from", "accounts"] });
-    if (!parsed.ok) return { code: 1, stderr: `log facebook campaign: ${parsed.error}\n${CAMPAIGN_USAGE}` };
+    const parsed = parseArgs(argv, parserSpecOf(CAMPAIGN_INPUT));
+    if (!parsed.ok) return refuseInput("facebook campaign", parsed.error, CAMPAIGN_USAGE);
     const [action, extra] = parsed.positionals;
     const campaignId = parsed.flags["campaign"];
     if (!action || extra !== undefined || !["fill", "heal", "run", "show"].includes(action) || typeof campaignId !== "string") {
-      return { code: 1, stderr: `log facebook campaign: pick fill, heal, run or show, with --campaign\n${CAMPAIGN_USAGE}` };
+      return { code: 1, error: "inputInvalid", stderr: `log facebook campaign: pick fill, heal, run or show, with --campaign\n${CAMPAIGN_USAGE}` };
     }
     try {
       if (action === "show") {
@@ -37,9 +63,9 @@ export const campaignCommand: Command = {
 
       if (action === "fill") {
         const from = parsed.flags["from"];
-        const count = Number(parsed.flags["accounts"]);
+        const count = numberOf(parsed, "accounts") ?? Number.NaN;
         if (typeof from !== "string" || !Number.isInteger(count) || count < 1) {
-          return { code: 1, stderr: `log facebook campaign fill: --from <listingId> and --accounts <n> are required\n${CAMPAIGN_USAGE}` };
+          return { code: 1, error: "inputInvalid", stderr: `log facebook campaign fill: --from <listingId> and --accounts <n> are required\n${CAMPAIGN_USAGE}` };
         }
         const ad = await getListing(context.twenty, from);
         if (!ad) return refuse("campaign fill", "listingNotFound", from);
@@ -81,4 +107,4 @@ export const campaignCommand: Command = {
       return refuseError("campaign", error);
     }
   },
-};
+}, ["live"]);

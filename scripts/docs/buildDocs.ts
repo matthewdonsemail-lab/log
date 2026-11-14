@@ -1,9 +1,9 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { inputFlagNames, isPlatform } from "../../src/cli/runner/helpers/index.ts";
-import { commandKey } from "../../src/cli/runner/helpers/platforms.ts";
+import { commandKey, commandWordOfKey } from "../../src/cli/runner/helpers/platforms.ts";
 import { COMMANDS } from "../../src/cli/runner/index.ts";
-import { agentsSection, commandTools, CORE_GUIDE, CORE_PRINCIPLES, GUIDE_TOOL, GUIDE_TOPICS, guideOfCommand, listUseCases, longRunLine, renderGuide, savedFlows, toolsFromCommands, toolsFromFlows, withUseCases } from "../../src/mcp/server/index.ts";
+import { agentsSection, commandTools, CORE_GUIDE, CORE_PRINCIPLES, GUIDE_TOOL, GUIDE_TOPICS, guideOfCommand, HOSTED_INSTRUCTIONS_FILE, listUseCases, longRunLine, noShellOnly, renderGuide, savedFlows, serverInstructions, shellOnly, toolsFromCommands, toolsFromFlows, withUseCases } from "../../src/mcp/server/index.ts";
 import { catalog, flagsOf, flowEntries, GLOBAL_FLAGS } from "../../src/surface/catalog/index.ts";
 import { diagrams } from "../../src/surface/diagrams/index.ts";
 import { DIRECT_ROUTES } from "../../src/directApi/engine/index.ts";
@@ -55,14 +55,14 @@ put("docs/specs/README.md", specsIndex(specDomains(root).filter((d) => existsSyn
 
 {
   const cli = join(root, "src/cli");
-  const found: { name: string; platform: string; module: string; exportName: string }[] = [];
+  const found: { name: string; platform: string; module: string; exportName: string; terminalOnly?: string; longRunning?: true }[] = [];
   for (const dir of readdirSync(cli).sort()) {
     const index = join(cli, dir, "index.ts");
     if (dir === "runner" || !existsSync(index)) continue;
     const loaded = (await import(index)) as Record<string, unknown>;
     for (const [exportName, value] of Object.entries(loaded).sort(([a], [b]) => a.localeCompare(b))) {
       const command = COMMANDS.find((c) => c === value);
-      if (command && !found.some((f) => f.name === command.name && f.platform === command.platform)) found.push({ name: command.name, platform: command.platform, module: `src/cli/${dir}/index.ts`, exportName });
+      if (command && !found.some((f) => f.name === command.name && f.platform === command.platform)) found.push({ name: command.name, platform: command.platform, module: `src/cli/${dir}/index.ts`, exportName, ...(command.terminalOnly ? { terminalOnly: command.terminalOnly } : {}), ...(command.longRunning ? { longRunning: true as const } : {}) });
     }
   }
   for (const command of COMMANDS) if (!found.some((f) => f.name === command.name && f.platform === command.platform)) problems.push(`${command.name} (${command.platform}) is in COMMANDS but no src/cli/<dir>/index.ts exports it, so log can't load it on its own`);
@@ -75,10 +75,12 @@ put("docs/specs/README.md", specsIndex(specDomains(root).filter((d) => existsSyn
       "  platform: string",
       "  module: string",
       "  exportName: string",
+      "  terminalOnly?: string",
+      "  longRunning?: true",
       "}",
       "",
       "export const COMMAND_INDEX: CommandIndexEntry[] = [",
-      ...ordered.map((f) => `  { name: ${JSON.stringify(f.name)}, platform: ${JSON.stringify(f.platform)}, module: ${JSON.stringify(f.module)}, exportName: ${JSON.stringify(f.exportName)} },`),
+      ...ordered.map((f) => `  { name: ${JSON.stringify(f.name)}, platform: ${JSON.stringify(f.platform)}, module: ${JSON.stringify(f.module)}, exportName: ${JSON.stringify(f.exportName)}${f.terminalOnly ? `, terminalOnly: ${JSON.stringify(f.terminalOnly)}` : ""}${f.longRunning ? ", longRunning: true" : ""} },`),
       "]",
       "",
     ].join("\n"),
@@ -110,7 +112,11 @@ put("docs/specs/README.md", specsIndex(specDomains(root).filter((d) => existsSyn
             "",
             "This is how the owner works. Each use case is something the owner asks for again and again, written as its steps in order, each step naming its tool and what counts as done. When the owner asks for work a use case covers, read that use case and follow it step by step instead of improvising. Work no use case covers yet, done for the owner more than once, gets a page of its own in docs/useCases/<platform>/.",
             "",
-            ...useCaseRows(useCases),
+            "With no prompt hook, getGuide({ ask }) routes the owner's words to the one that fits; each page's own asks line holds the words it is matched on.",
+            "",
+            "| Use case | What it is |",
+            "|---|---|",
+            ...useCases.map((u) => `| \`${GUIDE_TOOL}({ useCase: "${u.id}" })\` | ${u.title} |`),
             "",
             "## Rule one: if we don't know, we do this",
             "",
@@ -130,9 +136,9 @@ put("docs/specs/README.md", specsIndex(specDomains(root).filter((d) => existsSyn
             "",
             "## How a run reports back",
             "",
-            `- With a shell (Claude Code, Codex): ${longRunLine({ shell: true })}`,
-            `- Without one (claude.ai, Duet): ${longRunLine({ shell: false })}`,
-            "- Every result also says where every open browser is (`browsers`), the call that resolves its known page state (`next`: make it, don't stop, rule 79) and what only matt can clear (`needsMatt`).",
+            ...shellOnly([`- ${longRunLine({ shell: true })}`]),
+            ...noShellOnly([`- ${longRunLine({ shell: false })}`]),
+            "- Every result also says where every open browser is (`browsers`), the call that resolves its known page state (`next`: make it, don't stop, rule 79) and what only the owner can clear (`needsMatt`).",
             "- A refusal names its error code; the `errors` tool says what each one means and what to do.",
           ]
         : theirs.length
@@ -150,6 +156,8 @@ put("docs/specs/README.md", specsIndex(specDomains(root).filter((d) => existsSyn
     }
   }
 }
+
+put(HOSTED_INSTRUCTIONS_FILE, `${serverInstructions("hosted")}\n`);
 
 const readme = readFileSync(join(root, "README.md"), "utf8").replace(/\r\n/g, "\n");
 const referencePath = join(root, "docs/reference.md");
@@ -223,7 +231,7 @@ for (const command of COMMANDS) {
     const head = `${entry?.words ?? command.name}${form.words.length ? ` ${form.words.join(" ")}` : ""}`;
     if (!entry?.usage.some((line) => line === `log ${head}` || line.startsWith(`log ${head} `) || (form.words[0] === "list" && line.startsWith(`log ${entry.words} [list]`)))) problems.push(`log ${command.name}: its input form "${form.words.join(" ") || "(no words)"}" has no usage line starting \`log ${head}\` (rule 56)`);
   }
-  for (const flag of command.input.forms.flatMap((f) => f.flags)) if (!flag.global && !entry?.flags.some((f) => f.name === flag.name)) problems.push(`log ${command.name}: its input has --${flag.name}, but its usage doesn't name it (rule 56)`);
+  for (const flag of command.input.forms.flatMap((f) => f.flags)) if (!flag.global && !flagsOf(entry?.usage.join("\n") ?? "").some((f) => f.name === flag.name)) problems.push(`log ${command.name}: its input has --${flag.name}, but its usage doesn't name it (rule 56)`);
 }
 
 const BROWSER_NAME = /\b(camoufox|adspower|firefox|chromium)\b/i;
@@ -263,7 +271,7 @@ for (const dir of readdirSync(cliRoot)) {
   }
 }
 for (const [name, route] of Object.entries(DIRECT_ROUTES)) {
-  const dir = route.platform === "facebook" ? name : route.platform;
+  const dir = route.platform === "facebook" ? commandWordOfKey(name, route.platform) : route.platform;
   const index = join(cliRoot, dir, "index.ts");
   if (!existsSync(index) || !readFileSync(index, "utf8").includes(`context.${route.seam}`)) problems.push(`DIRECT_ROUTES.${name} says it runs on the direct-API engine through context.${route.seam}, but src/cli/${dir}/index.ts never calls it`);
   if (!new RegExp(`\\b${route.seam}\\??:`).test(contextType)) problems.push(`DIRECT_ROUTES.${name}: context.${route.seam} isn't on CommandContext (src/cli/runner/types.ts)`);

@@ -1,21 +1,21 @@
 ---
 name: runs
-description: Keep the recorded runs from filling the disk (rule 66). `log runs` lists every run under ~/.logCli/runs with its size, whether rea settled it and whether the request docs hold it; `log runs prune --apply` deletes the analysed ones, keeping each one's findings, steps and requests by domain. Use when the storage hook speaks, AdsPower says it is running out of disk space, or matt asks to clear the runs.
+description: Keep the recorded runs from filling the disk (rule 66). `log runs` lists every run under ~/.logCli/runs with its size, whether rea settled it and whether the request docs hold it; `log runs prune --apply` deletes the analysed ones, keeping each one's findings, steps and requests by domain. Use when the storage hook speaks, AdsPower says it is running out of disk space, or the owner asks to clear the runs.
 ---
 
 # runs
 
-Every action records a raw HAR (rules 19, 22): a warm-up run is about 1.5 GB,
+Every action records a raw HAR (rule 19): a warm-up run is about 1.5 GB,
 an inspect run up to 1.4 GB. On 2026-10-22 they reached 12.5 GB, the disk had
 2 GB left and AdsPower refused to start Bethlehem's browser.
 
 ## The loop
 
-1. **Analyse** (rules 25, 27): a run may go only when rea settled it
+1. **Analyse** (rule 25): a run may go only when rea settled it
    (`settle.json`: every step read, findings.md written) and the request docs
    hold its requests (`docs/platforms/facebook/operations.json` built after it).
-   - Not settled: `log facebook capture --settle <its capture folder>`.
-   - Not in the docs: `log facebook capture --docs`, then write any request's
+   - Not settled: `log capture settle <its capture folder>`.
+   - Not in the docs: `log capture docs`, then write any request's
      reasoning it asks for.
 2. **Look:** `log runs` lists each run with `may go` or why it is kept (still
    being written, not settled, not in the docs).

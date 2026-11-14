@@ -2,11 +2,7 @@
 
 Making a new platform whole with one command, and where every new file goes.
 
-Written by `bun run docs:build` from the code, the skills and AGENTS.md (rule 55). Not edited by hand: change the command's usage, its skill or the rule, and rebuild.
-
-## Current scope
-
-This guide describes the current command implementation. Legacy storage names and deferred features in procedure text do not define the native hosted schema. Active rules 171, 172 and 175 govern the target: existing private workspace log.db, central identity/team authorization and minimal routing metadata, with no required Twenty or agency/CRM model. Preserve current execution gates while migrating legacy dependencies explicitly.
+Written by `bun run docs:build` from the code, the skills and AGENTS.md. Not edited by hand: change the command's usage, its skill or the rule, and rebuild.
 
 ## Use cases these tools are part of
 
@@ -18,9 +14,12 @@ When the owner asks for one of these, follow its page step by step.
 
 ## The tools in this guide
 
-| Tool | What it does |
-|---|---|
-| `newPlatform` | Make a new platform's session, command, MCP tool, engine and docs… |
+Each tool's own description carries its full usage, notes, live line and rules; `logGet` gives its exact inputs and a call that works.
+
+| Tool | What it does | Usage |
+|---|---|---|
+| `newPlatform` | Make a new platform's session, command, MCP tool, engine and docs… | `log new platform <name> [--label <shown name>] [--twentyPlatform <ENUM>] [--library <vendor/folder>] [--sessionCookies <a,b>] [--cookieDomain <.site.com>] [--hosts <a.com,b.com>] [--home <https://…>] [--noProxy] [--noBrowser] [--apply] [--json]` |
+| `newPlatformLive` | Make a new platform's session, command, MCP tool…, live on the platform | `log new platform <name> [--label <shown name>] [--twentyPlatform <ENUM>] [--library <vendor/folder>] [--sessionCookies <a,b>] [--cookieDomain <.site.com>] [--hosts <a.com,b.com>] [--home <https://…>] [--noProxy] [--noBrowser] [--apply] [--json]` |
 
 ## The work, step by step: layout
 
@@ -31,7 +30,7 @@ From `skills/layout/SKILL.md`.
 | Where | What goes there |
 |---|---|
 | `src/{library}/{domain}/` | TypeScript, with the role files (`index.ts`, `types.ts`, `client.ts`, `machine.ts`, `helpers/`; rule 2) |
-| `src/browser/` | each browser (`adsPower`, `camoufox`) and what every browser shares: `driver`, `run`, `proxy`, `inspect`, `flow` (rule 57) |
+| `src/browser/` | each browser (`adsPower`, `camoufox`) and what every browser shares: `driver`, `run`, `proxy`, `inspect`, `flow` (rule 2) |
 | `python/browser/` | opening the account's browser through its gates: `browserDriver`, `adsPowerBrowser`, `visibleBrowser`, `proxyGate`, `harRecorder` |
 | `python/human/` | how the cursor and wheel move: `humanMouse`, `scrollMotion`, `recordMouse` |
 | `python/session/` | the processes TypeScript runs: `inspectSession`, `connectSession`, `publishSession`, `profileSession`, `logWorker` |
@@ -62,38 +61,12 @@ from browser import proxyGate
 
 `bun run check:layout` (lefthook pre-commit and pre-push) refuses a loose file, tracked or new, and a Python domain without its `__init__.py`.
 
-## Every tool, in full
+## The rules these tools fall under
 
-### `newPlatform`
+Each by its number and first line. The full text is in AGENTS.md (`log://agents`); the core rules are in full in `getGuide({ topic: "logMcpInstructions" })`.
 
-Make a new platform's session, command, MCP tool, engine and docs, wired through the syntax tree.
-Make a new platform (session, command, MCP tool, engine, docs), wired into the repo through its syntax tree
-log new platform <name> [--label <shown name>] [--twentyPlatform <ENUM>] [--library <vendor/folder>] [--sessionCookies <a,b>] [--cookieDomain <.site.com>] [--hosts <a.com,b.com>] [--home <https://…>] [--noProxy] [--noBrowser] [--apply] [--json]
-Makes a new platform for log-cli: its account session on the shared platformKit, `log <name> session check` with its MCP tool, a direct-API engine in python/<name>Api on the shared Python kit, and docs/platforms/<name>. The repo is wired by editing each file through its syntax tree (PLATFORMS, PLATFORM_LABELS, COMMANDS, COMMAND_INDEX, createContext, CommandContext, DIRECT_ROUTES, COMMAND_RULES), and every edit is checked to have landed before anything is written.
-Without --apply it lists what it would write and change, and writes nothing. Nothing is overwritten: an existing platform or file is refused. It says what Twenty is missing (the socialAccounts.platform option) but never changes Twenty. Then fill in the engine's actions and add the platform's families as commands (rule 83).
-Fill the named fields; each value goes through whole.
-Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "instagram/newPlatform" }).
-Before first using this tool in a session, load its guide: getGuide({ topic: "newPlatform" }) (Making a new platform whole with one command, and where every new file goes).
-AGENTS.md (log://agents): rules 1, 2, 63, 83, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
-
-## The rules these tools fall under, in full
-
-From the current AGENTS.md (`log://agents`). Historical citations are consolidated; archived instructions do not override the active scope.
-
-**Rule 1.** 2026-10-18 · Use camelCase for owned files, folders, values, ids, statuses and error codes. Convert external naming once at the boundary. See docs/namingConventions.md.
-
-**Rule 2.** 2026-10-18 · Put platform code under src/<platform>/<area>/<domain>; shared code stays in its shared library/domain. Use index.ts, types.ts, client.ts, machine.ts and helpers where appropriate. Keep scripts and Python in domain folders.
-
-**Rule 30.** 2026-10-19 · Complete the authorized task. Do not repeatedly request confirmation already given. Distinguish implemented behavior, proposed contracts and unverified assumptions.
-
-**Rule 38.** 2026-10-19 · Do not introduce discussions of Meta/Facebook rules, terms, eligibility or account ownership unless Matt raises them.
-
-**Rule 39.** 2026-10-19 · Use only the scope, options and intent Matt stated or implied. Do not add unrelated alternatives to research, comparisons, plans or implementation.
-
-**Rule 40.** 2026-10-19 · Do not propose physical infrastructure unless Matt asks. His available implementation scope is hosted/cloud environments and the tools already selected.
-
-**Rule 41.** 2026-10-19 · Paid work must stay within the authorized task and spend. Ask before adding a paid operation he did not authorize; do not substitute a new paid provider implicitly.
-
-**Rule 63.** 2026-10-22 · Platform commands are log <platform> <command> <what>. Shared commands remain shared. Preserve the naming boundary described in docs/commandNaming.md.
-
-**Rule 83.** 2026-10-25 · New platforms use the existing scaffold, shared account/session boundary, command/catalog wiring, platform documentation and spec anchors. Native hosted scaffolds must not recreate a Twenty dependency.
+- **Rule 30.** Complete the authorized task.
+- **Rule 38.** Do not introduce discussions of Meta/Facebook rules, terms, eligibility or account ownership unless the owner raises them.
+- **Rule 39.** Use only the scope, options and intent the owner stated or implied.
+- **Rule 40.** Do not propose physical infrastructure unless the owner asks.
+- **Rule 41.** Paid work must stay within the authorized task and spend.

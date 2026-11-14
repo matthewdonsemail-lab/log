@@ -1,6 +1,6 @@
 import { findLinkedinAccount, recordLinkedinSession, linkedinGate } from "../../linkedin/account/session/index.ts";
 import type { PlatformAnswer } from "../../platformKit/session/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../runner/helpers/index.ts";
+import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandContext, CommandInput } from "../runner/types.ts";
 import type { PlatformAccount } from "../../platformKit/session/index.ts";
 import { mkdirSync, writeFileSync } from "node:fs";
@@ -70,7 +70,7 @@ export const linkedinSessionCommand: Command = {
     const verb = parsed.positionals[0];
     if ((verb !== "check" && verb !== "scripts") || parsed.positionals.length > 1) return { code: 1, stderr: `log linkedin session: give check or scripts\n${LINKEDIN_SESSION_USAGE}` };
     const ref = parsed.flags["account"];
-    if (typeof ref !== "string") return { code: 1, stderr: `log linkedin session check: --account is needed\n${LINKEDIN_SESSION_USAGE}` };
+    if (typeof ref !== "string") return { code: 1, error: "inputInvalid", stderr: `log linkedin session check: --account is needed\n${LINKEDIN_SESSION_USAGE}` };
     try {
       const account = await findLinkedinAccount(context.twenty, ref);
       const gate = linkedinGate(account);

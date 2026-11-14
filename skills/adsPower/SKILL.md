@@ -1,20 +1,20 @@
 ---
 name: adsPower
-description: Give every account on a browser platform its AdsPower profile, give profiles back, check the Local API, and keep the browser-driver rules (rules 42, 44, 78, 84)
+description: Give every account on a browser platform its AdsPower profile, give profiles back, check the Local API, and keep the browser-driver rules (rules 35, 44)
 ---
 
 # adsPower
 
 ## Hard boundaries
 
-1. **Twenty stays the source** (rule 13). An AdsPower profile is the browser for one
+1. **Twenty stays the source.** An AdsPower profile is the browser for one
    `socialAccounts` row, linked by `adsPowerProfileId`. The Twenty row is never deleted; a DEACTIVATED
    account, or one whose home is not in `LOG_ADSPOWER_HOMES`, gives its profile back (deleted from
-   AdsPower, `adsPowerProfileId` cleared, rule 78).
+   AdsPower, `adsPowerProfileId` cleared).
 2. **No secret in AdsPower at rest.** Profiles are made with no proxy, password or 2FA key.
    `python/browser/browserDriver.py` puts the proxy on only to open, after the gate, and clears it at close.
-3. **Same as Camoufox** (rule 44). An AdsPower session goes through the same gate (rule 12),
-   self-check (rule 17), session HAR (rule 22), human mouse and scroll. `docs/browsers.md`
+3. **Same as Camoufox** (rule 44). An AdsPower session goes through the same gate and
+   self-check (rule 35), session HAR (rule 19), human mouse and scroll. `docs/browsers.md`
    lists what's built; `bun run check:browsers` keeps every browser in step.
 4. **Camoufox stays.** With `browserDriver` empty, an account with a linked profile opens on AdsPower
    and one without opens on Camoufox. Never remove it.
@@ -35,7 +35,7 @@ log adsPower status                 # the Local API answers
 log adsPower profiles               # AdsPower's profiles, and the Twenty account of each
 log adsPower sync                   # dry run: release / create / relink / linked / skip per account
 log adsPower sync --apply           # give back DEACTIVATED and out-of-home profiles, make the missing ones, link them in Twenty
-log adsPower sync --apply --homes US  # this run's homes (default LOG_ADSPOWER_HOMES, rule 78)
+log adsPower sync --apply --homes US  # this run's homes (default LOG_ADSPOWER_HOMES)
 log adsPower sync --apply --account <accountName>
 ```
 

@@ -189,7 +189,8 @@ export const linkedinDeleteCommand: Command = {
     if (parsed.positionals.length) return { code: 1, stderr: `log linkedin delete: takes no words, only flags\n${LINKEDIN_DELETE_USAGE}` };
     const ref = text(parsed.flags, "account");
     const activity = activityOf(text(parsed.flags, "activity"));
-    if (!ref || !activity) return { code: 1, stderr: `log linkedin delete: --account and --activity (an activity id or post URL) are needed\n${LINKEDIN_DELETE_USAGE}` };
+    if (!ref) return { code: 1, stderr: `log linkedin delete: --account is needed\n${LINKEDIN_DELETE_USAGE}` };
+    if (!activity) return { code: 1, stderr: `log linkedin delete: --activity must be a LinkedIn activity id or a post URL holding one\n${LINKEDIN_DELETE_USAGE}` };
     const live = parsed.flags["live"] === true;
     const approvedBy = text(parsed.flags, "approvedBy");
     if (live && !approvedBy) return refuse("linkedin delete", "notApproved", "--live needs --approvedBy <who> (rule 8)");

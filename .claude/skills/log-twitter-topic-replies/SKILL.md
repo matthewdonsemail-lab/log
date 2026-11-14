@@ -1,7 +1,7 @@
 ---
 name: log-twitter-topic-replies
 description: "Replying to everyone posting about one topic. A log play (docs/useCases/twitter/topicReplies.md): Pick a topic you have something real to say about, find everyone on X posting about it, and reply to each person with one line about their own post, backed by one of your own facts. Each reply can point at your article or video on the topic. The owner approves the list, then the queue sends it over days, inside the account's 240 writes a day ([write budgets](../../specs/writeBudgets.md))."
-when_to_use: "Use when matt asks for: replying to everyone posting about one topic."
+when_to_use: "Use when matt asks for this, in words like: \"reply to everyone tweeting about <topic>\", \"find everyone posting about <topic> on x and reply with my article\", \"reply to the people talking about <topic> with my video\"."
 metadata:
   summary: "Replying to everyone posting about one topic"
 ---
@@ -13,6 +13,8 @@ This is the log play `twitter/topicReplies`. Before anything else, call the log 
 Draft every message from that person's own thread and matt's real replies (`voice` with no text, `search`), never from memory, and never send two that read alike (`sameAsSent`).
 
 Pick a topic you have something real to say about, find everyone on X posting about it, and reply to each person with one line about their own post, backed by one of your own facts. Each reply can point at your article or video on the topic. The owner approves the list, then the queue sends it over days, inside the account's 240 writes a day ([write budgets](https://github.com/matthewdonsemail-lab/log/blob/main/docs/specs/writeBudgets.md)).
+
+How the owner asks for it: "reply to everyone tweeting about <topic>", "find everyone posting about <topic> on x and reply with my article", "reply to the people talking about <topic> with my video".
 
 ## Run it from a fresh context
 
@@ -29,10 +31,10 @@ Say: **"go on docs/useCases/twitter/topicReplies.md for <topic>, linking <articl
 | --- | --- | --- | --- |
 | 0 | Session check | `twitterSessionCheck` | `loggedIn` |
 | 1 | Find the posts: the topic's words, latest first, original posts and replies with a real take | [treg](https://treg.to/?ref=matthewdonse-aebsh)'s X post search | a pool of posts, newest first |
-| 2 | One post per person, only from people with 1500 followers or fewer (bigger accounts aren't worth it yet, rule 121; niche map people first). Drop anyone the account already replied to, and accounts that only repost news | the niche map's `followers`, treg's posts read on the account, for its past replies | a unique list, everyone at 1500 followers or under |
+| 2 | One post per person, only from people with 1500 followers or fewer (bigger accounts aren't worth it yet; niche map people first). Drop anyone the account already replied to, and accounts that only repost news | the niche map's `followers`, treg's posts read on the account, for its past replies | a unique list, everyone at 1500 followers or under |
 | 3 | For each post, a one-line summary of what they said, and a reply that answers it with one of your facts. Mark which link it carries (article or video) | house style | every line passes `twitterQueueCheck` |
 | 4 | Write the list somewhere the owner can read it on a phone: number, handle, link type, post url, "they said", the reply | a shared page | the owner says yes |
-| 5 | Queue it: each target carries its own `text`, build, check, approve, plan, run live. Plan only what fits today's limit (`limit`), and plan the rest on later days | README queue steps, `twitterQueuePlan` { limit } | the queue's `pending` reaches 0 |
+| 5 | Queue it: each target carries its own `text`, build, check, approve, plan, run live. Plan only what fits today's limit (`limit`), and plan the rest on later days | README queue steps: `twitterQueueBuild`, `twitterQueuePlan` { limit }, `twitterQueueRunLive` | the queue's `pending` reaches 0 |
 
 ## What one item looks like
 

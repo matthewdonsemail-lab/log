@@ -84,6 +84,7 @@ const LINKEDIN_MESSAGES_INPUT: CommandInput = {
         { name: "conversation", kind: "string", description: "The conversation's urn, from log linkedin inbox --json" },
         JSON_FLAG,
       ],
+      groups: [{ rule: "atLeastOne", names: ["with", "conversation"] }, { rule: "atMostOne", names: ["with", "conversation"] }],
     },
   ],
 };
