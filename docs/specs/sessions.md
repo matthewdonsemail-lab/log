@@ -65,7 +65,7 @@ Checked by: code and SubQ
 `sessionsSignIn` is one tool on the local and the hosted server. `signInCall` (`src/mcp/apps/signIn/client.ts`) runs it and, when the machine is waiting for the owner on a remote runtime, picks one rung per session (`signInRungOf`):
 
 1. A host that draws MCP Apps gets the live browser inline: `structuredContent.view`, with the tool carrying `ui://log/browserView`; the view reads `view` as well as `json`.
-2. A host without MCP Apps that declares `elicitation.url` is sent `elicitation/create` with `mode: "url"` and the console link. Only the local server does this: the hosted server answers each request statelessly, so it has rungs 1 and 3.
+2. A host without MCP Apps that declares `elicitation.url` is asked to open the console link with `elicitation/create` in `mode: "url"`. On a legacy session the local server sends it as a server-initiated request; on revision 2026-07-28 both servers return it in an `InputRequiredResult` and finish when the client retries with the answer and the `requestState` (REQ-MCP-24). A legacy session on the hosted server, which answers each POST with one JSON body, gets rungs 1 and 3 only.
 3. Every other host gets plain text with the same link.
 
 A local runtime (stdio) keeps today's answer: the browser window on this machine, no link.

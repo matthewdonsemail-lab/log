@@ -14,9 +14,10 @@ import { hostedSignIn } from "../../../cli/runtime/index.ts";
 import { PLATFORMS } from "../../../cli/runner/helpers/platforms.ts";
 import { runConsoleOperation } from "../../../console/operations/index.ts";
 import type { SessionToolAnswer } from "../../../platformKit/sessionCheck/index.ts";
-import { createLogMcpServer, runToolCall } from "../../server/index.ts";
+import { createLogMcpServer, runToolCall, statelessLogHandlers } from "../../server/index.ts";
+import { answerStateless } from "../../stateless/index.ts";
 import { MCP_APP_MIME_TYPE, UI_EXTENSION_ID } from "../browserView/index.ts";
-import { signInCall, signInRungOf } from "./index.ts";
+import { pendingElicitationOf, signInCall, signInRungOf } from "./index.ts";
 
 const KEYS = ["LOG_INBOX_STATE", "LOG_DB", "LOG_LOCAL_ACCOUNTS", "LOG_USER_ENV", "LOG_PLATFORM_STATE", "LOG_BROWSER_VIEW_LOCATION"] as const;
 const before: Record<string, string | undefined> = {};
@@ -69,7 +70,7 @@ beforeAll(() => {
   process.env.LOG_BROWSER_VIEW_LOCATION = "remote";
   writeFileSync(process.env.LOG_USER_ENV, "");
   writeFileSync(process.env.LOG_LOCAL_ACCOUNTS, JSON.stringify({ socialAccounts: [
-    ...["fakeGuild", "fakeGuildB", "fakeGuildC", "fakeGuildD", "fakeGuildE", "fakeGuildF"].map((name) => ({ id: `local:discord:${name}`, platform: "DISCORD", accountName: name })),
+    ...["fakeGuild", "fakeGuildB", "fakeGuildC", "fakeGuildD", "fakeGuildE", "fakeGuildF", "fakeGuildG", "fakeGuildH"].map((name) => ({ id: `local:discord:${name}`, platform: "DISCORD", accountName: name })),
     { id: "local:reddit:fakeRedd", platform: "REDDIT", accountName: "fakeRedd" },
     { id: "local:slack:fakeSlack", platform: "SLACK", accountName: "fakeSlack" },
   ] }));
@@ -163,6 +164,45 @@ describe("what the owner sees is decided from what the host declares", () => {
     expect(opened).toMatchObject({ platform: "discord", account: "fakeGuildF" });
     expect(opened.accountId).toBeTruthy();
     await expect(runConsoleOperation("signInLinkOpen", { token: tokenOf(url) }, { requester: "u7" })).rejects.toThrow("signInLinkInvalid");
+  });
+});
+
+describe("on revision 2026-07-28 the URL rung is an InputRequiredResult, not a server-initiated request", () => {
+  const META = { "io.modelcontextprotocol/protocolVersion": "2026-07-28", "io.modelcontextprotocol/clientCapabilities": { elicitation: { url: {} } } };
+  const ask = (id: number, extra: Record<string, unknown> = {}, account = "fakeGuildG") => ({ jsonrpc: "2.0", id, method: "tools/call", params: { name: "sessionsSignIn", arguments: { account, platform: "discord" }, ...extra, _meta: META } });
+
+  test("the local server asks for the console link in the result, then finishes when the client retries with the answer and the state", async () => {
+    open.clear();
+    const handlers = statelessLogHandlers({}, { logDir: null });
+    const first = (await answerStateless(ask(1), handlers)) as unknown as { result: { resultType: string; inputRequests: Record<string, { method: string; params: { mode: string; url: string; message: string } }>; requestState: string } };
+    expect(first.result.resultType).toBe("input_required");
+    const asked = first.result.inputRequests.signIn;
+    expect(asked.method).toBe("elicitation/create");
+    expect(asked.params.mode).toBe("url");
+    expect(asked.params.url).toContain("/console/connections?signIn=");
+    expect(JSON.stringify(first.result)).not.toContain("voxl");
+    expect(Object.keys(asked.params).sort()).toEqual(["message", "mode", "url"]);
+    const retried = (await answerStateless(ask(2, { inputResponses: { signIn: { action: "accept" } }, requestState: first.result.requestState }), handlers)) as unknown as { result: { resultType: string; structuredContent: { json: { signInSurface: string; elicitation: string } } } };
+    expect(retried.result.resultType).toBe("complete");
+    expect(retried.result.structuredContent.json).toMatchObject({ signInSurface: "url", elicitation: "accept" });
+    const forged = (await answerStateless(ask(3, { inputResponses: { signIn: { action: "accept" } }, requestState: `${first.result.requestState}x` }), handlers)) as unknown as { result: { resultType: string } };
+    expect(forged.result.resultType).toBe("input_required");
+    const otherCall = ask(4, { inputResponses: { signIn: { action: "accept" } }, requestState: first.result.requestState });
+    const otherArguments = (await answerStateless({ ...otherCall, params: { ...otherCall.params, arguments: { account: "fakeGuildG" } } }, handlers)) as unknown as { result: { resultType: string } };
+    expect(otherArguments.result.resultType).toBe("input_required");
+  });
+
+  test("the hosted runtime hands the pending request back in its result, and takes the answer as an argument on the retry", async () => {
+    open.clear();
+    const pending = (await hostedSignIn({ account: "fakeGuildH", platform: "discord", ui: false, urlElicitation: true }, { actorUserId: "u7" }, (input) => runToolCall("sessionsSignIn", input), "https://hosted.example")) as CallToolResult;
+    const inputRequired = pendingElicitationOf(pending.structuredContent);
+    expect(inputRequired?.url.startsWith("https://hosted.example/console/connections?signIn=")).toBe(true);
+    const answered = (await hostedSignIn({ account: "fakeGuildH", platform: "discord", ui: false, urlElicitation: true, elicitation: "accept" }, { actorUserId: "u7" }, (input) => runToolCall("sessionsSignIn", input), "https://hosted.example")) as CallToolResult;
+    expect(pendingElicitationOf(answered.structuredContent)).toBeNull();
+    expect((answered.structuredContent as { json: { signInSurface: string; elicitation: string } }).json).toMatchObject({ signInSurface: "url", elicitation: "accept" });
+    const legacy = (await hostedSignIn({ account: "fakeGuildH", platform: "discord", ui: false }, { actorUserId: "u7" }, (input) => runToolCall("sessionsSignIn", input), "https://hosted.example")) as CallToolResult;
+    expect(pendingElicitationOf(legacy.structuredContent)).toBeNull();
+    expect((legacy.structuredContent as { json: { signInSurface: string } }).json.signInSurface).toBe("text");
   });
 });
 

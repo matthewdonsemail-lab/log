@@ -4,6 +4,8 @@ import { MET, NOT_VIOLATED } from '../types'
 const RULES = 'src/mcp/server/helpers/agentRules.ts'
 const GUIDES = 'src/mcp/server/helpers/guides.ts'
 const SERVER = 'src/mcp/server/index.ts'
+const STATELESS = 'src/mcp/stateless/client.ts'
+const STATELESS_TYPES = 'src/mcp/stateless/types.ts'
 const TYPES = 'src/mcp/server/types.ts'
 const LIVE_LOG = 'src/agentHooks/liveLog/index.ts'
 const FRESHNESS = 'src/mcp/freshness/client.ts'
@@ -60,6 +62,14 @@ export const mcpServer = {
     'src/mcp/server/helpers/toolAliases.ts',
     'src/mcp/server/toolAliases.test.ts',
     'src/cli/runner/helpers/platforms.ts',
+    'src/mcp/stateless/client.ts',
+    'src/mcp/stateless/types.ts',
+    'src/mcp/stateless/helpers/requestState.ts',
+    'src/mcp/stateless/helpers/inputRequired.ts',
+    'src/mcp/apps/signIn/client.ts',
+    'src/runtime/bridge/client.ts',
+    'python/controlService/mcpRoutes.py',
+    'python/controlService/mcpRevision.py',
   ],
   anchors: {
     'REQ-MCP-01': [
@@ -203,6 +213,27 @@ export const mcpServer = {
       { kind: 'string', file: 'python/controlService/mcpRoutes.py', includes: 'serverInstructions.txt' },
       { kind: 'symbol', file: 'src/surface/scorecard/helpers/neutral.ts', name: 'platformNeutralProblems' },
     ],
+    'REQ-MCP-24': [
+      { kind: 'value', file: STATELESS_TYPES, name: 'DISCOVER_METHOD', equals: 'server/discover' },
+      { kind: 'string', file: STATELESS_TYPES, includes: '2026-07-28' },
+      { kind: 'string', file: STATELESS_TYPES, includes: 'io.modelcontextprotocol/protocolVersion' },
+      { kind: 'symbol', file: STATELESS, name: 'answerStateless' },
+      { kind: 'symbol', file: STATELESS, name: 'dualEraTransport' },
+      { kind: 'symbol', file: STATELESS, name: 'statelessHttp' },
+      { kind: 'symbol', file: STATELESS, name: 'headerMismatchOf' },
+      { kind: 'symbol', file: 'src/mcp/stateless/helpers/requestState.ts', name: 'sealRequestState' },
+      { kind: 'symbol', file: 'src/mcp/stateless/helpers/inputRequired.ts', name: 'answeredAction' },
+      { kind: 'symbol', file: SERVER, name: 'statelessLogHandlers' },
+      { kind: 'symbol', file: SERVER, name: 'statelessTools' },
+      { kind: 'uses', file: SERVER, name: 'dualEraTransport' },
+      { kind: 'uses', file: SERVER, name: 'statelessHttp' },
+      { kind: 'symbol', file: 'src/mcp/apps/signIn/client.ts', name: 'deferredElicitation' },
+      { kind: 'uses', file: 'src/cli/runtime/index.ts', name: 'withPendingElicitation' },
+      { kind: 'string', file: 'python/controlService/settings.py', includes: '2026-07-28' },
+      { kind: 'string', file: 'python/controlService/mcpRevision.py', includes: 'input_required' },
+      { kind: 'string', file: 'python/controlService/mcpRoutes.py', includes: 'mcp-protocol-version' },
+      { kind: 'string', file: 'src/runtime/bridge/reconcile.test.ts', includes: 'a reconcile for an operation still running here waits for its result' },
+    ],
     'REQ-MCP-14': [
       { kind: 'string', file: ENGINES, includes: '.lastHook' },
       { kind: 'string', file: ENGINES, includes: 'SessionStart' },
@@ -228,6 +259,7 @@ export const mcpServer = {
     'REQ-MCP-16': noul('Is route in src/useCases/router/client.ts the one router that both askAnswer and routePrompt call; does it leave placeholders out of the words, leave out plays under a platform folder other than the platforms the prompt names (synonyms included) and rank plays under a named platform higher, activate a play only when its word score reaches the threshold, it leads the next by the ambiguity band and its phrase names no platform the prompt left out, and otherwise return a menu or none without breaking a tie by folder order; does router.test.ts run both entry points over golden.json and assert the same outcome; and does scripts/hooks/useCases.ts ask the context service for the route and write it through hookOutput only when there is text?'),
     'REQ-MCP-15': noul('Does guideAnswer load a play with setActivePlay only for a useCase or a clear ask match; are plays kept in a store keyed by a server-minted play handle, one per caller (per process for stdio, per HTTP session server, per team and actor on the hosted runtime) and never by the Mcp-Session-Id header; is a handle passed as playHandle honoured only for its own caller; does a play expire after PLAY_IDLE_MS idle, get replaced by the next load and end with clearPlay; is acting as the owner derived from each tool metadata (live platform tools with a write or delete effect, and flows with an effect); does a play cover a tool when its steps name it or its dry-run twin or the play is filed under the tool platform folder (inbox and web plays only by name); does playGateMode require a covering play for the PLAY_GATED_ON_MAIN tools (any play when nothing could cover one), let every other acting tool run with no play and refuse it with playNotCovering, naming clearPlay and the play that fits, under a play that does not cover it; does unnamedActingTools list the acting tools no use case names; and do the local CallTool handler and the hosted toolRunner both add playFooter through withCallFooter, the hosted result keeping next?'),
     'REQ-MCP-22': noul('Is every command with platform any or byArgument filed under a guide topic whose name starts with no platform (accountBrowser, sessions, flows, inbox, voiceGate and the other shared topics), and every flow tool filed under facebookFlows only because its definition says facebook; does renderGuide put the scope block and the full text of each rule only in the core guide, list every other guide tools as one row with its usage line, cite rules by number and first line through ruleSummary, name the guides to load next with nextGuidesLine, and pass the whole guide through ownerNeutral; does guideForCaller keep the shell-only lines for a caller with a shell and the no-shell lines otherwise, with runToolCall passing hasShell for the local server and false for the hosted runtime; do operatingRuleIds drop the DEVELOPER_RULES and map retired ids, or drop them, so rulesLine lists each current operating rule once; and is the hosted INSTRUCTIONS read from the file buildDocs writes from serverInstructions(hosted)?'),
+    'REQ-MCP-24': noul('Is a request whose params._meta names io.modelcontextprotocol/protocolVersion, or a server/discover, answered by answerStateless with no session on both the stdio transport (dualEraTransport, which passes initialize and every other legacy message to the SDK server and holds server notifications until an initialize) and the HTTP server (statelessHttp, which checks MCP-Protocol-Version, Mcp-Method and Mcp-Name against the body); does every modern result carry resultType and the serverInfo _meta, list results ttlMs and cacheScope, an unsupported version -32022 with supported and requested, a missing version or clientCapabilities -32602; is tools/list one list from statelessTools whatever the request declares, with app-only tools refused per call to a caller without MCP Apps; does sessionsSignIn answer a modern caller with elicitation.url and no MCP Apps with an InputRequiredResult whose requestState is HMAC-sealed to the tool, the argument digest, the caller and an expiry, counting the retry answer only when that state opens, on the local server and through mcpRoutes.py and hostedSignIn on the hosted one; and does connectOnce answer a reconcile for an operation it is still running with that operation result instead of the journal running row?'),
     'REQ-MCP-14': noul('Does the engines hook write its text when the event is SessionStart, and on any other event only when the text differs from the one saved in its last hook file?'),
     unspecifiedBehavior: noul('Does the server list a tool without its rules line or result size limit, or let a hand-run log command through, by a route the specification does not describe?'),
   },
@@ -252,6 +284,7 @@ export const mcpServer = {
     'REQ-MCP-20': MET,
     'REQ-MCP-21': MET,
     'REQ-MCP-22': MET,
+    'REQ-MCP-24': MET,
     unspecifiedBehavior: NOT_VIOLATED,
   },
 }
