@@ -1,5 +1,5 @@
-import { afterEach, beforeEach, describe, expect, test } from "bun:test";
-import { mkdtempSync, writeFileSync } from "node:fs";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test } from "bun:test";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { marketplaceFixture } from "../../twenty/graphql/index.ts";
@@ -97,11 +97,22 @@ const randomValues = crypto.getRandomValues.bind(crypto);
 const savedGate = gateDeps.gate;
 const savedInbox = process.env.LOG_INBOX_STATE;
 const savedDb = process.env.LOG_DB;
+let root = "";
 let dir = "";
 
+beforeAll(() => {
+  root = mkdtempSync(join(tmpdir(), "queueRun"));
+});
+
+afterAll(() => {
+  try {
+    rmSync(root, { recursive: true, force: true });
+  } catch {}
+});
+
 beforeEach(() => {
-  dir = mkdtempSync(join(tmpdir(), "queueRun"));
-  process.env.LOG_INBOX_STATE = dir;
+  dir = mkdtempSync(join(root, "q"));
+  process.env.LOG_INBOX_STATE = root;
   delete process.env.LOG_DB;
   world.clock = START;
   world.lines = [];
