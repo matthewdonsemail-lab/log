@@ -83,6 +83,15 @@ describe("canonical inputs become each platform's own flags", () => {
     const missing = argvFor(chats, "reddit", { account: "fakeRedditor" });
     expect(missing).toMatchObject({ ok: false, code: "capabilityMissing", platformsWithIt: ["facebook", "twitter", "discord", "slack", "instagram"] });
   });
+
+  test("a brief over the gate goes through on the platforms whose send takes it, and is inputUnsupported elsewhere", () => {
+    const send = capabilityOf("messagesSend")!;
+    expect(argvFor(send, "discord", { account: "fakeGuild", chat: "100", text: "the job", brief: true, overGate: true, approvedBy: "fakeOwner" })).toMatchObject({ ok: true, command: "discordSend", argv: ["--account", "fakeGuild", "--channel", "100", "--text", "the job", "--brief", "--overGate", "--approvedBy", "fakeOwner"] });
+    expect(argvFor(send, "twitter", { account: "fakeBird", chat: "111", text: "the job", overGate: true })).toMatchObject({ ok: true, command: "twitterDm", argv: ["--account", "fakeBird", "--userId", "111", "--text", "the job", "--overGate"] });
+    expect(argvFor(send, "twitter", { account: "fakeBird", chat: "111", text: "the job", brief: true })).toMatchObject({ ok: false, code: "inputUnsupported" });
+    expect(argvFor(send, "slack", { account: "fakeTwin", chat: "D1", text: "the job", overGate: true })).toMatchObject({ ok: false, code: "inputUnsupported" });
+    expect(argvFor(send, "instagram", { account: "fakeTwin", chat: "fakeFriend", text: "the job", brief: true })).toMatchObject({ ok: false, code: "inputUnsupported" });
+  });
 });
 
 describe("log chats list and log messages read", () => {
