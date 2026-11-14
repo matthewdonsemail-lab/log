@@ -1,6 +1,6 @@
 export { guardCall } from "./guardCall.ts";
 export { parseEnvText } from "./parseEnvText.ts";
-export { actsAsOwner, argsLiveFlags, commandTools, OWNER_EFFECTS, PLAY_HANDLE, hasShell, identityOf, legacyArgsTool, LONG_RUNNING, longRunLine, SHELL_CLIENTS, toolsFromCommands } from "./toolsFromCommands.ts";
+export { actsAsOwner, argsLiveFlags, commandTools, OWNER_EFFECTS, PLAY_HANDLE, hasShell, identityOf, legacyArgsTool, LONG_RUNNING, longRunLine, longRunning, SHELL_CLIENTS, toolsFromCommands } from "./toolsFromCommands.ts";
 export type { ToolOptions } from "./toolsFromCommands.ts";
 export type { CommandTool } from "./toolsFromCommands.ts";
 export { flowActsAsOwner, flowArgv, flowOfTool, flowRunInput, FLOW_RUN_TOOL, flowPlatformLabel, flowTool, toolsFromFlows } from "./toolsFromFlows.ts";

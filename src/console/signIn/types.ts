@@ -1,6 +1,8 @@
 import type { Platform } from "../../cli/runner/helpers/platforms.ts";
+import type { SignInState } from "../../platformKit/signIn/index.ts";
 
-export type SignInMethod = "cookies" | "password";
+export const SIGN_IN_METHODS = ["cookies", "password", "browser"] as const;
+export type SignInMethod = (typeof SIGN_IN_METHODS)[number];
 
 export interface SignInRequest {
   platform: Platform;
@@ -19,7 +21,7 @@ export const COOKIE_NAMES: Readonly<Partial<Record<Platform, readonly string[]>>
 
 export const PASSWORD_PLATFORMS: readonly Platform[] = ["facebook"];
 
-export const SIGN_IN_ERRORS = ["signInInputInvalid", "cookieSignInUnavailable", "passwordSignInUnavailable", "cookiesIncomplete", "signInRefused", "signInBusy", "accountNotFound"] as const;
+export const SIGN_IN_ERRORS = ["signInInputInvalid", "cookieSignInUnavailable", "passwordSignInUnavailable", "cookiesIncomplete", "signInRefused", "accountNotFound", "signInRouteUnavailable"] as const;
 export type SignInError = (typeof SIGN_IN_ERRORS)[number];
 
 export interface SignInResult {
@@ -27,6 +29,7 @@ export interface SignInResult {
   next: "none" | "browserCheck";
   accountId: string;
   detail: string;
+  state: SignInState;
 }
 
 export interface SignInPrompts {

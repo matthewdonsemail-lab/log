@@ -5,7 +5,7 @@ import { FLOWS_GUIDE, guideOfCommand } from "../../server/helpers/guides.ts";
 import { flowTool } from "../../server/helpers/toolsFromFlows.ts";
 import { flowPlatform } from "../../../browser/flow/index.ts";
 import type { FlowDefinition } from "../../../browser/flow/index.ts";
-import { argsLiveFlags, commandTools, LONG_RUNNING } from "../../server/helpers/toolsFromCommands.ts";
+import { argsLiveFlags, commandTools, longRunning } from "../../server/helpers/toolsFromCommands.ts";
 import type { CommandTool } from "../../server/helpers/toolsFromCommands.ts";
 import { TERMINAL_ONLY } from "../../server/types.ts";
 import type { CatalogEntry, CatalogInput, InputType } from "../types.ts";
@@ -62,7 +62,7 @@ function entryOf(plain: CommandTool, live: CommandTool | undefined): CatalogEntr
     inputs,
     liveInputs,
     bypass: form ? form.flags.some((f) => f.bypass) : /--bypass\b/.test(command.usage),
-    longRunning: LONG_RUNNING.has(command.name),
+    longRunning: longRunning(command),
     guide: guideOfCommand(command),
     terminalOnly: null,
   };

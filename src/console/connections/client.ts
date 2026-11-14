@@ -4,7 +4,7 @@ import { platformOfTwenty, signInRouteOf } from "../../cli/launch/helpers/start.
 import { PLATFORM_LABELS, PLATFORMS } from "../../cli/runner/helpers/platforms.ts";
 import type { Platform } from "../../cli/runner/helpers/platforms.ts";
 import { localAccountsPath, readLocalAccounts } from "../../twenty/graphql/index.ts";
-import { activeCheckId, readCheckRows } from "../accountCheck/index.ts";
+import { readCheckRows } from "../accountCheck/index.ts";
 import { readConnectionAccounts } from "./helpers/accounts.ts";
 import { readExtensionStates } from "./helpers/extensions.ts";
 import type { ConnectionAccount, ConnectionsView, ConsoleAccount, ConsoleConnections } from "./types.ts";
@@ -31,11 +31,7 @@ export function readConsoleAccounts(path: string = localAccountsPath()): Console
 
 export function readConnectionRows(env: Env = process.env, home = homedir()): ConnectionAccount[] {
   const checks = readCheckRows();
-  const active = activeCheckId();
-  return readConnectionAccounts(env, home).map((account) => {
-    const held = checks.get(account.id);
-    return { ...account, lastCheck: held ? { ...held, ...(held.state === "running" && account.id !== active ? { state: "unknown" as const } : {}) } : null };
-  });
+  return readConnectionAccounts(env, home).map((account) => ({ ...account, lastCheck: checks.get(account.id) ?? null }));
 }
 
 export function loadConnectionsView(env: Env = process.env, home = homedir()): ConnectionsView {

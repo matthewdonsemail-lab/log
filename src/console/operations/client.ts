@@ -1,8 +1,8 @@
-import { checkRefusal, inProcessToolCaller, sharedAccountChecker } from "../accountCheck/index.ts";
+import { inProcessToolCaller, runAccountCheck } from "../accountCheck/index.ts";
 import { loadConnectionsView } from "../connections/index.ts";
 import { readConsoleCredentials, saveConsoleCredentials } from "../credentials/index.ts";
 import { loadConsoleEvents, MAX_PAGE_SIZE } from "../events/index.ts";
-import { signInConsoleAccount } from "../signIn/index.ts";
+import { finishConsoleSignIn, signInConsoleAccount } from "../signIn/index.ts";
 import { loadConsoleUsage, usageDaysOf } from "../usage/index.ts";
 import { actOnBrowser, browserCheckFrame, browserCheckView, browserErrorCode, closeBrowser, openBrowser, saveBrowserState, sendBrowserInput } from "../browserCheck/index.ts";
 import type { ConnectionAccount } from "../connections/index.ts";
@@ -14,7 +14,7 @@ export function isConsoleOperation(value: unknown): value is ConsoleOperation {
 }
 
 export function consoleErrorCode(error: unknown): string {
-  const code = browserErrorCode(error) ?? (error instanceof Error ? error.message : "");
+  const code = browserErrorCode(error) ?? (error instanceof Error ? error.message.split(":")[0] : "");
   return (CONSOLE_SAFE_ERRORS as readonly string[]).includes(code) ? code : "consoleWorkspaceUnavailable";
 }
 
@@ -57,6 +57,8 @@ async function browserOperation(tool: string, args: Record<string, unknown>, dep
   if (tool === "browserInput") return { view: await sendBrowserInput(account, { ...at, event: args.event }) };
   if (tool === "browserAction") return { view: await actOnBrowser(account, args.action, at, callTool) };
   if (tool === "browserSaveState") return { view: await saveBrowserState(account, at, callTool), connections: loadConnectionsView() };
+  const signIn = await finishConsoleSignIn(account, { callTool, store: deps.signInStore, actors: deps.signInActors });
+  if (signIn) return { view: await browserCheckView(account), signIn, connections: loadConnectionsView() };
   return { view: await closeBrowser(account, callTool), connections: loadConnectionsView() };
 }
 
@@ -64,10 +66,7 @@ async function accountCheck(args: Record<string, unknown>, deps: ConsoleOperatio
   const view = loadConnectionsView();
   const account = view.accounts.find((item) => item.id === args.accountId);
   if (!account) throw new Error("accountNotFound");
-  const refusal = checkRefusal(account);
-  if (refusal) throw new Error(refusal);
-  const checker = sharedAccountChecker(deps.callTool ?? (await inProcessToolCaller()));
-  const result = await checker.check({ id: account.id, name: account.name, platform: account.platform });
+  const result = await runAccountCheck(account, deps.callTool ?? (await inProcessToolCaller()), deps.checkStore);
   return { state: result.state, session: result.session ?? null, connections: loadConnectionsView() };
 }
 
@@ -84,7 +83,7 @@ export async function runConsoleOperation(tool: string, args: Record<string, unk
   }
   if (tool === "accountCheck") return accountCheck(args, deps);
   if (tool === "accountSignIn") {
-    const result = await signInConsoleAccount(args);
+    const result = await signInConsoleAccount(args, process.env, { callTool: deps.callTool, store: deps.signInStore, actors: deps.signInActors });
     return { ...result, connections: loadConnectionsView() };
   }
   if (tool.startsWith("browser")) return browserOperation(tool, args, deps);

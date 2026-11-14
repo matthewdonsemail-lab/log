@@ -1,3 +1,5 @@
+import { PLATFORM_LABELS, PLATFORM_SITES, PLATFORMS } from '../../../cli/runner/helpers/platforms'
+import type { Platform } from '../../../cli/runner/helpers/platforms'
 import type { StepExchange } from '../../../subq/stepReading/types'
 
 export interface PageState {
@@ -159,7 +161,34 @@ export const PAGE_STATES: readonly StateRule[] = [
   { id: 'checkpoint', url: /\/checkpoint/i, what: 'a Facebook checkpoint', resolve: 'none: a checkpointed account is deactivated (rule 82, matt 2026-11-02): the browser checkpoint watch sets it DEACTIVATED, reason checkpointed, its listings lost; the browser closes and nothing is pressed. Tell matt', person: true }
 ]
 
+export function platformOfUrl(url: string): Platform | null {
+  let host: string
+  try {
+    host = new URL(url).hostname.toLowerCase()
+  } catch {
+    return null
+  }
+  return PLATFORMS.find((p) => PLATFORM_SITES[p].hosts.some((h) => host === h || host.endsWith(`.${h}`))) ?? null
+}
+
+export function platformLoginState(platform: Platform): PageState {
+  return {
+    id: `${platform}Login`,
+    what: `${PLATFORM_LABELS[platform]}'s login screen`,
+    resolve: `the owner signs in themself on ${PLATFORM_LABELS[platform]}'s login screen; closing the browser (sessionsSignIn with done) saves the session from it once its sign-in cookies are there`,
+    person: true
+  }
+}
+
 export function pageStateOf(url: string, text: string, context: StateContext = {}): PageState | null {
+  const found = matchedPageState(url, text, context)
+  if (found?.id !== 'loginForm') return found
+  const platform = platformOfUrl(url)
+  if (platform === 'facebook') return found
+  return platform ? platformLoginState(platform) : { ...found, resolve: 'the owner signs in themself on the login screen', person: true }
+}
+
+function matchedPageState(url: string, text: string, context: StateContext): PageState | null {
   for (const s of PAGE_STATES) {
     if (s.url && !s.url.test(url)) continue
     if (s.answer && context.exchanges?.length) {

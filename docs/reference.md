@@ -197,7 +197,7 @@ flowchart LR
   agent["Agent (Claude Code, Codex)"]
   matt["matt, in a terminal"]
   shell["Bash / PowerShell / Monitor"]
-  mcp["MCP server log: 224 command tools + saved flows"]
+  mcp["MCP server log: 225 command tools + saved flows"]
   bin["bin/log.ts"]
   runCli["runCli: 112 commands (COMMANDS)"]
   live[("~/.logCli/mcp/day.log: the live log")]
@@ -313,7 +313,7 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | [`log treg`](#log-treg) | The treg extension: find an endpoint by the job, read it, and call it with the key injected server-side (free ones run, priced ones only when the owner asked) | any (none) | `[--limit <integer 1..100>]` `[--json]` `[--params <jsonObject>]` `[--path <path>]` `[--method <GET|POST>]` `[--data <text>]` `[--await]` `[--maxItems <integer 1..1000>]` `[--fields <a,b,…>]` `[--where <key=value,…>]` `[--raw]` `[--approvedBy <who>]` `[--live]` | none | none | `tregSearch`, `tregGet`, `tregCall`, `tregCallLive` | PreToolUse, PostToolUse · PostToolUse | no | 41, 53, 163, 142, 164, 30, 38, 39, 40, 41 |
 | [`log balance`](#log-balance) | Every paid provider log calls, with what is left and which are out of credit | any (none) | `[--provider <subq|jina|inworld|fishAudio|assemblyAi|parallel|treg|twoCaptcha|byteful>]` `[--json]` | none | none | `balance` | PreToolUse, PostToolUse · PostToolUse | no | 41, 73, 94, 164, 30, 38, 39, 40, 41 |
 | [`log governor`](#log-governor) | Read every platform account's governor count, and put one back to 0 when the owner says so, recorded in log.db | any (none) | `[--platform <facebook|twitter|reddit|discord|linkedin|slack|instagram>]` `[--json]` `--account <accountName|all>` `--by <who>` `[--reason <text>]` | none | none | `governorShow`, `governorReset` | PreToolUse, PostToolUse · PostToolUse | no | 73, 86, 94, 105, 163, 168, 30, 38, 39, 40, 41 |
-| [`log sessions`](#log-sessions) | Check every account's saved session through its platform's own answer, with the next step to sign each one back in | any (none) | `[--platform <facebook|twitter|reddit|discord|linkedin|slack|instagram>]` `[--account <accountName>]` `[--json]` | none | none | `sessionsCheck` | PreToolUse, PostToolUse · PostToolUse | no | 25, 73, 94, 163, 30, 38, 39, 40, 41 |
+| [`log sessions`](#log-sessions) | Check every account's saved session through its platform's own answer, and sign one in from its own browser | any (none) | `[--platform <facebook|twitter|reddit|discord|linkedin|slack|instagram>]` `[--account <accountName>]` `[--json]` `[--route <browser|cookies>]` `[--done]` `[--wait <integer 0..900>]` | none | none | `sessionsCheck`, `sessionsSignIn` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 25, 73, 94, 163, 30, 38, 39, 40, 41 |
 | [`log chats`](#log-chats) | List an account's chats on its own platform, the platform taken from the account | any (none) | `--account <account>` `[--space <space>]` `[--limit <integer 1..>]` `[--platform <facebook|twitter|reddit|discord|linkedin|slack|instagram>]` `[--json]` | none | none | `chatsList` | PreToolUse, PostToolUse · PostToolUse | no | 89, 154, 160, 163, 30, 38, 39, 40, 41 |
 | [`log messages`](#log-messages) | Read one chat's messages on the account's own platform, the platform taken from the account | any (none) | `--account <account>` `--chat <chat>` `[--space <space>]` `[--limit <integer 1..>]` `[--platform <facebook|twitter|reddit|discord|linkedin|slack|instagram>]` `[--json]` | none | none | `messagesRead` | PreToolUse, PostToolUse · PostToolUse | no | 89, 154, 160, 163, 30, 38, 39, 40, 41 |
 | [`log clone`](#log-clone) | the owner's voice, cloned once per provider (Inworld or Fish Audio) from their own voice notes, and words said in it to a local file | any (none) | `[--provider <inworld|fishAudio>]` `[--from <file,…>]` `[--apply]` `[--replace]` `[--json]` `--text <text>` `[--model <model>]` `[--format <mp3|wav>]` | none | none | `cloneVoice`, `cloneSpeak` | PreToolUse, PostToolUse · PostToolUse | no | 39, 41, 94, 163, 142, 30, 38, 39, 40, 41 |
@@ -668,6 +668,7 @@ flowchart TB
   mcp --> c_governor
   cli --> c_sessions
   mcp --> c_sessions
+  c_sessions --> live
   cli --> c_chats
   mcp --> c_chats
   cli --> c_messages
@@ -1630,11 +1631,13 @@ Every platform account's governor counts what it sent X, Discord, Slack, Instagr
 
 #### log sessions
 
-Check every account's saved session through its platform's own answer, with the next step to sign each one back in MCP tools: `sessionsCheck`, one per form, with named fields.
+Check every account's saved session through its platform's own answer, and sign one in from its own browser MCP tools: `sessionsCheck`, `sessionsSignIn`, one per form, with named fields.
 
 ```text
 log sessions check [--platform <p>] [--account <accountName>] [--json]
-Checks every account's saved session through its platform's own check (X, Discord, Instagram, Slack, Reddit, LinkedIn), one account after another, and says for each: signed in, needs signing in (a 401, or no session saved), stopped (the platform refused: nothing retries, rule 94) or unknown. An account that needs signing in comes with its next step: its own browser opened on the platform's sign-in page for the owner (log inspect start; closing it saves the new session), or X's cookie prompt. Facebook is checked in its browser, and a deactivated account is skipped. Each result is also the console's last check for that account, so the console, the CLI and the MCP tool sessionsCheck say the same. Sends nothing.
+log sessions signIn --account <accountName> [--platform <p>] [--route browser|cookies] [--done] [--wait <seconds>] [--json]
+check: checks every account's saved session through its platform's own check (X, Discord, Instagram, Slack, Reddit, LinkedIn), one account after another, and says for each: signed in, needs signing in (a 401, or no session saved), stopped (the platform refused: nothing retries, rule 94) or unknown. One gate decides which accounts may be checked: a deactivated account is skipped, and one held stopped (by its status, its session or its last check) is never checked again until the owner says so. A check holds the account while it runs, so a second check of it is refused as busy; a check whose process died is read back as unknown. An account that needs signing in comes with its next step, sessionsSignIn. Facebook is checked in its browser. Each result is also the console's last check for that account, so the console, the CLI and the MCP tool sessionsCheck say the same. Sends nothing.
+signIn: one sign-in, as a machine: it checks the account first (signed in: done; held stopped: nothing is opened), then opens the account's own browser on the platform's login screen for the owner to sign in themself (route browser, every platform with a browser), or takes the masked cookie prompt in a terminal (route cookies: X, LinkedIn and Slack; X has no browser yet). The session is saved from the browser when it closes, and only when the platform's own sign-in cookies are in it, so a signed-out browser never overwrites a stored session; then it is checked again. With no --wait it returns while the owner signs in; --done (or the owner closing the window) finishes it. Sends nothing.
 ```
 
 #### log chats

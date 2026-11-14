@@ -182,6 +182,9 @@ stateDiagram-v2
 | `proxyCheckFailed` | yes | `cli/preflight` | publish→blocked, monitor→blocked | The proxy check itself could not run (the worker or the run folder failed), so the proxy is unknown. | Run `log proxy check --account <id>` and read its error. |
 | `chatMovedOn` | yes | `inbox/claims`, `src/cli/discord`, `src/cli/slack`, `src/cli/twitter` | publish→blocked, monitor→blocked | Someone wrote in the chat after the voice gate read it, so the draft answers an older moment. Nothing was sent. | Read what they said (it is in the refusal), redraft to answer it, gate it and send again. |
 | `chatClaimLost` | yes | `inbox/claims`, `src/cli/twitter` | publish→blocked, monitor→blocked | The claim on this chat was lost (expired, taken over, or another send took it) before the first part went out. Nothing was sent. | Check `log inbox actions --chat <id>` for who holds it now; claim it again only if nobody else is answering, then send. |
+| `accountCheckBusy` | yes | `platformKit/sessionCheck`, `platformKit/signIn` | publish→blocked, monitor→blocked | Another check or sign-in of this account is running, held by a live process. Nothing was sent. | Wait for the running check to finish, then check again. |
+| `accountCheckStopped` | no | `platformKit/sessionCheck` | publish→blocked, monitor→blocked | The account is held stopped: its status, its session or its last check was a platform refusal, so it isn't checked or signed in again (rule 94). Nothing was sent. | The owner looks at the stop first; it lifts once a newer session check or sign-in is recorded. |
+| `signInRouteUnavailable` | no | `platformKit/signIn` | publish→blocked, monitor→blocked | The platform doesn't sign in by that route: browser needs a platform with a browser, cookies a platform with a cookie prompt. Nothing was opened. | Sign in by the route the refusal names (X: cookies). |
 
 ## listing
 
@@ -374,4 +377,5 @@ stateDiagram-v2
 | `bypassNotConfirmed` | no | `mcp/server` | command exits | bypass (a run outside the account's waking hours) was given without confirmBypass: true, so nothing ran. | Pass confirmBypass: true only when the owner asked for a run outside the hours (rule 86). |
 | `playMissing` | no | `mcp/server` | command exits | A tool that sends as the owner was called with no play loaded for the caller, so nothing was sent. | Load the play that fits with getGuide({ useCase }), the refusal lists them, then call again. |
 | `playNotCovering` | no | `mcp/server` | command exits | A tool that sends as the owner was called under a play that neither names it nor is filed under its platform, so nothing was sent. | End the play with getGuide({ clearPlay: true }) or load the play that fits, then call again. |
+| `sessionPlatformInvalid` | no | `platformKit/sessionCheck` | command exits | The platform given isn't one log knows. | Give one of the platforms log lists in its usage, or leave the platform out to check every account. |
 

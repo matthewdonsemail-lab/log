@@ -2794,5 +2794,67 @@
     "publish": "blocked",
     "monitor": "blocked",
     "action": "Check `log inbox actions --chat <id>` for who holds it now; claim it again only if nobody else is answering, then send."
+  },
+  "accountCheckBusy": {
+    "layer": "account",
+    "meaning": "Another check or sign-in of this account is running, held by a live process. Nothing was sent.",
+    "retryable": true,
+    "raisedIn": [
+      "platformKit/sessionCheck",
+      "platformKit/signIn"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Wait for the running check to finish, then check again."
+  },
+  "accountCheckStopped": {
+    "layer": "account",
+    "meaning": "The account is held stopped: its status, its session or its last check was a platform refusal, so it isn't checked or signed in again (rule 94). Nothing was sent.",
+    "retryable": false,
+    "raisedIn": [
+      "platformKit/sessionCheck"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "The owner looks at the stop first; it lifts once a newer session check or sign-in is recorded."
+  },
+  "sessionPlatformInvalid": {
+    "layer": "tool",
+    "meaning": "The platform given isn't one log knows.",
+    "retryable": false,
+    "raisedIn": [
+      "platformKit/sessionCheck"
+    ],
+    "action": "Give one of the platforms log lists in its usage, or leave the platform out to check every account."
+  },
+  "signInRouteUnavailable": {
+    "layer": "account",
+    "meaning": "The platform doesn't sign in by that route: browser needs a platform with a browser, cookies a platform with a cookie prompt. Nothing was opened.",
+    "retryable": false,
+    "raisedIn": [
+      "platformKit/signIn"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Sign in by the route the refusal names (X: cookies)."
+  },
+  "sessionSaveUnconfirmed": {
+    "layer": "browser",
+    "meaning": "The browser closed but no save of its session was recorded, so the sign-in is not known to have saved anything. The stored session was left as it was.",
+    "retryable": true,
+    "raisedIn": [
+      "platformKit/signIn"
+    ],
+    "action": "Check the account again; sign in again if it still needs it."
+  },
+  "browserOperationRefused": {
+    "layer": "browser",
+    "meaning": "log refused a browser step of the sign-in (opening or closing the account browser). Nothing was retried.",
+    "retryable": false,
+    "raisedIn": [
+      "platformKit/signIn",
+      "console/browserCheck"
+    ],
+    "action": "Read the refusal it quotes (an account gate, a missing browser profile), fix that, then sign in again."
   }
 }

@@ -12,6 +12,9 @@ import { connectMachine } from "../../marketplace/connect/index.ts";
 import type { ActOutput, ConnectActorInputs, ConnectOutput, ReadOutput, SaveOutput, SolveOutput } from "../../marketplace/connect/index.ts";
 import { createInspector, formatTraceLine } from "../../observability/trace/index.ts";
 import { recordAccountIssue } from "../../marketplace/replacement/index.ts";
+import { browserSessionGate, recordSessionSave } from "../../platformKit/signIn/index.ts";
+import type { SaveOutcome } from "../../platformKit/signIn/index.ts";
+import { knownPlatformOfAccount } from "../runner/helpers/platforms.ts";
 import { checkRunnable, findAccount, listFacebookAccounts, saveCookies, saveDeviceProfile, savePlatformSession, saveSession, setAccountStatus, toFacebookCookies } from "../../marketplace/socialAccount/index.ts";
 import type { FacebookAccount, RunPurpose } from "../../marketplace/socialAccount/index.ts";
 import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuse, refuseError, refuseInput } from "../runner/helpers/index.ts";
@@ -107,14 +110,22 @@ export async function keepNewDevice(context: CommandContext, account: FacebookAc
 
 export async function keepSession(context: CommandContext, account: FacebookAccount, run: PreparedRun): Promise<string | null> {
   const state = run.readStorageState();
+  const now = (context.now ?? (() => new Date()))();
+  const facebook = !account.platform || account.platform === "FACEBOOK";
+  let outcome: SaveOutcome;
   try {
-    const save = !account.platform || account.platform === "FACEBOOK" ? saveSession : savePlatformSession;
-    return (await save(context.twenty, account.id, state))
-      ? `Saved ${account.accountName}'s browser session (${state.cookies.length} cookies, ${state.origins.length} origin(s)) to Twenty.`
-      : null;
+    const saved = facebook
+      ? (await saveSession(context.twenty, account.id, state)) ? { saved: true, code: null, detail: null } : { saved: false, code: "noPlatformSession", detail: "the browser has no Facebook c_user and xs cookies" }
+      : await savePlatformSession(context.twenty, account.id, state, (held) => browserSessionGate(knownPlatformOfAccount(account), held), now);
+    outcome = { ...saved, at: now.toISOString() };
   } catch (error) {
-    return `Could not save ${account.accountName}'s browser session to Twenty: ${refuseError("session", error).stderr}`;
+    const said = refuseError("session", error).stderr ?? "";
+    recordSessionSave(account.id, { saved: false, code: "sessionSaveFailed", detail: said.slice(0, 300), at: now.toISOString() });
+    return `Could not save ${account.accountName}'s browser session to Twenty: ${said}`;
   }
+  recordSessionSave(account.id, outcome);
+  if (outcome.saved) return `Saved ${account.accountName}'s browser session (${state.cookies.length} cookies, ${state.origins.length} origin(s)) to Twenty.`;
+  return facebook ? null : `Kept ${account.accountName}'s stored session: ${outcome.detail} (${outcome.code}), so a signed-out browser saved nothing.`;
 }
 
 export function withNote(result: CommandResult, note: string | null): CommandResult {
