@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 49 domains, 548 requirements. Each one's anchors are proved against its code by the syntax tree on every commit, push and pull request (`bun run check:specs`). SubQ reads a requirement against its code only when asked (`bun run check:specs --subq`, rule 170). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 49 domains, 553 requirements. Each one's anchors are proved against its code by the syntax tree on every commit, push and pull request (`bun run check:specs`). SubQ reads a requirement against its code only when asked (`bun run check:specs --subq`, rule 170). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -143,6 +143,11 @@ The agent hooks put log-cli's state in front of the agent (Claude Code or Codex)
 - **REQ-HOOKS-21** Claude Code's hooks reach log through the warm service, and only the refusals start a process
 - **REQ-HOOKS-22** The hook service moves itself onto new code
 - **REQ-HOOKS-23** Only the platform's refusal stops a catch-up
+- **REQ-HOOKS-24** One harness table, one hook file per hook host
+- **REQ-HOOKS-25** Each adapter answers in its harness's shape, cut to its limit
+- **REQ-HOOKS-26** The prompt hook names the play when the service is down
+- **REQ-HOOKS-27** The check runs every hook on scratch state, starting nothing
+- **REQ-HOOKS-28** Setup installs the hooks for each harness it finds
 
 ## [Inspect rule one](./inspectRuleOne.md)
 

@@ -3,6 +3,7 @@ import { join } from 'node:path'
 import { readPending } from '../../src/inbox/pending/index'
 import { superviseLocalWatchers } from '../../src/platformKit/watcher/index'
 import { clearDeadQueueLocks, ensureLiveWatchers, hookReaderOf, inboxReaders, pollReaders, releasePoll, startDescriber } from '../../src/inbox/watch/index'
+import { contextOutput, hookHostOf } from '../../src/agentHooks/harness/index'
 
 const repo = join(import.meta.dir, '..', '..')
 
@@ -26,4 +27,4 @@ clearDeadQueueLocks()
 ensureLiveWatchers('model', ['describer'], () => startDescriber(repo))
 
 const { text } = readPending(hookReaderOf(raw), { stored: event === 'SessionStart' })
-if (text) process.stdout.write(JSON.stringify({ hookSpecificOutput: { hookEventName: event, additionalContext: text } }))
+if (text) process.stdout.write(contextOutput(event, text, hookHostOf(process.argv)))

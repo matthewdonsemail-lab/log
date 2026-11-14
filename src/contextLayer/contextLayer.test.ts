@@ -60,14 +60,21 @@ describe('the play comes back after compaction', () => {
     expect(text).toContain('getGuide({ useCase: "twitter/replyGuyFunnel" })')
   })
 
-  test('the hook answers a prompt from the router and stays silent when the service is down', async () => {
+  test('the hook answers a prompt from the router and falls back to the word router when the service is down', async () => {
     const route = async () => ({ play: { id: 'inbox/voiceNote', title: 'Sending a voice note', score: 0.8, phrase: 'send a vn' } })
     const hit = await hookAnswer({ hook_event_name: 'UserPromptSubmit', prompt: 'send a vn to the group' }, route)
     expect(hit.outcome).toBe('inbox/voiceNote')
     expect(JSON.parse(hookOutput(hit)).hookSpecificOutput.additionalContext).toContain('inbox/voiceNote')
-    const down = await hookAnswer({ hook_event_name: 'UserPromptSubmit', prompt: 'send a vn to the group' }, async () => null)
-    expect(down.outcome).toBe('serviceTimeout')
-    expect(hookOutput(down)).toBe('')
+    const useCases = () => [
+      { id: 'twitter/notifications', title: 'X notifications', asks: '"check my x notifications"' },
+      { id: 'discord/groupChatRead', title: 'Read a Discord group chat', asks: '"read the group chat on discord"' },
+    ]
+    const down = await hookAnswer({ hook_event_name: 'UserPromptSubmit', prompt: 'check my x notifications' }, async () => null, useCases)
+    expect(down.outcome).toBe('wordsOnly twitter/notifications')
+    expect(JSON.parse(hookOutput(down)).hookSpecificOutput.additionalContext).toContain('twitter/notifications')
+    const nothing = await hookAnswer({ hook_event_name: 'UserPromptSubmit', prompt: 'refactor the parser' }, async () => null, useCases)
+    expect(nothing.outcome).toBe('wordsOnly none')
+    expect(hookOutput(nothing)).toBe('')
   })
 
   test('the per-prompt hook is one curl to the service, with bun only as the fallback', () => {

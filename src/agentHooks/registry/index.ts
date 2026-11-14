@@ -1,8 +1,11 @@
 import { serviceHookCommand } from "../../contextLayer/service/client.ts";
 import { CONTEXT_PORT } from "../../contextLayer/service/types.ts";
-import type { AgentHook, HookEvent, HookHost } from "./types.ts";
+import { HARNESS_TABLE_START, withHarnessTable } from "../harness/client.ts";
+import type { AgentHook, HookEvent, HookFile } from "./types.ts";
 
-export type { AgentHook, HookEvent, HookHost } from "./types.ts";
+export const HARNESS_README = "docs/harnesses/README.md";
+
+export type { AgentHook, HookEvent, HookFile, HookHost } from "./types.ts";
 
 export const MCP_SERVER_NAME = "log";
 
@@ -47,9 +50,11 @@ export const AGENT_HOOKS: readonly AgentHook[] = [
   { event: "Stop", script: PAGE_STATE, timeout: 20, why: "the turn does not end while a browser sits on a state log-cli can resolve (rule 35)" },
 ];
 
-export function hookCommand(host: HookHost, script: string, service?: string): string {
-  const bun = host === "claudeCode" ? `bun "$CLAUDE_PROJECT_DIR/${script}"` : `bun "$(git rev-parse --show-toplevel)/${script}"`;
-  return service ? serviceHookCommand(service, bun) : bun;
+export type CommandHost = "claudeCode" | "codex";
+
+export function hookCommand(host: CommandHost, script: string, service?: string): string {
+  const bun = host === "claudeCode" ? `bun "$CLAUDE_PROJECT_DIR/${script}"` : `bun "$(git rev-parse --show-toplevel)/${script}" --host ${host}`;
+  return service ? serviceHookCommand(host === "claudeCode" ? service : `${service}?host=${host}`, bun) : bun;
 }
 
 export const HOOK_SERVICE_URL = `http://127.0.0.1:${CONTEXT_PORT}/hooks`;
@@ -84,7 +89,7 @@ export function claudeCodeHooks(hooks: readonly AgentHook[]): Record<string, unk
   return out;
 }
 
-export function hooksFor(host: HookHost, hooks: readonly AgentHook[] = AGENT_HOOKS): Record<string, unknown[]> {
+export function hooksFor(host: CommandHost, hooks: readonly AgentHook[] = AGENT_HOOKS): Record<string, unknown[]> {
   if (host === "claudeCode") return claudeCodeHooks(hooks);
   const out: Record<string, unknown[]> = {};
   for (const hook of hooks) {
@@ -92,6 +97,95 @@ export function hooksFor(host: HookHost, hooks: readonly AgentHook[] = AGENT_HOO
     (out[hook.event] ??= []).push(group);
   }
   return out;
+}
+
+const CURSOR_EVENTS: Readonly<Partial<Record<HookEvent, string>>> = { SessionStart: "sessionStart", PostToolUse: "postToolUse" };
+
+export function cursorHooks(hooks: readonly AgentHook[] = AGENT_HOOKS): Record<string, unknown> {
+  const out: Record<string, unknown[]> = {};
+  for (const [event, name] of Object.entries(CURSOR_EVENTS) as [HookEvent, string][]) {
+    const answering = hooks.filter((h) => h.event === event && !REFUSING.includes(h.script));
+    if (answering.length) out[name] = [{ command: `bun ${EVENT_SCRIPT} ${event} --host cursor` }];
+  }
+  return { version: 1, hooks: out };
+}
+
+export const ANTIGRAVITY_SCRIPT = "scripts/hooks/antigravity.ts";
+
+const ANTIGRAVITY_EVENTS: readonly [HookEvent, string][] = [
+  ["SessionStart", "SessionStart"],
+  ["UserPromptSubmit", "PreInvocation"],
+  ["PreToolUse", "PreToolUse"],
+  ["PostToolUse", "PostToolUse"],
+  ["Stop", "Stop"],
+];
+
+const ANTIGRAVITY_TOOLS = `run_command|mcp__${MCP_SERVER_NAME}__.*`;
+
+export function antigravityHooks(hooks: readonly AgentHook[] = AGENT_HOOKS): Record<string, unknown> {
+  const out: Record<string, unknown[]> = {};
+  for (const [event, name] of ANTIGRAVITY_EVENTS) {
+    if (!hooks.some((h) => h.event === event)) continue;
+    const tool = event === "PreToolUse" || event === "PostToolUse";
+    out[name] = [{ ...(tool ? { matcher: ANTIGRAVITY_TOOLS } : {}), hooks: [{ type: "command", command: `bun ${ANTIGRAVITY_SCRIPT} ${name}`, timeout: 30 }] }];
+  }
+  return { "log-hooks": out };
+}
+
+export const HERMES_PLUGIN_NAME = "logHooks";
+
+export const HERMES_PLUGIN_DIR = "hermesPlugin/native";
+
+export function hermesPluginYaml(version: string): string {
+  return [
+    `name: ${HERMES_PLUGIN_NAME}`,
+    `version: ${version}`,
+    `description: "log's hooks for Hermes. Before each model call, pre_llm_call puts the play the prompt asks for, pending inbox messages and browser states in front of the model. Written from src/agentHooks/registry (bun run check:agentHooks --write)."`,
+    "provides_hooks:",
+    "  - pre_llm_call",
+    "",
+  ].join("\n");
+}
+
+function parsedOrNull(text: string | null): Record<string, unknown> | null {
+  if (text === null) return null;
+  try {
+    return JSON.parse(text) as Record<string, unknown>;
+  } catch {
+    return null;
+  }
+}
+
+const jsonText = (value: unknown) => `${JSON.stringify(value, null, 2)}\n`;
+
+function hooksKeyFile(path: string, wanted: Record<string, unknown[]>, header: Record<string, unknown> = {}): HookFile {
+  return {
+    path,
+    format: "json",
+    same: (current) => JSON.stringify(parsedOrNull(current)?.hooks ?? null) === JSON.stringify(wanted),
+    wanted: (current) => jsonText({ ...header, ...(parsedOrNull(current) ?? {}), hooks: wanted }),
+  };
+}
+
+function wholeFile(path: string, wanted: Record<string, unknown>): HookFile {
+  return { path, format: "json", same: (current) => JSON.stringify(parsedOrNull(current)) === JSON.stringify(wanted), wanted: () => jsonText(wanted) };
+}
+
+export function hookFiles(hooks: readonly AgentHook[] = AGENT_HOOKS, hermesVersion = "0.2.0"): HookFile[] {
+  const yaml = hermesPluginYaml(hermesVersion);
+  return [
+    hooksKeyFile(".claude/settings.json", hooksFor("claudeCode", hooks)),
+    hooksKeyFile(".codex/hooks.json", hooksFor("codex", hooks), { description: "log-cli's agent hooks, written from src/agentHooks/registry (bun run check:agentHooks --write)." }),
+    wholeFile(".cursor/hooks.json", cursorHooks(hooks)),
+    wholeFile(".agents/hooks.json", antigravityHooks(hooks)),
+    { path: `${HERMES_PLUGIN_DIR}/plugin.yaml`, format: "text", same: (current) => (current ?? "").replace(/\r\n/g, "\n") === yaml, wanted: () => yaml },
+    {
+      path: HARNESS_README,
+      format: "text",
+      same: (current) => current !== null && current.includes(HARNESS_TABLE_START) && withHarnessTable(current.replace(/\r\n/g, "\n")) === current.replace(/\r\n/g, "\n"),
+      wanted: (current) => withHarnessTable((current ?? "").replace(/\r\n/g, "\n")),
+    },
+  ];
 }
 
 export function toolIsHooked(tool: string, hooks: readonly AgentHook[] = AGENT_HOOKS): boolean {

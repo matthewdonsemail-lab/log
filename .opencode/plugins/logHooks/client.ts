@@ -64,7 +64,7 @@ export async function ensureHookServer(repo: string, attempts = 24): Promise<boo
 
 export async function postHook(event: LogHookEvent, payload: LogHookPayload, timeoutMs = HOOK_TIMEOUT_MS): Promise<LogHookReply> {
   try {
-    const response = await fetch(`${origin()}/hooks/${event}`, {
+    const response = await fetch(`${origin()}/hooks/${event}?host=opencode`, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ hook_event_name: event, ...payload }),

@@ -1,0 +1,5 @@
+name: logHooks
+version: 0.2.0
+description: "log's hooks for Hermes. Before each model call, pre_llm_call puts the play the prompt asks for, pending inbox messages and browser states in front of the model. Written from src/agentHooks/registry (bun run check:agentHooks --write)."
+provides_hooks:
+  - pre_llm_call

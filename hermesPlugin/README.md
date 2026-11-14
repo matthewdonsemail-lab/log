@@ -36,8 +36,8 @@ An Agent Plugins v1 package:
 
 - `mcp.json`: starts log's MCP server (`logMcp`) on your machine over stdio. Hermes gets log's tools as `mcp__log__*`: DM inboxes, conversation reads, session checks, search across past conversations, the voice check, and the send/reply/quote tools.
 - `plugin.json`: marks the `log` server **untrusted**, so every tool not annotated read-only (anything that sends or changes an account) asks for approval and is refused in cron and other unattended runs. The tool-call timeout is 600 s, because a platform read can take a while.
-- `skills/dm-inbox`: how to find who needs a reply and answer them: read the whole thread, pull how you actually write to that person, draft, check the draft, send only on your go.
-- `skills/outreach`: replies, quotes and follow-ups in your voice.
+- `skills/`: every log play, one skill each (`log:log-twitter-dm-inbox`, `log:log-inbox-triage` and so on), generated from log's use cases by `bun run skills:build`, the same skills Claude Code gets. Each one starts by loading its play with `getGuide({ useCase })`, so log's play gate lets its sends through.
+- `native/`: a second, native Hermes plugin, `logHooks` (`plugin.yaml`, `__init__.py`). A portable plugin like this one can't register hooks, so the router lives there: its `pre_llm_call` hook runs log's hook script before each model call and adds what it answers to the turn: the play the prompt asks for, anyone waiting in a signed-in inbox, open browsers on a state log can resolve, and, on a session's first turn, what a session start gets. `log launch --setup` installs it into `~/.hermes/plugins/logHooks` with the path of your log install.
 - `dashboard/`: the log tab for Hermes's dashboard (`manifest.json`, `plugin_api.py`, `dist/`). Plain JavaScript on the dashboard SDK, no build step and no bundled libraries.
 
 ## Install
@@ -58,9 +58,16 @@ An Agent Plugins v1 package:
    hermes plugins enable log
    ```
 
+3. For the router hook, pick Hermes in `log launch --setup` (it shows when `~/.hermes` exists), then enable the native plugin it installed:
+
+   ```bash
+   hermes plugins enable logHooks
+   ```
+
 ## Disclosure
 
 - **Dashboard tab:** its backend (`dashboard/plugin_api.py`) runs inside Hermes's dashboard only while the plugin is enabled. It reads, read-only, log's own files under `~/.logCli`: each account's `session.json`, its `governor_state.json` (today's request and send counts) and the X inbox log already synced (`inboxSync.json`), including message previews. It makes no network call, runs no command and writes nothing. The tab is served on Hermes's own local dashboard, behind its sign-in.
+- **Router hook:** the native `logHooks` plugin, once enabled, runs `bun <your log install>/scripts/hooks/event.ts` before each model call with the message you sent, and adds its answer (at most 7,500 characters per event) to the turn. That script reads log's local state and starts log's own background services (the context service and, for signed-in accounts, the inbox watchers) the way log's other hooks do.
 - **Local process:** the plugin runs `logMcp` from your log install as a long-running stdio process while Hermes is open. It is not bundled here; you install log yourself.
 - **Network calls:** log calls the platforms you signed in (X, Discord, Slack, Instagram and Reddit, plus LinkedIn for its session check) directly, as your own accounts, and only when a tool runs. This plugin adds no telemetry and sends nothing anywhere else.
 - **Data and credentials:** your account sessions, cookies and message history stay in log's own folder on your machine (`~/.logCli`). The plugin never reads cookies or credentials; only log does. The dashboard tab reads only the files named above. Nothing is put in `mcp.json`.

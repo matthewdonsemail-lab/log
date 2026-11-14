@@ -3,6 +3,7 @@ import { join } from 'node:path'
 import { engineContext, fbkStateRoot } from '../../src/directApi/engine/index'
 import { localChangesLine, staleServerLine } from '../../src/mcp/freshness/index'
 import { getState, putState } from '../../src/storage/state/index'
+import { contextOutput, hookHostOf } from '../../src/agentHooks/harness/index'
 
 const raw = await Bun.stdin.text().catch(() => '')
 let event = 'UserPromptSubmit'
@@ -17,5 +18,5 @@ const last = join(root, '.lastHook')
 const changed = getState<string>('lastHook', last, { legacyFile: last, parse: (raw) => raw })?.body !== text
 if (event === 'SessionStart' || changed) {
   putState('lastHook', last, text)
-  process.stdout.write(JSON.stringify({ hookSpecificOutput: { hookEventName: event, additionalContext: text } }))
+  process.stdout.write(contextOutput(event, text, hookHostOf(process.argv)))
 }
