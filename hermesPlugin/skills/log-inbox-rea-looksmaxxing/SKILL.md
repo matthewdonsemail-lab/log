@@ -18,7 +18,7 @@ How the owner asks for it: "/rea-looksmaxxing how clavicular gets paid", "moneym
 
 ## Run it from a fresh context
 
-Say: **"go on docs/useCases/inbox/reaLooksmaxxing.md for <creator> and <offer>"**. The agent reads this page and treg's `web-access` skill, loads `getGuide({ topic: "xSending" })` before anything on X, and runs the steps. Outside this repo the same play is the `rea-looksmaxxing` skill: `curl -fsSL https://log.listeningkit.com/install.sh | sh -s -- --skills rea-looksmaxxing --skillsOnly` installs it with treg's `treg` and `web-access` skills beside it (on Windows, set `LOG_SKILLS=rea-looksmaxxing` and `LOG_SKILLS_ONLY=1` before `irm https://log.listeningkit.com/install.ps1 | iex`), and `npx skills add log.listeningkit.com` finds it too.
+Say: **"go on docs/useCases/inbox/reaLooksmaxxing.md for <creator> and <offer>"**. The agent reads this page and treg's `web-access` skill, loads `getGuide({ topic: "xSending" })` before anything on X, and runs the steps. Outside this repo the same play is the `rea-looksmaxxing` skill: log's installer with `--skills rea-looksmaxxing --skillsOnly` installs it with treg's `treg` and `web-access` skills beside it (on Windows, set `LOG_SKILLS=rea-looksmaxxing` and `LOG_SKILLS_ONLY=1` before the PowerShell installer; both are in [install](https://github.com/matthewdonsemail-lab/log/blob/main/docs/install.md)), and `npx skills add log.listeningkit.com` finds it too.
 
 ## The steps
 

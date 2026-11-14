@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { installHermes, installedPluginYaml } from "../hermes/index.ts";
@@ -151,6 +151,37 @@ describe("the native Hermes plugin's pre_llm_call", () => {
       expect(out.names).toEqual(["pre_llm_call"]);
       expect(out.first.context).toBe("SessionStart|--host hermes|check my x notifications\n\nUserPromptSubmit|--host hermes|check my x notifications");
       expect(out.later.context).toBe("UserPromptSubmit|--host hermes|hi");
+    } finally {
+      rmSync(scratch, { recursive: true, force: true });
+    }
+  });
+});
+
+describe("the native Hermes plugin installed on its own, with no log launch --setup", () => {
+  test("finds log's global install by itself and runs its event script", () => {
+    const scratch = mkdtempSync(join(tmpdir(), "harnessContract-pyHermesAlone-"));
+    try {
+      const bunHome = join(scratch, "bun");
+      const installed = join(bunHome, "install", "global", "node_modules", "@listeningkit", "log");
+      mkdirSync(join(installed, "scripts", "hooks"), { recursive: true });
+      writeFileSync(join(installed, "scripts", "hooks", "event.ts"), "await Bun.stdin.text()\nprocess.stdout.write(JSON.stringify({ context: `found ${process.argv[2]}` }))\n");
+      const pluginDir = join(scratch, "hermes", "plugins", "logHooks");
+      mkdirSync(pluginDir, { recursive: true });
+      writeFileSync(join(pluginDir, "plugin.yaml"), readFileSync(join(root, HERMES_PLUGIN_DIR, "plugin.yaml"), "utf8"));
+      writeFileSync(join(pluginDir, "__init__.py"), readFileSync(join(root, HERMES_PLUGIN_DIR, "__init__.py"), "utf8"));
+      const script = [
+        "import importlib.util, json",
+        `spec = importlib.util.spec_from_file_location("logHooks", ${JSON.stringify(join(pluginDir, "__init__.py"))})`,
+        "module = importlib.util.module_from_spec(spec)",
+        "spec.loader.exec_module(module)",
+        "print(json.dumps({'root': str(module.log_root()), 'answer': module.pre_llm_call(session_id='s', user_message='hi', is_first_turn=False)}))",
+      ].join("\n");
+      const env: Record<string, string | undefined> = { ...process.env, BUN_INSTALL: bunHome, LOG_ROOT: "" };
+      const run = spawnSync(process.env.LOG_PYTHON || "python", ["-c", script], { encoding: "utf8", windowsHide: true, env });
+      expect(run.status).toBe(0);
+      const out = JSON.parse(run.stdout.trim()) as { root: string; answer: { context: string } };
+      expect(realpathSync(out.root)).toBe(realpathSync(installed));
+      expect(out.answer.context).toBe("found UserPromptSubmit");
     } finally {
       rmSync(scratch, { recursive: true, force: true });
     }
