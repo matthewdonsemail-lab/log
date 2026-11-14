@@ -25,9 +25,9 @@ Say: **"go on docs/useCases/instagram/newPlatform.md for <platform>"**. The agen
 
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
-| 1 | Make the platform, dry run first, then apply | `newPlatform` { name, hosts, home, cookieDomain, sessionCookies }, then with apply: true | every file written and every syntax-tree edit landed, `check:platforms` passes |
+| 1 | Make the platform, dry run first, then apply | `newPlatform` { name, hosts, home, cookieDomain, sessionCookies }, then `newPlatformLive` with the same and confirmLive: true | every file written and every syntax-tree edit landed, `check:platforms` passes |
 | 2 | Restart the MCP server so it loads the new platform | the owner restarts the Claude app | `adsPowerSync` sees the platform's accounts |
-| 3 | Give the account its browser profile | `adsPowerSync` { account: "<account>", apply: true } | the account has an `adsPowerProfileId` |
+| 3 | Give the account its browser profile | `adsPowerSyncLive` { account: "<account>", confirmLive: true } | the account has an `adsPowerProfileId` |
 | 4 | Open the platform in the account's browser | `inspectStart` { account, detach: true, url: "<home>", goal } | the gate and self-check passed and the home page is open |
 | 5 | The owner signs in by hand in that window; read where it landed | `inspectDo` { action: "snapshot" } | the platform's own answer shows the account signed in |
 | 6 | Save the session, then close the browser so it is written to the account | `inspectDo` { action: "saveState" }, then `inspectDo` { action: "stop" } | the account's cookies hold the platform's session cookies |

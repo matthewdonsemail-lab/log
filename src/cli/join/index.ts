@@ -349,6 +349,7 @@ export const joinCommand: Command = {
   usage: JOIN_USAGE,
   platform: "facebook",
   name: "join",
+  longRunning: true,
   effect: "browser",
   input: JOIN_INPUT,
   summary: "Join a Facebook group as one account, in its open browser: read the gate, --live presses Join; every step patches agencyGroups.joinSubmission",

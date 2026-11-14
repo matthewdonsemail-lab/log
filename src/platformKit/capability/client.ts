@@ -70,21 +70,22 @@ export function capabilityMissing(definition: CapabilityDefinition, platform: Pl
   return { ok: false, code: "capabilityMissing", detail: `${capabilityTool(definition)} isn't on ${PLATFORM_LABELS[platform]}; it is on ${platformsWithIt.map((p) => PLATFORM_LABELS[p]).join(", ")}`, platformsWithIt };
 }
 
-export function argvFor(definition: CapabilityDefinition, platform: Platform, input: Partial<Record<CanonicalInput, string | number>>): CapabilityArgv {
+export function argvFor(definition: CapabilityDefinition, platform: Platform, input: Partial<Record<CanonicalInput, string | number | boolean>>): CapabilityArgv {
   const binding = definition.platforms[platform];
   if (!binding) return capabilityMissing(definition, platform);
   const argv: string[] = [...binding.words];
   const flags: string[] = [];
   for (const spec of definition.inputs) {
     const value = input[spec.name];
-    if (value === undefined || value === "") continue;
+    if (value === undefined || value === "" || value === false) continue;
     const mapping = binding.inputs[spec.name];
     if (!mapping) {
       if (spec.name === "account") continue;
       return { ok: false, code: "inputUnsupported", detail: `${spec.name} isn't taken by ${capabilityTool(definition)} on ${PLATFORM_LABELS[platform]}` };
     }
     const text = String(value);
-    if ("positional" in mapping) argv.push(text);
+    if (value === true && "flag" in mapping) flags.push(`--${mapping.flag}`);
+    else if ("positional" in mapping) argv.push(text);
     else flags.push(`--${"flag" in mapping ? mapping.flag : mapping.choose(text).flag}`, text);
   }
   return { ok: true, platform, command: binding.command, argv: [...argv, ...flags] };

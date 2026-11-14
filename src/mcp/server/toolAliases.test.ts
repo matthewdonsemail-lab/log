@@ -5,7 +5,7 @@ import { COMMANDS } from "../../cli/runner/index.ts";
 import { isPlatform, toolBaseName } from "../../cli/runner/helpers/platforms.ts";
 import { marketplaceFixture } from "../../twenty/graphql/index.ts";
 import { catalog, entryById, getAnswer, resolveCall } from "../catalog/index.ts";
-import { ARGS_TOOLS_GIVEN_FORMS, commandTools, createLogMcpServer, currentToolName, guardCall, RENAMED_COMMAND_TOOLS, RENAMED_FLOW_TOOLS, RENAMED_TOOLS, runToolCall, savedFlows, toolsFromCommands, toolsFromFlows } from "./index.ts";
+import { ARGS_TOOLS_GIVEN_FORMS, commandTools, createLogMcpServer, currentToolName, guardCall, LOCAL_LIVE_FLAGS, RENAMED_COMMAND_TOOLS, RENAMED_FLOW_TOOLS, RENAMED_TOOLS, runToolCall, savedFlows, toolsFromCommands, toolsFromFlows } from "./index.ts";
 
 const toolNames = [...toolsFromCommands(COMMANDS), ...toolsFromFlows(savedFlows())].map((t) => t.name);
 
@@ -30,7 +30,7 @@ describe("every platform's tools carry the platform's name", () => {
 describe("renamed Facebook tools keep their old names for one release", () => {
   test("the table names every Facebook tool by its old name, and nothing else", () => {
     const given = (t: { command: Parameters<typeof toolBaseName>[0] }) => ARGS_TOOLS_GIVEN_FORMS.has(toolBaseName(t.command));
-    const listed = commandTools(COMMANDS).filter((t) => t.command.platform === "facebook" && (!given(t) || t.tool === toolBaseName(t.command))).map((t) => t.tool);
+    const listed = commandTools(COMMANDS).filter((t) => t.command.platform === "facebook" && !(t.live && t.forced.some((f) => LOCAL_LIVE_FLAGS.has(f))) && (!given(t) || t.tool === toolBaseName(t.command))).map((t) => t.tool);
     const facebook = [...new Set([...listed, ...[...ARGS_TOOLS_GIVEN_FORMS].filter((name) => name.startsWith("facebook"))])];
     const old = Object.fromEntries(facebook.map((tool) => [tool[8].toLowerCase() + tool.slice(9), tool]));
     expect(RENAMED_COMMAND_TOOLS).toEqual(old);

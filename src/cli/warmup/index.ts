@@ -56,6 +56,7 @@ export const warmupCommand: Command = {
   usage: WARMUP_USAGE,
   platform: "byArgument",
   name: "warmup",
+  longRunning: true,
   effect: "browser",
   input: WARMUP_INPUT,
   summary: "The warm-up, by platform and activity: `log <platform> warmup reel|feed|stages` (the account's browser primed with the activity, each step checked, the outline written)",

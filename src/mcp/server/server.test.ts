@@ -9,7 +9,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import type { WorkerClient } from "../../camofox/worker/index.ts";
 import { emitLog } from "../../observability/processLog/index.ts";
-import { commandTools, createLogMcpServer, formatLogLine, guardCall, parseEnvText, runToolCall, savedFlows, TERMINAL_ONLY, toolsFromCommands, toolsFromFlows } from "./index.ts";
+import { commandTools, createLogMcpServer, formatLogLine, guardCall, parseEnvText, runToolCall, savedFlows, toolsFromCommands, toolsFromFlows } from "./index.ts";
 import { readJob } from "../jobs/index.ts";
 
 async function connected() {
@@ -27,7 +27,7 @@ function textOf(result: Awaited<ReturnType<Client["callTool"]>>): string {
 describe("toolsFromCommands", () => {
   test("every command has a tool except the terminal-only ones, one per form when it declares its input", () => {
     const entries = commandTools(COMMANDS);
-    for (const command of COMMANDS) expect(entries.some((t) => t.command === command)).toBe(!(command.name in TERMINAL_ONLY));
+    for (const command of COMMANDS) expect(entries.some((t) => t.command === command)).toBe(!command.terminalOnly);
     const names = toolsFromCommands(COMMANDS).map((tool) => tool.name);
     expect(names).toEqual(expect.arrayContaining(["facebookPublish", "facebookPublishLive", "facebookConnect", "inspectStart", "inspectDo", "inspectDoLive", "facebookHostStartLive", "facebookJoinGroupLive", "warmupLive", "facebookAccountShow", "runsPrune", "facebookListing", "facebookListingCreate"]));
     expect(names).not.toContain("facebookAccountsLive");
@@ -130,7 +130,8 @@ describe("guardCall", () => {
       argv: ["inspect", "do", "type", "e7", "Full house clear-out, \"everything\" = gone\nSame day", "--live"],
     });
     expect(guardCall("facebookAccountStatus", { account: "bethlehem", status: "PAUSED", reason: "setByHand" }, COMMANDS)).toEqual({ ok: true, argv: ["facebook", "account", "status", "bethlehem", "PAUSED", "--reason=setByHand"] });
-    expect(guardCall("runsPrune", { apply: true }, COMMANDS)).toEqual({ ok: true, argv: ["runs", "prune", "--apply"] });
+    expect(guardCall("runsPrune", { apply: true }, COMMANDS)).toMatchObject({ ok: false, code: "inputInvalid" });
+    expect(guardCall("runsPruneLive", { confirmLive: true }, COMMANDS)).toEqual({ ok: true, argv: ["runs", "prune", "--apply"] });
     expect(guardCall("inspectStart", { account: "a", detach: true, proxyMs: 4000 }, COMMANDS)).toEqual({ ok: true, argv: ["inspect", "start", "--account=a", "--detach", "--proxyMs=4000"] });
   });
 

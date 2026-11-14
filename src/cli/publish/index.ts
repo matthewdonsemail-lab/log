@@ -101,6 +101,7 @@ export const PUBLISH_INPUT: CommandInput = {
   forms: [
     {
       words: [],
+      liveEffect: "write",
       summary: "Post one Twenty listing; a dry run unless live",
       positionals: [],
       flags: [
@@ -120,6 +121,7 @@ export const publishCommand: Command = {
   usage: PUBLISH_USAGE,
   platform: "facebook",
   name: "publish",
+  longRunning: true,
   effect: "browser",
   input: PUBLISH_INPUT,
   summary: "Post one Twenty listing (dry run unless --live), printing every machine step",

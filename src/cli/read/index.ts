@@ -302,6 +302,7 @@ export const readCommand: Command = {
   usage: READ_USAGE,
   platform: "facebook",
   name: "read",
+  longRunning: true,
   effect: "browser",
   summary: "Read a Facebook group's new posts and their comments, or its newest members, as one account, by hand: posts on the direct-API engine first, else in its open browser; only the group's cursor is saved to Twenty, the members to a file",
   args: "group --account <a> --group <g> [--scrolls <n>] [--commentPosts <n>] [--live] [--bypass] [--json] | --show | members --account <a> --group <g> --count <n> [--secondsPerScroll <s>] [--maxScrolls <n>] [--owners] [--bypass] [--json]",

@@ -6,12 +6,11 @@ import { contextOf, harnessOf, HOOK_HOSTS, scratchHookEnv, watcherLogsIn } from 
 import { AGENT_HOOKS, ANTIGRAVITY_SCRIPT, EVENT_SCRIPT, hookFiles, MCP_SERVER_NAME, toolIsHooked } from "../../src/agentHooks/registry/index.ts";
 import type { HookEvent, HookHost } from "../../src/agentHooks/registry/index.ts";
 import { PAGE_STATES, RESOLVE_CALLS } from "../../src/browser/flow/helpers/pageState.ts";
-import { isPlatform } from "../../src/cli/runner/helpers/index.ts";
+import { commandKey, isPlatform } from "../../src/cli/runner/helpers/index.ts";
 import { COMMANDS } from "../../src/cli/runner/index.ts";
-import { commandTools, LONG_RUNNING, toolsFromCommands } from "../../src/mcp/server/helpers/toolsFromCommands.ts";
+import { commandTools, toolsFromCommands } from "../../src/mcp/server/helpers/toolsFromCommands.ts";
 import { toolsFromFlows } from "../../src/mcp/server/helpers/toolsFromFlows.ts";
 import { savedFlows } from "../../src/mcp/server/index.ts";
-import { TERMINAL_ONLY } from "../../src/mcp/server/types.ts";
 
 const root = join(import.meta.dir, "..", "..");
 
@@ -112,13 +111,11 @@ try {
 
 const commandNames = new Set(COMMANDS.map((c) => c.name));
 const tools = [...toolsFromCommands(COMMANDS), ...toolsFromFlows(savedFlows())];
-const commandsWithTools = new Set(commandTools(COMMANDS).map((t) => t.command.name));
-for (const name of commandNames) if (!commandsWithTools.has(name) && !TERMINAL_ONLY[name]) problems.push(`log ${name} has no MCP tool and isn't terminal-only (src/mcp/server/types.ts TERMINAL_ONLY, with why)`);
-for (const name of Object.keys(TERMINAL_ONLY)) if (!commandNames.has(name)) problems.push(`TERMINAL_ONLY names "${name}", which isn't a command`);
+const commandsWithTools = new Set(commandTools(COMMANDS).map((t) => t.command));
+for (const command of COMMANDS) if (!commandsWithTools.has(command) && !command.terminalOnly) problems.push(`log ${command.name} (${commandKey(command)}) has no MCP tool and isn't terminal-only (its command's terminalOnly, with why)`);
 for (const tool of tools) if (!toolIsHooked(tool.name)) problems.push(`MCP tool ${tool.name} isn't matched by the PostToolUse hook (mcp__${MCP_SERVER_NAME}__${tool.name})`);
-for (const name of LONG_RUNNING) {
-  if (!commandNames.has(name)) problems.push(`LONG_RUNNING names "${name}", which isn't a command`);
-  for (const entry of commandTools(COMMANDS).filter((t) => t.command.name === name)) {
+for (const command of COMMANDS.filter((c) => c.longRunning)) {
+  for (const entry of commandTools(COMMANDS).filter((t) => t.command === command)) {
     const tool = tools.find((t) => t.name === entry.tool);
     if (tool && !tool.description.includes("~/.logCli/mcp/<day>.log")) problems.push(`MCP tool ${entry.tool} runs long but its description doesn't point at the live log (rule 26)`);
   }

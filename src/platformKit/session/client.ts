@@ -5,8 +5,8 @@ import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'no
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { platformStateRoot, writeLocalSession, writesPerDayOf } from '../../directApi/engine/index'
-import { SOCIAL_ACCOUNTS, toFacebookAccount } from '../../marketplace/socialAccount/index'
-import type { FacebookAccount, SocialAccountRow } from '../../marketplace/socialAccount/index'
+import { SOCIAL_ACCOUNTS, toFacebookAccount } from '../socialAccount/index'
+import type { FacebookAccount, SocialAccountRow } from '../socialAccount/index'
 import { TwentyError, accountStore } from '../../twenty/graphql/index'
 import type { TwentyClient } from '../../twenty/graphql/index'
 import { timedEngine, timedEngineSync } from '../../observability/timing/index'
@@ -17,8 +17,11 @@ export type PlatformAccount = FacebookAccount
 
 export async function findPlatformAccount(twenty: TwentyClient, shape: PlatformShape, ref: string): Promise<PlatformAccount> {
   const key = ref.trim().replace(/^@/, '')
-  const named = (await twenty.list(SOCIAL_ACCOUNTS, { accountName: { eq: key } })).filter((r) => String(r.platform) === shape.twentyPlatform)
+  const anyPlatform = await twenty.list(SOCIAL_ACCOUNTS, { accountName: { eq: key } })
+  const named = anyPlatform.filter((r) => String(r.platform) === shape.twentyPlatform)
   const rows = named.length ? named : (await twenty.list(SOCIAL_ACCOUNTS, { name: { eq: key } })).filter((r) => String(r.platform) === shape.twentyPlatform && !r.accountName?.trim())
+  const foundOn = [...new Set(anyPlatform.map((r) => String(r.platform ?? '').toLowerCase()).filter(Boolean))]
+  if (rows.length === 0 && foundOn.length) throw new TwentyError('accountPlatformMismatch', `"${key}" is not a ${shape.twentyPlatform.toLowerCase()} account: it is kept under ${foundOn.join(', ')}`)
   if (rows.length === 0) throw new TwentyError('accountNotFound', `no ${shape.twentyPlatform} socialAccount "${key}"`)
   if (rows.length > 1) throw new TwentyError('accountNotFound', `${rows.length} ${shape.twentyPlatform} socialAccounts are called "${key}"`)
   return toFacebookAccount(rows[0] as SocialAccountRow)

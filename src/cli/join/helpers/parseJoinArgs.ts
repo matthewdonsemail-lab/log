@@ -5,6 +5,7 @@ export const JOIN_INPUT: CommandInput = {
   forms: [
     {
       words: ["group"],
+      liveEffect: "write",
       summary: "Join a Facebook group as one account, in its open browser: read its gate; live presses Join, or with fill and submit sends the answers",
       positionals: [],
       flags: [

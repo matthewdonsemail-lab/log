@@ -5,6 +5,7 @@ import { rulesLine } from "../../server/helpers/agentRules.ts";
 import { CALL_TOOL, GET_TOOL, SEARCH_TOOL } from "../types.ts";
 import type { CatalogEntry, CatalogInput, SearchResult } from "../types.ts";
 import { cliExample, exampleInputs } from "./examples.ts";
+import { capabilityOfEntry } from "./search.ts";
 
 function cell(value: unknown): string {
   const text = value === null || value === undefined ? "" : String(value);
@@ -41,7 +42,7 @@ export function renderSearch(result: SearchResult): string {
   return [
     `query: ${cell(result.query)}`,
     `verdict: ${result.verdict}${result.verdict === "closest" ? " (none does every word; these do most)" : ""}`,
-    ...table("results", ["id", "summary", "acts"], result.hits.map((h) => [h.entry.id, h.entry.summary, h.entry.terminalOnly ? "terminal" : h.entry.liveTool ? "live" : h.entry.effect === "read" ? "no" : h.entry.effect])),
+    ...table("results", ["id", "capability", "summary", "acts"], result.hits.map((h) => [h.entry.id, capabilityOfEntry(h.entry), h.entry.summary, h.entry.terminalOnly ? "terminal" : h.entry.liveTool ? "live" : h.entry.effect === "read" ? "no" : h.entry.effect])),
     ...helpLines([`${GET_TOOL} {"id":"${result.hits[0].entry.id}"}   (its inputs and a call that works)`]),
   ].join("\n");
 }

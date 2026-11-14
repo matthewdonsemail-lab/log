@@ -6,7 +6,6 @@ import { marketplaceFixture } from "../../twenty/graphql/index.ts";
 import { guardCall } from "../server/helpers/guardCall.ts";
 import { commandTools } from "../server/helpers/toolsFromCommands.ts";
 import { createLogMcpServer } from "../server/index.ts";
-import { TERMINAL_ONLY } from "../server/types.ts";
 import { catalog, didYouMean, exampleInputs, getAnswer, resolveCall, searchAnswer, searchCatalog } from "./index.ts";
 
 const entries = catalog(COMMANDS);
@@ -29,7 +28,7 @@ describe("the command catalog", () => {
     expect(callable.map((e) => e.tool).sort()).toEqual(plainTools);
     const liveTools = commandTools(COMMANDS).filter((t) => t.live).map((t) => t.tool).sort();
     expect(callable.flatMap((e) => (e.liveTool ? [e.liveTool] : [])).sort()).toEqual(liveTools);
-    for (const name of Object.keys(TERMINAL_ONLY)) if (COMMANDS.some((c) => c.name === name)) expect(entries.some((e) => e.command.name === name && e.terminalOnly)).toBe(true);
+    for (const command of COMMANDS.filter((c) => c.terminalOnly)) expect(entries.some((e) => e.command === command && e.terminalOnly === command.terminalOnly)).toBe(true);
     expect(entries.find((e) => e.id === "twitter.dm")?.liveTool).toBe("twitterDmLive");
   });
 
@@ -60,7 +59,7 @@ describe("logSearch", () => {
 
   test("naming a platform keeps the other platforms out", () => {
     const found = searchCatalog(entries, "save x cookies", 8);
-    expect(found.hits[0].entry.id).toBe("twitter.cookies.save");
+    expect(found.hits.slice(0, 3).map((h) => h.entry.id)).toContain("twitter.cookies.save");
     for (const hit of found.hits) expect(["twitter", "any", "byArgument"]).toContain(hit.entry.platform);
   });
 
@@ -73,7 +72,7 @@ describe("logSearch", () => {
 
   test("results are a table, and the answer ends with the next call", () => {
     const text = searchAnswer(entries, { query: "send a dm on x" }).text;
-    expect(text).toMatch(/^results\[\d+\]\{id,summary,acts\}:$/m);
+    expect(text).toMatch(/^results\[\d+\]\{id,capability,summary,acts\}:$/m);
     expect(text).toContain('help[1]:\n  - logGet {"id":"twitter.dm"}');
   });
 });

@@ -32,7 +32,7 @@ Say: **"go on docs/useCases/inbox/reaLooksmaxxing.md for <creator> and <offer>"*
 | 5 | See who replied, liked or followed | `twitterNotifications` | a list of real people and what they did |
 | 6 | Read each person's whole thread before a word is written | `twitterDms` { with }, `instagramDms`, `discordRead` | what they asked and where the talk stands |
 | 7 | Draft the answer in the owner's voice and gate it against the same person | `voice` { to, with, context }, then `voice` with `text` | the gate passes |
-| 8 | Answer them, then point them at the offer once they're keen. The first message is about them, never the pitch | `twitterReplyLive`, `twitterDmLive`, `instagramSendLive`, `discordSendLive` | the platform answers `sent`, and they're in the Discord or on the offer |
+| 8 | Answer them, then point them at the offer once they're keen. The first message is about them, never the pitch | `twitterReplyLive`, `twitterDmLive`, `instagramSendLive`, `discordSendLive`, or for a DM on the account's own platform `messagesSendLive` { account, chat, text, approvedBy: "<owner>", confirmLive: true } after its dry run `messagesSend` | the platform answers `sent`, and they're in the Discord or on the offer |
 
 ## What to know
 

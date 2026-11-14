@@ -1,6 +1,7 @@
 import type { FlowDefinition } from "../../../browser/flow/index.ts";
 import { flowPlatform } from "../../../browser/flow/index.ts";
-import { isPlatform } from "../../../cli/runner/helpers/platforms.ts";
+import { commandKey, isPlatform } from "../../../cli/runner/helpers/platforms.ts";
+import { CAPABILITIES } from "../../../platformKit/capability/helpers/table.ts";
 import type { Command } from "../../../cli/runner/types.ts";
 import { stepsOf } from "./activePlay.ts";
 import { LIVE_SUFFIX } from "./toolAnnotations.ts";
@@ -62,9 +63,25 @@ export function playGateMode(tool: string, acting: ReadonlySet<string>, pages: r
   return acting.has(tool) ? "ifPlay" : "none";
 }
 
+export const CAPABILITY_PLAY_MODE: PlayGateMode = "required";
+
+export function capabilityPlayGateMode(capability: string | null, tool: string, acting: ReadonlySet<string>, pages: readonly PlayPage[], platform: string | null): PlayGateMode {
+  return capability?.endsWith(LIVE_SUFFIX) ? CAPABILITY_PLAY_MODE : playGateMode(tool, acting, pages, platform);
+}
+
 export function playRequiredTools(commands: readonly Command[], flows: readonly FlowDefinition[], pages: readonly PlayPage[]): Set<string> {
   const acting = actingAsOwnerTools(commands, flows);
-  return new Set([...PLAY_GATED_ON_MAIN].filter((tool) => ["required", "anyPlay"].includes(playGateMode(tool, acting, pages, platformOfTool(tool, commands, flows)))));
+  const required = new Set([...PLAY_GATED_ON_MAIN].filter((tool) => ["required", "anyPlay"].includes(playGateMode(tool, acting, pages, platformOfTool(tool, commands, flows)))));
+  for (const capability of capabilityLiveTools(commands)) required.add(capability.tool);
+  return required;
+}
+
+export function capabilityLiveTools(commands: readonly Command[]): { tool: string; runs: string[] }[] {
+  const tools = commandTools(commands);
+  return CAPABILITIES.filter((definition) => definition.live).map((definition) => ({
+    tool: `${definition.noun}${definition.verb[0].toUpperCase()}${definition.verb.slice(1)}${LIVE_SUFFIX}`,
+    runs: Object.values(definition.platforms).flatMap((binding) => tools.filter((t) => t.live && binding !== undefined && commandKey(t.command) === binding.command && (t.form?.words ?? []).join(" ") === binding.words.join(" ")).map((t) => t.tool)),
+  }));
 }
 
 export function unnamedActingTools(commands: readonly Command[], flows: readonly FlowDefinition[], pages: readonly PlayPage[]): string[] {

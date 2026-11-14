@@ -60,6 +60,7 @@ export const cookiesCommand: Command = {
   usage: COOKIES_USAGE,
   platform: "twitter",
   name: "cookies",
+  terminalOnly: "asks for an X account's session cookies (auth_token, ct0 and twid) in a Clack prompt (masked) and checks them with X before saving. Run `log twitter cookies save --account <handle>` in a terminal.",
   effect: "write",
   summary: "Add or refresh an X account in Twenty: its session cookies from a masked prompt, checked against X, and its copy style",
   input: COOKIES_INPUT,

@@ -27,8 +27,8 @@ Say: **"go on docs/useCases/inbox/reactions.md for <person or chat>"**. The agen
 | --- | --- | --- | --- |
 | 1 | Read the chat and find the message to react to, with its id | `twitterDms` { with }, `discordRead` { channel }, `slackRead` { chat } or `instagramDms` { with }, with json | one message named with its author, time and id (a Slack message's id is its ts) |
 | 2 | Pick the emoji: the one the owner named, or the one a person would put on that moment | the agent, from the chat | one emoji |
-| 3 | Dry run it | `twitterReact`, `discordReact`, `slackReact` or `instagramReact` { account, chat, message, emoji } | the dry run names the chat and the message |
-| 4 | React | `twitterReactLive`, `discordReactLive`, `slackReactLive` or `instagramReactLive` { account, chat, message, emoji, approvedBy: "<owner>", confirmLive: true } | the platform answers `sent` |
+| 3 | Dry run it | `messagesReact` { account, chat, message, emoji }: the platform is the account's (or `twitterReact`, `discordReact`, `slackReact`, `instagramReact`) | the dry run names the chat and the message |
+| 4 | React | `messagesReactLive` { account, chat, message, emoji, approvedBy: "<owner>", confirmLive: true } (or `twitterReactLive`, `discordReactLive`, `slackReactLive`, `instagramReactLive`) | the platform answers `sent` |
 | 5 | Tell the owner what was reacted to | the reply to the owner | the message quoted with the emoji |
 
 On Discord the chat flag is `channel` and on Instagram `thread`. `remove` takes the account's own reaction off. A refusal stops it, and nothing is tried again until the owner says so (rule 94).

@@ -7,6 +7,7 @@ import { marketplaceFixture } from "../../twenty/graphql/index.ts";
 import type { PlatformEngineRun } from "../../platformKit/session/index.ts";
 import { REDDIT_PLATFORM } from "../../reddit/account/session/index.ts";
 import { runCli } from "../runner/index.ts";
+import { gateDeps } from "../twitter/helpers/voice.ts";
 
 function fixture() {
   const twenty = marketplaceFixture();
@@ -39,10 +40,10 @@ describe("log reddit session check", () => {
     expect(r.row.sessionState).toBe("loggedIn");
   });
 
-  test("an account of another platform is refused before the engine is called", async () => {
+  test("an account of another platform is refused before the engine is called, saying where it is kept", async () => {
     const r = await run(["reddit", "session", "check", "--account", "galwayOne"]);
     expect(r.code).toBe(1);
-    expect(r.err).toContain("accountNotFound");
+    expect(r.err).toContain("accountPlatformMismatch");
     expect(r.calls).toEqual([]);
   });
 
@@ -80,5 +81,78 @@ describe("log reddit session check", () => {
     expect(unapproved.code).toBe(1);
     expect(unapproved.err).toContain("notApproved");
     expect(unapproved.calls).toEqual([]);
+  });
+});
+
+describe("reddit post and reply go through the AI-artifact check, the voice gate and the claim", () => {
+  const held = { ...gateDeps };
+  const before = { state: process.env.LOG_INBOX_STATE, db: process.env.LOG_DB };
+  const sent = { answer: { ok: true, id: "t3_fake" }, refreshed: null } as unknown as PlatformEngineRun;
+
+  function scratch() {
+    process.env.LOG_INBOX_STATE = mkdtempSync(join(tmpdir(), "redditGates"));
+    delete process.env.LOG_DB;
+  }
+
+  function restore() {
+    Object.assign(gateDeps, held);
+    if (before.state === undefined) delete process.env.LOG_INBOX_STATE;
+    else process.env.LOG_INBOX_STATE = before.state;
+    if (before.db !== undefined) process.env.LOG_DB = before.db;
+  }
+
+  test("copy with AI artifacts is refused, dry run or live, and nothing is sent", async () => {
+    const dry = await run(["reddit", "reply", "--account", "redditOne", "--url", "https://www.reddit.com/r/test/comments/abc/x/", "--text", "hi​there"]);
+    expect(dry.code).toBe(1);
+    expect(dry.err).toContain("aiArtifacts");
+    expect(dry.calls).toEqual([]);
+  });
+
+  test("a live post the voice gate refuses sends nothing", async () => {
+    scratch();
+    gateDeps.gate = async () => ({ ok: false, refused: ">>> VOICE GATE FAILED (fake)" });
+    try {
+      const r = await run(["reddit", "post", "--account", "redditOne", "--subreddit", "test", "--title", "hi", "--approvedBy", "fakeOwner", "--live"], sent);
+      expect(r.code).toBe(1);
+      expect(r.err).toContain("voiceGateFailed");
+      expect(r.calls).toEqual([]);
+    } finally {
+      restore();
+    }
+  });
+
+  test("a live vote whose engine throws is uncertain: nothing is retried and the run says so", async () => {
+    scratch();
+    try {
+      const err: string[] = [];
+      const code = await runCli(["reddit", "vote", "--account", "redditOne", "--target", "t3_abc", "--approvedBy", "fakeOwner", "--live"], {
+        twenty: fixture(),
+        out: () => {},
+        err: (l) => err.push(l),
+        directReddit: () => {
+          throw new Error("fakeEngineBroke");
+        },
+      });
+      expect(code).not.toBe(0);
+      expect(err.join(" ")).toContain("fakeEngineBroke");
+    } finally {
+      restore();
+    }
+  });
+
+  test("a live reply that passes the gate claims the thread and sends once", async () => {
+    scratch();
+    const gated: string[] = [];
+    gateDeps.gate = async (_context, send) => {
+      gated.push(`${send.platform}:${send.to}:${send.text}`);
+      return { ok: true, line: "voice gate: passed (fake)" };
+    };
+    try {
+      const r = await run(["reddit", "reply", "--account", "redditOne", "--url", "https://www.reddit.com/r/test/comments/abc/x/", "--text", "fair point", "--approvedBy", "fakeOwner", "--live"], sent);
+      expect(gated).toEqual(["reddit:https://www.reddit.com/r/test/comments/abc/x/:fair point"]);
+      expect(r.calls).toEqual(["redditOne:reply"]);
+    } finally {
+      restore();
+    }
   });
 });

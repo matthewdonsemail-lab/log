@@ -65,6 +65,7 @@ export const chatCommand: Command = {
   usage: CHAT_USAGE,
   platform: "twitter",
   name: "chat",
+  terminalOnly: "asks the owner for the X Chat PIN in a Clack prompt (masked). The owner runs `log twitter chat pin --account <a>` in a terminal.",
   effect: "write",
   summary: "X Chat's PIN for the account's encrypted DMs: asked in a Clack prompt, kept in Twenty, never printed",
   input: CHAT_INPUT,

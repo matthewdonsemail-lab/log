@@ -21,7 +21,7 @@ export function checkRefusal(account: ConnectionAccount): AccountCheckError | nu
 
 export async function inProcessToolCaller(): Promise<CheckToolCaller> {
   const { runToolCall } = await import("../../mcp/server/index.ts");
-  return (name, input) => runToolCall(name, input) as Promise<{ isError?: boolean; structuredContent?: unknown }>;
+  return (name, input) => runToolCall(name, input, {}, undefined, undefined, undefined, undefined, undefined, true, "console") as Promise<{ isError?: boolean; structuredContent?: unknown }>;
 }
 
 export async function runAccountCheck(account: ConnectionAccount, callTool: CheckToolCaller, store?: CheckStore): Promise<CheckResult> {

@@ -56,7 +56,7 @@ Checked by: code and SubQ
 
 ### REQ-HOOKS-08: Every command is an MCP tool or terminal-only
 
-The check fails on a command that has no MCP tool and isn't listed as terminal-only, and on a terminal-only entry that isn't a command.
+The check fails on a command that has no MCP tool and whose own `terminalOnly` field (why it runs only in a terminal) is not set. Terminal-only is a field of each command, keyed by its command key, so there is no separate list to fall out of step.
 
 Checked by: SubQ
 
@@ -68,7 +68,7 @@ Checked by: code and SubQ
 
 ### REQ-HOOKS-10: Every long-running tool points at the live log
 
-The check fails on a long-running command's MCP tool whose description doesn't point at the live log, `~/.logCli/mcp/<day>.log`.
+The check fails on an MCP tool of a command whose `longRunning` field is set whose description doesn't point at the live log, `~/.logCli/mcp/<day>.log`.
 
 Checked by: code and SubQ
 

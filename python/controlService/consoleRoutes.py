@@ -14,6 +14,7 @@ NO_STORE = {"Cache-Control": "no-store"}
 
 RUNTIME_ERRORS = {
     "consoleInputInvalid",
+    "liveNotConfirmed",
     "credentialInputInvalid",
     "credentialRejected",
     "credentialRateLimited",
@@ -83,6 +84,7 @@ class BrowserRequest(Strict):
     revision: str | None = Field(default=None, max_length=64, pattern=r"^[a-f0-9]{1,64}$")
     action: str | None = Field(default=None, pattern=r"^(back|reload|verify|resolve|linkProfile)$")
     event: dict | None = None
+    confirmLive: bool | None = None
 
 
 def answer_of(view) -> dict | list:

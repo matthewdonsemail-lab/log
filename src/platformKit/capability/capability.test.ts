@@ -32,7 +32,7 @@ describe("the capability table", () => {
   });
 
   test("tool names are <noun><Verb>, never a platform word", () => {
-    expect(CAPABILITIES.map(capabilityTool)).toEqual(["chatsList", "messagesRead", "messagesWatch"]);
+    expect(CAPABILITIES.map(capabilityTool)).toEqual(["chatsList", "messagesRead", "messagesWatch", "messagesSend", "messagesReact", "voiceNotesSend"]);
   });
 
   test("each capability is listed as one shared tool, and the per-platform tools stay", () => {
@@ -40,7 +40,8 @@ describe("the capability table", () => {
     for (const definition of CAPABILITIES) expect(tools).toContain(capabilityTool(definition));
     for (const row of capabilityRows(COMMANDS)) expect(COMMANDS.some((c) => commandKey(c) === row.command)).toBe(true);
     const shared = commandTools(COMMANDS).filter((t) => CAPABILITIES.map(capabilityTool).includes(t.tool));
-    expect(shared.every((t) => t.command.platform === "any" && t.effect === "read" && !t.live)).toBe(true);
+    expect(shared.every((t) => t.command.platform === "any" && !t.live)).toBe(true);
+    for (const definition of CAPABILITIES) expect(tools.includes(`${capabilityTool(definition)}Live`)).toBe(definition.live === true);
   });
 });
 

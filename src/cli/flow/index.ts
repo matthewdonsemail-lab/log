@@ -150,6 +150,7 @@ export const flowCommand: Command = {
   usage: FLOW_USAGE,
   platform: "any",
   name: "flow",
+  longRunning: true,
   effect: "browser",
   input: FLOW_INPUT,
   summary: "Recorded inspect runs as flows: docs, an XState machine per flow, run on any account (rule 31)",

@@ -2,17 +2,12 @@ import { formToolName, inputSchemaOf } from "../../../cli/runner/helpers/command
 import { commandKey, isPlatform, platformLabel, toolBaseName } from "../../../cli/runner/helpers/platforms.ts";
 import type { Command, InputForm, ToolEffect } from "../../../cli/runner/types.ts";
 import type { LogTool } from "../types.ts";
-import { TERMINAL_ONLY, TOOL_RESULT_SCHEMA } from "../types.ts";
+import { TOOL_RESULT_SCHEMA } from "../types.ts";
+import { isLongRunning } from "../../../platformKit/gates/helpers/commandGates.ts";
 import { cite, rulesLine } from "./agentRules.ts";
 import { guideLine, guideOfCommand } from "./guides.ts";
 import { annotationsOf, LIVE_SUFFIX, titleOf } from "./toolAnnotations.ts";
 import { ARGS_TOOLS_GIVEN_FORMS } from "./toolAliases.ts";
-
-export const LONG_RUNNING: ReadonlySet<string> = new Set(["inspect", "join", "read", "poll", "check", "connect", "publish", "profile", "scan", "status", "watch", "warmup", "host", "flow", "capture", "doctor", "campaign", "queue", "sessions", "messages"]);
-
-export function longRunning(command: Pick<Command, "name">): boolean {
-  return LONG_RUNNING.has(command.name);
-}
 
 export const commandWords = (command: Command): string =>
   isPlatform(command.platform) ? `${command.platform} ${command.name}` : command.platform === "byArgument" ? `<platform> ${command.name}` : command.name;
@@ -28,8 +23,14 @@ export interface CommandTool {
 
 export const OWNER_EFFECTS: ReadonlySet<ToolEffect> = new Set(["write", "delete"]);
 
-export function actsAsOwner(entry: Pick<CommandTool, "live" | "effect" | "command">): boolean {
-  return entry.live && OWNER_EFFECTS.has(entry.effect) && isPlatform(entry.command.platform);
+export const LOCAL_LIVE_FLAGS: ReadonlySet<string> = new Set(["apply", "write"]);
+
+export function isLocalLiveTwin(entry: { live: boolean; forced?: readonly string[] }): boolean {
+  return entry.live && (entry.forced ?? []).some((flag) => LOCAL_LIVE_FLAGS.has(flag));
+}
+
+export function actsAsOwner(entry: Pick<CommandTool, "live" | "effect" | "command"> & { forced?: readonly string[] }): boolean {
+  return entry.live && OWNER_EFFECTS.has(entry.effect) && isPlatform(entry.command.platform) && !isLocalLiveTwin(entry);
 }
 
 export const PLAY_HANDLE = { type: "string", description: "The play handle getGuide returned, when this caller keeps more than one play; left out, the caller's own play is used. The play decides which step this call is, and a send a play names goes out only under a play that names it" };
@@ -37,6 +38,7 @@ export const PLAY_HANDLE = { type: "string", description: "The play handle getGu
 export const ARGS_LIVE_FLAGS = ["live", "likes"] as const;
 
 export function argsLiveFlags(command: Command): string[] {
+  if (command.input) return [...new Set(command.input.forms.flatMap((form) => form.flags.filter((f) => f.live).map((f) => f.name)))];
   return ARGS_LIVE_FLAGS.filter((flag) => new RegExp(`--${flag}\\b`).test(command.usage));
 }
 
@@ -46,14 +48,15 @@ function formTools(command: Command, form: InputForm): CommandTool[] {
   const liveFlags = form.flags.filter((f) => f.live);
   const plain: InputForm = { ...form, flags: form.flags.filter((f) => !f.live) };
   const tools: CommandTool[] = [{ tool, command, form: plain, live: false, forced: [], effect }];
-  if (liveFlags.length === 1) tools.push({ tool: `${tool}${LIVE_SUFFIX}`, command, form: plain, live: true, forced: [liveFlags[0].name], effect });
-  if (liveFlags.length > 1) tools.push({ tool: `${tool}${LIVE_SUFFIX}`, command, form, live: true, forced: [], effect });
+  const liveEffect = form.liveEffect ?? effect;
+  if (liveFlags.length === 1) tools.push({ tool: `${tool}${LIVE_SUFFIX}`, command, form: plain, live: true, forced: [liveFlags[0].name], effect: liveEffect });
+  if (liveFlags.length > 1) tools.push({ tool: `${tool}${LIVE_SUFFIX}`, command, form, live: true, forced: [], effect: liveEffect });
   return tools;
 }
 
 export function commandTools(commands: readonly Command[]): CommandTool[] {
   return commands
-    .filter((command) => !(command.name in TERMINAL_ONLY))
+    .filter((command) => !command.terminalOnly)
     .flatMap((command): CommandTool[] => {
       if (command.input) return command.input.forms.filter((form) => !form.terminalOnly).flatMap((form) => formTools(command, form));
       const plain: CommandTool = { tool: toolBaseName(command), command, form: null, live: false, forced: [], effect: command.effect };
@@ -70,7 +73,7 @@ export function identityOf(entry: Pick<CommandTool, "command" | "form">, argv: r
 export function legacyArgsTool(name: string, commands: readonly Command[]): CommandTool | null {
   if (!ARGS_TOOLS_GIVEN_FORMS.has(name)) return null;
   for (const command of commands) {
-    if (!command.input || command.name in TERMINAL_ONLY) continue;
+    if (!command.input || command.terminalOnly) continue;
     const base = toolBaseName(command);
     const live = name === `${base}${LIVE_SUFFIX}`;
     if (name !== base && !live) continue;
@@ -136,6 +139,11 @@ function usageHeads(usage: string): string[] {
 
 const SPEND_LINE = "Live spends money (a priced lookup) but changes nothing on any account, so it is read-only and can run alongside other calls. Call it only when the owner asked for that spend, with approvedBy and confirmLive: true (rule 41).";
 const LIVE_LINE = (place: string) => `Live on ${place}: it acts there (posts, clicks, joins or changes something). Call it only when the owner asked for this live run, with confirmLive: true (${cite(8, 10)}).`;
+const LOCAL_LINE = (what: string) => `Live: ${what.replace(/\.$/, "")}. No account on a platform is contacted. Call it only when the owner asked for this run, with confirmLive: true (${cite(8)}).`;
+function liveLine(entry: CommandTool, form: InputForm): string {
+  const local = form.flags.find((f) => f.live && LOCAL_LIVE_FLAGS.has(f.name)) ?? entry.command.input?.forms.flatMap((f) => f.flags).find((f) => f.live && entry.forced.includes(f.name) && LOCAL_LIVE_FLAGS.has(f.name));
+  return local ? LOCAL_LINE(local.description) : LIVE_LINE(platformLabel(entry.command));
+}
 
 function typedTool(entry: CommandTool, form: InputForm, options: ToolOptions): LogTool {
   const { command } = entry;
@@ -147,19 +155,19 @@ function typedTool(entry: CommandTool, form: InputForm, options: ToolOptions): L
     title,
     description: [
       `${form.summary}.`,
-      ...(entry.live ? [entry.effect === "spend" ? SPEND_LINE : LIVE_LINE(platformLabel(command))] : []),
+      ...(entry.live ? [entry.effect === "spend" ? SPEND_LINE : liveLine(entry, form)] : []),
       command.summary,
       ...(options.full ? formUsage(command, form) : formUsage(command, form).filter((line) => line.startsWith("log "))),
       ...(NOTES[entry.tool] ?? []),
       `Fill the named fields; each value goes through whole.${bypass ? " `bypass` (outside the account's hours) needs confirmBypass: true, only when the owner asked." : ""}${!entry.live && entry.command.input?.forms.some((f) => f.words.join() === form.words.join() && f.flags.some((flag) => flag.live)) ? ` What acts on ${platformLabel(command)} is \`${entry.tool}${LIVE_SUFFIX}\`.` : ""}`,
-      ...(longRunning(command) ? [longRunLine(options)] : []),
+      ...(isLongRunning(command) ? [longRunLine(options)] : []),
       ...guideLines(command),
       rulesLine(commandKey(command)),
     ].join("\n"),
     annotations: annotationsOf(entry.effect, entry.live, title),
     inputSchema: {
       type: "object",
-      properties: { ...properties, ...(entry.live ? { confirmLive: CONFIRM_LIVE(platformLabel(command)) } : {}), ...(bypass ? { confirmBypass: CONFIRM_BYPASS } : {}), ...(longRunning(command) ? { waitMs: WAIT_MS } : {}), ...(actsAsOwner(entry) ? { playHandle: PLAY_HANDLE } : {}) },
+      properties: { ...properties, ...(entry.live ? { confirmLive: CONFIRM_LIVE(platformLabel(command)) } : {}), ...(bypass ? { confirmBypass: CONFIRM_BYPASS } : {}), ...(isLongRunning(command) ? { waitMs: WAIT_MS } : {}), ...(actsAsOwner(entry) ? { playHandle: PLAY_HANDLE } : {}) },
       ...(required.length || entry.live ? { required: [...required, ...(entry.live ? ["confirmLive"] : [])] } : {}),
       additionalProperties: false,
     },
@@ -183,7 +191,7 @@ function argsTool(entry: CommandTool, options: ToolOptions): LogTool {
       entry.live
         ? `Pass the arguments after the command name in \`args\`, with ${liveFlags}. \`--bypass\` (outside the account's hours) needs confirmBypass: true, only when the owner asked.`
         : `Pass the arguments after the command name in \`args\`, e.g. ["--json"].${liveFlags ? ` It never takes ${liveFlags}: that is \`${entry.tool}${LIVE_SUFFIX}\`.` : ""} \`--bypass\` (outside the account's hours) needs confirmBypass: true, only when the owner asked.`,
-      ...(longRunning(command) ? [longRunLine(options)] : []),
+      ...(isLongRunning(command) ? [longRunLine(options)] : []),
       ...guideLines(command),
       rulesLine(commandKey(command)),
     ].join("\n"),
@@ -194,7 +202,7 @@ function argsTool(entry: CommandTool, options: ToolOptions): LogTool {
         args: { type: "array", items: { type: "string" }, description: command.platform === "byArgument" ? `Arguments for \`log <platform> ${command.name}\`, the platform first (e.g. ["facebook", "reel"])` : `Arguments for \`log ${commandWords(command)}\`` },
         ...(entry.live ? { confirmLive: CONFIRM_LIVE(platformLabel(command)) } : {}),
         confirmBypass: CONFIRM_BYPASS,
-        ...(longRunning(command) ? { waitMs: WAIT_MS } : {}),
+        ...(isLongRunning(command) ? { waitMs: WAIT_MS } : {}),
         ...(actsAsOwner(entry) ? { playHandle: PLAY_HANDLE } : {}),
       },
       ...(entry.live ? { required: ["args", "confirmLive"] } : {}),

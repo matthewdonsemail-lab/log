@@ -46,6 +46,7 @@ export interface ScoredCommandTool {
   command: ScoredCommand;
   live: boolean;
   effect: ToolEffect;
+  forced?: readonly string[];
 }
 
 export interface ToolText {

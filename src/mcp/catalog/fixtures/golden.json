@@ -1,0 +1,204 @@
+{
+  "queries": [
+    {
+      "query": "post a tweet",
+      "within": 1,
+      "id": "twitter.post"
+    },
+    {
+      "query": "read the latest messages from discord",
+      "within": 1,
+      "id": "discord.read"
+    },
+    {
+      "query": "who liked my post",
+      "within": 1,
+      "id": "twitter.notifications"
+    },
+    {
+      "query": "who followed me",
+      "within": 3,
+      "id": "twitter.followers"
+    },
+    {
+      "query": "check my accounts",
+      "within": 3,
+      "id": "sessions.check"
+    },
+    {
+      "query": "is my x account signed in",
+      "within": 3,
+      "id": "twitter.session.check"
+    },
+    {
+      "query": "sign in to discord",
+      "within": 1,
+      "id": "sessions.signIn"
+    },
+    {
+      "query": "upvote a post",
+      "within": 1,
+      "id": "reddit.vote"
+    },
+    {
+      "query": "send a dm on x",
+      "within": 1,
+      "id": "twitter.dm"
+    },
+    {
+      "query": "reply to a tweet",
+      "within": 1,
+      "id": "twitter.reply"
+    },
+    {
+      "query": "like a tweet",
+      "within": 1,
+      "id": "twitter.like"
+    },
+    {
+      "query": "follow someone on x",
+      "within": 1,
+      "id": "twitter.follow"
+    },
+    {
+      "query": "send a message on slack",
+      "within": 1,
+      "id": "slack.send"
+    },
+    {
+      "query": "send a discord message",
+      "within": 1,
+      "id": "discord.send"
+    },
+    {
+      "query": "react to a message",
+      "within": 1,
+      "id": "messages.react"
+    },
+    {
+      "query": "send a voice note",
+      "within": 1,
+      "id": "voiceNotes.send"
+    },
+    {
+      "query": "read my slack messages",
+      "within": 1,
+      "id": "slack.read"
+    },
+    {
+      "query": "list my discord servers",
+      "within": 1,
+      "id": "discord.servers"
+    },
+    {
+      "query": "search discord",
+      "within": 1,
+      "id": "discord.search"
+    },
+    {
+      "query": "post to reddit",
+      "within": 1,
+      "id": "reddit.post"
+    },
+    {
+      "query": "reply on reddit",
+      "within": 1,
+      "id": "reddit.reply"
+    },
+    {
+      "query": "read a subreddit",
+      "within": 1,
+      "id": "reddit.read.subreddits"
+    },
+    {
+      "query": "delete a discord message",
+      "within": 1,
+      "id": "discord.delete"
+    },
+    {
+      "query": "read a facebook group",
+      "within": 1,
+      "id": "facebook.read.group"
+    },
+    {
+      "query": "publish a listing",
+      "within": 1,
+      "id": "facebook.publish"
+    },
+    {
+      "query": "remove a listing",
+      "within": 1,
+      "id": "facebook.listing.remove"
+    },
+    {
+      "query": "join a facebook group",
+      "within": 1,
+      "id": "facebook.join.group"
+    },
+    {
+      "query": "list my chats",
+      "within": 1,
+      "id": "chats.list"
+    },
+    {
+      "query": "read instagram dms",
+      "within": 1,
+      "id": "instagram.dms"
+    },
+    {
+      "query": "send an instagram dm",
+      "within": 1,
+      "id": "instagram.send"
+    },
+    {
+      "query": "my x notifications",
+      "within": 1,
+      "id": "twitter.notifications"
+    },
+    {
+      "query": "my x followers",
+      "within": 1,
+      "id": "twitter.followers"
+    },
+    {
+      "query": "create an x list",
+      "within": 1,
+      "id": "twitter.list.create"
+    },
+    {
+      "query": "quote a tweet",
+      "within": 1,
+      "id": "twitter.quote"
+    },
+    {
+      "query": "repost a tweet",
+      "within": 1,
+      "id": "twitter.repost"
+    },
+    {
+      "query": "check my session",
+      "within": 1,
+      "id": "sessions.check"
+    },
+    {
+      "query": "who messaged me",
+      "within": 3,
+      "id": "messages.read"
+    },
+    {
+      "query": "list my accounts",
+      "within": 1,
+      "id": "accounts.list"
+    },
+    {
+      "query": "add a new platform",
+      "within": 1,
+      "id": "new.platform"
+    },
+    {
+      "query": "save x cookies",
+      "within": 3,
+      "id": "twitter.cookies.save"
+    }
+  ]
+}

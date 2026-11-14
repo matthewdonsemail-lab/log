@@ -593,6 +593,7 @@ export const launchCommand: Command = {
   usage: LAUNCH_USAGE,
   platform: "any",
   name: "launch",
+  terminalOnly: "prompts in a terminal (Clack). Call the commands it wraps directly.",
   effect: "write",
   summary: "Start here: a guided menu to set log up (platforms, sign-ins, the account's browser and extensions), add an account, sign it in, check it and connect your agent (and the listing tools when Twenty is set up)",
   args: "[--setup] [--json]",

@@ -10,6 +10,7 @@ import type { ListingFilter } from "../../facebook/marketplace/agencyListing/ind
 import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
 import { listingFromJson, renderListingDetail, renderListingsTable } from "./helpers/index.ts";
+import { liveThroughAction } from "../../platformKit/action/index.ts";
 
 export * from "./helpers/index.ts";
 
@@ -87,7 +88,7 @@ export const LISTING_INPUT: CommandInput = {
       ],
     },
     {
-      words: ["remove"], effect: "browser",
+      words: ["remove"], effect: "browser", liveEffect: "delete",
       summary: "Delete a listing on Facebook from its account's Selling page, then set it REMOVED in Twenty (the row stays); a dry run unless live",
       positionals: [{ name: "listing", kind: "string", required: true, description: "The agencyListing id, or the Facebook listing id" }],
       flags: [
@@ -101,7 +102,7 @@ export const LISTING_INPUT: CommandInput = {
       words: ["sweep"], effect: "write",
       summary: "Mark every listing of a blocked account ACCOUNT_LOST (a dry run unless --apply)",
       positionals: [],
-      flags: [{ name: "apply", kind: "boolean", description: "Write ACCOUNT_LOST to Twenty and hand campaign copies to another account" }, JSON_FLAG],
+      flags: [{ name: "apply", kind: "boolean", live: true, description: "Write ACCOUNT_LOST to Twenty and hand campaign copies to another account" }, JSON_FLAG],
     },
     {
       words: ["lint"],
@@ -112,7 +113,7 @@ export const LISTING_INPUT: CommandInput = {
   ],
 };
 
-export const listingCommand: Command = {
+export const listingCommand: Command = liveThroughAction<Command>({
   usage: LISTING_USAGE,
   platform: "facebook",
   name: "listing",
@@ -190,7 +191,7 @@ export const listingCommand: Command = {
       return refuseError("listing", error);
     }
   },
-};
+}, ["live", "apply"]);
 
 export const REMOVABLE_STATUSES = ["active", "underReview", "unconfirmed", "sold", "duplicateTakedown"] as const;
 

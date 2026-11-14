@@ -5,6 +5,7 @@ import { renderListingsTable } from "../listing/helpers/index.ts";
 import { publishCommand } from "../publish/index.ts";
 import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuse, refuseError, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandInput, FlagSpec } from "../runner/types.ts";
+import { liveThroughAction } from "../../platformKit/action/index.ts";
 
 export const CAMPAIGN_USAGE = [
   "Usage: log facebook campaign fill --campaign <agencyCampaignId> --from <agencyListingId> --accounts <n>",
@@ -27,6 +28,7 @@ export const CAMPAIGN_INPUT: CommandInput = {
     { words: ["heal"], effect: "write", summary: "Hand each ACCOUNT_LOST listing in the campaign to another account", positionals: [], flags: [CAMPAIGN] },
     {
       words: ["run"],
+      liveEffect: "write",
       summary: "Publish the campaign's READY listings (a dry run unless live)",
       positionals: [],
       flags: [CAMPAIGN, { name: "live", kind: "boolean", live: true, description: "Publish them on Facebook, only when the owner asked (rule 8)" }, { name: "bypass", kind: "boolean", bypass: true, description: "Outside the accounts' waking hours, only when the owner asked (rule 86)" }],
@@ -35,10 +37,11 @@ export const CAMPAIGN_INPUT: CommandInput = {
   ],
 };
 
-export const campaignCommand: Command = {
+export const campaignCommand: Command = liveThroughAction<Command>({
   usage: CAMPAIGN_USAGE,
   platform: "facebook",
   name: "campaign",
+  longRunning: true,
   effect: "browser",
   input: CAMPAIGN_INPUT,
   summary: "Put one ad on N accounts in one place, replace lost accounts, publish the campaign",
@@ -104,4 +107,4 @@ export const campaignCommand: Command = {
       return refuseError("campaign", error);
     }
   },
-};
+}, ["live"]);

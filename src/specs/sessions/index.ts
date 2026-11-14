@@ -55,7 +55,7 @@ export const sessions = {
       { kind: 'symbol', file: CHECK_CLIENT, name: 'runSessionCheck' },
       { kind: 'uses', file: SESSIONS, name: 'runSessionCheck' },
       { kind: 'uses', file: CONSOLE_CHECK, name: 'runSessionCheck' },
-      { kind: 'string', file: TOOLS_FROM, includes: 'sessions' },
+      { kind: 'symbol', file: 'src/platformKit/gates/helpers/commandGates.ts', name: 'isLongRunning' },
     ],
     'REQ-SESSIONS-04': [
       { kind: 'symbol', file: SIGN_IN_MACHINE, name: 'signInMachine' },

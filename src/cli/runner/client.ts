@@ -146,6 +146,15 @@ export async function runFast(argv: string[], context?: Partial<CommandContext>,
   const entry = form?.ok && form.command ? form.command : null;
   const command = entry ? await loadIndexed(entry) : undefined;
   if (!entry || !command || command.name !== entry.name) return (await full())(argv, context);
+  if (command.longRunning) {
+    const [{ gateCli }, { busyJob }] = await Promise.all([import("../../platformKit/gates/client.ts"), import("../../mcp/jobs/index.ts")]);
+    const held = gateCli(command, rest, { busy: (account) => busyJob(account) });
+    if (held) {
+      (context?.err ?? ((line: string) => console.error(line)))(held.message);
+      context?.refused?.(held.code);
+      return 1;
+    }
+  }
   return runWith(argv, context, (ctx, args) => {
     const again = resolvePlatformForm([ALIASES[args[0]] ?? args[0], ...args.slice(1)], findIn([command]));
     return again.ok && again.command ? runOne(ctx, again.command, again.argv) : dispatchWith(ctx, args, [command]);

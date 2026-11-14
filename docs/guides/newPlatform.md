@@ -19,6 +19,7 @@ Each tool's own description carries its full usage, notes, live line and rules; 
 | Tool | What it does | Usage |
 |---|---|---|
 | `newPlatform` | Make a new platform's session, command, MCP tool, engine and docs… | `log new platform <name> [--label <shown name>] [--twentyPlatform <ENUM>] [--library <vendor/folder>] [--sessionCookies <a,b>] [--cookieDomain <.site.com>] [--hosts <a.com,b.com>] [--home <https://…>] [--noProxy] [--noBrowser] [--apply] [--json]` |
+| `newPlatformLive` | Make a new platform's session, command, MCP tool…, live on the platform | `log new platform <name> [--label <shown name>] [--twentyPlatform <ENUM>] [--library <vendor/folder>] [--sessionCookies <a,b>] [--cookieDomain <.site.com>] [--hosts <a.com,b.com>] [--home <https://…>] [--noProxy] [--noBrowser] [--apply] [--json]` |
 
 ## The work, step by step: layout
 

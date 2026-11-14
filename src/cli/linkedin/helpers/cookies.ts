@@ -68,6 +68,7 @@ export const linkedinCookiesCommand: Command = {
   usage: LINKEDIN_COOKIES_USAGE,
   platform: "linkedin",
   name: "cookies",
+  terminalOnly: "asks for a LinkedIn account's session cookies in a Clack prompt (masked) and checks them with LinkedIn before saving. Run `log linkedin cookies save --account <publicId>` in a terminal.",
   effect: "write",
   summary: "Add or refresh a LinkedIn account in Twenty: its session cookies from a masked prompt, checked against LinkedIn",
   input: LINKEDIN_COOKIES_INPUT,

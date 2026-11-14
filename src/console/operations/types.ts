@@ -50,6 +50,7 @@ export const UNJOURNALED_TOOLS: readonly string[] = ["browserViewStream", "brows
 
 export const CONSOLE_SAFE_ERRORS = [
   "consoleInputInvalid",
+  "liveNotConfirmed",
   "consoleOperationUnknown",
   "credentialInputInvalid",
   "credentialRejected",

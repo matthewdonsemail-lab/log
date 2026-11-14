@@ -1,7 +1,6 @@
-import { argvOfInput, isPlatform, platformLabel, toolBaseName } from "../../../cli/runner/helpers/index.ts";
+import { argvOfInput, formToolName, isPlatform, platformLabel, toolBaseName } from "../../../cli/runner/helpers/index.ts";
 import type { Command } from "../../../cli/runner/types.ts";
 import type { GuardResult, LogToolInput } from "../types.ts";
-import { NO_PROMPT, TERMINAL_ONLY } from "../types.ts";
 import { LIVE_SUFFIX } from "./toolAnnotations.ts";
 import { argsLiveFlags, commandTools, legacyArgsTool } from "./toolsFromCommands.ts";
 import type { CommandTool } from "./toolsFromCommands.ts";
@@ -21,7 +20,7 @@ const flagName = (arg: string) => (arg.startsWith("--") ? arg.slice(2).split("="
 const refusal = (code: string, message: string): GuardResult => ({ ok: false, code, message });
 
 const withNoPrompt = (command: Command, argv: string[]): string[] => {
-  const noPrompt = NO_PROMPT[command.name];
+  const noPrompt = command.noPrompt;
   return noPrompt && !argv.includes(noPrompt) ? [...argv, noPrompt] : argv;
 };
 
@@ -39,13 +38,18 @@ function argsCall(name: string, entry: Pick<CommandTool, "command" | "live">, in
   return { ok: true, argv: commandLine(command, withNoPrompt(command, args)) };
 }
 
-function namedTools(command: Command, commands: Command[]): string[] {
+function namedTools(command: Command, commands: readonly Command[]): string[] {
   return commandTools(commands).filter((t) => t.command === command).map((t) => t.tool);
 }
 
-export function guardCall(called: string, input: LogToolInput | undefined, commands: Command[]): GuardResult {
+export function terminalCommandOf(name: string, commands: readonly Command[]): Command | null {
+  return commands.find((command) => command.terminalOnly && [toolBaseName(command), ...(command.input?.forms ?? []).map((form) => formToolName(command, form))].some((tool) => tool === name || `${tool}${LIVE_SUFFIX}` === name)) ?? null;
+}
+
+export function guardCall(called: string, input: LogToolInput | undefined, commands: readonly Command[]): GuardResult {
   const name = currentToolName(called);
-  if (name in TERMINAL_ONLY) return refusal("terminalOnly", `log ${name} is not a tool: it ${TERMINAL_ONLY[name]}`);
+  const terminal = terminalCommandOf(name, commands);
+  if (terminal) return refusal("terminalOnly", `log ${commandLine(terminal, []).join(" ")} is not a tool: it ${terminal.terminalOnly}`);
   const entry = commandTools(commands).find((t) => t.tool === name);
   const legacy = legacyArgsTool(name, commands);
   if (legacy && (!entry || (input !== undefined && "args" in input))) {
@@ -64,7 +68,7 @@ export function guardCall(called: string, input: LogToolInput | undefined, comma
   const liveField = live ? undefined : command.input?.forms.flatMap((f) => f.flags).find((f) => f.live && f.name in fields && !form.flags.includes(f));
   if (liveField) return refusal("inputInvalid", `${name} never acts on ${platformLabel(command)}: ${liveField.name} is \`${name}${LIVE_SUFFIX}\`, only when the owner asked (rule 8)`);
   const built = argvOfInput(form, fields, { live });
-  if (!built.ok) return refusal("inputInvalid", `${name}: ${built.message}`);
+  if (!built.ok) return refusal(built.code ?? "inputInvalid", `${name}: ${built.message}`);
   if (live && !entry.forced.length && !built.live) return refusal("inputInvalid", `${name} is for live runs: set ${form.flags.filter((f) => f.live).map((f) => f.name).join(" or ")}, or call \`${name.slice(0, -LIVE_SUFFIX.length)}\``);
   if (built.bypass && confirmBypass !== true) return refusal("bypassNotConfirmed", BYPASS_REFUSAL(name));
   return { ok: true, argv: commandLine(command, withNoPrompt(command, [...built.argv, ...entry.forced.map((f) => `--${f}`)])) };

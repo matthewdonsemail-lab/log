@@ -112,13 +112,14 @@ function sameView(before: BrowserCheckView, input: { generation?: unknown; revis
   if (typeof input.revision === "string" && before.revision && input.revision !== before.revision) throw new Error("browserStateChanged");
 }
 
-export async function actOnBrowser(account: ConnectionAccount, action: unknown, input: { generation?: unknown; revision?: unknown }, callTool: BrowserToolCaller, env: Env = process.env): Promise<BrowserCheckView> {
+export async function actOnBrowser(account: ConnectionAccount, action: unknown, input: { generation?: unknown; revision?: unknown; confirmLive?: unknown }, callTool: BrowserToolCaller, env: Env = process.env): Promise<BrowserCheckView> {
   if (!(BROWSER_ACTIONS as readonly unknown[]).includes(action)) throw new Error("browserInputInvalid");
   const step = action as BrowserAction;
   const before = await browserCheckView(account, env);
   if (step === "linkProfile") {
     if (before.phase !== "profileRequired") return before;
-    confirmed(await callTool("adsPower", { args: ["sync", "--apply", "--account", account.name, "--json"] }));
+    if (input.confirmLive !== true) throw new Error("liveNotConfirmed");
+    confirmed(await callTool("adsPowerSyncLive", { account: account.name, json: true, confirmLive: input.confirmLive }));
     return browserCheckView(account, env);
   }
   if (before.phase === "busy") throw new Error("browserBusy");
@@ -131,7 +132,8 @@ export async function actOnBrowser(account: ConnectionAccount, action: unknown, 
   }
   if (step === "resolve") {
     if (!before.canResolve) throw new Error("browserCheckUnresolved");
-    confirmed(await callTool("inspectDoLive", { account: account.name, action: "signIn", confirmLive: true, goal: GOAL, json: true, waitMs: 50000 }));
+    if (input.confirmLive !== true) throw new Error("liveNotConfirmed");
+    confirmed(await callTool("inspectDoLive", { account: account.name, action: "signIn", confirmLive: input.confirmLive, goal: GOAL, json: true, waitMs: 50000 }));
     return browserCheckView(account, env);
   }
   if (!["ready", "verified", "signInRequired"].includes(before.phase)) throw new Error("browserInputStopped");

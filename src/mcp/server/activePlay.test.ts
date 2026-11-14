@@ -101,7 +101,7 @@ describe("a play unlocks only the sends it covers", () => {
   const flows = savedFlows();
   const pages = listUseCases();
   const acting = actingAsOwnerTools(COMMANDS, flows);
-  const UNNAMED = ["discordDeleteLive", "facebookFlowDeletePostLive", "facebookFlowPostCommentLive", "facebookFlowProfilePhotoPostLive", "facebookFlowProfilePostLive", "redditPostLive", "redditReplyLive", "redditVoteLive", "twitterListAddLive", "twitterListCreateLive", "twitterQuoteLive", "twitterRepostLive", "twitterVoiceLive"];
+  const UNNAMED = ["discordDeleteLive", "facebookFlowDeletePostLive", "facebookFlowPostCommentLive", "facebookFlowProfilePhotoPostLive", "facebookFlowProfilePostLive", "facebookPublishLive", "redditPostLive", "redditReplyLive", "redditVoteLive", "twitterListAddLive", "twitterListCreateLive", "twitterQuoteLive", "twitterRepostLive", "twitterVoiceLive"];
   const gate = (tool: string, play: ActivePlay | null) => {
     const platform = platformOfTool(tool, COMMANDS, flows);
     return playRefusal(tool, { mode: playGateMode(tool, acting, pages, platform), platform, useCases: [], play });
@@ -211,7 +211,7 @@ describe("a play unlocks only the sends it covers", () => {
     const play = setActivePlay("discord/channelReply", page("discord/channelReply"), { scope, handle: mintPlayHandle() });
     const input = { account: "fakeBird", userId: "100", text: "hi", approvedBy: "fakeOwner", confirmLive: true, playHandle: play.handle };
     expect(guardCall("twitterDmLive", withoutHandle(input), COMMANDS)).toMatchObject({ ok: true });
-    expect(guardCall("twitterDmLive", withoutHandle({ ...input, approvedBy: undefined }), COMMANDS)).toEqual({ ok: false, code: "inputInvalid", message: "twitterDmLive: approvedBy is needed on a live run (rule 8)" });
+    expect(guardCall("twitterDmLive", withoutHandle({ ...input, approvedBy: undefined }), COMMANDS)).toEqual({ ok: false, code: "notApproved", message: "twitterDmLive: approvedBy is needed on a live run (rule 8)" });
     const result = await runToolCall("twitterDmLive", input, {}, () => {}, noBrowsers, undefined, false, scope);
     expect((result.structuredContent as { stderr: string }).stderr).toStartWith("playNotCovering");
   });

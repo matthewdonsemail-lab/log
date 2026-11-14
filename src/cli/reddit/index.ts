@@ -1,7 +1,13 @@
 import { findRedditAccount, recordRedditSession, redditGate } from "../../reddit/account/session/index.ts";
 import type { PlatformAnswer } from "../../platformKit/session/index.ts";
-import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuse, refuseError, refuseInput } from "../runner/helpers/index.ts";
+import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuse, refuseError, refuseGated, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandInput, FlagSpec } from "../runner/types.ts";
+import { watermarkLine, watermarkReadingOf } from "../../twitter/copy/watermark/index.ts";
+import { gateDeps } from "../twitter/helpers/voice.ts";
+import { guardSend } from "../../inbox/claims/index.ts";
+import type { SendGuard } from "../../inbox/claims/index.ts";
+import { confirmAnswer, rethrowFailure, runAction } from "../../platformKit/action/index.ts";
+import type { PlatformEngineRun } from "../../platformKit/session/index.ts";
 
 export const REDDIT_SESSION_USAGE = [
   "Usage: log reddit session check --account <accountName> [--json]",
@@ -171,6 +177,7 @@ export const redditReadCommand: Command = {
   usage: REDDIT_READ_USAGE,
   platform: "reddit",
   name: "read",
+  longRunning: true,
   effect: "read",
   input: REDDIT_READ_INPUT,
   summary: "Find subreddits, and read a subreddit's newest posts with their links, through the account's direct-API engine",
@@ -278,6 +285,7 @@ interface RedditWrite {
   spec: (flags: Record<string, unknown>) => { fields: Record<string, unknown> } | { error: string };
   plan: (fields: Record<string, unknown>) => string;
   done: (answer: Record<string, unknown>) => string;
+  copy?: (fields: Record<string, unknown>) => { text: string; chat: string };
 }
 
 function text(flags: Record<string, unknown>, name: string): string {
@@ -306,6 +314,9 @@ function redditWriteCommand(write: RedditWrite): Command {
       const approvedBy = text(parsed.flags, "approvedBy");
       if (live && !approvedBy) return refuse(`reddit ${write.name}`, "notApproved", "--live needs --approvedBy <who> (rule 8)");
       const json = Boolean(parsed.flags["json"]);
+      const copy = write.copy?.(built.fields) ?? null;
+      const watermark = copy ? watermarkReadingOf(copy.text) : null;
+      if (watermark?.level === "artifacts") return refuse(`reddit ${write.name}`, "aiArtifacts", `the copy carries what AI chat interfaces leave in text: ${watermark.findings.filter((f) => f.deterministic).map((f) => `${f.label} ×${f.count}`).join(", ")}`);
       try {
         const account = await findRedditAccount(context.twenty, ref);
         const gate = redditGate(account);
@@ -316,8 +327,32 @@ function redditWriteCommand(write: RedditWrite): Command {
           return { code: 0, stdout: `log reddit ${write.name}: dry run: ${account.accountName} would ${plan}. Nothing was sent. --live --approvedBy <who> does it (rule 8).` };
         }
         if (!context.directReddit) return { code: 1, stderr: `log reddit ${write.name}: the direct-API engine isn't wired in this context` };
-        context.err(`${account.accountName}: ${plan}, approved by ${approvedBy}, on the direct-API engine`);
-        const run = context.directReddit(account, { action: write.action, live: true, approvedBy, ...built.fields });
+        if (watermark) context.err(`${account.accountName}: ${watermarkLine(watermark)}`);
+        const engine = context.directReddit;
+        let guard: SendGuard | null = null;
+        const acted = await runAction<null, PlatformEngineRun>({
+          gate: async () => {
+            if (!copy) return { ok: true, held: null };
+            const voiced = await gateDeps.gate(context, { platform: "reddit", account: account.accountName, to: copy.chat, text: copy.text, conversationId: copy.chat });
+            if (!voiced.ok) return { ok: false, code: "voiceGateFailed", detail: voiced.refused };
+            context.err(voiced.line);
+            const claimed = guardSend({ platform: "reddit", account: account.accountName, conversationId: copy.chat });
+            if (!claimed.ok) return { ok: false, code: "chatClaimedElsewhere", detail: claimed.refused };
+            guard = claimed;
+            if (claimed.part(0, copy.text) === "lost") return { ok: false, code: "chatClaimLost", detail: "the claim on this thread was lost before it was sent, so nothing was sent" };
+            return { ok: true, held: null };
+          },
+          act: async () => {
+            context.err(`${account.accountName}: ${plan}, approved by ${approvedBy}, on the direct-API engine`);
+            return engine(account, { action: write.action, live: true, approvedBy, ...built.fields });
+          },
+          confirm: (run) => confirmAnswer(run.answer),
+        });
+        const held = guard as SendGuard | null;
+        if (held?.ok) held.done(acted.outcome === "done" ? "sent" : "failed", copy ? copy.text.slice(0, 300) : undefined);
+        if (acted.stage === "gating") return refuseGated(`reddit ${write.name}`, acted, "voiceGateFailed");
+        rethrowFailure(acted);
+        const run = acted.answer!;
         for (const line of await recordRedditSession(context.twenty, account, run, context.now?.() ?? new Date())) context.err(line);
         const answer = run.answer as typeof run.answer & Record<string, unknown>;
         if (!answer.ok) return { code: 1, stderr: `log reddit ${write.name}: ${answer.code}: ${answer.detail ?? ""}. Nothing is retried (rule 94).` };
@@ -362,6 +397,7 @@ export const redditPostCommand = redditWriteCommand({
   usage: REDDIT_POST_USAGE,
   input: REDDIT_POST_INPUT,
   summary: "Post a text post to a subreddit through the account's direct-API engine; a dry run unless --live",
+  copy: (fields) => ({ text: [fields.title, fields.text].filter((part) => typeof part === "string" && part).join("\n"), chat: `r/${String(fields.subreddit)}` }),
   args: "--account <a> --subreddit <name> --title <title> [--text <markdown>] [--flair <flair>] [--approvedBy <who>] [--live] [--json]",
   spec: (flags) => {
     const subreddit = text(flags, "subreddit").replace(/^\/?r\//, "");
@@ -407,6 +443,7 @@ export const redditReplyCommand = redditWriteCommand({
   usage: REDDIT_REPLY_USAGE,
   input: REDDIT_REPLY_INPUT,
   summary: "Comment on a Reddit post or reply to one of its comments through the account's direct-API engine; a dry run unless --live",
+  copy: (fields) => ({ text: String(fields.text ?? ""), chat: String(fields.commentId || fields.url) }),
   args: "--account <a> --url <permalink> --text <text> [--comment <t1_id>] [--approvedBy <who>] [--live] [--json]",
   spec: (flags) => {
     const url = text(flags, "url");

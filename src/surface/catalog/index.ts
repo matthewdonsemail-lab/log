@@ -7,8 +7,8 @@ import { commandEngine } from "../../directApi/engine/index.ts";
 import type { FlowDefinition } from "../../browser/flow/index.ts";
 import type { Command, CommandInput, FlagSpec } from "../../cli/runner/types.ts";
 import { COMMAND_RULES, EVERY_TOOL_RULES } from "../../mcp/server/helpers/agentRules.ts";
-import { commandTools, commandWords, longRunning } from "../../mcp/server/helpers/toolsFromCommands.ts";
-import { TERMINAL_ONLY } from "../../mcp/server/types.ts";
+import { commandTools, commandWords } from "../../mcp/server/helpers/toolsFromCommands.ts";
+import { isLongRunning } from "../../platformKit/gates/helpers/commandGates.ts";
 import type { CommandEntry, Flag, FlowEntry } from "./types.ts";
 
 export type { CommandEntry, Flag, FlowEntry } from "./types.ts";
@@ -81,7 +81,7 @@ export function sessionHooks(hooks: readonly AgentHook[] = AGENT_HOOKS): AgentHo
 }
 
 export function commandEntry(command: Command): CommandEntry {
-  const terminalOnly = TERMINAL_ONLY[command.name] ?? null;
+  const terminalOnly = command.terminalOnly ?? null;
   const tools = commandTools([command]).map((t) => t.tool);
   return {
     name: command.name,
@@ -92,7 +92,7 @@ export function commandEntry(command: Command): CommandEntry {
     tool: terminalOnly ? null : tools.join(", "),
     typed: command.input !== undefined,
     terminalOnly,
-    longRunning: longRunning(command),
+    longRunning: isLongRunning(command),
     browser: commandBrowser(command.name),
     engine: commandEngine(commandKey(command), command.name),
     platform: command.platform,

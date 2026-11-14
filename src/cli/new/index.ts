@@ -3,6 +3,7 @@ import { join } from "node:path";
 import { applyPlan, planNewPlatform } from "../../scaffold/platform/index.ts";
 import { JSON_FLAG, listOf, parseArgs, parserSpecOf, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
+import { liveThroughAction } from "../../platformKit/action/index.ts";
 
 const REPO = join(import.meta.dir, "..", "..", "..");
 
@@ -29,14 +30,14 @@ export const NEW_INPUT: CommandInput = {
         { name: "home", kind: "string", description: "The page its browser opens on (default https://www.<first host>/)" },
         { name: "noProxy", kind: "boolean", description: "Its accounts open with no proxy, like X (default: a proxy in the home country is required)" },
         { name: "noBrowser", kind: "boolean", description: "It has no browser path, only the direct-API engine (default: the account's AdsPower browser)" },
-        { name: "apply", kind: "boolean", description: "Write it (without it, only list what it would do)" },
+        { name: "apply", kind: "boolean", live: true, description: "Write it (without it, only list what it would do)" },
         JSON_FLAG,
       ],
     },
   ],
 };
 
-export const newCommand: Command = {
+export const newCommand: Command = liveThroughAction<Command>({
   usage: NEW_USAGE,
   platform: "any",
   name: "new",
@@ -76,4 +77,4 @@ export const newCommand: Command = {
     if (parsed.flags["json"]) return { code: docs.status === 0 ? 0 : 1, stdout: JSON.stringify({ apply: true, names: plan.names, done, docs: docsLine, notes: plan.notes, next }, null, 2) };
     return { code: docs.status === 0 ? 0 : 1, stdout: [`log new platform ${name}: made ${plan.names.label}.`, ...done.map((l) => `  ${l}`), `  ${docsLine}`, ...plan.notes.map((n) => `note: ${n}`), ...next].join("\n") };
   },
-};
+}, ["apply"]);

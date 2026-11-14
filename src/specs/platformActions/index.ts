@@ -38,12 +38,17 @@ export const platformActions = {
       { kind: 'uses', file: DISCORD, name: 'runAction' },
       { kind: 'uses', file: SLACK, name: 'runAction' },
       { kind: 'uses', file: INSTAGRAM, name: 'runAction' },
+      { kind: 'uses', file: 'src/cli/reddit/index.ts', name: 'runAction' },
+      { kind: 'symbol', file: CLIENT, name: 'liveThroughAction' },
+      { kind: 'symbol', file: CLIENT, name: 'runLive' },
+      { kind: 'uses', file: 'src/cli/campaign/index.ts', name: 'liveThroughAction' },
+      { kind: 'uses', file: 'src/cli/capabilities/index.ts', name: 'liveThroughAction' },
     ],
   },
   rubrics: {
     'REQ-ACTION-01': noul('Is actionMachine built with setup() and named guards and actions, does every invoke have onError, and does it go gating, then acting only when the gate passed, then confirming, ending in done, refused or uncertain?'),
     'REQ-ACTION-02': noul('Does a refused or throwing gate end in refused with nothing acted, does a not-ok platform answer end in refused at confirming with its code, does a throwing act or confirm end in uncertain with the error, and does confirmParts confirm a multi-part send only when every part went out?'),
-    'REQ-ACTION-03': noul('Do reactCommandOf, voiceNoteCommandOf, the X writes and lists, discord send and delete, slack send and instagram send run every live call through runAction, with the catch-up, voice gate and claim in the gate, release the chat claim when the outcome is uncertain, and never call runAction on a dry run?'),
+    'REQ-ACTION-03': noul('Do reactCommandOf, voiceNoteCommandOf, the X writes and lists, discord send and delete, slack send, instagram send and reddit post, reply and vote run every live call through runAction, do the commands wrapped by liveThroughAction (adsPower, preflight, lifecycle, listing, runs, storage, new, clone, campaign and the capability commands) run every call with one of their live flags through runLive, with the catch-up, voice gate and claim in the gate, release the chat claim when the outcome is uncertain, and never call runAction on a dry run?'),
     unspecifiedBehavior: noul('Does the action machine retry an act, or treat a thrown act as success, by a route the specification does not describe?'),
   },
   assertions: {

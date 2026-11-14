@@ -47,6 +47,7 @@ export const watchCommand: Command = {
   usage: WATCH_USAGE,
   platform: "facebook",
   name: "watch",
+  longRunning: true,
   effect: "browser",
   input: WATCH_INPUT,
   summary: "Run the listing monitor (XState) for one account and print every step",

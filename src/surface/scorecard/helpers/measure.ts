@@ -1,4 +1,5 @@
 import { stepsOf } from "../../../mcp/server/helpers/activePlay.ts";
+import { isLocalLiveTwin } from "../../../mcp/server/helpers/toolsFromCommands.ts";
 import { PLATFORMS } from "../../../cli/runner/helpers/platforms.ts";
 import { commandKey } from "../../../cli/runner/helpers/platforms.ts";
 import { GUIDE_LIMIT } from "../types.ts";
@@ -92,7 +93,7 @@ export function argsTools(tools: readonly ToolText[]): string[] {
 }
 
 export function actingTools(tools: readonly ScoredCommandTool[], flowTools: readonly string[]): string[] {
-  return [...tools.filter((t) => t.live && t.effect !== "spend").map((t) => t.tool), ...flowTools.filter((name) => name.endsWith("Live"))];
+  return [...tools.filter((t) => t.live && t.effect !== "spend" && !isLocalLiveTwin(t)).map((t) => t.tool), ...flowTools.filter((name) => name.endsWith("Live"))];
 }
 
 export const ungatedActingTools = (acting: readonly string[], playRequired: ReadonlySet<string>): string[] => acting.filter((name) => !playRequired.has(name));

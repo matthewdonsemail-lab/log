@@ -1,17 +1,18 @@
 import type { Platform } from "../../cli/runner/helpers/platforms.ts";
 import type { ToolEffect } from "../../cli/runner/types.ts";
 
-export const CANONICAL_INPUTS = ["account", "chat", "space", "limit", "seconds"] as const;
+export const CANONICAL_INPUTS = ["account", "chat", "space", "limit", "seconds", "text", "message", "emoji", "asOne", "approvedBy"] as const;
 export type CanonicalInput = (typeof CANONICAL_INPUTS)[number];
 
 export interface CapabilityInput {
   name: CanonicalInput;
-  kind: "string" | "integer";
+  kind: "string" | "integer" | "boolean";
   description: string;
   required?: boolean;
   min?: number;
   max?: number;
   fallback?: number;
+  approval?: true;
 }
 
 export type InputMapping = { flag: string } | { positional: true } | { choose: (value: string) => { flag: string }; flags: readonly string[] };
@@ -27,6 +28,7 @@ export interface CapabilityDefinition {
   verb: string;
   summary: string;
   effect: ToolEffect;
+  live?: true;
   inputs: readonly CapabilityInput[];
   platforms: Partial<Record<Platform, PlatformBinding>>;
 }

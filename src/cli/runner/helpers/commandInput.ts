@@ -5,7 +5,7 @@ import { toolBaseName } from "./platforms.ts";
 
 export type TypedInput = Record<string, unknown>;
 
-export type InputArgv = { ok: true; argv: string[]; live: boolean; bypass: boolean } | { ok: false; message: string };
+export type InputArgv = { ok: true; argv: string[]; live: boolean; bypass: boolean } | { ok: false; message: string; code?: "notApproved" };
 
 export const PROXY_MS_FLAG: FlagSpec = { name: "proxyMs", kind: "integer", min: 500, max: 60_000, description: "This run's proxy speed limit to Facebook, in ms (500-60000, default 2500, rule 33)", global: true };
 
@@ -132,7 +132,7 @@ export function argvOfInput(form: InputForm, input: TypedInput | undefined, opti
     const value = given[spec.name];
     if (value === undefined || (value === false && spec.kind === "boolean")) {
       if (spec.required) return { ok: false, message: `${spec.name} is needed` };
-      if (options.live && spec.approval) return { ok: false, message: `${spec.name} is needed on a live run (rule 8)` };
+      if (options.live && spec.approval) return { ok: false, code: "notApproved", message: `${spec.name} is needed on a live run (rule 8)` };
       continue;
     }
     const problem = checkFlag(spec, value);

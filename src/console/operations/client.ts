@@ -56,7 +56,7 @@ async function browserOperation(tool: string, args: Record<string, unknown>, dep
   if (tool === "browserOpen") return { view: await openBrowser(account, callTool) };
   if (tool === "browserFrame") return { frame: await browserCheckFrame(account, args.generation) };
   if (tool === "browserInput") return { view: await sendBrowserInput(account, { ...at, event: args.event }) };
-  if (tool === "browserAction") return { view: await actOnBrowser(account, args.action, at, callTool) };
+  if (tool === "browserAction") return { view: await actOnBrowser(account, args.action, { ...at, confirmLive: args.confirmLive }, callTool) };
   if (tool === "browserSaveState") return { view: await saveBrowserState(account, at, callTool), connections: loadConnectionsView() };
   const signIn = await finishConsoleSignIn(account, { callTool, store: deps.signInStore, actors: deps.signInActors });
   if (signIn) return { view: await browserCheckView(account), signIn, connections: loadConnectionsView() };

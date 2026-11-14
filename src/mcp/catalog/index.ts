@@ -2,10 +2,11 @@ import type { Command } from "../../cli/runner/types.ts";
 import { rulesLine } from "../server/helpers/agentRules.ts";
 import { guideLine } from "../server/helpers/guides.ts";
 import { annotationsOf } from "../server/helpers/toolAnnotations.ts";
+import { PLAY_HANDLE } from "../server/helpers/toolsFromCommands.ts";
 import { TOOL_RESULT_SCHEMA } from "../server/types.ts";
 import type { LogTool, LogToolInput } from "../server/types.ts";
 import type { FlowDefinition } from "../../browser/flow/index.ts";
-import { catalogOf, didYouMean, flowEntries, entryById, helpLines, renderGet, renderSearch, renderUnknownId, searchCatalog } from "./helpers/index.ts";
+import { capabilityOfEntry, catalogOf, didYouMean, flowEntries, entryById, helpLines, renderGet, renderSearch, renderUnknownId, searchCatalog } from "./helpers/index.ts";
 import { CALL_TOOL, CATALOG_GUIDE, GET_TOOL, SEARCH_LIMIT, SEARCH_LIMIT_MAX, SEARCH_TOOL } from "./types.ts";
 import type { CallRefusal, CallTarget, CatalogEntry } from "./types.ts";
 
@@ -84,6 +85,7 @@ export function catalogTools(): LogTool[] {
           confirmLive: { type: "boolean", description: "Set true only when the owner asked for this live run" },
           confirmBypass: { type: "boolean", description: "Set true only when the owner asked for a run outside the account's local waking hours (rule 20)" },
           waitMs: { type: "integer", description: "How long this call waits for a long run, in ms (default 20000, at most 50000); past it the run comes back as a job" },
+          playHandle: PLAY_HANDLE,
         },
         required: ["id"],
         additionalProperties: false,
@@ -98,7 +100,7 @@ export function searchAnswer(entries: readonly CatalogEntry[], input: LogToolInp
   if (!query) return { ok: false, text: [`${SEARCH_TOOL}: query is needed, in plain words`, ...helpLines([`${SEARCH_TOOL} {"query":"send a dm on x"}`])].join("\n"), json: null };
   const asked = typeof input?.limit === "number" && Number.isInteger(input.limit) ? input.limit : SEARCH_LIMIT;
   const result = searchCatalog(entries, query, Math.min(Math.max(1, asked), SEARCH_LIMIT_MAX));
-  const row = (h: (typeof result.hits)[number]) => ({ id: h.entry.id, summary: h.entry.summary, live: Boolean(h.entry.liveTool), terminalOnly: Boolean(h.entry.terminalOnly), matched: h.matched, missed: h.missed });
+  const row = (h: (typeof result.hits)[number]) => ({ id: h.entry.id, capability: capabilityOfEntry(h.entry), summary: h.entry.summary, live: Boolean(h.entry.liveTool), terminalOnly: Boolean(h.entry.terminalOnly), matched: h.matched, missed: h.missed });
   return { ok: true, text: renderSearch(result), json: { query, verdict: result.verdict, results: result.hits.map(row), near: result.near.map(row) } };
 }
 
