@@ -2,9 +2,14 @@
   <img src="banner.png" alt="log: run your social accounts from the command line or your AI agent" width="100%" />
 </p>
 
+<p align="center">
+  <a href="https://x.com/matthewsoldit/status/2120938715820474690"><img src="media/readme/hermesIntro.gif" alt="Introducing log by ListeningKit, in collaboration with Hermes Agent: Hermes asks who is waiting for a reply, log reads every inbox, and the answer lands on Discord in your own voice" width="100%" /></a>
+  <br><sub>Introducing log, in collaboration with Hermes Agent. <a href="https://x.com/matthewsoldit/status/2120938715820474690">Watch the launch video with sound on X →</a></sub>
+</p>
+
 <h3 align="center">One command for every social account you run.</h3>
 <p align="center"><b>Read and answer X, Discord, Slack, Instagram, Reddit, LinkedIn and Facebook<br>
-from your terminal, or let Claude Code, Codex or Cursor do it through the MCP server.</b><br>
+from your terminal, or from any agent: Claude Code, Codex, Cursor, Hermes, OpenCode, ChatGPT, Claude and Grok.</b><br>
 <a href="docs/useCases/README.md">See every play, step by step →</a></p>
 
 <p align="center">
@@ -126,9 +131,11 @@ Then check it with `log <platform> session check --account <name>`, which sends 
 | Agent | How to connect |
 |---|---|
 | Claude Code | `claude mcp add log -- logMcp` |
-| Codex, Cursor and other MCP clients | add `logMcp` as a stdio MCP server: [docs/mcp.md](docs/mcp.md) |
+| Hermes | `hermes plugins install listeningkit-log --enable`: the [log plugin for Hermes](hermesPlugin/README.md) |
+| Codex, Cursor, OpenCode and other MCP clients | add `logMcp` as a stdio MCP server: [docs/mcp.md](docs/mcp.md) |
+| Claude, ChatGPT and Grok, or an agent on a server | the hosted server, `https://mcp.listeningkit.com/mcp`, over OAuth |
 
-Then ask in plain words: *"read my X DMs and tell me who's waiting on me"*. The agent loads log's guide first, then follows the matching play.
+Then ask in plain words: *"read my X DMs and tell me who's waiting on me"*. log's router names the play for that request, and the agent follows its steps. Every harness, and what each one can do: [Works in every harness](#works-in-every-harness).
 
 ## Platforms
 
@@ -150,6 +157,63 @@ Then ask in plain words: *"read my X DMs and tell me who's waiting on me"*. The 
 - **Live inbox.** New messages are pushed into your agent's context as they arrive, and two agents never answer the same chat.
 - **Kept human.** Every account has its own daily limits, pacing and local waking hours. A refusal from the platform stops the run, and nothing is retried.
 - **Your machine, your data.** Accounts and sessions stay in `~/.logCli`. Many accounts? Keep them in [Twenty](docs/twenty.md), an open-source CRM, so every machine, agent and teammate sees the same ones.
+
+## Works in every harness
+
+A harness is the agent app you talk to log through. log is the same MCP server in all of them, with the same tools under the same names. What changes is how log's guidance reaches the model and how new messages reach it:
+
+| Harness | Connects | How it's told what to do | How new messages reach it | Views and sign-in |
+|---|---|---|---|---|
+| [Claude Code](docs/harnesses/claudeApp.md#claude-code) | local or hosted | its prompt hook runs the router on every prompt | hooks on every prompt and after every tool call | text; sign-in in the window on your screen |
+| [Codex](docs/harnesses/codex.md) | local or hosted | its prompt hook | hooks on every prompt and around tool calls | text |
+| [Hermes](docs/harnesses/hermes.md) | local or hosted | the `logHooks` plugin's `pre_llm_call`, before every model call | the same hook, before every model call | text, plus a **log tab** in the Hermes dashboard |
+| [OpenCode](docs/harnesses/README.md) | local | its prompt hook | its plugin's hooks | text |
+| [Antigravity](docs/harnesses/README.md) | local | its prompt hook | its hooks | text |
+| [Cursor](docs/harnesses/cursor.md) | local or hosted | `getGuide({ ask })` (Cursor's prompt hook can't add context) | `sessionStart` and `postToolUse` hooks | MCP Apps: `report` and `browserView` inline |
+| [Claude (web, desktop, mobile)](docs/harnesses/claudeApp.md) | hosted | `getGuide({ ask })` | when it asks | MCP Apps inline |
+| [ChatGPT](docs/harnesses/chatgpt.md) | hosted | `getGuide({ ask })` | when it asks | MCP Apps inline |
+| [Grok (xAI API)](docs/harnesses/grok.md) | hosted | `getGuide({ ask })` | when it asks | text |
+
+The full table, written from the code (`HARNESSES` in `src/agentHooks/harness/types.ts`), with each hook's text limit and where its hooks live: [docs/harnesses](docs/harnesses/README.md).
+
+### The log plugin for Hermes
+
+Hermes runs all day, on your machine or a server, and talks to you on Telegram, Slack and its desktop app. The [log plugin](hermesPlugin/README.md) gives it log's tools, every play as a skill, and a log tab in its dashboard. Hermes reads freely, and every send, reply or post asks you first.
+
+```bash
+hermes plugins install listeningkit-log --enable   # from the Hermes catalog
+log launch --setup                                 # pick Hermes: installs the router hook
+hermes plugins enable logHooks
+```
+
+<table>
+<tr>
+<td width="50%"><img src="hermesPlugin/docs/screenshots/xInbox.jpg" alt="Hermes asks who is waiting for a reply, and log finds the X conversations waiting on you" /></td>
+<td width="50%"><img src="hermesPlugin/docs/screenshots/yourVoice.jpg" alt="A draft in your own voice, checked before anything is sent" /></td>
+</tr>
+<tr>
+<td><sub>Who's waiting on you, read from every inbox.</sub></td>
+<td><sub>A draft in your own voice, checked before it's sent.</sub></td>
+</tr>
+<tr>
+<td width="50%"><img src="hermesPlugin/docs/screenshots/platforms.jpg" alt="log's platform cards: Slack, Instagram and more, each in your own session" /></td>
+<td width="50%"><img src="hermesPlugin/docs/screenshots/dashboard.png" alt="The log tab in the Hermes dashboard: who is waiting, every account's session and today's sends" /></td>
+</tr>
+<tr>
+<td><sub>Every platform you're on, each in your own session.</sub></td>
+<td><sub>The log tab: who's waiting, every account's session, today's sends against its limit.</sub></td>
+</tr>
+</table>
+
+### One capability, every surface
+
+Each thing log can do has one name and works the same way from the CLI, the MCP server and the log console, on every platform. The platform is something you pass in, never a default:
+
+- **Shared tools.** `log chats list`, `log messages read|send|react|watch` and their MCP tools (`chatsList`, `messagesRead`, `messagesSendLive`) work on X, Discord, Slack, Instagram and Facebook, the platform taken from the account.
+- **One sign-in.** `log sessions signIn` (MCP: `sessionsSignIn`) opens the account's own browser, you sign in on the platform's login screen, and the session is saved only once the platform shows you signed in. A signed-out browser never overwrites a good session. `log sessions check` answers for every account at once.
+- **The log console.** `log console` is the same operations as a terminal console, or as a web console on your own machine with `--web`. Every console screen has a matching command.
+- **Views.** `report` draws a view from log's own data, and `browserView` shows an account's live browser in the chat, where the host draws MCP Apps. Elsewhere both come back as text.
+- **Machines, not scripts.** Anything that runs over time (sign-in, a session check, each account's watcher, a send, a queue run) is a state machine, so a crash leaves no half-done state behind.
 
 ## How it works
 
@@ -175,7 +239,7 @@ flowchart LR
     K["Hooks<br/>put new messages in front of the agent"]
   end
   subgraph agents["Your agent"]
-    C["Claude Code, Codex or Cursor"]
+    C["Claude Code, Codex, Cursor,<br/>Hermes, OpenCode, ChatGPT..."]
   end
   X & D & S & I -- "push: new message, reaction, media" --> W
   W -- "append once" --> DB
@@ -214,6 +278,77 @@ sequenceDiagram
 ```
 
 Claude Code starts `logMcp` once. `logMcp` is a small proxy that never exits, and it runs the real server as a child process. When log's code changes, it waits until nothing is running, starts the new code, and swaps it in. A long job, like a queue sending over an hour, is never cut off. Your agent keeps working without a restart. This design was picked from four open-source options by a SubQ matrix ([`docs/decisions/mcpReload`](docs/decisions/mcpReload)).
+
+### How the router tells your agent what to do
+
+Each [play](docs/useCases/README.md) is a workflow written step by step, with the words people use to ask for it. The router matches what you typed against every play, so the agent starts from the right steps instead of guessing:
+
+```mermaid
+flowchart TD
+  ASK["You: who's waiting on me on X?"] --> HOOK{"Does the harness<br/>have a prompt hook?"}
+  HOOK -- "yes: Claude Code, Codex, Hermes,<br/>OpenCode, Antigravity" --> H["The hook runs the router<br/>on every prompt, by itself"]
+  HOOK -- "no: Cursor, Claude, ChatGPT, Grok" --> G["The model calls getGuide({ ask })<br/>the same router, on the server"]
+  H & G --> R["The router<br/>your words against every play's phrases,<br/>plus a meaning score from a local model"]
+  R -- "clear match" --> M["PLAY MATCH<br/>the play's steps load with<br/>getGuide({ useCase })"]
+  R -- "near tie" --> T["MAYBE A PLAY<br/>a short menu, nothing loaded"]
+  R -- "no match" --> N["No play<br/>the agent answers as usual"]
+  M --> PG["Play gate<br/>only the sends the loaded play names go through"]
+  PG --> VG["Voice gate<br/>the draft is checked against how you write"]
+  VG --> LIVE["Sent as you, only with --live<br/>and your approval"]
+```
+
+1. **The hook runs it for you.** In a harness with a prompt hook, the router runs before the model sees your message, and its answer is added to the turn. In Hermes this is the `logHooks` plugin's `pre_llm_call`.
+2. **Or the model asks.** Everywhere else, the server's instructions and every tool's description tell the model to call `getGuide({ ask: "<your words>" })` first. It's the same router, so the same prompt gets the same play. A golden set of prompts checks that (`src/useCases/router/fixtures/golden.json`).
+3. **Words, then meaning.** Each play lists how people ask for it. The hook's warm context service adds a meaning score from MiniLM, a small model on your machine, in about 12 ms. If the service is down, the hook falls back to the word score, so a play is still named.
+4. **A clear match loads the play. A near tie doesn't.** A clear match names the play and its steps load with `getGuide({ useCase })`. A near tie shows a short menu and loads nothing. Building or fixing log itself is never a play.
+5. **The play gate.** A send only goes through when the play that's loaded names it. An agent can't wander from "read my DMs" into sending.
+
+### How notifications stream into your agent
+
+Your agent doesn't have to ask what's new. Every account's watcher holds the platform's own push channel, and the hooks put what arrived in front of the agent before its next step:
+
+```mermaid
+sequenceDiagram
+  participant P as The platform
+  participant W as Your account's watcher
+  participant DB as log.db
+  participant K as Hook
+  participant A as Your agent
+  participant S as Your account's session
+  Note over K,W: a hook starts any signed-in account's watcher that isn't running
+  P->>W: push: new message, reaction, notification
+  W->>DB: append the event once, by its id
+  A->>K: you type, a tool call ends, or (Hermes) a model call starts
+  K->>DB: what's new since this session last looked?
+  K-->>A: NEW MESSAGE, who said what and what to do
+  K-->>A: each account's session, today's limits, X's unread counts
+  K-->>A: a gap, a refused catch-up, a second watcher refused
+  A->>DB: claim the chat, so no other agent answers it
+  A->>DB: read the conversation, about 1 ms
+  A->>S: send the reply through the one session
+  S-->>DB: the platform's answer, recorded with the reply
+```
+
+What your agent sees, added to its turn (the handles here are made up):
+
+```text
+log-cli accounts: each one's session (the platform's own answer) and what its governor allowed today:
+  twitter yourHandle: session loggedIn, 19/500 requests, 0/240 writes today, its one session open
+  slack yourWorkspace: session loggedIn, 3/500 requests, 0/40 writes today
+
+>>> PLAY MATCH: the prompt matches the log play twitter/dmInbox (Reading the DM inbox: who is waiting on you).
+Its steps load with getGuide({ useCase: "twitter/dmInbox" }).
+
+>>> X LIVE: each X account's unread counts right now, from X's own ViewerBadgeCounts:
+  @yourHandle: 12 notifications, 0 DMs and 0 X Chat unread
+
+!!! GAPOPENED slack yourWorkspace: behind since its watcher restarted; it catches up through its own session, and a send that needs its context waits for that
+```
+
+- **One watcher per account.** It's the only process holding the platform's push channel (X Chat's socket, Discord's gateway, Slack's socket, Instagram's realtime connection). A second one is refused, and you're told.
+- **Every session has its own cursor.** Nothing is shown twice, and nothing is missed between turns.
+- **Gaps are caught up, never guessed.** When a connection drops, the watcher pulls what it missed through the account's own session, paced like a person. Until it has, a send that needs that context waits. If the platform refuses, the run stops and you're told.
+- **Two agents never answer the same chat.** An agent claims a chat before it drafts, and every claim, send and release is written down in `log.db`.
 
 ### What happens when someone messages you
 
@@ -343,6 +478,12 @@ log <platform> session check --account <a>        # is the session still signed 
 log twitter dms --account <a> [--with <handle>]   # the inbox, or one person in full
 log twitter dm --account <a> --userId <id> --text "<message>" [--live --approvedBy <who>]
 log twitter queue build|plan|run                  # several sends, at random times
+log chats list --account <a>                      # any platform: the account's chats
+log messages read --account <a> --chat "<chat>"   # any platform: one chat's messages
+log sessions check                                # every account, the platform's own answer
+log sessions signIn --account <a>                 # sign in from the account's own browser
+log console [--web]                               # the local console, in the terminal or the browser
+log watchers                                      # each account's one live watcher
 log discord read|send --account <a> --channel "<chat>"
 log slack read|send --account <a> --channel "<chat>"
 log instagram dms|send --account <a>
@@ -359,7 +500,7 @@ The full docs are at **[log.listeningkit.com/docs](https://log.listeningkit.com/
 
 | Tab | What's in it |
 |---|---|
-| Get started | [install](docs/install.md), [add your accounts](docs/accounts.md), [connect your agent](docs/mcp.md), [using log well](docs/usingLog.md) |
+| Get started | [install](docs/install.md), [add your accounts](docs/accounts.md), [connect your agent](docs/mcp.md), [each harness](docs/harnesses/README.md), [using log well](docs/usingLog.md) |
 | Use cases | [the plays, step by step](docs/useCases/README.md) |
 | Platforms | [X](docs/platformGuides/x.md), [Discord](docs/platformGuides/discord.md), [Slack](docs/platformGuides/slack.md), [Facebook](docs/platformGuides/facebook.md), [Reddit](docs/platformGuides/reddit.md) and [LinkedIn](docs/platformGuides/linkedin.md) |
 | Reference | [every command, MCP tool and hook](docs/reference.md), [error codes](docs/errorCatalog.md), [agent guides](docs/guides) |
