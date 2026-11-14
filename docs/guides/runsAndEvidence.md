@@ -21,7 +21,7 @@ Each tool's own description carries its full usage, notes, live line and rules; 
 
 | Tool | What it does | Usage |
 |---|---|---|
-| `errors` | The error catalog | `log errors [--layer <account\|listing\|photo\|form\|captcha\|runtime\|twenty\|proxyVendor\|auth\|profile\|tool>] [--code <code>] [--json] [--markdown]` |
+| `errors` | The error catalog | `log errors [--layer <account\|listing\|photo\|form\|captcha\|runtime\|twenty\|proxyVendor\|auth\|profile\|tool\|mobile>] [--code <code>] [--json] [--markdown]` |
 | `graph` | Print a machine's states and transitions as a Mermaid diagram | `log graph <publish\|monitor>` |
 | `captureHar` | Copy a run's raw HAR and read it and its scripts with offline rea | `log capture har <path> [--out <dir>] [--noRea] [--json]` |
 | `captureSettle` | Settle a run's capture | `log capture settle <runCaptureDir>  (what each run starts in the background: rea reads its capture, split per step)` |

@@ -48,6 +48,7 @@ export const GUIDE_TOPICS: Readonly<Record<string, GuideTopic>> = {
   newPlatform: { about: "Making a new platform whole with one command, and where every new file goes", commands: ["any:new"], skills: ["layout"] },
   instagram: { about: "An Instagram account: its session, reading its DMs, sending text and photos, and the live realtime watch", commands: ["instagram:session", "instagram:dms", "instagram:send", "instagram:react", "instagram:voice", "instagram:watch"], skills: ["instagram"] },
   ui: { about: "Generative UI in the chat: the report tool, where you write a small React view against log's kit (in the spirit of Lynx workspaces) and log draws it with data from log.db, or send just data for a starter view; text everywhere else", commands: ["any:report"], skills: ["report"], serverTools: ["report"] },
+  mobile: { about: "One phone per account: the phones that are connected, the phone attached to each account, and the screen, the UI tree and the app's own network calls read off one phone", commands: ["any:mobile"], skills: [] },
 };
 
 export const guideKey = (command: Pick<Command, "platform" | "name">): string => `${command.platform}:${command.name}`;

@@ -8,6 +8,7 @@ import type { TwentyClient } from "../../twenty/graphql/index.ts";
 import type { AdsPowerClient } from "../../browser/adsPower/index.ts";
 import type { DecisionsClient } from "../../subq/decisions/index.ts";
 import type { Platform } from "./helpers/platforms.ts";
+import type { MobileServices } from "../../mobile/device/index.ts";
 
 export interface CommandResult {
   code: number;
@@ -52,6 +53,7 @@ export interface CommandContext {
   directSlackLive?: (account: import("../../platformKit/session/index.ts").PlatformAccount, spec: import("../../platformKit/session/index.ts").PlatformEngineSpec, onLive: (event: Record<string, unknown>) => void) => Promise<import("../../platformKit/session/index.ts").PlatformEngineRun>;
   directInstagram?: (account: import("../../platformKit/session/index.ts").PlatformAccount, spec: import("../../platformKit/session/index.ts").PlatformEngineSpec) => import("../../platformKit/session/index.ts").PlatformEngineRun;
   directInstagramLive?: (account: import("../../platformKit/session/index.ts").PlatformAccount, spec: import("../../platformKit/session/index.ts").PlatformEngineSpec, onLive: (event: Record<string, unknown>) => void) => Promise<import("../../platformKit/session/index.ts").PlatformEngineRun>;
+  mobile?: MobileServices;
 }
 
 export type ValueFormat = "date" | "time" | "dateOrSpan" | "jsonObject";
