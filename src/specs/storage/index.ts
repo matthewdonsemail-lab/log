@@ -184,6 +184,12 @@ export const storage = {
       { kind: 'uses', file: 'src/extensions/voiceClone/helpers/store.ts', name: 'putState' },
       { kind: 'uses', file: 'src/mcp/reload/client.ts', name: 'putState' },
     ],
+    'REQ-STORAGE-19': [
+      { kind: 'symbol', file: SCHEMA, name: 'repairSkipped' },
+      { kind: 'symbol', file: SCHEMA, name: 'missingObjectsOf' },
+      { kind: 'uses', file: SCHEMA, name: 'repairSkipped' },
+      { kind: 'uses', file: SCHEMA, name: 'missingObjectsOf' },
+    ],
     'REQ-STORAGE-18': [
       { kind: 'symbol', file: MIGRATIONS, name: 'IDENTITY_PROFILE_TABLES' },
       { kind: 'string', file: PLATFORM_TYPES, includes: 'identityProfiles' },
@@ -226,6 +232,7 @@ export const storage = {
     'REQ-STORAGE-16': noul('Does checkOneDatabase count appendFileSync and writeFileSync in every tracked non-test ts and mjs file under src, scripts and bin, fail when a file not in ALLOWED writes or a listed file writes more than its count, with no notMovedYet kind for shared state, and name a listed file that no longer writes; is it run by lefthook and bun run check; and does retirePendingFile append any pending.jsonl row not already in events and then rename the file to pending.jsonl.imported, keeping a file with an unreadable line?'),
     'REQ-STORAGE-17': noul('Apart from each engine governor count in its account governor_state.json (written by the engine and by src/directApi/governor resetGovernor, which records every reset as a governorReset ledger row), is there a state table keyed by scope and key, written only through putState, claimState, deleteState and pruneState in src/storage/state/client.ts; do the page-state and engines hooks (src/agentHooks/answers/client.ts, scripts/hooks/engines.ts, scripts/hooks/pageState.ts), the session offsets, the context service (forgetService deletes its row through deleteState) and its start claim, memeTaste readTaste and writeTaste, the voice clone store, the chat list cache, the MCP server stamp, the reload state and the voice passes read and write it instead of files; does getState import the old file at legacyFile only once, recorded in imports; and does writeSessionOffsets prune rows older than three days under its key prefix?'),
     'REQ-STORAGE-18': noul('Does migration 19 create identityProfiles keyed by platform and userId with extra checked by json_valid; is identityProfiles in DERIVED_TABLES and derivedFingerprint; is every row written only by writeIdentityProfile from a profileSeen event or an extender toProfile row, merging a sighting by keeping stored fields it lacks, merging extra key by key and keeping the latest fetchedAt; is the profileSeen event id the platform, user id and fields so a repeat appends nothing; do recordPlatformSession, recordTwitterSession and the X followers command pass only fields already in the engine answer through sessionProfileOf or twitterFollowerProfile into rememberProfiles, with no new platform call; does profileExtraOf keep only IDENTITY_PROFILE_EXTRA_KEYS; and do putBlob and readBlobBytes store and return a kind in RAW_BLOB_KINDS unchanged with codec raw?'),
+    'REQ-STORAGE-19': noul('After the version loop, does migrate call repairSkipped, which for each migration with creates at or below the file user_version runs it again inside BEGIN IMMEDIATE only when missingObjectsOf finds a declared table or index missing, returns it with repaired naming the missing objects, never changes user_version, never runs a migration without creates again, and is never reached for a file newer than SCHEMA_VERSION; and does every migration with creates run only CREATE ... IF NOT EXISTS statements for exactly its declared objects?'),
     unspecifiedBehavior: noul('Does the storage code order messages by text times, store the same message twice when it has a platform id, or hold the write lock for a whole backfill, by a route the specification does not describe?'),
   },
   assertions: {
@@ -247,6 +254,7 @@ export const storage = {
     'REQ-STORAGE-16': MET,
     'REQ-STORAGE-17': MET,
     'REQ-STORAGE-18': MET,
+    'REQ-STORAGE-19': MET,
     unspecifiedBehavior: NOT_VIOLATED,
   },
 }
