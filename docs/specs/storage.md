@@ -101,6 +101,12 @@ Bulk writes commit in batches of about 1,000 rows. `saveConversationRows` groups
 
 Checked by: code and SubQ
 
+### REQ-STORAGE-19: A create-only migration another branch skipped is repaired, never re-run blind
+
+`migrate` runs every migration above the file's `user_version`, so two branches that both number a migration 19 leave the second one's 19 unapplied: the file is already at 19. A migration that only creates tables and indexes, with `CREATE ... IF NOT EXISTS`, declares them in `creates`. After the version loop, `repairSkipped` checks each declared migration at or below the file's version, and when any declared object is missing from `sqlite_master` (`missingObjectsOf`) it runs that migration again inside `BEGIN IMMEDIATE` and returns it with `repaired` naming what was missing. `user_version` never changes, a migration without `creates` is never run again, and a file newer than the code is left as it is (or refused, as in REQ-STORAGE-11). Migrations 8, 12, 13, 15, 16, 18 and 19 declare `creates`. A migration that adds a column, fills or rewrites rows, or makes a table a later migration alters or drops does not. `src/storage/schema/repair.test.ts` keeps the versions unique and rising by one, and every declared migration to `CREATE ... IF NOT EXISTS` of exactly its declared objects, none of them altered or dropped later.
+
+Checked by: code and SubQ
+
 ## The loose stores, moved in
 
 ### REQ-STORAGE-12: The X queues live in log.db

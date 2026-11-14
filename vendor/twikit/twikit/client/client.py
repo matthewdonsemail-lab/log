@@ -1735,8 +1735,15 @@ class Client:
         if not items_:
             return Result([])
         items = items_[0]
-        next_cursor = items[-1]['content']['value']
-        previous_cursor = items[-2]['content']['value']
+
+        def cursor_at(index):
+            try:
+                return items[index]['content']['value']
+            except (IndexError, KeyError, TypeError):
+                return None
+
+        next_cursor = cursor_at(-1)
+        previous_cursor = cursor_at(-2)
 
         results = []
         for item in items:

@@ -51,14 +51,15 @@ An Agent Plugins v1 package:
 
    log's [install guide](https://github.com/matthewdonsemail-lab/log/blob/main/docs/install.md) also has a one-line installer that sets up Bun and the Python its platform engines use. Check `logMcp` is on your PATH.
 
-2. Install and enable the plugin:
+2. Install and enable the plugin from the Hermes catalog (it's listed as `listeningkit-log` and named `log` once installed):
 
    ```bash
-   hermes plugins install log --no-enable
-   hermes plugins enable log
+   hermes plugins install listeningkit-log --enable
    ```
 
-3. For the router hook, pick Hermes in `log launch --setup` (it shows when `~/.hermes` exists), then enable the native plugin it installed:
+   For what is on `main` before the catalog pin moves: `hermes plugins install matthewdonsemail-lab/log/hermesPlugin --enable`. That's a source outside the catalog, so Hermes's install scan asks you to add `--force` after you read its findings. This folder is the plugin's only home; `deepmroot/listeningkit-log`, where it started, is no longer updated.
+
+3. For the router hook, pick Hermes in `log launch --setup` (it shows when Hermes's home exists: `HERMES_HOME`, `~/.hermes`, or `%LOCALAPPDATA%\hermes` on Windows), then enable the native plugin it installed:
 
    ```bash
    hermes plugins enable logHooks
