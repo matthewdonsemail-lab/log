@@ -1,6 +1,6 @@
 import { copyVersionsOf, lintVersions, skipWordsOf } from "../../../facebook/marketplace/copy/index.ts";
-import { toPublishListing } from "../../../marketplace/agencyListing/index.ts";
-import type { AgencyListing, ListingCondition } from "../../../marketplace/agencyListing/index.ts";
+import { toPublishListing } from "../../../facebook/marketplace/agencyListing/index.ts";
+import type { AgencyListing, ListingCondition } from "../../../facebook/marketplace/agencyListing/index.ts";
 
 const CONDITIONS: readonly ListingCondition[] = ["new", "usedLikeNew", "usedGood", "usedFair"];
 

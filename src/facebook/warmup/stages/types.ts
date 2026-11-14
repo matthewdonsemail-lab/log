@@ -1,4 +1,4 @@
-import type { WarmupActivity } from '../../../marketplace/lifecycle/types'
+import type { WarmupActivity } from '../../../platformKit/lifecycle/types'
 
 export type { WarmupActivity }
 

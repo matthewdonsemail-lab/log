@@ -6,7 +6,8 @@ import { defaultReaRunner, evidenceIdOf, writeCaptureScripts } from "../capture/
 import { exportScripts, parseSteps, splitHarBySteps } from "../capture/helpers/index";
 import type { ReaRunner } from "../capture/types";
 import { CAPTURE_FOLDERS } from "../../browser/driver/types";
-import { domainOf, factsFromDoc, foldOperation, importersOf, indexModules, readGraphqlDefinition, renderOperationDoc, renderStoredSightings, requestsInStep, sliceFor } from "./helpers/index";
+import { domainOf, factsFromDoc, foldOperation, importersOf, indexModules, readGraphqlDefinition, renderOperationDoc, renderStoredSightings, requestDocPrompts, requestsInStep, sliceFor } from "./helpers/index";
+import { platformMachines } from "../platformClient/helpers/platformMachines";
 import type { ReasoningPrompts, StoredFacts } from "./helpers/index";
 import type { RequestSeen } from "./helpers/index";
 import type { ClientOperation, FacebookModule } from "./types";
@@ -315,7 +316,7 @@ export async function buildClientMap(options: BuildClientMapOptions): Promise<st
   if (options.runner) await readSlices(operations, modules, options.outDir, options.runner, log, options.concurrency);
   else log("rea: not run (--noRea)");
   writeFileSync(join(options.outDir, "clientMap.json"), `${JSON.stringify({ builtAt: new Date().toISOString(), operations }, null, 2)}\n`, { mode: 0o600 });
-  const docs = writeOperationDocs(operations, options.docsDir, captures.length);
+  const docs = writeOperationDocs(operations, options.docsDir, captures.length, clientFactsPath(), requestDocPrompts({ name: "Facebook", evidence: "its definition", machines: platformMachines("facebook") }));
   const unread = operations.filter((o) => !o.reaEvidenceId).length;
   return `Facebook client map: ${operations.length} requests from ${captures.length} runs, ${operations.length - unread} read by rea. Docs: ${options.docsDir} (${docs.toWrite} still need their reasoning written).`;
 }

@@ -1,5 +1,5 @@
-import { recordAccountIssue } from "../../marketplace/replacement/index.ts";
-import { findAccount, toTwentyEnum } from "../../marketplace/socialAccount/index.ts";
+import { recordAccountIssue } from "../../facebook/marketplace/replacement/index.ts";
+import { findAccount, toTwentyEnum } from "../../platformKit/socialAccount/index.ts";
 import { existsSync, readFileSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
 import { createActor, fromPromise, toPromise } from "xstate";
@@ -8,7 +8,7 @@ import type { FlowActInput, FlowDefinition, FlowRunOutput, FlowStep, FlowStepRes
 import type { InspectAction } from "../../browser/inspect/index.ts";
 import { placeProblem } from "../../facebook/marketplace/location/index.ts";
 import { preparePhotos } from "../../media/photo/index.ts";
-import { fetchProxyUrl } from "../../marketplace/socialAccount/index.ts";
+import { fetchProxyUrl } from "../../platformKit/socialAccount/index.ts";
 import { createInspector, formatTraceLine } from "../../observability/trace/index.ts";
 import { mapInspectRun } from "../../rea/inspectMap/index.ts";
 import { openAccount, withRun } from "../live/index.ts";

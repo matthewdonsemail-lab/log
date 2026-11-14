@@ -1,5 +1,5 @@
 import { cancel, intro, isCancel, outro, password } from "@clack/prompts";
-import { findAccount } from "../../marketplace/socialAccount/index.ts";
+import { findAccount } from "../../platformKit/socialAccount/index.ts";
 import { shouldPrompt } from "../launch/helpers/index.ts";
 import type { LaunchTTY } from "../launch/helpers/index.ts";
 import { parseArgs, refuseInput } from "../runner/helpers/index.ts";

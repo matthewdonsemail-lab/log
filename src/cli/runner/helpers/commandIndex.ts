@@ -38,7 +38,7 @@ export const COMMAND_INDEX: CommandIndexEntry[] = [
   { name: "messenger", platform: "facebook", module: "src/cli/messenger/index.ts", exportName: "messengerCommand" },
   { name: "errors", platform: "any", module: "src/cli/errors/index.ts", exportName: "errorsCommand" },
   { name: "graph", platform: "any", module: "src/cli/errors/index.ts", exportName: "graphCommand" },
-  { name: "capture", platform: "facebook", module: "src/cli/capture/index.ts", exportName: "captureCommand" },
+  { name: "capture", platform: "any", module: "src/cli/capture/index.ts", exportName: "captureCommand" },
   { name: "runs", platform: "any", module: "src/cli/runs/index.ts", exportName: "runsCommand" },
   { name: "storage", platform: "any", module: "src/cli/storage/index.ts", exportName: "storageCommand" },
   { name: "timing", platform: "any", module: "src/cli/timing/index.ts", exportName: "timingCommand" },

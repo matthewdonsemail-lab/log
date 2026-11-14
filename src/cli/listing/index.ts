@@ -1,12 +1,12 @@
-import { blockedListings, sweepBlockedListings } from "../../marketplace/replacement/index.ts";
+import { blockedListings, sweepBlockedListings } from "../../facebook/marketplace/replacement/index.ts";
 import { readFileSync } from "node:fs";
 import { loadFlow } from "../../browser/flow/index.ts";
-import { setListingStatus } from "../../marketplace/agencyListing/index.ts";
+import { setListingStatus } from "../../facebook/marketplace/agencyListing/index.ts";
 import { runFlow } from "../flow/index.ts";
-import { fromTwentyEnum, listFacebookAccounts, findAccount, toTwentyEnum } from "../../marketplace/socialAccount/index.ts";
-import { countryMismatch, createSlot, getListing, LISTING_STATUSES, listListingsWhere } from "../../marketplace/agencyListing/index.ts";
-import type { AgencyListing } from "../../marketplace/agencyListing/index.ts";
-import type { ListingFilter } from "../../marketplace/agencyListing/index.ts";
+import { fromTwentyEnum, listFacebookAccounts, findAccount, toTwentyEnum } from "../../platformKit/socialAccount/index.ts";
+import { countryMismatch, createSlot, getListing, LISTING_STATUSES, listListingsWhere } from "../../facebook/marketplace/agencyListing/index.ts";
+import type { AgencyListing } from "../../facebook/marketplace/agencyListing/index.ts";
+import type { ListingFilter } from "../../facebook/marketplace/agencyListing/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
 import { listingFromJson, renderListingDetail, renderListingsTable } from "./helpers/index.ts";

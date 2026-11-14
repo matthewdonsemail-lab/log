@@ -1,4 +1,4 @@
-import type { ProfileContext, ProfileOutput, ProfilePlanStep } from "../../../marketplace/profile/index.ts";
+import type { ProfileContext, ProfileOutput, ProfilePlanStep } from "../../../facebook/marketplace/profile/index.ts";
 
 export function summarizeProfile(context: unknown): Record<string, unknown> {
   const c = context as ProfileContext | undefined;

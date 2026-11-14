@@ -1,9 +1,9 @@
 import { countryName, slowFacebookMs } from "../../browser/proxy/index.ts";
 import type { ProxyCheck } from "../../browser/proxy/index.ts";
 import { prepareRun } from "../../browser/run/index.ts";
-import { distanceKm, homeOf } from "../../marketplace/home/index.ts";
-import { findAccount, listFacebookAccounts, maskProxyUrl, recordProxyCheck } from "../../marketplace/socialAccount/index.ts";
-import type { FacebookAccount } from "../../marketplace/socialAccount/index.ts";
+import { distanceKm, homeOf } from "../../platformKit/home/index.ts";
+import { findAccount, listFacebookAccounts, maskProxyUrl, recordProxyCheck } from "../../platformKit/socialAccount/index.ts";
+import type { FacebookAccount } from "../../platformKit/socialAccount/index.ts";
 import {
   buildProxyUrl,
   gatewayHost,

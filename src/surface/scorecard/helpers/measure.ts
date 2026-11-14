@@ -6,6 +6,7 @@ import type { Metric, ScoredCommand, ScoredCommandTool, ScorecardInput, SourceTe
 import { deadCitations } from "./citations.ts";
 import { stringFlagReparses } from "./flagReparses.ts";
 import { uncodedRefusals } from "./uncodedRefusals.ts";
+import { marketplaceImports } from "./marketplaceImports.ts";
 import { isShared, platformOfToolName, platformOfTopic, platformsNamed } from "./platformWords.ts";
 
 const GUIDE_LINE = "Before first using this tool";
@@ -166,5 +167,6 @@ export function measure(input: ScorecardInput): Metric[] {
   out.push(metric("stringFlagReparses", "Flags declared string that a command reads through Number(...) or .split(\",\")", "lower", stringFlagReparses(input.codeFiles, input.declaredFlags)));
   out.push(metric("uncodedRefusals", "Command refusals in src/cli/ that return stderr with no catalog code field (they reach a caller as commandFailed)", "lower", uncodedRefusals(input.codeFiles)));
   out.push(metric("platformFallbacks", "Hard-coded Facebook fallbacks in src/ and scripts/", "lower", platformFallbacks(input.codeFiles)));
+  out.push(metric("marketplaceImports", "Files in src/ outside src/facebook/ and src/marketplace/ that import from src/marketplace/", "lower", marketplaceImports(input.codeFiles)));
   return out;
 }

@@ -55,7 +55,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'The account was disconnected on purpose.',
     retryable: false,
-    raisedIn: ['marketplace/account'],
+    raisedIn: ['platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
     action: reconnect
@@ -64,7 +64,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'The account has not been checked for too long to trust its state.',
     retryable: true,
-    raisedIn: ['marketplace/account'],
+    raisedIn: ['platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Run `log facebook scan --account <id>`.'
@@ -73,7 +73,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'Facebook sent the session to the login page.',
     retryable: false,
-    raisedIn: ['worker', 'publish.openingForm', 'marketplace/account'],
+    raisedIn: ['worker', 'publish.openingForm', 'platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
     action: reconnect
@@ -82,7 +82,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'The session was invalidated, usually by a password change.',
     retryable: false,
-    raisedIn: ['marketplace/account'],
+    raisedIn: ['platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
     action: reconnect
@@ -91,7 +91,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'Facebook put the account on a checkpoint (verify identity, SMS code, ID).',
     retryable: false,
-    raisedIn: ['worker', 'publish.openingForm', 'marketplace/account'],
+    raisedIn: ['worker', 'publish.openingForm', 'platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Log in by hand and clear the checkpoint, then `log facebook connect`. No solver can do it.'
@@ -431,7 +431,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'The account has not confirmed its email or phone.',
     retryable: false,
-    raisedIn: ['marketplace/account'],
+    raisedIn: ['platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Confirm the email or phone on Facebook by hand.'
@@ -440,7 +440,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'The saved cookies are not accepted.',
     retryable: false,
-    raisedIn: ['marketplace/account'],
+    raisedIn: ['platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
     action: reconnect
@@ -458,7 +458,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'Marketplace is restricted or the account is disabled ("can\'t buy or sell").',
     retryable: false,
-    raisedIn: ['worker', 'publish.openingForm', 'marketplace/account'],
+    raisedIn: ['worker', 'publish.openingForm', 'platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
     action: tellOwner
@@ -467,7 +467,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'The account can read but Facebook refuses its writes ("something went wrong").',
     retryable: false,
-    raisedIn: ['marketplace/account'],
+    raisedIn: ['platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
     action: tellOwner
@@ -476,7 +476,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'Facebook flagged the account as automated.',
     retryable: false,
-    raisedIn: ['marketplace/account'],
+    raisedIn: ['platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
     action: tellOwner
@@ -485,7 +485,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'Facebook says the account hit a limit ("limit reached", "daily listing limit").',
     retryable: true,
-    raisedIn: ['worker', 'publish.openingForm', 'publish.reviewing', 'marketplace/account'],
+    raisedIn: ['worker', 'publish.openingForm', 'publish.reviewing', 'platformKit/account'],
     publish: 'blocked',
     monitor: 'resting',
     action: 'Wait 24h. The monitor rests by itself; publish again tomorrow.'
@@ -494,7 +494,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'The proxy, not Facebook, is rate limiting.',
     retryable: true,
-    raisedIn: ['marketplace/account'],
+    raisedIn: ['platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Wait, or move the account to another proxy.'
@@ -503,7 +503,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'An interstitial challenge page stands in front of the content.',
     retryable: false,
-    raisedIn: ['marketplace/account'],
+    raisedIn: ['platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Open the account by hand and clear the page.'
@@ -512,7 +512,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'The IP or the account is blocked.',
     retryable: false,
-    raisedIn: ['marketplace/account'],
+    raisedIn: ['platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
     action: tellOwner
@@ -521,7 +521,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'A policy restriction applies to the account.',
     retryable: false,
-    raisedIn: ['marketplace/account'],
+    raisedIn: ['platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
     action: tellOwner
@@ -530,7 +530,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'The account lacks permission for this action.',
     retryable: false,
-    raisedIn: ['marketplace/account'],
+    raisedIn: ['platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
     action: tellOwner
@@ -539,7 +539,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'A group asks the account to join first.',
     retryable: false,
-    raisedIn: ['marketplace/account'],
+    raisedIn: ['platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Join the group by hand.'
@@ -548,7 +548,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'The account was removed from a group.',
     retryable: false,
-    raisedIn: ['marketplace/account'],
+    raisedIn: ['platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
     action: tellOwner
@@ -557,7 +557,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: "No exit IP through the account's proxy: it is down or refusing connections. No browser was opened.",
     retryable: true,
-    raisedIn: ['proxyGate', 'publish.openingForm', 'worker', 'marketplace/account'],
+    raisedIn: ['proxyGate', 'publish.openingForm', 'worker', 'platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Check the proxy is up, then `log proxy check --account <id>`.'
@@ -575,7 +575,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'The proxy answered 407: it refused the username or password. No browser was opened.',
     retryable: false,
-    raisedIn: ['proxyGate', 'publish.openingForm', 'worker', 'marketplace/account'],
+    raisedIn: ['proxyGate', 'publish.openingForm', 'worker', 'platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Fix the username and password in the socialAccount proxy in Twenty.'
@@ -584,7 +584,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: "The account's proxy can't be read: it needs scheme://user:pass@host:port.",
     retryable: false,
-    raisedIn: ['proxyGate', 'marketplace/socialAccount', 'publish.openingForm', 'worker', 'marketplace/account'],
+    raisedIn: ['proxyGate', 'platformKit/socialAccount', 'publish.openingForm', 'worker', 'platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Fix the socialAccount proxy in Twenty.'
@@ -593,7 +593,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'The socialAccount is not platform FACEBOOK. log-cli only runs Facebook accounts.',
     retryable: false,
-    raisedIn: ['marketplace/socialAccount'],
+    raisedIn: ['platformKit/socialAccount'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Pick a FACEBOOK account, or fix its platform in Twenty.'
@@ -645,7 +645,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: "The account's accountStatus doesn't allow this run (only ACTIVE and WARMING post; connect also takes NEEDS_LOGIN and CHECKPOINT). An empty status counts as not usable.",
     retryable: false,
-    raisedIn: ['marketplace/socialAccount'],
+    raisedIn: ['platformKit/socialAccount'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Set accountStatus in Twenty (log facebook account status), or use another account.'
@@ -654,7 +654,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: "The account has no homeCountry (ISO, e.g. IE), so its proxy and listings can't be checked. Nothing runs without it.",
     retryable: false,
-    raisedIn: ['marketplace/socialAccount'],
+    raisedIn: ['platformKit/socialAccount'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Set homeCountry (and homeCity) on the socialAccount in Twenty.'
@@ -663,7 +663,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'Facebook says the account is disabled or locked.',
     retryable: false,
-    raisedIn: ['worker', 'publish.openingForm', 'marketplace/account'],
+    raisedIn: ['worker', 'publish.openingForm', 'platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'The account becomes BANNED and its campaign listings get replacement accounts. Keep the record.'
@@ -672,7 +672,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: "The account already published its dailyListingCap listings today (3 when empty).",
     retryable: true,
-    raisedIn: ['cli/publish', 'marketplace/replacement'],
+    raisedIn: ['cli/publish', 'facebook/marketplace/replacement'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Wait until tomorrow, or raise dailyListingCap in Twenty.'
@@ -681,7 +681,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'The account has no proxy in Twenty, and no browser opens for an account without one (rule 12), not for a dry run and not for signing in.',
     retryable: false,
-    raisedIn: ['proxyGate', 'marketplace/socialAccount', 'publish.openingForm', 'worker'],
+    raisedIn: ['proxyGate', 'platformKit/socialAccount', 'publish.openingForm', 'worker'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Set the socialAccount proxy in Twenty (scheme://user:pass@host:port), then `log proxy check --account <name>`.'
@@ -825,19 +825,19 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: "log-cli has no browser locale for the account's homeCountry, so it can't pin one. Nothing opened.",
     retryable: false,
-    raisedIn: ['marketplace/home', 'browser/run'],
+    raisedIn: ['platformKit/home', 'browser/run'],
     publish: 'blocked',
     monitor: 'blocked',
-    action: 'Add the country to HOME_COUNTRIES in src/marketplace/home/types.ts, or fix homeCountry in Twenty.'
+    action: 'Add the country to HOME_COUNTRIES in src/platformKit/home/types.ts, or fix homeCountry in Twenty.'
   },
   noHomeTimezone: {
     layer: 'account',
     meaning: "The account's homeCountry has several timezones and its homeCity isn't in the city table, so its local time is unknown. Nothing opened.",
     retryable: false,
-    raisedIn: ['marketplace/home', 'browser/run'],
+    raisedIn: ['platformKit/home', 'browser/run'],
     publish: 'blocked',
     monitor: 'blocked',
-    action: 'Add the city to CITY_TIMEZONES in src/marketplace/home/types.ts, or fix homeCity in Twenty.'
+    action: 'Add the city to CITY_TIMEZONES in src/platformKit/home/types.ts, or fix homeCity in Twenty.'
   },
   deviceProfileInvalid: {
     layer: 'account',
@@ -897,7 +897,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'The page loaded but shows a login wall instead of content.',
     retryable: false,
-    raisedIn: ['worker', 'marketplace/account'],
+    raisedIn: ['worker', 'platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
     action: reconnect
@@ -906,7 +906,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'The page loaded but shows a captcha instead of content.',
     retryable: false,
-    raisedIn: ['marketplace/account'],
+    raisedIn: ['platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Open the account by hand. `log facebook publish` routes captchas itself; `scan` does not.'
@@ -915,7 +915,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'The account belongs to a platform log-cli does not know.',
     retryable: false,
-    raisedIn: ['marketplace/account'],
+    raisedIn: ['platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Facebook only (AGENTS.md rule 3).'
@@ -924,7 +924,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: 'The client saw an account failure it could not map.',
     retryable: false,
-    raisedIn: ['marketplace/account'],
+    raisedIn: ['platformKit/account'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Look at the raw signal and add a code for it here.'
@@ -1520,7 +1520,7 @@ export const ERROR_CATALOG = {
     layer: 'listing',
     meaning: 'No agencyListing with that id in Twenty.',
     retryable: false,
-    raisedIn: ['marketplace/agencyListing'],
+    raisedIn: ['facebook/marketplace/agencyListing'],
     action: 'Check the id (log facebook listings shows them).'
   },
   listingNotRemovable: {
@@ -1534,7 +1534,7 @@ export const ERROR_CATALOG = {
     layer: 'listing',
     meaning: 'The agencyListing has no socialAccount, so nothing knows which account posts it.',
     retryable: false,
-    raisedIn: ['marketplace/agencyListing'],
+    raisedIn: ['facebook/marketplace/agencyListing'],
     action: 'Set its Social account in Twenty, or fill the campaign with log facebook campaign fill.'
   },
   listingNotPublishable: {
@@ -1562,7 +1562,7 @@ export const ERROR_CATALOG = {
     layer: 'listing',
     meaning: "No FACEBOOK account in the listing's country is ACTIVE, proxied, under its cap and not already in the campaign. The listing stays ACCOUNT_LOST.",
     retryable: true,
-    raisedIn: ['marketplace/replacement'],
+    raisedIn: ['facebook/marketplace/replacement'],
     action: 'Add or activate an account in that country (with a proxy there), then run log facebook campaign heal.'
   },
 
@@ -1605,7 +1605,7 @@ export const ERROR_CATALOG = {
     layer: 'twenty',
     meaning: 'No socialAccount with that accountName or id in Twenty.',
     retryable: false,
-    raisedIn: ['marketplace/socialAccount'],
+    raisedIn: ['platformKit/socialAccount'],
     action: 'Check the accountName in Twenty (log facebook accounts lists the Facebook ones). An inbox watcher for an account gone from Twenty is not restarted.'
   },
 
@@ -1841,7 +1841,7 @@ export const ERROR_CATALOG = {
     raisedIn: ['cli/preflight', 'host.setLocation'],
     publish: 'blocked',
     monitor: 'blocked',
-    action: 'Add the city with its state or province code to CITY_REGIONS in src/marketplace/home/types.ts.'
+    action: 'Add the city with its state or province code to CITY_REGIONS in src/platformKit/home/types.ts.'
   },
   twoStepNoAuthApp: {
     layer: 'account',

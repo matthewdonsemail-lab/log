@@ -3,7 +3,7 @@ import { mkdtempSync, writeFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { createTwentyClient } from '../../src/twenty/graphql/client.ts'
-import { findAccount } from '../../src/marketplace/socialAccount/client.ts'
+import { findAccount } from '../../src/platformKit/socialAccount/client.ts'
 
 function netscape(cookies: { name: string; value: string; domain?: string; path?: string; expires?: number; httpOnly?: boolean }[]): string {
   const lines = ['# Netscape HTTP Cookie File']

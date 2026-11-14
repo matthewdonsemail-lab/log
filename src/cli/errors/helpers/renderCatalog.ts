@@ -1,7 +1,7 @@
 import { ERROR_CATALOG } from "../../../errors/catalog/index.ts";
 import type { ErrorCode, ErrorEntry, ErrorLayer } from "../../../errors/catalog/index.ts";
-import { monitorMachine } from "../../../marketplace/monitor/index.ts";
-import { publishMachine } from "../../../marketplace/publish/index.ts";
+import { monitorMachine } from "../../../facebook/marketplace/monitor/index.ts";
+import { publishMachine } from "../../../facebook/marketplace/publish/index.ts";
 import { toMermaid } from "../../../observability/graph/index.ts";
 import { renderTable } from "../../runner/helpers/index.ts";
 

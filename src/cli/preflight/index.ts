@@ -3,11 +3,11 @@ import { adsPowerHomes, createAdsPowerClient, ensureKernel, homesOf, profileKern
 import { readCurrentInspect } from "../../browser/inspect/index.ts";
 import { slowFacebookMs } from "../../browser/proxy/index.ts";
 import { listLaunches, prepareRun } from "../../browser/run/index.ts";
-import { readProgress } from "../../marketplace/host/index.ts";
-import { preflightOf, renderPreflight } from "../../marketplace/preflight/index.ts";
-import type { KernelFact, PreflightFacts, ProxyFact } from "../../marketplace/preflight/index.ts";
-import { findAccount, listFacebookAccounts } from "../../marketplace/socialAccount/index.ts";
-import type { FacebookAccount } from "../../marketplace/socialAccount/index.ts";
+import { readProgress } from "../../facebook/marketplace/host/index.ts";
+import { preflightOf, renderPreflight } from "../../platformKit/preflight/index.ts";
+import type { KernelFact, PreflightFacts, ProxyFact } from "../../platformKit/preflight/index.ts";
+import { findAccount, listFacebookAccounts } from "../../platformKit/socialAccount/index.ts";
+import type { FacebookAccount } from "../../platformKit/socialAccount/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf, refuseError, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandContext, CommandInput } from "../runner/types.ts";
 

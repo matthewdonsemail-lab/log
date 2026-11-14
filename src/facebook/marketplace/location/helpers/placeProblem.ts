@@ -1,5 +1,5 @@
 import { CA_PROVINCE_NAMES, MIN_REGION_LETTERS, US_STATE_NAMES } from '../types'
-import { CITY_REGIONS } from '../../../../marketplace/home/types'
+import { CITY_REGIONS } from '../../../../platformKit/home/types'
 import type { PlaceProblem } from '../types'
 
 const EXAMPLE = '"City, State" with the state written out ("Bethlehem, Pennsylvania")'

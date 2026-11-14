@@ -5,7 +5,7 @@ import { join } from "node:path";
 import { signInRouteOf } from "../../../cli/launch/helpers/start.ts";
 import { PLATFORMS } from "../../../cli/runner/helpers/platforms.ts";
 import type { Platform } from "../../../cli/runner/helpers/platforms.ts";
-import { fromTwentyEnum } from "../../../marketplace/socialAccount/helpers/twentyEnum.ts";
+import { fromTwentyEnum } from "../../../platformKit/socialAccount/helpers/twentyEnum.ts";
 import { vendorOfProxy } from "../../../proxyVendor/vendor/helpers/vendorOfProxy.ts";
 import { localAccountsPath, readLocalAccounts } from "../../../twenty/graphql/index.ts";
 import { ACCOUNT_STATUSES, SESSION_STATES } from "../types.ts";

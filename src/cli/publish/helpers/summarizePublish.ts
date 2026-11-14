@@ -1,5 +1,5 @@
 import { summarizeConnect } from "../../live/helpers/renderConnect.ts";
-import type { PublishContext, PublishOutput } from "../../../marketplace/publish/index.ts";
+import type { PublishContext, PublishOutput } from "../../../facebook/marketplace/publish/index.ts";
 
 export function summarizePublish(context: unknown): Record<string, unknown> {
   const c = context as PublishContext | undefined;

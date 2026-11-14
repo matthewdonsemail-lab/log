@@ -6,7 +6,7 @@ None of the three earlier projects had a real state machine for **posting**:
 
 - **The Camoufox client:** create is one straight-line async function with early returns (`domain_marketplace/create.py:1-5`, `:40-201`).
 - **The production poster:** posting is one 1,500-line function with chains of try-and-fall-back (`facebook-poster.ts:974-2443`). Its only machine is a status column in the database.
-- **The dashboard:** its status machine starts *after* publishing (`underReview` and so on) and never touches a browser (`apps/web/src/lib/listings/machine.ts`, ported to `src/marketplace/listing/machine.ts`).
+- **The dashboard:** its status machine starts *after* publishing (`underReview` and so on) and never touches a browser (`apps/web/src/lib/listings/machine.ts`, ported to `src/facebook/marketplace/listing/machine.ts`).
 
 ## 1. The Camoufox client: `MarketplaceCreateAction`
 
@@ -94,11 +94,11 @@ Inside `postToFacebookMarketplace` the steps run in this fixed order (`facebook-
 
 ## 3. The dashboard: what happens after publishing
 
-`apps/web/src/lib/listings/machine.ts`, ported to `src/marketplace/listing/machine.ts`. A new listing starts at `underReview` (`server.ts:114-131`). After that only the platform moves it: `underReview → active | underReviewDuplicate | removed`. The Camoufox client's webhook also sends `status: UNDER_REVIEW` after publishing (`create.py:165-191`), so both agree on where a fresh listing starts.
+`apps/web/src/lib/listings/machine.ts`, ported to `src/facebook/marketplace/listing/machine.ts`. A new listing starts at `underReview` (`server.ts:114-131`). After that only the platform moves it: `underReview → active | underReviewDuplicate | removed`. The Camoufox client's webhook also sends `status: UNDER_REVIEW` after publishing (`create.py:165-191`), so both agree on where a fresh listing starts.
 
 ## 4. The machine log runs
 
-This is the design `log facebook publish` was built from. It takes the spike's proven steps, the production poster's checks and photo variation, and the dashboard's starting status, and closes the gaps. File: `src/marketplace/publish/machine.ts` (XState v5, in the same style as `marketplace/monitor/machine.ts`). Every browser step is an actor the caller supplies with `machine.provide`, so tests never open a browser.
+This is the design `log facebook publish` was built from. It takes the spike's proven steps, the production poster's checks and photo variation, and the dashboard's starting status, and closes the gaps. File: `src/facebook/marketplace/publish/machine.ts` (XState v5, in the same style as `facebook/marketplace/monitor/machine.ts`). Every browser step is an actor the caller supplies with `machine.provide`, so tests never open a browser.
 
 > The machine as built, with every error code and where it ends, is generated in the [error catalog](../errorCatalog.md) (`log graph publish`, `log errors`). What it must do is in the spec, [Marketplace publish and check](../specs/marketplacePublish.md). The diagram below is the design.
 

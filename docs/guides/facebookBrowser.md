@@ -92,7 +92,7 @@ The West Bank step's SubQ reading was about 49,000 tokens.
 ### Request docs
 
 Rebuild Facebook's request docs after recording or changing a page:
-`log facebook capture --docs`.
+`log capture docs`.
 
 ### The mouse on Facebook
 
@@ -158,8 +158,8 @@ A save Twenty refused keeps the run's device and session in
 every browser (`log facebook host send --account <a> SHUTDOWN`), then run `log facebook account
 resetOpens <a>|all --reason "<why>"`. It deletes nothing.
 
-Code: `src/marketplace/host` (the runner), `src/cli/host` (the steps),
-`src/marketplace/lifecycle` (the machine). Doc: `docs/lifecycle.md`.
+Code: `src/facebook/marketplace/host` (the runner), `src/cli/host` (the steps),
+`src/platformKit/lifecycle` (the machine). Doc: `docs/lifecycle.md`.
 
 ### The check (every watch round)
 
@@ -215,7 +215,7 @@ usual. Mountain Top, host 20261024T222706, steps 12-26.
 
 The host's setLocation types the account's own home written out
 (`homePlace`: its city and the state or province from `CITY_REGIONS`,
-`src/marketplace/home/types.ts`, through `fullPlaceName`, so it passes the
+`src/platformKit/home/types.ts`, through `fullPlaceName`, so it passes the
 acronym check): "Mountain Top, Pennsylvania", "Kamloops, British
 Columbia". A listing's `locationQuery` is used only for a home with no region.
 `log facebook preflight` shows each account's place and refuses one with no
@@ -236,7 +236,7 @@ From `skills/lifecycle/SKILL.md`.
    logged reason (top of AGENTS.md, rule 35). Never add a command that opens a
    browser of its own.
 2. **The machine is the spec.** Change the lifecycle in
-   `src/marketplace/lifecycle/machine.ts` and its tests, then regenerate the
+   `src/platformKit/lifecycle/machine.ts` and its tests, then regenerate the
    doc: `log facebook lifecycle states --write`. Never hand-edit the generated tree.
 3. **Final is final.** Restricted, banned, lost and deactivated: the record stays in Twenty;
    nothing resumes them. A `/checkpoint` page is never pressed through: the
@@ -315,7 +315,7 @@ of its warm-up. This does that for one account, both photos in one run (the owne
 6. Rebuild the Facebook client docs: the profile requests are new.
 
    ```bash
-   log facebook capture --docs
+   log capture docs
    ```
 
 ### Codes

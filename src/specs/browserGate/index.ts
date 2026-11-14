@@ -5,7 +5,7 @@ const gate = 'python/browser/proxyGate.py'
 const vis = 'python/browser/visibleBrowser.py'
 const device = 'python/device/deviceProfile.py'
 const run = 'src/browser/run/client.ts'
-const home = 'src/marketplace/home/helpers/homeOf.ts'
+const home = 'src/platformKit/home/helpers/homeOf.ts'
 
 export const browserGate = {
   description: 'The gate every account browser passes before it loads anything',
@@ -16,8 +16,8 @@ export const browserGate = {
     'python/browser/browserDriver.py',
     'python/device/deviceProfile.py',
     'src/browser/run/client.ts',
-    'src/marketplace/home/helpers/homeOf.ts',
-    'src/marketplace/home/types.ts',
+    'src/platformKit/home/helpers/homeOf.ts',
+    'src/platformKit/home/types.ts',
   ],
   anchors: {
     'REQ-GATE-01': [
@@ -65,7 +65,7 @@ export const browserGate = {
       { kind: 'string', file: run, includes: 'deviceProfileInvalid' },
     ],
     'REQ-GATE-12': [
-      { kind: 'symbol', file: 'src/marketplace/home/types.ts', name: 'HOME_COUNTRIES' },
+      { kind: 'symbol', file: 'src/platformKit/home/types.ts', name: 'HOME_COUNTRIES' },
       { kind: 'symbol', file: home, name: 'homeOf' },
       { kind: 'string', file: home, includes: 'noHomeLocale' },
     ],

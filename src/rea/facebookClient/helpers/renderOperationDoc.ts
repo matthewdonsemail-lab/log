@@ -1,17 +1,38 @@
 import { REPORT_LINE } from '../../capture/helpers/splitHarBySteps'
 import type { ClientOperation, OperationSighting } from '../types'
 
-export const FACTS_START = '<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->'
+export const FACTS_START = '<!-- facts:start · written by `log capture docs` from the run captures and rea. Not edited by hand. -->'
+export const FACTS_START_MARK = '<!-- facts:start'
 export const FACTS_END = '<!-- facts:end -->'
 export const TO_WRITE = '<!-- toWrite -->'
 
 export type ReasoningPrompts = readonly (readonly [string, string])[]
 
-export const FACEBOOK_REASONING: ReasoningPrompts = [
-  ['What it does', 'What this request is for on Facebook\'s side, from its definition and the step it fires in.'],
-  ['What our machine does with it', 'Which state of `marketplace/connect` or `marketplace/publish` waits for it, reads it, or ignores it, and why.'],
-  ['What can go wrong', 'The errors and statuses it can return, what each means for the run, and the end or retry our machine takes.']
-]
+export interface RequestDocTemplate {
+  name: string
+  evidence: string
+  machines: readonly string[]
+}
+
+export const PLATFORM_EVIDENCE = "rea's reading of the code that sends it"
+
+export function requestDocPrompts(template: RequestDocTemplate): ReasoningPrompts {
+  const machines = template.machines.map((m) => `\`${m}\``).join(', ')
+  return [
+    ['What it does', `What this request is for on ${template.name}'s side, from ${template.evidence} and the step it fires in.`],
+    ['What our machine does with it', `Which ${machines ? `state of ${machines}, or which ` : ''}flow, inspect step or engine action waits for it, reads it, or ignores it, and why.`],
+    ['What can go wrong', 'The errors and statuses it can return, what each means for the run, and what our machine does then.']
+  ]
+}
+
+export const NEUTRAL_REASONING: ReasoningPrompts = requestDocPrompts({ name: 'the platform', evidence: PLATFORM_EVIDENCE, machines: [] })
+
+export function factsSpan(doc: string): { start: number; end: number } | null {
+  const start = doc.indexOf(FACTS_START_MARK)
+  const end = doc.indexOf(FACTS_END)
+  if (start < 0 || end < start || doc.indexOf('-->', start) > end) return null
+  return { start, end: end + FACTS_END.length }
+}
 
 export function stepLabel(step: string): string {
   return step
@@ -82,13 +103,10 @@ export function renderFacts(operation: ClientOperation, sightings = renderSighti
   ].join('\n')
 }
 
-export function renderOperationDoc(operation: ClientOperation, existing: string | null, sightings?: string, reasoning: ReasoningPrompts = FACEBOOK_REASONING): string {
+export function renderOperationDoc(operation: ClientOperation, existing: string | null, sightings?: string, reasoning: ReasoningPrompts = NEUTRAL_REASONING): string {
   const facts = renderFacts(operation, sightings)
-  if (existing && existing.includes(FACTS_START) && existing.includes(FACTS_END)) {
-    const before = existing.slice(0, existing.indexOf(FACTS_START))
-    const after = existing.slice(existing.indexOf(FACTS_END) + FACTS_END.length)
-    return `${before}${facts}${after}`
-  }
+  const span = existing ? factsSpan(existing) : null
+  if (existing && span) return `${existing.slice(0, span.start)}${facts}${existing.slice(span.end)}`
   const sections = reasoning.map(([title, prompt]) => `## ${title}\n\n${TO_WRITE} ${prompt}\n`)
   return `# ${operation.name}\n\n${facts}\n\n${sections.join('\n')}`
 }

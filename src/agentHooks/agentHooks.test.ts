@@ -98,22 +98,22 @@ describe("live logs hook", () => {
 
   test("finds an installed log command, and not git log", () => {
     expect(logCommandOf("log twitter dms --account a")).toBe("dms");
-    expect(logCommandOf("cd repo && log facebook capture --docs | tail -3")).toBe("capture");
+    expect(logCommandOf("cd repo && log capture docs | tail -3")).toBe("capture");
     expect(logCommandOf("LOG_ACCOUNTS=local log localAccount list")).toBe("localAccount");
     expect(logCommandOf("git log --oneline -3")).toBeNull();
     expect(logCommandOf("git log origin/main..HEAD")).toBeNull();
-    expect(buffersOutput("log facebook capture --docs 2>&1 | tail -20")).toBe(true);
-    expect(buffersOutput("log facebook capture --docs 2>&1 | tee run.log")).toBe(false);
+    expect(buffersOutput("log capture docs 2>&1 | tail -20")).toBe(true);
+    expect(buffersOutput("log capture docs 2>&1 | tee run.log")).toBe(false);
   });
 
   test("tail/head buffer; tail -f and tee don't", () => {
-    expect(buffersOutput("bun bin/log.ts facebook capture --docs 2>&1 | tail -20")).toBe(true);
-    expect(buffersOutput("bun bin/log.ts facebook capture --docs | head")).toBe(true);
-    expect(buffersOutput("bun bin/log.ts facebook capture --docs | Select-Object -Last 5")).toBe(true);
-    expect(buffersOutput("bun bin/log.ts facebook capture --docs 2>&1 | tee run.log")).toBe(false);
+    expect(buffersOutput("bun bin/log.ts capture docs 2>&1 | tail -20")).toBe(true);
+    expect(buffersOutput("bun bin/log.ts capture docs | head")).toBe(true);
+    expect(buffersOutput("bun bin/log.ts capture docs | Select-Object -Last 5")).toBe(true);
+    expect(buffersOutput("bun bin/log.ts capture docs 2>&1 | tee run.log")).toBe(false);
     expect(buffersOutput("tail -f ~/.logCli/mcp/2026-10-20.log | grep warmup")).toBe(false);
     expect(buffersOutput("bun bin/log.ts errors >/dev/null 2>&1; grep cli ~/.logCli/mcp/x.log | tail -3")).toBe(false);
-    expect(buffersOutput("cd repo && bun bin/log.ts facebook capture --docs | tail -3")).toBe(true);
+    expect(buffersOutput("cd repo && bun bin/log.ts capture docs | tail -3")).toBe(true);
   });
 
   test("a log command run by hand from a shell is refused and pointed at the MCP (rule 163)", () => {

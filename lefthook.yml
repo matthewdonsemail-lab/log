@@ -138,5 +138,5 @@ pre-push:
     test:
       run: bun test
 
-    facebookClientDocs:
-      run: bun run check:facebookClientDocs
+    clientDocs:
+      run: bun run check:clientDocs

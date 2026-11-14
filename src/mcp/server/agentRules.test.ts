@@ -75,7 +75,7 @@ describe("watching a long call live over MCP (rule 26)", () => {
     for (const name of ["claude-code", "codex-mcp-client"]) {
       const client = await connected(name);
       const { tools } = await client.listTools();
-      for (const tool of ["inspectStart", "inspectDo", "facebookJoinGroup", "warmup", "facebookPublish", "facebookCapture", "facebookFlowProfileSetupLive"]) expect(tools.find((t) => t.name === tool)?.description).toContain("start a Monitor on `tail -f ~/.logCli/mcp/<day>.log`");
+      for (const tool of ["inspectStart", "inspectDo", "facebookJoinGroup", "warmup", "facebookPublish", "captureDocs", "facebookFlowProfileSetupLive"]) expect(tools.find((t) => t.name === tool)?.description).toContain("start a Monitor on `tail -f ~/.logCli/mcp/<day>.log`");
       expect(tools.find((t) => t.name === "facebookAccounts")?.description).not.toContain("Monitor");
       await client.close();
     }

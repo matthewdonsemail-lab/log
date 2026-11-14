@@ -3,7 +3,7 @@ import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import type { InspectSessionConfig } from "../../browser/inspect/index.ts";
-import { findAccount } from "../../marketplace/socialAccount/index.ts";
+import { findAccount } from "../../platformKit/socialAccount/index.ts";
 import { marketplaceFixture } from "../../twenty/graphql/index.ts";
 import type { CommandContext } from "../runner/types.ts";
 import { openInspectSession } from "./helpers/index.ts";

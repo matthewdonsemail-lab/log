@@ -6,7 +6,7 @@ const TYPES = 'src/facebook/marketplace/copy/types.ts'
 const LINT = 'src/facebook/marketplace/copy/helpers/lintCopy.ts'
 const PICK = 'src/facebook/marketplace/copy/helpers/pickVersion.ts'
 const DISTANCE = 'src/facebook/marketplace/copy/helpers/wordDistance.ts'
-const LISTINGS = 'src/marketplace/agencyListing/client.ts'
+const LISTINGS = 'src/facebook/marketplace/agencyListing/client.ts'
 
 const VERSION_RULES = [
   'versionId',
@@ -74,7 +74,7 @@ export const marketplaceCopy = {
     PICK,
     DISTANCE,
     LISTINGS,
-    'src/marketplace/replacement/client.ts',
+    'src/facebook/marketplace/replacement/client.ts',
     'src/cli/listing/helpers/listingFromJson.ts',
     'src/cli/listing/index.ts',
     'src/cli/campaign/index.ts',

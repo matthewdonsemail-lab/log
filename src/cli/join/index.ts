@@ -7,8 +7,8 @@ import { draftComplete, draftFrom, ensureGroup, findGroup, groupJoinMachine, par
 import type { Group, GroupJoinOutput, GroupRef, GroupStepInput, GroupStepReply, JoinAnswer, JoinOptions } from "../../facebook/group/join/index.ts";
 import { describePlan, groupAnswerMachine, patchApplication } from "../../facebook/group/answer/index.ts";
 import type { AnswerStepInput, GroupAnswerOutput } from "../../facebook/group/answer/index.ts";
-import { homeOf, outsideActiveHours } from "../../marketplace/home/index.ts";
-import { checkRunnable, findAccount, listFacebookAccounts } from "../../marketplace/socialAccount/index.ts";
+import { homeOf, outsideActiveHours } from "../../platformKit/home/index.ts";
+import { checkRunnable, findAccount, listFacebookAccounts } from "../../platformKit/socialAccount/index.ts";
 import { createInspector, formatTraceLine } from "../../observability/trace/index.ts";
 import { shouldPrompt } from "../launch/helpers/index.ts";
 import type { LaunchTTY } from "../launch/helpers/index.ts";

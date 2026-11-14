@@ -11,7 +11,7 @@
     { "path": "src/specs/slack/index.ts", "rule": "publicIp", "fingerprint": "49a4b0a5d8c8", "why": "A Chrome version string, not an address" },
     { "path": "src/cli/discord/discord.test.ts", "rule": "email", "fingerprint": "c3fcb126311f", "why": "A made-up address in an attachment test" },
     { "path": "src/camofox/device/device.test.ts", "rule": "urlCredentials", "fingerprint": "24a27e9c92ca", "why": "Dummy proxy password in a test" },
-    { "path": "src/marketplace/socialAccount/socialAccount.test.ts", "rule": "urlCredentials", "why": "Dummy proxy passwords in tests" },
+    { "path": "src/platformKit/socialAccount/socialAccount.test.ts", "rule": "urlCredentials", "why": "Dummy proxy passwords in tests" },
     { "path": "src/proxyVendor/twoCaptcha/twoCaptcha.test.ts", "rule": "urlCredentials", "fingerprint": "08378bb6e248", "why": "Dummy proxy password in a test" },
     { "path": "src/media/photo/photo.test.ts", "rule": "urlCredentials", "fingerprint": "a0785818a40c", "why": "Dummy proxy password in a test" },
     { "path": "src/twenty/graphql/helpers/marketplaceFixture.ts", "rule": "urlCredentials", "fingerprint": "96b193cdedf2", "why": "Dummy proxy password in a fixture" },

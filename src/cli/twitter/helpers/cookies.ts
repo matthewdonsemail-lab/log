@@ -1,6 +1,6 @@
 import { cancel, intro, isCancel, outro, password } from "@clack/prompts";
-import { toFacebookAccount } from "../../../marketplace/socialAccount/index.ts";
-import type { SocialAccountRow } from "../../../marketplace/socialAccount/index.ts";
+import { toFacebookAccount } from "../../../platformKit/socialAccount/index.ts";
+import type { SocialAccountRow } from "../../../platformKit/socialAccount/index.ts";
 import { twitterStateRoot, writeLocalSession } from "../../../directApi/engine/index.ts";
 import { findTwitterAccount } from "../../../twitter/account/session/index.ts";
 import type { TwitterAccount } from "../../../twitter/account/session/index.ts";

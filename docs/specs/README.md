@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 49 domains, 548 requirements. Each one's anchors are proved against its code by the syntax tree on every commit, push and pull request (`bun run check:specs`). SubQ reads a requirement against its code only when asked (`bun run check:specs --subq`, rule 170). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 49 domains, 549 requirements. Each one's anchors are proved against its code by the syntax tree on every commit, push and pull request (`bun run check:specs`). SubQ reads a requirement against its code only when asked (`bun run check:specs --subq`, rule 170). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -214,7 +214,7 @@ A procedure recorded with `log inspect` becomes the whole pipeline, not a one-of
 
 ## [Runs and rea](./runsAndRea.md)
 
-Every browser action records a raw HAR of everything it did, and rea reads it. What each platform's client does is written up as one doc per request, by platform and then domain, built from the runs by `log facebook capture --docs` with rea reading each request's code. A run is deleted once it is analysed, and what it taught is kept. Rules 22, 27, 48, 66 and 85, with rule 73 (a step's exchanges are kept past the prune).
+Every browser action records a raw HAR of everything it did, and rea reads it. What each platform's client does is written up as one doc per request, by platform and then domain, built from the runs by `log capture docs` (shared: it reads every platform's runs) with rea reading each request's code. A run is deleted once it is analysed, and what it taught is kept. Rules 22, 27, 48, 66 and 85, with rule 73 (a step's exchanges are kept past the prune).
 
 - **REQ-RUNS-01** Every browser context records a raw HAR
 - **REQ-RUNS-02** A browser without a capture folder is refused
@@ -230,6 +230,7 @@ Every browser action records a raw HAR of everything it did, and rea reads it. W
 - **REQ-RUNS-12** Every step's exchanges are taken out before a run goes
 - **REQ-RUNS-13** What a run taught is kept
 - **REQ-RUNS-14** The storage hook warns before the disk fills
+- **REQ-RUNS-15** A request doc names its own platform and machines
 
 ## [Browser gate](./browserGate.md)
 

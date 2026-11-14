@@ -10,9 +10,9 @@ import type { GroupMember, MembersPlan, MembersReadOutput, MembersStepInput, Mem
 import { cursorOf, groupReadMachine, readStateOf, saveRead } from "../../facebook/group/read/index.ts";
 import type { GroupReadOutput, ReadStepInput, ReadStepReply, SavedRead } from "../../facebook/group/read/index.ts";
 import type { ErrorCode } from "../../errors/catalog/index.ts";
-import { homeOf, outsideActiveHours } from "../../marketplace/home/index.ts";
-import { checkRunnable, findAccount } from "../../marketplace/socialAccount/index.ts";
-import type { FacebookAccount } from "../../marketplace/socialAccount/index.ts";
+import { homeOf, outsideActiveHours } from "../../platformKit/home/index.ts";
+import { checkRunnable, findAccount } from "../../platformKit/socialAccount/index.ts";
+import type { FacebookAccount } from "../../platformKit/socialAccount/index.ts";
 import { createInspector, formatTraceLine } from "../../observability/trace/index.ts";
 import type { TwentyClient } from "../../twenty/graphql/index.ts";
 import { refuse, refuseError, refuseInput } from "../runner/helpers/index.ts";
