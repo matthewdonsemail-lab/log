@@ -2,7 +2,8 @@ import { noul } from 'jev-spec'
 import { MET, NOT_VIOLATED } from '../types'
 
 const PERSON = 'src/twitter/dm/person/client.ts'
-const RUN = 'src/twitter/queue/run/client.ts'
+const RUN = 'src/twitter/queue/run/machine.ts'
+const TODO = 'src/twitter/queue/run/helpers/todo.ts'
 const COMMAND = 'src/cli/twitter/helpers/queue.ts'
 
 export const fullContext = {
@@ -11,6 +12,8 @@ export const fullContext = {
   codePaths: [
     'src/twitter/dm/person/client.ts',
     'src/twitter/queue/run/client.ts',
+    'src/twitter/queue/run/machine.ts',
+    'src/twitter/queue/run/helpers/todo.ts',
     'src/twitter/queue/plan/client.ts',
     'src/cli/twitter/helpers/queue.ts',
     'src/cli/twitter/helpers/dms.ts',
@@ -41,7 +44,7 @@ export const fullContext = {
     'REQ-CONTEXT-05': [{ kind: 'symbol', file: PERSON, name: 'contextChangesSince' }],
     'REQ-CONTEXT-06': [
       { kind: 'string', file: RUN, includes: 'held' },
-      { kind: 'symbol', file: RUN, name: 'dropPost' },
+      { kind: 'symbol', file: TODO, name: 'dropPost' },
     ],
     'REQ-CONTEXT-07': [{ kind: 'symbol', file: 'src/twitter/queue/plan/client.ts', name: 'editItem' }],
     'REQ-CONTEXT-08': [{ kind: 'string', file: COMMAND, includes: 'queueBusy' }],
@@ -68,17 +71,17 @@ export const fullContext = {
     'REQ-CONTEXT-01': noul('With --with, does the dms command read the thread with that handle from the engine and add the activity of the person from the notification store rows, matched by userId or handle and sorted newest first?'),
     'REQ-CONTEXT-02': noul('Does activityLine pick its words by the row kind through ACTIVITY_WORDS, and include the row text, their own words, when there is one?'),
     'REQ-CONTEXT-03': noul('Does the dms command call the notifications engine action only when notificationsFresh, called with its default 120 second window, says the saved store is not fresh?'),
-    'REQ-CONTEXT-04': noul('For a reply event, does runQueue await deps.contextChanged(item) before it calls deps.send, and does the queue run command wire contextChanged to read the person context with chatContextOf from the .db?'),
+    'REQ-CONTEXT-04': noul('For a reply event, does queueRunMachine invoke checkContext (deps.contextChanged(item)) and only then sendItem (deps.send), and does the queue run command wire contextChanged to read the person context with chatContextOf from the .db?'),
     'REQ-CONTEXT-11': noul('Does readSourceFor return the platform only when no owner is live or the chat was never backfilled and the .db holds fewer than the limit, a refusal when behindOf says the catch-up was refused, the platform at once with reason catchingUp while a catch-up still runs (never waiting), and the .db otherwise; does log discord read answer a DM or group from chatMessages without calling the engine when it says db, read a server channel from Discord, and mark a chat backfilled after a platform read; does log twitter dms --with decide before opening the X session and answer from chatContextOf on the db path; and does findInChatList call the platform list only when the cached list has no match?'),
     'REQ-CONTEXT-12': noul('Does lastWordOf order each chat by sentAtMs then seq, group the dash and colon conversations of one X user by personKeyOf, drop a copy of a text of MIN_MIRROR_CHARS or more whose earliest copy came from the other side, skip reactions and NOT_SAID lines when finding the last message while counting an empty message, mark their reaction after the last message of the owner as followUp and not waiting, and do log inbox waiting, log twitter dms --waiting (withDbLastWord) and storedWaiting all take who wrote last from it?'),
     'REQ-CONTEXT-10': noul('Does the queue run command contextChanged await waitCaughtUp for the account and return its refusal as the change when it fails, then build the messages and activity from chatContextOf (events of type message, ownMessage and notification matched by userId, handle or conversation) and pass them to contextChangesSince, without calling the engine inbox or notifications actions?'),
     'REQ-CONTEXT-05': noul('Does contextChangesSince return every message, from either side, and every activity row whose time is after since, and does the queue pass item.draftedAt (or queue.created) as since?'),
-    'REQ-CONTEXT-06': noul('When contextChanged returns any change, does runQueue set item.status to held, set item.heldFor to the changes, call dropPost for its other events, alert with a HELD line naming twitterQueueEdit, and continue without calling deps.send?'),
+    'REQ-CONTEXT-06': noul('When contextChanged returns any change, does queueRunMachine (the contextMoved guard, holdItem) set item.status to held, set item.heldFor to the changes, call dropPost for its other events, alert with a HELD line naming twitterQueueEdit, and go back to taking the next event without invoking sendItem?'),
     'REQ-CONTEXT-07': noul('Does editItem accept only a pending or held item, set its text, set draftedAt to now, set status to pending, delete heldFor, plan a held item again with fitTimes and call approveQueue?'),
     'REQ-CONTEXT-08': noul('Does queue edit refuse before changing the queue when liveLock(file) is true?'),
-    'REQ-CONTEXT-09 like': noul('In runQueue, can a like event be sent for an item whose reply or dm was not sent in this run (item.sentAtRun is not plan.planned)?'),
-    'REQ-CONTEXT-09 split': noul('For a dm item split into several parts, does the queue send every part inside the one deps.send call (dmSplit, then sendDmParts), after the single contextChanged read runQueue made for that item, with no part planned or sent as an event of its own?'),
-    'REQ-CONTEXT-09 readFails': noul('In the queue command, does contextChanged return a non-empty list, so runQueue holds the item, when waitCaughtUp says the account is still behind or its catch-up was refused, or when the item has neither a handle nor a user id?'),
+    'REQ-CONTEXT-09 like': noul('In queueRunMachine, can a like event be sent for an item whose reply or dm was not sent in this run (item.sentAtRun is not plan.planned)?'),
+    'REQ-CONTEXT-09 split': noul('For a dm item split into several parts, does the queue send every part inside the one deps.send call (dmSplit, then sendDmParts), after the single contextChanged read queueRunMachine made for that item, with no part planned or sent as an event of its own?'),
+    'REQ-CONTEXT-09 readFails': noul('In the queue command, does contextChanged return a non-empty list, so queueRunMachine holds the item, when waitCaughtUp says the account is still behind or its catch-up was refused, or when the item has neither a handle nor a user id?'),
     unspecifiedBehavior: noul('Can a queued dm, reply or quote be sent without its context being read right before the send, or be sent while held, by a route the specification does not describe?'),
   },
   assertions: {
