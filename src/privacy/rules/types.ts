@@ -17,6 +17,8 @@ export type PrivacyRuleName =
   | 'windowsUserPath'
   | 'email'
   | 'phone'
+  | 'linkedinProfile'
+  | 'linkedinMemberId'
   | 'denylist'
   | 'forbiddenPath'
   | 'gitleaks'

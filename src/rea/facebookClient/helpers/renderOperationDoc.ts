@@ -44,6 +44,7 @@ export function stepLabel(step: string): string {
         return '<url>'
       }
     })
+    .replace(/\/in\/[^/\s"?]+/g, '/in/<profile>')
     .replace(/\b\d{6,}\b/g, '<id>')
     .replace(/says:\s+[A-Z][\w'-]*/g, 'says: <name>')
     .trim()

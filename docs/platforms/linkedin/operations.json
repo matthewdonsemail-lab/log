@@ -1,0 +1,330 @@
+{
+  "builtAt": "2026-11-14T20:33:27.977Z",
+  "runs": 3,
+  "operations": [
+    {
+      "name": "flagshipWebFeedForyou",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/flagshipWebFeedForyou.md",
+      "reaEvidenceId": "ev_2b7a18c271a4f80536532c2cac14a9478e5ead3403f7631fd1303b375af517a7",
+      "seen": 5
+    },
+    {
+      "name": "flagshipWebIn",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/flagshipWebIn.md",
+      "reaEvidenceId": "ev_2b7a18c271a4f80536532c2cac14a9478e5ead3403f7631fd1303b375af517a7",
+      "seen": 7
+    },
+    {
+      "name": "flagshipWebNotifications",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/flagshipWebNotifications.md",
+      "reaEvidenceId": "ev_e3519f6e87cd1298cdec3e4d833cff3edb8a91dd0b317c9708d194dc2eb38455",
+      "seen": 1
+    },
+    {
+      "name": "flagshipWebPosts",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/flagshipWebPosts.md",
+      "reaEvidenceId": "ev_2b7a18c271a4f80536532c2cac14a9478e5ead3403f7631fd1303b375af517a7",
+      "seen": 1
+    },
+    {
+      "name": "flagshipWebRscActionActionsAppConfig",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/flagshipWebRscActionActionsAppConfig.md",
+      "reaEvidenceId": "ev_38cfc5b696a5280645647ef049d0c12bf870721c67c775bfc0267773183762b5",
+      "seen": 7
+    },
+    {
+      "name": "flagshipWebRscActionActionsComponent",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/flagshipWebRscActionActionsComponent.md",
+      "reaEvidenceId": "ev_c1abdf33053dc1d7030ab762ec70be7a4792316ed5a5874ffa3d4ae200fdfc55",
+      "seen": 25
+    },
+    {
+      "name": "flagshipWebRscActionActionsPagination",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/flagshipWebRscActionActionsPagination.md",
+      "reaEvidenceId": "ev_10d91e00db1aedd6c9455768dfb9f8012f9823b74a067826b63cecfb509b7f58",
+      "seen": 7
+    },
+    {
+      "name": "flagshipWebRscActionActionsServerRequest",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/flagshipWebRscActionActionsServerRequest.md",
+      "reaEvidenceId": "ev_beea3ff6a23754247201f9854f98467e0eb184892094bdc5ae1088a7bdf55062",
+      "seen": 65
+    },
+    {
+      "name": "flagshipWebRscActionActionsServerStreamRequest",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/flagshipWebRscActionActionsServerStreamRequest.md",
+      "reaEvidenceId": "ev_871fc298a6ca40ab00a951152efd2b3867b8a360a5fceb78097b27f3c9e8f0bc",
+      "seen": 20
+    },
+    {
+      "name": "litmsApiEventsExtTagLoad",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/litmsApiEventsExtTagLoad.md",
+      "reaEvidenceId": "ev_890dffbeab0fd1f58d6ce5b2dba067b19d32ad578ae22676f51f5ebcfa824d94",
+      "seen": 10
+    },
+    {
+      "name": "litmsApiEventsTmsLoad",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/litmsApiEventsTmsLoad.md",
+      "reaEvidenceId": "ev_58484ddf774e72495c809f53697f7f3f99b9fc3d9e0b361a3e3163fec68a59cb",
+      "seen": 8
+    },
+    {
+      "name": "litmsApiMetadata",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/litmsApiMetadata.md",
+      "reaEvidenceId": "ev_dcd6192a07f9e1dc889c5a59cbe07c98ac3583615ab55d9508db461520a10af9",
+      "seen": 8
+    },
+    {
+      "name": "liTscpSct",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/liTscpSct.md",
+      "reaEvidenceId": "ev_dd9ee12db3ca780d8c0cc9b1562a8842f627b09873ce8ae95001b47e733153dc",
+      "seen": 2
+    },
+    {
+      "name": "lix",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/lix.md",
+      "reaEvidenceId": "ev_99f341f871ab6a7fd99a5029ee1e64c2ae5a59824eea1a83c8954a6041b5977d",
+      "seen": 19
+    },
+    {
+      "name": "merchantpool1",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/merchantpool1.md",
+      "reaEvidenceId": "ev_430b5b61a3c1fdbf8bda22f2cece09ae9974c382ca03573c7cf7e858395d8abf",
+      "seen": 1
+    },
+    {
+      "name": "platformLitmsAllowlistVoyagerWebFeed",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/platformLitmsAllowlistVoyagerWebFeed.md",
+      "reaEvidenceId": "ev_914afe55b9058180eb9a7049a5e7d12cec99bae23753520408145b690c5c217b",
+      "seen": 5
+    },
+    {
+      "name": "platformLitmsAllowlistVoyagerWebGlobal",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/platformLitmsAllowlistVoyagerWebGlobal.md",
+      "reaEvidenceId": "ev_914afe55b9058180eb9a7049a5e7d12cec99bae23753520408145b690c5c217b",
+      "seen": 7
+    },
+    {
+      "name": "psettingsPolicyNotices",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/psettingsPolicyNotices.md",
+      "reaEvidenceId": "ev_cdd4a44be0d9ca2918d12e33d45dcb1e615b55c972d1f523c49e64343bdade4b",
+      "seen": 7
+    },
+    {
+      "name": "realtimeConnect",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/realtimeConnect.md",
+      "reaEvidenceId": "ev_d94202cf3fdca670507050a7f1df2433508b971a4c96e7d25d1337e450111def",
+      "seen": 4
+    },
+    {
+      "name": "realtimeRealtimefrontendclientconnectivitytracking",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/realtimeRealtimefrontendclientconnectivitytracking.md",
+      "reaEvidenceId": "ev_8f5b17e622af162b3bea6ae47295b22bd0fd5770008aa3a5e612cb3e8b90d3f6",
+      "seen": 91
+    },
+    {
+      "name": "realtimeRealtimefrontendtimestamp",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/realtimeRealtimefrontendtimestamp.md",
+      "reaEvidenceId": "ev_af9b463eaa074cb3bb1a37cc50d2176f28894247e549ead97ba8387ade677134",
+      "seen": 8
+    },
+    {
+      "name": "voyagerApiGraphql",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/voyagerApiGraphql.md",
+      "reaEvidenceId": "ev_ebb311c92c2fd9b9d68f44d37f3ac6312b93ea7fe007073cf2c6760d9ed28046",
+      "seen": 102
+    },
+    {
+      "name": "voyagerApiMe",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/voyagerApiMe.md",
+      "reaEvidenceId": "ev_3599e16ad61df3a4cd5da3a6051350192973c93f0be19d014235323b6f149c44",
+      "seen": 7
+    },
+    {
+      "name": "voyagerApiMessagingDashPresencestatuses",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/voyagerApiMessagingDashPresencestatuses.md",
+      "reaEvidenceId": "ev_33e0da64fb8b95cef4077d523e8b5bcced0715a71770cc3ccf8c343ebae64aa8",
+      "seen": 7
+    },
+    {
+      "name": "voyagerApiPremiumFeatureaccess",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/voyagerApiPremiumFeatureaccess.md",
+      "reaEvidenceId": "ev_944cf6d391d8b8c8222c65c1af7fd2a8f89f67dfc522108d77d57a368ba99cfd",
+      "seen": 7
+    },
+    {
+      "name": "voyagerApiVoyagerglobalalerts",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/voyagerApiVoyagerglobalalerts.md",
+      "reaEvidenceId": "ev_e88964642826cde394707eaf9c1815ed21d722ca1a297149ccd3aac36c1a357a",
+      "seen": 7
+    },
+    {
+      "name": "voyagerApiVoyagergrowthiwerestriction",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/voyagerApiVoyagergrowthiwerestriction.md",
+      "reaEvidenceId": "ev_99f341f871ab6a7fd99a5029ee1e64c2ae5a59824eea1a83c8954a6041b5977d",
+      "seen": 2
+    },
+    {
+      "name": "voyagerApiVoyageridentitydashnotificationcards",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/voyagerApiVoyageridentitydashnotificationcards.md",
+      "reaEvidenceId": "ev_2a17bfb1e836e28fdd8e4317a57bcf86f97dc074232857f685b4e7c446274db3",
+      "seen": 7
+    },
+    {
+      "name": "voyagerApiVoyagermessagingdashconversationnudges",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/voyagerApiVoyagermessagingdashconversationnudges.md",
+      "reaEvidenceId": "ev_7c6a49705fbd56a0f95800c9803fcf302f5c5cfe6ff84603c13f4581519af75c",
+      "seen": 7
+    },
+    {
+      "name": "voyagerApiVoyagermessagingdashsecondaryinbox",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/voyagerApiVoyagermessagingdashsecondaryinbox.md",
+      "reaEvidenceId": "ev_8659b0c4ae018a379e28ec856575bc0ca5594ca58bfe0fa31b067e7da763234b",
+      "seen": 6
+    },
+    {
+      "name": "voyagerApiVoyagermessaginggraphqlGraphql",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/voyagerApiVoyagermessaginggraphqlGraphql.md",
+      "reaEvidenceId": "ev_6ff0af4f46043abea737467084493054482f65a87a59bfaea914f1430791d946",
+      "seen": 14
+    },
+    {
+      "name": "voyagerApiVoyagernotificationsdashbadgingitemcounts",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/voyagerApiVoyagernotificationsdashbadgingitemcounts.md",
+      "reaEvidenceId": "ev_31ba50f25de2e81706b1d2f33fd34afcae420bb251c36010fd5140dc97f649c7",
+      "seen": 7
+    },
+    {
+      "name": "voyagerApiVoyagerorganizationdashpagemailbox",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/voyagerApiVoyagerorganizationdashpagemailbox.md",
+      "reaEvidenceId": "ev_41c8cfd9c647f8db687f9317d81557c47a1c59294c7ec06c83685220b8f86c69",
+      "seen": 7
+    },
+    {
+      "name": "voyagerApiVoyagerpremiumdashadvertisebadge",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/voyagerApiVoyagerpremiumdashadvertisebadge.md",
+      "reaEvidenceId": "ev_99f341f871ab6a7fd99a5029ee1e64c2ae5a59824eea1a83c8954a6041b5977d",
+      "seen": 24
+    },
+    {
+      "name": "voyagerApiVoyagerrelationshipsdashmemberrelationships",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/voyagerApiVoyagerrelationshipsdashmemberrelationships.md",
+      "reaEvidenceId": "ev_99f341f871ab6a7fd99a5029ee1e64c2ae5a59824eea1a83c8954a6041b5977d",
+      "seen": 2
+    },
+    {
+      "name": "voyagerApiVoyagersegmentsdashchameleonconfig",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/voyagerApiVoyagersegmentsdashchameleonconfig.md",
+      "reaEvidenceId": "ev_7a001f034c32c2b8325f40d5e5c9f057683df25f0e3f68f4515052acf484959e",
+      "seen": 7
+    }
+  ]
+}

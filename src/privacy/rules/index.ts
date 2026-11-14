@@ -110,4 +110,6 @@ export const SCAN_RULES: PrivacyRule[] = [
     allowed: (value, context: AllowContext) => isAllowedEmail(value, context.allowedEmails),
   },
   { name: 'phone', pattern: /(?<![\w+/=.-])\+[1-9]\d{7,14}(?![\d.])/g, allowed: (value) => DUMMY_PHONE.test(value) },
+  { name: 'linkedinProfile', pattern: /(?<=\/in\/|memberIdentity:|vanityName:|publicIdentifier:)([A-Za-z0-9][A-Za-z0-9%_-]{2,99})(?=[/?#"'`\s)|]|$)/g, value: 1, allowed: (value) => isDummy(value) || isDummyUser(value) || /^(publicId|profile|handle|me|someone(-[a-z]+)?)$/i.test(value) || /doe\d*$/i.test(value) || /[A-Z]/.test(value) },
+  { name: 'linkedinMemberId', pattern: /\bACoA[A-Za-z0-9_-]{20,}/g, allowed: (value) => /^ACoA(?:x+|X+|0+)$/.test(value) },
 ]

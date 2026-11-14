@@ -1,6 +1,6 @@
 # discordApiPromotions
 
-<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log capture docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -10,10 +10,10 @@
 | Path | `discord.com/api/promotions` |
 | Sends | — |
 | Reads | — |
-| Called from | `runs/inspect/20261113T231616_deepman2/script3.js:232 625075`, `runs/inspect/20261113T231616_deepman2/script3.js:124 559868`, `runs/inspect/20261113T231616_deepman2/script3.js:124 961943`, `runs/inspect/20261111T233723_deepman2/script1280.js:1 anonymous` |
-| rea | `ev_a0da06fe3cf3d556f23b404bd4600cccf9a423e2ea3662cd4232ca302fbdf0b8` |
+| Called from | `runs/inspect/20261114T184328_deepman2/script0.js:232 625075`, `runs/inspect/20261114T184328_deepman2/script0.js:124 559868`, `runs/inspect/20261114T184328_deepman2/script0.js:124 961943`, `runs/inspect/20261111T233723_deepman2/script1280.js:1 anonymous` |
+| rea | `ev_f6daff8038b4f477b27b852e31fc1f2f76f7dd725b1883891e74b824ed6f0ac3` |
 
-Seen 14 time(s) in 12 run(s).
+Seen 15 time(s) in 13 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -25,10 +25,162 @@ Seen 14 time(s) in 12 run(s).
 | inspect | step 2: snapshot | 1 | 200 | 535 ms | 48899 ms | — |
 | inspect | step 6: wait 45s | 1 | 200 | 343 ms | 22395 ms | — |
 | inspect | step 1: goto /channels/@me | 1 | 200 | 237 ms | 2245 ms | — |
+| inspect | step 9: wait 45s | 1 | 200 | 311 ms | 13208 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261114T184328_deepman2**, step 9: wait 45s: 200, 311 ms
+
+Sent:
+
+```json
+{
+  "query": {
+    "locale": "en-US",
+    "platform": "0"
+  },
+  "body": null
+}
+```
+
+Answered:
+
+```json
+[
+  {
+    "id": "<id:1>",
+    "marketing_components": [
+      "(14 fields)"
+    ],
+    "start_date": "2026-11-04T16:30:00+00:00",
+    "end_date": "2026-11-18T17:00:00+00:00",
+    "flags": 1537,
+    "country_list_mode": "blocklist",
+    "promotion_type": 5,
+    "metadata": {
+      "premium_promotion": "(2 fields)"
+    },
+    "priority": 75
+  },
+  {
+    "id": "<id:2>",
+    "marketing_components": [],
+    "start_date": "2026-11-01T07:00:00+00:00",
+    "end_date": "2026-12-01T07:00:00+00:00",
+    "outbound_title": "SteelSeries",
+    "outbound_redemption_page_link": "https://steelseries.com",
+    "flags": 65,
+    "allowed_countries": [
+      "BE",
+      "HR",
+      "BG",
+      "HU",
+      "FR",
+      "FI",
+      "… 30 more"
+    ],
+    "country_list_mode": "allowlist",
+    "partner_id": "steelseries",
+    "promotion_type": 7,
+    "priority": null
+  },
+  {
+    "id": "<id:3>",
+    "marketing_components": [],
+    "start_date": "2026-11-01T07:00:00+00:00",
+    "end_date": "2026-12-01T07:00:00+00:00",
+    "outbound_title": "Logitech G",
+    "outbound_redemption_page_link": "https://www.logitechg.com",
+    "flags": 65,
+    "allowed_countries": [
+      "BE",
+      "HR",
+      "BG",
+      "HU",
+      "FR",
+      "FI",
+      "… 26 more"
+    ],
+    "country_list_mode": "allowlist",
+    "partner_id": "logitech",
+    "promotion_type": 7,
+    "priority": null
+  },
+  {
+    "id": "<id:4>",
+    "marketing_components": [
+      "(14 fields)",
+      "(14 fields)",
+      "(14 fields)",
+      "(14 fields)"
+    ],
+    "start_date": "2026-10-21T20:54:15.400000+00:00",
+    "end_date": "2027-08-07T04:59:00+00:00",
+    "outbound_redemption_end_date": "2027-08-07T04:59:00+00:00",
+    "outbound_title": "Nitro Blueprint Weapon",
+    "outbound_redemption_modal_body": "Nitro Blueprint Weapon",
+    "outbound_terms_and_conditions": "Nitro Blueprint Weapon",
+    "outbound_redemption_page_link": "https://www.callofduty.com/redeem",
+    "flags": 13,
+    "country_list_mode": "blocklist",
+    "partner_id": "call_of_duty",
+    "promotion_type": 4,
+    "priority": null
+  },
+  {
+    "id": "<id:5>",
+    "marketing_components": [],
+    "start_date": "2026-09-11T05:00:00+00:00",
+    "end_date": "2028-09-11T05:00:00+00:00",
+    "outbound_title": "YouTube",
+    "outbound_redemption_modal_body": "YouTube",
+    "outbound_terms_and_conditions": "YouTube",
+    "outbound_redemption_page_link": "https://www.youtube.com/redeem",
+    "flags": 15,
+    "allowed_countries": [
+      "BE",
+      "FR",
+      "FI",
+      "DK",
+      "HK",
+      "DE",
+      "… 27 more"
+    ],
+    "country_list_mode": "allowlist",
+    "partner_id": "youtube",
+    "promotion_type": 4,
+    "priority": null
+  },
+  {
+    "id": "<id:6>",
+    "marketing_components": [],
+    "start_date": "2026-04-01T07:00:00+00:00",
+    "end_date": "2029-04-01T07:00:00+00:00",
+    "outbound_redemption_end_date": "2029-04-01T07:00:00+00:00",
+    "outbound_title": "Logitech 5%",
+    "outbound_redemption_modal_body": "New Logitech promo",
+    "outbound_terms_and_conditions": "T&C",
+    "outbound_redemption_page_link": "https://www.logitechg.com/",
+    "flags": 77,
+    "allowed_countries": [
+      "BE",
+      "HR",
+      "BG",
+      "HU",
+      "FR",
+      "FI",
+      "… 26 more"
+    ],
+    "country_list_mode": "allowlist",
+    "partner_id": "logitech",
+    "promotion_type": 4,
+    "priority": null
+  },
+  "… 1 more"
+]
+```
 
 **runs/inspect/20261113T231616_deepman2**, step 6: wait 45s: 200, 343 ms
 
@@ -321,157 +473,6 @@ Answered:
       "JP",
       "HU",
       "LV",
-      "… 26 more"
-    ],
-    "country_list_mode": "allowlist",
-    "partner_id": "logitech",
-    "promotion_type": 4,
-    "priority": null
-  },
-  "… 1 more"
-]
-```
-
-**runs/inspect/20261109T192314_deepman2**, step 1: goto /channels/@me: 200, 237 ms
-
-Sent:
-
-```json
-{
-  "query": {
-    "locale": "en-US",
-    "platform": "0"
-  },
-  "body": null
-}
-```
-
-Answered:
-
-```json
-[
-  {
-    "id": "<id:1>",
-    "marketing_components": [
-      "(14 fields)"
-    ],
-    "start_date": "2026-11-04T16:30:00+00:00",
-    "end_date": "2026-11-18T17:00:00+00:00",
-    "flags": 1537,
-    "country_list_mode": "blocklist",
-    "promotion_type": 5,
-    "metadata": {
-      "premium_promotion": "(2 fields)"
-    },
-    "priority": 75
-  },
-  {
-    "id": "<id:2>",
-    "marketing_components": [],
-    "start_date": "2026-11-01T07:00:00+00:00",
-    "end_date": "2026-12-01T07:00:00+00:00",
-    "outbound_title": "SteelSeries",
-    "outbound_redemption_page_link": "https://steelseries.com",
-    "flags": 65,
-    "allowed_countries": [
-      "JP",
-      "FR",
-      "BG",
-      "BE",
-      "FI",
-      "DK",
-      "… 30 more"
-    ],
-    "country_list_mode": "allowlist",
-    "partner_id": "steelseries",
-    "promotion_type": 7,
-    "priority": null
-  },
-  {
-    "id": "<id:3>",
-    "marketing_components": [],
-    "start_date": "2026-11-01T07:00:00+00:00",
-    "end_date": "2026-12-01T07:00:00+00:00",
-    "outbound_title": "Logitech G",
-    "outbound_redemption_page_link": "https://www.logitechg.com",
-    "flags": 65,
-    "allowed_countries": [
-      "JP",
-      "FR",
-      "BG",
-      "BE",
-      "FI",
-      "DK",
-      "… 26 more"
-    ],
-    "country_list_mode": "allowlist",
-    "partner_id": "logitech",
-    "promotion_type": 7,
-    "priority": null
-  },
-  {
-    "id": "<id:4>",
-    "marketing_components": [
-      "(14 fields)",
-      "(14 fields)",
-      "(14 fields)",
-      "(14 fields)"
-    ],
-    "start_date": "2026-10-21T20:54:15.400000+00:00",
-    "end_date": "2027-08-07T04:59:00+00:00",
-    "outbound_redemption_end_date": "2027-08-07T04:59:00+00:00",
-    "outbound_title": "Nitro Blueprint Weapon",
-    "outbound_redemption_modal_body": "Nitro Blueprint Weapon",
-    "outbound_terms_and_conditions": "Nitro Blueprint Weapon",
-    "outbound_redemption_page_link": "https://www.callofduty.com/redeem",
-    "flags": 13,
-    "country_list_mode": "blocklist",
-    "partner_id": "call_of_duty",
-    "promotion_type": 4,
-    "priority": null
-  },
-  {
-    "id": "<id:5>",
-    "marketing_components": [],
-    "start_date": "2026-09-11T05:00:00+00:00",
-    "end_date": "2028-09-11T05:00:00+00:00",
-    "outbound_title": "YouTube",
-    "outbound_redemption_modal_body": "YouTube",
-    "outbound_terms_and_conditions": "YouTube",
-    "outbound_redemption_page_link": "https://www.youtube.com/redeem",
-    "flags": 15,
-    "allowed_countries": [
-      "JP",
-      "FR",
-      "BE",
-      "UA",
-      "MX",
-      "FI",
-      "… 27 more"
-    ],
-    "country_list_mode": "allowlist",
-    "partner_id": "youtube",
-    "promotion_type": 4,
-    "priority": null
-  },
-  {
-    "id": "<id:6>",
-    "marketing_components": [],
-    "start_date": "2026-04-01T07:00:00+00:00",
-    "end_date": "2029-04-01T07:00:00+00:00",
-    "outbound_redemption_end_date": "2029-04-01T07:00:00+00:00",
-    "outbound_title": "Logitech 5%",
-    "outbound_redemption_modal_body": "New Logitech promo",
-    "outbound_terms_and_conditions": "T&C",
-    "outbound_redemption_page_link": "https://www.logitechg.com/",
-    "flags": 77,
-    "allowed_countries": [
-      "JP",
-      "FR",
-      "BG",
-      "BE",
-      "MX",
-      "FI",
       "… 26 more"
     ],
     "country_list_mode": "allowlist",

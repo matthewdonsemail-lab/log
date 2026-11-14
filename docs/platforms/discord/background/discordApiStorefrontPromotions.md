@@ -1,6 +1,6 @@
 # discordApiStorefrontPromotions
 
-<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log capture docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -10,8 +10,8 @@
 | Path | `discord.com/api/storefront/promotions` |
 | Sends | — |
 | Reads | `promotions` |
-| Called from | `runs/inspect/20261113T231616_deepman2/script3.js:232 625075`, `runs/inspect/20261113T231616_deepman2/script3.js:124 559868`, `runs/inspect/20261113T231616_deepman2/script3.js:124 961943`, `runs/inspect/20261111T233723_deepman2/script1280.js:1 anonymous` |
-| rea | `ev_f8fb2ad4ef827988297b514b4c6d9d49e1b94748231dfe4b404a66e6ce6b103d` |
+| Called from | `runs/inspect/20261114T184328_deepman2/script0.js:232 625075`, `runs/inspect/20261114T184328_deepman2/script0.js:124 559868`, `runs/inspect/20261114T184328_deepman2/script0.js:124 961943`, `runs/inspect/20261111T233723_deepman2/script1280.js:1 anonymous` |
+| rea | `ev_f6daff8038b4f477b27b852e31fc1f2f76f7dd725b1883891e74b824ed6f0ac3` |
 
 Seen 1 time(s) in 1 run(s).
 
@@ -74,13 +74,13 @@ Answered:
           "subtype": "BASIC",
           "collection_id": "1561844530079076372",
           "shop_home": {
-            "description": "Collect 4 items to unlock an exclusive Deadpool/Wolverine Avatar Decoration. Terms apply (`{help_center_url}`).",
+            "description": "Collect 4 items to unlock an exclusive Deadpool/Wolverine Avatar Decoration. [Terms apply]({help_center_url}).",
             "style": {
               "content_theme": "dark"
             }
           },
           "index_page": {
-            "description": "Collect 4 items to unlock an exclusive Deadpool/Wolverine Avatar Decoration. Terms apply (`{help_center_url}`).",
+            "description": "Collect 4 items to unlock an exclusive Deadpool/Wolverine Avatar Decoration. [Terms apply]({help_center_url}).",
             "style": {
               "content_theme": "dark"
             }
