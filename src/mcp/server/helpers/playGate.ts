@@ -7,7 +7,9 @@ import { LIVE_SUFFIX } from "./toolAnnotations.ts";
 import { actsAsOwner, commandTools } from "./toolsFromCommands.ts";
 import { flowActsAsOwner, flowTool } from "./toolsFromFlows.ts";
 
-export const FLOW_LIVE_TOOL = "flowLive";
+export const FLOW_LIVE_TOOL = "flowRunLive";
+
+export const LEGACY_FLOW_LIVE_TOOL = "flowLive";
 
 export const PLAY_GATED_ON_MAIN: ReadonlySet<string> = new Set(["twitterDmLive", "twitterReplyLive", "twitterQuoteLive", "twitterQueueRunLive", "twitterVoiceLive", "discordSendLive", "slackSendLive", "instagramSendLive"]);
 
@@ -71,9 +73,9 @@ export function unnamedActingTools(commands: readonly Command[], flows: readonly
 }
 
 export function gatedToolOf(name: string, input: Record<string, unknown> | undefined, flows: readonly FlowDefinition[]): string {
-  if (name !== FLOW_LIVE_TOOL) return name;
   const args = Array.isArray(input?.args) ? (input.args as unknown[]) : [];
-  if (args[0] !== "run" || typeof args[1] !== "string") return name;
-  const flow = flows.find((f) => f.name === args[1]);
+  const flowName = name === FLOW_LIVE_TOOL && !args.length ? input?.name : name === FLOW_LIVE_TOOL || name === LEGACY_FLOW_LIVE_TOOL ? (args[0] === "run" ? args[1] : null) : null;
+  if (typeof flowName !== "string") return name;
+  const flow = flows.find((f) => f.name === flowName);
   return flow && flowActsAsOwner(flow, true) ? flowTool(flow, true) : name;
 }

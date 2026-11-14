@@ -57,7 +57,7 @@ export const listCommand: Command = {
     const label = `twitter list ${word}`;
     const parsed = parseArgs(argv.slice(1), parserSpecOf({ forms: [{ ...form, words: [] }] }));
     if (!parsed.ok) return { code: 1, stderr: `log ${label}: ${parsed.error}\n${LIST_USAGE}` };
-    if (parsed.positionals.length) return { code: 1, stderr: `log ${label}: takes no words after ${word}, only flags\n${LIST_USAGE}` };
+    if (parsed.positionals.length) return { code: 1, error: "inputInvalid", stderr: `log ${label}: takes no words after ${word}, only flags\n${LIST_USAGE}` };
     const str = (name: string) => (typeof parsed.flags[name] === "string" ? String(parsed.flags[name]).trim() : "");
     const live = parsed.flags["live"] === true;
     const approvedBy = str("approvedBy");

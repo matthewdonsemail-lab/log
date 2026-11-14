@@ -126,12 +126,20 @@ Checked by: code and SubQ
 
 ### REQ-COMMAND-19: Every form tool is driven through its command's own run
 
-`src/cli/runner/runRoundTrip.test.ts` builds, for every non-live form tool, a minimal input from its schema, then each optional field on its own, passes each through `argvOfInput` and runs the command's own `run` with stubbed engines, Twenty, treg and fetch in a temporary home, and fails when a schema-valid input is refused for a parse or input reason. A second pass sets each bounded flag to its minimum and maximum (they must run) and one past each (the schema and `run` must both refuse it). Its skip list is three forms that start a process (`inspectStart`, `facebookHostStart`, `mediaDescriber`), and `instagramDms.limit` is the one bound that depends on another field.
+`src/cli/runner/runRoundTrip.test.ts` builds, for every non-live form tool, a minimal input from its schema, then each optional field on its own, passes each through `argvOfInput` and runs the command's own `run` with stubbed engines, Twenty, treg and fetch in a temporary home, and fails when a schema-valid input is refused for a parse or input reason. A second pass sets each bounded flag to its minimum and maximum (they must run) and one past each (the schema and `run` must both refuse it). Its skip list is five forms: three that start a process (`inspectStart`, `facebookHostStart`, `mediaDescriber`), `localAccountPull` (it reads Twenty with its own client, not the context's) and `facebookWatch` (with `checks` 0 it watches until stopped). A field in an `atMostOne` group is tried with the group's other fields left out. A flag that writes into the repo or acts (`apply`, `write`, `docs`) is not tried on its own. And `instagramDms.limit` is the one bound that depends on another field.
 
 Checked by: code and SubQ
 
 ### REQ-COMMAND-20: The reference lists typed flags from the input forms
 
 For a command with input forms, `docs/reference.md` lists each flag from the forms with its kind and range (`[--limit <integer 1..1000>]`), optional flags in brackets, and adds any flag only its usage names. A command with no forms keeps the flags read from its usage.
+
+Checked by: code and SubQ
+
+### REQ-COMMAND-21: Every tool has named inputs
+
+Every command a tool runs declares `input.forms`, so no listed tool takes a raw `args` list (`argsTools` in the scorecard is 0 and may only go down). A command with sub-commands has one tool per form: `adsPowerStatus`, `adsPowerProfiles`, `adsPowerSync`; `localAccountAdd`, `localAccountList`, `localAccountPull`; `proxyCheck`, `proxyAssign`, `proxyBalance`, `proxyStatic`; `facebookCampaignFill`, `facebookCampaignHeal`, `facebookCampaignRun` and `facebookCampaignRunLive`, `facebookCampaignShow`; `facebookLifecycle` and `facebookLifecycleStates`; `flowFromInspect`, `flowDocs`, `flowList`, `flowShow`, `flowRun` and `flowRunLive`; `facebookJoinGroup` and `facebookJoinGroupLive`; `facebookProfileSetup` and `facebookProfileSetupLive`. The others keep their name with typed fields (`facebookPreflight`, `facebookDoctor`, `facebookConnect`, `facebookScan`, `facebookStatus`, `facebookWatch`, `facebookPoll`, `facebookCapture`, `graph`, `logout`, `whoami`, `warmup` and `warmupLive`). Modes that exclude each other are `atMostOne` groups (`proxyAssign` account or missing, city or anyCity; `facebookCapture` har, settle or docs; `facebookPoll` group or request; `facebookJoinGroup` show, answer or fill). The CLI parses the same forms (`parserSpecOf`), so a flag the tool refuses the terminal refuses too.
+
+For one release the 25 old tool names (`ARGS_TOOLS_GIVEN_FORMS`, `src/mcp/server/helpers/toolAliases.ts`) still run their command from `args`, unlisted, with the same live and bypass checks, and the result says which tools replaced them (`legacyArgsTool`, `guardCall`). `connect` gets `--noPrompt` on both paths. A per-flow tool runs through `flowRun`/`flowRunLive` with named fields (`flowRunInput`), and every saved flow is a catalog entry `<platform>.flow.<name>` (`flowEntries`, `src/mcp/catalog/helpers/entries.ts`), ranked below the commands in `logSearch`.
 
 Checked by: code and SubQ

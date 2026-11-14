@@ -6,7 +6,7 @@ import type { PlatformAccount } from "../../../platformKit/session/index.ts";
 import { TwentyError } from "../../../twenty/graphql/index.ts";
 import { shouldPrompt } from "../../launch/helpers/index.ts";
 import type { LaunchTTY } from "../../launch/helpers/index.ts";
-import { parseArgs, parserSpecOf, refuse, refuseError } from "../../runner/helpers/index.ts";
+import { parseArgs, parserSpecOf, refuse, refuseError, refuseInput } from "../../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../../runner/types.ts";
 
 export const LINKEDIN_COOKIES_USAGE = [
@@ -75,10 +75,10 @@ export const linkedinCookiesCommand: Command = {
   async run(context, argv) {
     if (argv[0] !== "save") return { code: 1, stderr: `log linkedin cookies: save is the only subcommand\n${LINKEDIN_COOKIES_USAGE}` };
     const parsed = parseArgs(argv.slice(1), parserSpecOf({ forms: [{ ...LINKEDIN_COOKIES_INPUT.forms[0], words: [] }] }));
-    if (!parsed.ok) return { code: 1, stderr: `log linkedin cookies: ${parsed.error}\n${LINKEDIN_COOKIES_USAGE}` };
+    if (!parsed.ok) return refuseInput("linkedin cookies", parsed.error, LINKEDIN_COOKIES_USAGE);
     const raw = parsed.flags["account"];
     const publicId = typeof raw === "string" ? publicIdOf(raw) : "";
-    if (!/^[A-Za-z0-9\-_%]{3,100}$/.test(publicId)) return { code: 1, stderr: `log linkedin cookies save: --account must be the profile's public id (linkedin.com/in/<publicId>)\n${LINKEDIN_COOKIES_USAGE}` };
+    if (!/^[A-Za-z0-9\-_%]{3,100}$/.test(publicId)) return { code: 1, error: "inputInvalid", stderr: `log linkedin cookies save: --account must be the profile's public id (linkedin.com/in/<publicId>)\n${LINKEDIN_COOKIES_USAGE}` };
     if (!context.directLinkedin) return { code: 1, stderr: "log linkedin cookies save: the direct-API engine isn't wired in this context" };
     if (!context.cookiePrompts && !shouldPrompt(false, linkedinCookiesDeps.tty())) {
       return { code: 1, stderr: "log linkedin cookies save: the cookies are typed in a Clack prompt, so it needs an interactive terminal: run it there (they are never passed as flags)" };

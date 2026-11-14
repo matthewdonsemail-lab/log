@@ -67,6 +67,25 @@ export function flowOfTool(flows: FlowDefinition[], name: string): { flow: FlowD
   return null;
 }
 
+export const FLOW_RUN_TOOL = "flowRun";
+
+export function flowRunInput(flow: FlowDefinition, input: Record<string, unknown> | undefined, live = false): { ok: true; input: Record<string, unknown> } | { ok: false; message: string } {
+  const built = flowArgv(flow, input, live);
+  if (!built.ok) return built;
+  const set = Object.fromEntries(flow.params.map((p) => [p.name, String(input?.[p.name])]));
+  return {
+    ok: true,
+    input: {
+      name: flow.name,
+      account: input?.account,
+      ...(flow.params.length ? { set } : {}),
+      ...(input?.bypass === true ? { bypass: true } : {}),
+      ...(input?.now === true ? { now: true } : {}),
+      ...(typeof input?.proxyMs === "number" ? { proxyMs: input.proxyMs } : {}),
+    },
+  };
+}
+
 export function flowArgv(flow: FlowDefinition, input: Record<string, unknown> | undefined, live = false): { ok: true; argv: string[]; live: boolean } | { ok: false; message: string } {
   const name = flowTool(flow, live);
   const account = input?.account;

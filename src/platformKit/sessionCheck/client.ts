@@ -21,7 +21,8 @@ export function platformAnswerOf(answer: SessionToolAnswer): Answer | null {
   const content = objectOf(answer.structuredContent);
   const json = objectOf(content?.json);
   if (json && ("ok" in json || "code" in json || "loginState" in json)) return json as Answer;
-  return content && ("loginState" in content || "code" in content || typeof content.ok === "boolean") ? (content as Answer) : null;
+  if (!content || "exit" in content) return null;
+  return "loginState" in content || "code" in content || typeof content.ok === "boolean" ? (content as Answer) : null;
 }
 
 export function verdictOf(answer: SessionToolAnswer): { verdict: SessionVerdict; code: string | null; detail: string | null; httpStatus: number | null } {
@@ -35,9 +36,9 @@ export function verdictOf(answer: SessionToolAnswer): { verdict: SessionVerdict;
   if (said && ((code && (SIGN_IN_CODES as readonly string[]).includes(code)) || said.loginState === "loggedOut" || httpStatus === 401)) return { verdict: "signInNeeded", code: code ?? "loggedOut", detail, httpStatus };
   if (said?.ok === false) return { verdict: "stopped", code, detail, httpStatus };
   if (answer.isError) {
-    const stderr = typeof content?.stderr === "string" ? content.stderr : "";
-    const local = /: ([a-z][A-Za-z]+): (.+)/.exec(stderr);
-    return { verdict: "unknown", code: code ?? local?.[1] ?? "checkFailed", detail: detail ?? local?.[2]?.slice(0, 300) ?? "the check failed before the platform answered", httpStatus };
+    const stderr = typeof content?.stderr === "string" ? content.stderr.trim().split(/\r?\n/)[0] : "";
+    const toolCode = typeof content?.code === "string" && content.code ? content.code : null;
+    return { verdict: "unknown", code: code ?? toolCode ?? "checkFailed", detail: detail ?? (stderr ? stderr.slice(0, 300) : "the check failed before the platform answered"), httpStatus };
   }
   return { verdict: "unknown", code, detail, httpStatus };
 }

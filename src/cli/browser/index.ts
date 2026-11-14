@@ -1,7 +1,7 @@
 import { viewerState } from "../../browser/viewer/index.ts";
 import type { ViewerView } from "../../browser/viewer/index.ts";
 import { readLocalAccounts } from "../../twenty/graphql/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";
+import { JSON_FLAG, parseArgs, parserSpecOf, refuseInput } from "../runner/helpers/index.ts";
 import { knownPlatformOfAccount, PLATFORM_LABELS } from "../runner/helpers/platforms.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
 
@@ -80,10 +80,10 @@ export const browserCommand: Command = {
   args: "view --account <accountName> [--json]",
   async run(_context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(BROWSER_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log browser: ${parsed.error}\n${BROWSER_USAGE}` };
+    if (!parsed.ok) return refuseInput("browser", parsed.error, BROWSER_USAGE);
     if (parsed.positionals[0] !== "view" || parsed.positionals.length > 1) return { code: 1, stderr: `log browser: say view\n${BROWSER_USAGE}` };
     const account = parsed.flags["account"];
-    if (typeof account !== "string" || !account) return { code: 1, stderr: `log browser view: --account is required\n${BROWSER_USAGE}` };
+    if (typeof account !== "string" || !account) return { code: 1, error: "inputInvalid", stderr: `log browser view: --account is required\n${BROWSER_USAGE}` };
     const view = await browserDeps.state(account);
     return { code: 0, stdout: parsed.flags["json"] ? JSON.stringify(browserViewJson(view), null, 2) : browserViewText(view) };
   },

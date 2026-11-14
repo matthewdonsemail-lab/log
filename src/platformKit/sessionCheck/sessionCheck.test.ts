@@ -34,8 +34,9 @@ describe("verdictOf", () => {
     expect(verdictOf({ isError: true, structuredContent: { ok: false } }).verdict).toBe("stopped");
   });
   test("log failing before the platform answers is unknown, with log's own code", () => {
-    const failed = verdictOf({ isError: true, structuredContent: { exit: 1, stderr: "log discord session check: twentyNotConfigured: TWENTY_BASE_URL or TWENTY_API_KEY is not set." } });
+    const failed = verdictOf({ isError: true, structuredContent: { exit: 1, ok: false, code: "twentyNotConfigured", stderr: "log discord session check: twentyNotConfigured: TWENTY_BASE_URL or TWENTY_API_KEY is not set." } });
     expect(failed).toMatchObject({ verdict: "unknown", code: "twentyNotConfigured" });
+    expect(verdictOf({ isError: true, structuredContent: { exit: 1, ok: false, code: null, stderr: "boom" } })).toMatchObject({ verdict: "unknown", code: "checkFailed", detail: "boom" });
   });
 });
 

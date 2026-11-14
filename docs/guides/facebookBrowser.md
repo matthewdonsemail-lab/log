@@ -25,20 +25,21 @@ Each tool's own description carries its full usage, notes, live line and rules; 
 | `facebookAccountResave` | Save a run's device and session that Twenty didn't take | `log facebook account resave <accountName> --from <folder>   (a run's device and session Twenty didn't take: ~/.logCli/runs/unsaved/...)` |
 | `facebookAccountResetOpens` | Restart today's count of launches and host opens, only when the owner… | `log facebook account resetOpens <accountName\|all> [--reason <text>]   (today's launches and host opens count from now; nothing is deleted)` |
 | `facebookAccountStatus` | Set an account's status | `log facebook account status <accountName> <ACTIVE\|WARMING\|LIMITED\|PAUSED\|NEEDS_LOGIN\|CHECKPOINT\|RESTRICTED\|BANNED\|DEAD\|DEACTIVATED> [--reason <code>] [--detail <text>]` |
-| `facebookLifecycle` | Each account's place in its lifecycle | `log facebook lifecycle [states [--write]] [--account <name>] [--json]` |
-| `facebookPreflight` | Before any browser opens, check each account will get through | `log facebook preflight [--account <a>] [--homes <US,CA>] [--noProxy] [--apply] [--json]` |
+| `facebookLifecycle` | Each Facebook account's place in its lifecycle | `log facebook lifecycle [--account <name>] [--json]` |
+| `facebookLifecycleStates` | The lifecycle machine's state tree | `log facebook lifecycle states [--write]   (the machine's state tree; --write regenerates docs/lifecycle.md)` |
+| `facebookPreflight` | Before any browser opens, check each Facebook account will get through | `log facebook preflight [--account <accountName>] [--homes <US,CA>] [--noProxy] [--apply] [--json]` |
 | `facebookDoctor` | Check python, facebook-camofox-client, Camoufox, Twenty, and which… | `log facebook doctor [--json]` |
-| `facebookConnect` | Sign a Facebook account in through its proxy | `log facebook connect --account <name> [--noPrompt] [--wait <seconds>] [--bypass] [--now]` |
-| `facebookProfile` | Set an account's profile picture and cover photo from its account… | `log facebook profile setup --account <name> [--live] [--bypass] [--json]` |
-| `facebookProfileLive` | Set an account's profile picture and cover photo from…, live on Facebook | `log facebook profile setup --account <name> [--live] [--bypass] [--json]` |
+| `facebookConnect` | Sign a Facebook account in through its proxy | `log facebook connect --account <accountName> [--noPrompt] [--wait <seconds>] [--bypass] [--now]` |
+| `facebookProfileSetup` | Set a Facebook account's profile picture and cover photo from its… | `log facebook profile setup --account <accountName> [--live] [--bypass] [--json]` |
+| `facebookProfileSetupLive` | Set a Facebook account's profile picture and cover…, live on Facebook | `log facebook profile setup --account <accountName> [--live] [--bypass] [--json]` |
 | `facebookHostStart` | Run the account's lifecycle in one open browser through its active… | `log facebook host start --account <accountName> [--live] [--likes] [--bypass] [--now] [--gapSeconds <n>] [--watchMinutes <n>]   (--live: profile, name, location; --likes: the warm-up's likes)` |
 | `facebookHostStartLive` | Run the account's lifecycle in one open browser…, live on Facebook | `log facebook host start --account <accountName> [--live] [--likes] [--bypass] [--now] [--gapSeconds <n>] [--watchMinutes <n>]   (--live: profile, name, location; --likes: the warm-up's likes)` |
 | `facebookHostSend` | Send an event to the account's running host | `log facebook host send --account <accountName> <PERSON_DONE\|PAUSE\|RESUME\|SHUTDOWN\|LOST>` |
 | `facebookHostStatus` | Where each host is | `log facebook host status [--account <accountName>]` |
 | `facebookCheck` | Check one account in its open browser | `log facebook check --account <accountName> [--bypass] [--json]   (in the account's open browser: Marketplace status, each listing's state and clicks in the last 14 days on Selling into Twenty, the seller inbox's chats; nothing clicked)` |
-| `facebookScan` | Read Marketplace > Selling live for one account and update its… | `log facebook scan --account <name> [--json] [--bypass]` |
-| `facebookStatus` | Open one Marketplace item page live and classify its status | `log facebook status <listingId> --account <name> [--json] [--bypass]` |
-| `facebookWatch` | Run the listing monitor | `log facebook watch --account <name> [--checks <n>] [--interval <min>] [--json] [--bypass]` |
+| `facebookScan` | Read Marketplace > Selling live for one account and update its… | `log facebook scan --account <accountName> [--json] [--bypass]` |
+| `facebookStatus` | Open one Marketplace item page live and classify its status | `log facebook status <listingId> --account <accountName> [--json] [--bypass]` |
+| `facebookWatch` | Run the Marketplace listing monitor | `log facebook watch --account <accountName> [--checks <n>] [--interval <minutes>] [--json] [--bypass]` |
 
 ## The work, step by step: facebookInspect
 

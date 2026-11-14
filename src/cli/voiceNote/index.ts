@@ -71,7 +71,7 @@ export function voiceNoteCommandOf(shape: VoiceShape): Command {
     async run(context, argv) {
       const parsed = parseArgs(argv, parserSpecOf(input));
       if (!parsed.ok) return { code: 1, stderr: `log ${label}: ${parsed.error}\n${usage}` };
-      if (parsed.positionals.length) return { code: 1, stderr: `log ${label}: takes no words, only flags: the voice note is made from --text, never from a file\n${usage}` };
+      if (parsed.positionals.length) return { code: 1, error: "inputInvalid", stderr: `log ${label}: takes no words, only flags: the voice note is made from --text, never from a file\n${usage}` };
       const text = String(parsed.flags["text"] ?? "");
       const approvedBy = typeof parsed.flags["approvedBy"] === "string" ? parsed.flags["approvedBy"].trim() : "";
       const live = parsed.flags["live"] === true;

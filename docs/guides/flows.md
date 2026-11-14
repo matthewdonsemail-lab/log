@@ -20,10 +20,14 @@ Each tool's own description carries its full usage, notes, live line and rules; 
 
 | Tool | What it does | Usage |
 |---|---|---|
-| `flow` | Recorded inspect runs as flows | `log flow fromInspect <runDir> --name <n> \| docs <n> \| list \| show <n> \| run <n> --account <a> [--set k=v]... [--live]` |
-| `flowLive` | Recorded inspect runs as flows, live on the platform | `log flow fromInspect <runDir> --name <n> \| docs <n> \| list \| show <n> \| run <n> --account <a> [--set k=v]... [--live]` |
-| `warmup` | The warm-up, by platform and activity | `log <platform> warmup <platform> <activity> [plan\|record\|run\|log\|persona] [--account <a>] [--live] [--likes] [--bypass]` |
-| `warmupLive` | The warm-up, by platform and activity, live on the platform | `log <platform> warmup <platform> <activity> [plan\|record\|run\|log\|persona] [--account <a>] [--live] [--likes] [--bypass]` |
+| `flowFromInspect` | Turn a recorded inspect run into a flow | `log flow fromInspect <runDir> --name <name> [--summary <text>] [--rename text1=firstName]...` |
+| `flowDocs` | Write a flow's doc again | `log flow docs <name>` |
+| `flowList` | Every saved flow, with its tool | `log flow list` |
+| `flowShow` | A saved flow's steps and parameters, as JSON | `log flow show <name>` |
+| `flowRun` | Run a saved flow on an account | `log flow run <name> --account <accountName> [--set <param>=<value>]... [--live] [--bypass] [--now] [--json]` |
+| `flowRunLive` | Run a saved flow on an account, live on the platform | `log flow run <name> --account <accountName> [--set <param>=<value>]... [--live] [--bypass] [--now] [--json]` |
+| `warmup` | The warm-up, by platform and activity | `log <platform> warmup <activity> [--account <a>] [--live] [--likes] [--bypass] [--now]   (record: the account's browser opened primed with the activity, each step checked, the outline written)` |
+| `warmupLive` | The warm-up, by platform and activity, live on the platform | `log <platform> warmup <activity> [--account <a>] [--live] [--likes] [--bypass] [--now]   (record: the account's browser opened primed with the activity, each step checked, the outline written)` |
 
 ## The work, step by step: flow
 

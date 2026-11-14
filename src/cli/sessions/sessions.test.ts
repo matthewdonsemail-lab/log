@@ -20,7 +20,7 @@ const ANSWERS: Record<string, SessionToolAnswer> = {
   discordSessionCheck: { isError: true, structuredContent: { json: { ok: false, code: "sessionDead", loginState: "loggedOut", httpStatus: 401 } } },
   redditSessionCheck: { structuredContent: { json: { ok: true, loginState: "loggedIn", httpStatus: 200 } } },
   slackSessionCheck: { isError: true, structuredContent: { json: { ok: false, code: "rateLimited", loginState: "unknown", httpStatus: 429 } } },
-  instagramSessionCheck: { isError: true, structuredContent: { exit: 1, stderr: "log instagram session check: twentyNotConfigured: not set" } },
+  instagramSessionCheck: { isError: true, structuredContent: { exit: 1, ok: false, code: "twentyNotConfigured", stderr: "log instagram session check: twentyNotConfigured: not set" } },
 };
 
 let signedInNow = new Set<string>();

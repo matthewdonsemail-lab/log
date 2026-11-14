@@ -6,7 +6,7 @@ import type { HostControl, MilestoneField } from "../../marketplace/host/index.t
 import { standingOf } from "../../marketplace/lifecycle/index.ts";
 import { findAccount, toTwentyEnum } from "../../marketplace/socialAccount/index.ts";
 import { createInspector, formatTraceLine } from "../../observability/trace/index.ts";
-import { numberOf, parseArgs, parserSpecOf, PROXY_MS_FLAG, refuseError } from "../runner/helpers/index.ts";
+import { numberOf, parseArgs, parserSpecOf, PROXY_MS_FLAG, refuseError, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
 import { dayOf, hostActors } from "./helpers/index.ts";
 import type { HostBrowser } from "./helpers/index.ts";
@@ -58,7 +58,7 @@ export const hostCommand: Command = {
   args: "<start|send|status> --account <name> [--live] [--bypass]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(HOST_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log facebook host: ${parsed.error}\n${HOST_USAGE}` };
+    if (!parsed.ok) return refuseInput("facebook host", parsed.error, HOST_USAGE);
     const [sub, event] = parsed.positionals;
     const flags = parsed.flags;
 
@@ -74,7 +74,7 @@ export const hostCommand: Command = {
       return { code: 0, stdout: lines.join("\n") || "No host has run yet." };
     }
 
-    if (typeof flags["account"] !== "string") return { code: 1, stderr: `log facebook host: --account is required\n${HOST_USAGE}` };
+    if (typeof flags["account"] !== "string") return { code: 1, error: "inputInvalid", stderr: `log facebook host: --account is required\n${HOST_USAGE}` };
     let account;
     try {
       account = await findAccount(context.twenty, flags["account"]);
@@ -88,7 +88,7 @@ export const hostCommand: Command = {
       return { code: 0, stdout: `Sent ${event} to ${account.accountName}'s host.` };
     }
 
-    if (sub !== "start") return { code: 1, stderr: `log facebook host: pick start, send or status\n${HOST_USAGE}` };
+    if (sub !== "start") return { code: 1, error: "inputInvalid", stderr: `log facebook host: pick start, send or status\n${HOST_USAGE}` };
     const gap = numberOf(parsed, "gapSeconds") ?? 10;
     const watch = numberOf(parsed, "watchMinutes") ?? 12;
 

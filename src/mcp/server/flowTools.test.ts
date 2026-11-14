@@ -1,6 +1,8 @@
 import { describe, expect, test } from "bun:test";
 import { loadFlow } from "../../browser/flow/index.ts";
-import { flowArgv, flowOfTool, runToolCall, toolsFromFlows } from "./index.ts";
+import { COMMANDS } from "../../cli/runner/index.ts";
+import { catalog, entryById, resolveCall } from "../catalog/index.ts";
+import { flowArgv, flowOfTool, flowRunInput, runToolCall, toolsFromFlows } from "./index.ts";
 
 const flow = loadFlow("profileSetup")!;
 
@@ -37,5 +39,23 @@ describe("flows as MCP tools (rule 31)", () => {
     const text = (dry.content as { text: string }[]).map((c) => c.text).join("\n");
     expect(text).toContain("dry run: nothing opens");
     expect(text).toContain('upload button "Upload photo"');
+  });
+});
+
+describe("flow tools in the catalog (slice 12)", () => {
+  test("each saved flow is an entry under its platform, and logCall resolves it to the flow tool", () => {
+    const entries = catalog(COMMANDS, [flow]);
+    const entry = entryById(entries, "facebook.flow.profileSetup");
+    expect(entry).toMatchObject({ tool: "facebookFlowProfileSetup", liveTool: "facebookFlowProfileSetupLive", platform: "facebook" });
+    expect(entry!.inputs.map((i) => i.name)).toEqual(["account", "profilePhoto", "coverPhoto", "firstName", "lastName", "bypass", "now", "proxyMs"]);
+    const input = { account: "a", profilePhoto: "p.jpg", coverPhoto: "c.jpg", firstName: "Fake", lastName: "Bird" };
+    expect(resolveCall(entries, { id: "facebook.flow.profileSetup", inputs: input, live: true, confirmLive: true })).toMatchObject({ ok: true, tool: "facebookFlowProfileSetupLive" });
+    expect(entryById(catalog(COMMANDS), "facebook.flow.profileSetup")).toBeNull();
+  });
+
+  test("a flow tool runs through flowRun with named fields, never args", () => {
+    const input = { account: "a", profilePhoto: "p.jpg", coverPhoto: "c.jpg", firstName: "Fake", lastName: "Bird", bypass: true };
+    expect(flowRunInput(flow, input, true)).toEqual({ ok: true, input: { name: "profileSetup", account: "a", set: { profilePhoto: "p.jpg", coverPhoto: "c.jpg", firstName: "Fake", lastName: "Bird" }, bypass: true } });
+    expect(flowRunInput(flow, { account: "a" })).toMatchObject({ ok: false });
   });
 });

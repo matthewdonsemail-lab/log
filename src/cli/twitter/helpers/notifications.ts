@@ -71,7 +71,7 @@ export const notificationsCommand: Command = {
     const parsed = parseArgs(argv, parserSpecOf(NOTIFICATIONS_INPUT));
     if (!parsed.ok) return { code: 1, stderr: `log ${label}: ${parsed.error}\n${NOTIFICATIONS_USAGE}` };
     const ref = parsed.flags["account"];
-    if (typeof ref !== "string") return { code: 1, stderr: `log ${label}: --account is needed\n${NOTIFICATIONS_USAGE}` };
+    if (typeof ref !== "string") return { code: 1, error: "inputInvalid", stderr: `log ${label}: --account is needed\n${NOTIFICATIONS_USAGE}` };
     const typeRaw = parsed.flags["type"];
     const type: NotificationType = typeof typeRaw === "string" ? (typeRaw as NotificationType) : "all";
     if (!isNotificationType(type)) return refuse(label, "notificationQueryInvalid", `--type ${String(typeRaw)}`);

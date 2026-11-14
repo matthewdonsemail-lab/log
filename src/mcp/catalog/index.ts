@@ -4,7 +4,8 @@ import { guideLine } from "../server/helpers/guides.ts";
 import { annotationsOf } from "../server/helpers/toolAnnotations.ts";
 import { TOOL_RESULT_SCHEMA } from "../server/types.ts";
 import type { LogTool, LogToolInput } from "../server/types.ts";
-import { catalogOf, didYouMean, entryById, helpLines, renderGet, renderSearch, renderUnknownId, searchCatalog } from "./helpers/index.ts";
+import type { FlowDefinition } from "../../browser/flow/index.ts";
+import { catalogOf, didYouMean, flowEntries, entryById, helpLines, renderGet, renderSearch, renderUnknownId, searchCatalog } from "./helpers/index.ts";
 import { CALL_TOOL, CATALOG_GUIDE, GET_TOOL, SEARCH_LIMIT, SEARCH_LIMIT_MAX, SEARCH_TOOL } from "./types.ts";
 import type { CallRefusal, CallTarget, CatalogEntry } from "./types.ts";
 
@@ -13,12 +14,10 @@ export * from "./types.ts";
 
 const cache = new WeakMap<readonly Command[], CatalogEntry[]>();
 
-export function catalog(commands: readonly Command[]): CatalogEntry[] {
-  const held = cache.get(commands);
-  if (held) return held;
-  const built = catalogOf(commands);
-  cache.set(commands, built);
-  return built;
+export function catalog(commands: readonly Command[], flows: readonly FlowDefinition[] = []): CatalogEntry[] {
+  const held = cache.get(commands) ?? catalogOf(commands);
+  cache.set(commands, held);
+  return flows.length ? [...held, ...flowEntries(commands, flows)] : held;
 }
 
 export function isCatalogTool(name: string): boolean {
@@ -127,7 +126,7 @@ export function resolveCall(entries: readonly CatalogEntry[], input: LogToolInpu
   const unknown = Object.keys(given).filter((name) => !accepted.includes(name));
   if (unknown.length) {
     const liveOnly = unknown.filter((name) => entry.liveInputs.some((i) => i.name === name));
-    const why = liveOnly.length && !live ? `${liveOnly.join(", ")} ${liveOnly.length === 1 ? "is" : "are"} only for the live run (live: true with confirmLive: true, only when matt asked)` : `${entry.id} takes ${accepted.join(", ") || "no inputs"}`;
+    const why = liveOnly.length && !live ? `${liveOnly.join(", ")} ${liveOnly.length === 1 ? "is" : "are"} only for the live run (live: true with confirmLive: true, only when the owner asked)` : `${entry.id} takes ${accepted.join(", ") || "no inputs"}`;
     return { ok: false, message: `${CALL_TOOL}: unknownInput ${unknown.join(", ")}: ${why}. Nothing was run.\n${helpLines([`${GET_TOOL} {"id":"${entry.id}"}`]).join("\n")}` };
   }
   const passed: Record<string, unknown> = { ...given };

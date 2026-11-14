@@ -1,5 +1,5 @@
 import { listClients, localOwnerUserId, oauthStorePath, revokeClients } from "../../mcp/oauth/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";
+import { JSON_FLAG, parseArgs, parserSpecOf, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
 
 export const MCP_USAGE = [
@@ -24,9 +24,9 @@ export const mcpCommand: Command = {
   args: "clients [--json] | revoke <clientId|all>",
   run(_context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(MCP_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log mcp: ${parsed.error}\n${MCP_USAGE}` };
+    if (!parsed.ok) return refuseInput("mcp", parsed.error, MCP_USAGE);
     const [sub, which, ...rest] = parsed.positionals;
-    if (rest.length) return { code: 1, stderr: `log mcp: unexpected argument "${rest[0]}"\n${MCP_USAGE}` };
+    if (rest.length) return { code: 1, error: "inputInvalid", stderr: `log mcp: unexpected argument "${rest[0]}"\n${MCP_USAGE}` };
     if (sub === "clients") {
       const clients = listClients();
       const owner = process.env.LOG_MCP_OWNER_USER_ID || localOwnerUserId() ? "set" : "none: run log login on this server (or set LOG_MCP_OWNER_USER_ID)";
@@ -40,6 +40,6 @@ export const mcpCommand: Command = {
       if (!revoked.length) return { code: 1, stderr: `log mcp revoke: no client ${which}` };
       return { code: 0, stdout: `Revoked ${revoked.length} client(s): ${revoked.join(", ")}. Their tokens stopped working; each must sign in through Twenty again.` };
     }
-    return { code: 1, stderr: `log mcp: pick clients or revoke\n${MCP_USAGE}` };
+    return { code: 1, error: "inputInvalid", stderr: `log mcp: pick clients or revoke\n${MCP_USAGE}` };
   },
 };

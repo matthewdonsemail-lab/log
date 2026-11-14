@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 48 domains, 535 requirements. Each one's anchors are proved against its code by the syntax tree on every commit, push and pull request (`bun run check:specs`). SubQ reads a requirement against its code only when asked (`bun run check:specs --subq`, rule 170). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 48 domains, 537 requirements. Each one's anchors are proved against its code by the syntax tree on every commit, push and pull request (`bun run check:specs`). SubQ reads a requirement against its code only when asked (`bun run check:specs --subq`, rule 170). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -30,6 +30,7 @@ Every log command has one shape: a command that acts on one platform starts with
 - **REQ-COMMAND-18** approvedBy is required on a live tool whose command needs it
 - **REQ-COMMAND-19** Every form tool is driven through its command's own run
 - **REQ-COMMAND-20** The reference lists typed flags from the input forms
+- **REQ-COMMAND-21** Every tool has named inputs
 
 ## [MCP server](./mcpServer.md)
 
@@ -57,6 +58,7 @@ The log MCP server is how every agent works with log-cli: it carries matt's rule
 - **REQ-MCP-19** browserView shows an account's live browser where the person is, and only their own gated input reaches it
 - **REQ-MCP-20** report draws a report from log's block catalog in every host, inline where the host can and as markdown where it can't
 - **REQ-MCP-22** Guides are scoped by capability and platform, fit every host, and say "the owner"
+- **REQ-MCP-23** Every result carries its code, platform and capability
 
 ## [The platform-neutral scorecard](./agnosticScorecard.md)
 

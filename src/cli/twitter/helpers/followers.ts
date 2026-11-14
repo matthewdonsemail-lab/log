@@ -1,7 +1,7 @@
 import { rememberProfiles } from "../../../inbox/store/index.ts";
 import { twitterFollowerProfile } from "../../../storage/platform/index.ts";
 import type { TwitterFollower, TwitterSessionAnswer } from "../../../twitter/account/session/index.ts";
-import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuse, refuseError } from "../../runner/helpers/index.ts";
+import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuse, refuseError, refuseInput } from "../../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../../runner/types.ts";
 import { governorLine, openTwitterAccount } from "./account.ts";
 
@@ -51,9 +51,9 @@ export const followersCommand: Command = {
   args: "--account <a> [--limit <n>] [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(FOLLOWERS_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log twitter followers: ${parsed.error}\n${FOLLOWERS_USAGE}` };
+    if (!parsed.ok) return refuseInput("twitter followers", parsed.error, FOLLOWERS_USAGE);
     const ref = parsed.flags["account"];
-    if (typeof ref !== "string") return { code: 1, stderr: `log twitter followers: --account is needed\n${FOLLOWERS_USAGE}` };
+    if (typeof ref !== "string") return { code: 1, error: "inputInvalid", stderr: `log twitter followers: --account is needed\n${FOLLOWERS_USAGE}` };
     const limit = numberOf(parsed, "limit") ?? 200;
     try {
       const opened = await openTwitterAccount(context, "twitter followers", ref);

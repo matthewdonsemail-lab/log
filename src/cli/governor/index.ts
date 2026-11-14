@@ -3,7 +3,7 @@ import type { GovernorCount, GovernorResetResult } from "../../directApi/governo
 import { writesPerDayOf } from "../../directApi/engine/index.ts";
 import { ledgerRows } from "../../storage/ledger/index.ts";
 import { PLATFORMS } from "../runner/helpers/platforms.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";
+import { JSON_FLAG, parseArgs, parserSpecOf, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandInput, FlagSpec } from "../runner/types.ts";
 
 export const GOVERNOR_USAGE = [
@@ -51,9 +51,9 @@ export const governorCommand: Command = {
   args: "show|reset [--platform <p>] [--account <a|all>] [--by <who>] [--reason <text>]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(GOVERNOR_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log governor: ${parsed.error}\n${GOVERNOR_USAGE}` };
+    if (!parsed.ok) return refuseInput("governor", parsed.error, GOVERNOR_USAGE);
     const [sub = "show", ...rest] = parsed.positionals;
-    if (rest.length || !["show", "reset"].includes(sub)) return { code: 1, stderr: `log governor: pick show or reset\n${GOVERNOR_USAGE}` };
+    if (rest.length || !["show", "reset"].includes(sub)) return { code: 1, error: "inputInvalid", stderr: `log governor: pick show or reset\n${GOVERNOR_USAGE}` };
     const json = parsed.flags["json"] === true;
     const str = (name: string) => (typeof parsed.flags[name] === "string" ? String(parsed.flags[name]).trim() : "");
     const platform = str("platform");
@@ -64,7 +64,7 @@ export const governorCommand: Command = {
     }
     const account = str("account");
     const by = str("by");
-    if (!platform || !account || !by) return { code: 1, stderr: `log governor reset: --platform, --account and --by are needed\n${GOVERNOR_USAGE}` };
+    if (!platform || !account || !by) return { code: 1, error: "inputInvalid", stderr: `log governor reset: --platform, --account and --by are needed\n${GOVERNOR_USAGE}` };
     const accounts = account === "all" ? governorAccounts(platform) : [account];
     const missing = accounts.filter((a) => !countOf(platform, a));
     if (!accounts.length || missing.length) return { code: 1, stderr: `log governor reset: ${platform} has no governor count for ${missing.length ? missing.join(", ") : "any account"}\n${GOVERNOR_USAGE}` };

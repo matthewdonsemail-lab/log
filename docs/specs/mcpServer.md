@@ -201,3 +201,11 @@ Guides are rendered once, deterministically, with shell-only and no-shell blocks
 `check:platformNeutral` (`scripts/checks/checkPlatformNeutral.ts`, `platformNeutralProblems` in `src/surface/scorecard/helpers/neutral.ts`) fails when any of these scorecard numbers is above zero: shared commands or tools under a platform-named guide, shared commands whose usage, summary or tool note names one platform (a `Platforms:` line listing the platforms in use doesn't count), flow tools with no platform, guides over the limit, dead rule citations in tool descriptions, guides, use cases, skills or hook text, and the owner's name in served text. It runs in pre-commit, pre-push and `bun run check`.
 
 Checked by: code and SubQ
+
+## One result envelope
+
+### REQ-MCP-23: Every result carries its code, platform and capability
+
+`ToolResult` (`src/mcp/server/types.ts`) has `code`, `platform` and `capability`, required in `TOOL_RESULT_SCHEMA`. `code` is the error catalog code of a refusal or failure, null when the call worked or is still running as a job. `refuse` and `refuseInput` (`src/cli/runner/helpers/refuse.ts`) set `CommandResult.error`; `runOne` reports it through `context.refused`, a non-zero result with no code as `commandFailed` (`resultCodeOf`), and `runTimed` puts the first one in the result (`crashed` when the command threw). Guard refusals carry their own (`inputInvalid`, `liveNotConfirmed`, `bypassNotConfirmed`, `terminalOnly`, `toolUnknown`, `playMissing`, `playNotCovering`, `accountBusy`). `platform` is the command's platform, the platform word of a `byArgument` command, or the flow's; `capability` is the command and its form words (`session.check`, `send`, `flow.run`). The hosted relay (`toolRunner`, `src/cli/runtime/index.ts`) returns the result's `code` as its error code, so a refused command no longer reaches a hosted caller as `toolFailed`. `log sessions check` exits 0 when the check ran, whatever it found. Shared codes (`limitInvalid`, `secondsInvalid`, `mediaInvalid`, `crashed`) and every `tool`-layer code name no platform, and catalog text says "the owner". `uncodedRefusals` in the scorecard counts the command refusals under `src/cli/` that still return stderr with no code; it may only go down. Tests: `src/mcp/server/resultCode.test.ts`.
+
+Checked by: code and SubQ

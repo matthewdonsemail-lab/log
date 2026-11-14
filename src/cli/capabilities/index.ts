@@ -43,19 +43,19 @@ export function capabilityCommandOf(noun: string, definitions: readonly Capabili
     args: definitions.map((d) => usageLine(d).slice(`log ${noun} `.length)).join(" | "),
     async run(context, argv) {
       const parsed = parseArgs(argv, parserSpecOf(input));
-      if (!parsed.ok) return { code: 1, stderr: `log ${noun}: ${parsed.error}\n${usage}` };
+      if (!parsed.ok) return { code: 1, error: "inputInvalid", stderr: `log ${noun}: ${parsed.error}\n${usage}` };
       const [verb, ...rest] = parsed.positionals;
       const definition = definitions.find((d) => d.verb === verb);
-      if (!definition || rest.length) return { code: 1, stderr: `log ${noun}: pick ${definitions.map((d) => d.verb).join(" or ")}\n${usage}` };
+      if (!definition || rest.length) return { code: 1, error: "inputInvalid", stderr: `log ${noun}: pick ${definitions.map((d) => d.verb).join(" or ")}\n${usage}` };
       const label = `${noun} ${verb}`;
       const text = (name: string): string | undefined => (typeof parsed.flags[name] === "string" ? String(parsed.flags[name]).trim() || undefined : undefined);
       const given = Object.fromEntries(definition.inputs.map((spec) => [spec.name, text(spec.name)]));
-      for (const spec of definition.inputs) if (spec.required && !given[spec.name]) return { code: 1, stderr: `log ${label}: --${spec.name} is needed\n${usage}` };
-      for (const flag of Object.keys(parsed.flags)) if (!["json", "platform", ...definition.inputs.map((s) => s.name)].includes(flag)) return { code: 1, stderr: `log ${label}: --${flag} isn't one of ${label}'s inputs\n${usage}` };
+      for (const spec of definition.inputs) if (spec.required && !given[spec.name]) return { code: 1, error: "inputInvalid", stderr: `log ${label}: --${spec.name} is needed\n${usage}` };
+      for (const flag of Object.keys(parsed.flags)) if (!["json", "platform", ...definition.inputs.map((s) => s.name)].includes(flag)) return { code: 1, error: "inputInvalid", stderr: `log ${label}: --${flag} isn't one of ${label}'s inputs\n${usage}` };
       const limit = given["limit"];
-      if (limit !== undefined && !/^[1-9]\d*$/.test(limit)) return { code: 1, stderr: `log ${label}: --limit must be a whole number above 0\n${usage}` };
+      if (limit !== undefined && !/^[1-9]\d*$/.test(limit)) return { code: 1, error: "inputInvalid", stderr: `log ${label}: --limit must be a whole number above 0\n${usage}` };
       const platform = text("platform");
-      if (platform !== undefined && !isPlatform(platform)) return { code: 1, stderr: `log ${label}: --platform must be one of ${PLATFORMS.join(", ")}\n${usage}` };
+      if (platform !== undefined && !isPlatform(platform)) return { code: 1, error: "inputInvalid", stderr: `log ${label}: --platform must be one of ${PLATFORMS.join(", ")}\n${usage}` };
       const chosen = choosePlatform(capabilityDeps.accounts(), String(given["account"]), platform);
       if (!chosen.ok) return refuse(label, chosen.code, chosen.detail);
       const mapped = argvFor(definition, chosen.platform, { ...given, account: chosen.account });

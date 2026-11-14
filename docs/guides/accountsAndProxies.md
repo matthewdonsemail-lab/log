@@ -20,7 +20,10 @@ Each tool's own description carries its full usage, notes, live line and rules; 
 
 | Tool | What it does | Usage |
 |---|---|---|
-| `proxy` | Check an account's proxy, give it one from a provider | `log proxy <check\|assign\|balance\|static> [--account <name>] [--vendor twoCaptcha\|byteful] [...]` |
+| `proxyCheck` | Check an account's proxy | `log proxy check   --account <accountName> [--json]` |
+| `proxyAssign` | Give an account | `log proxy assign  --account <accountName> \| --missing  [--vendor twoCaptcha\|byteful] [--city <city> [--region <state>] \| --anyCity] [--minutes <1-120>] [--socks5]` |
+| `proxyBalance` | Each proxy provider's traffic and balance | `log proxy balance [--json]` |
+| `proxyStatic` | The provider's static ISP IPs on the account, and where each is | `log proxy static  [--json]   (Byteful's static ISP IPs on the account, where each is)` |
 
 ## The rules these tools fall under
 

@@ -4,9 +4,10 @@ import { checkSessions, runSessionCheck, sessionsText } from "../../platformKit/
 import type { SessionCheckAccount, SessionToolCaller } from "../../platformKit/sessionCheck/index.ts";
 import { runSignIn, signInRouteFor, signInText } from "../../platformKit/signIn/index.ts";
 import type { SignInActors, SignInRoute, SignInStore } from "../../platformKit/signIn/index.ts";
+import { isErrorCode } from "../../errors/catalog/index.ts";
 import { SIGN_IN_ROUTE_NAMES } from "../launch/helpers/start.ts";
 import { PLATFORMS } from "../runner/helpers/platforms.ts";
-import { JSON_FLAG, numberOf, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";
+import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandContext, CommandInput } from "../runner/types.ts";
 import { cookieSaveBy, liveWiring, signInActorsOf } from "./helpers/index.ts";
 
@@ -74,10 +75,9 @@ async function check(context: CommandContext, flags: Record<string, unknown>, st
     });
   } catch (error) {
     const { code } = errorOf(error);
-    return { code: 1, stderr: `log sessions check: ${code}${code === "accountNotFound" ? `: no account ${str("account")}${str("platform") ? ` on ${str("platform")}` : ""}` : ""}` };
+    return { code: 1, error: isErrorCode(code) ? code : "commandFailed", stderr: `log sessions check: ${code}${code === "accountNotFound" ? `: no account ${str("account")}${str("platform") ? ` on ${str("platform")}` : ""}` : ""}` };
   }
-  const needs = reports.some((report) => report.verdict === "signInNeeded" || report.verdict === "stopped");
-  return { code: needs ? 1 : 0, stdout: flags["json"] === true ? JSON.stringify({ accounts: reports }, null, 2) : sessionsText(reports) };
+  return { code: 0, stdout: flags["json"] === true ? JSON.stringify({ accounts: reports }, null, 2) : sessionsText(reports) };
 }
 
 function pickAccount(accounts: SessionCheckAccount[], name: string, platform?: string): SessionCheckAccount {
@@ -100,11 +100,13 @@ async function signIn(context: CommandContext, flags: Record<string, unknown>, s
       now: context.now,
       onStage: (stage) => context.err(`${account.platform} ${account.name}: ${stage}`),
     });
-    const code = result.state === "signedIn" || result.state === "waitingForOwner" ? 0 : 1;
-    return { code, stdout: flags["json"] === true ? JSON.stringify({ ok: code === 0, signIn: result, next: result.next }, null, 2) : signInText(result) };
+    const failed = result.state === "failed";
+    const error = failed ? (isErrorCode(result.code) ? result.code : "commandFailed") : undefined;
+    const stdout = flags["json"] === true ? JSON.stringify({ ok: !failed, signIn: result, next: result.next }, null, 2) : signInText(result);
+    return failed ? { code: 1, error, stdout, stderr: `log sessions signIn: ${result.code ?? "signInFailed"}${result.detail ? `: ${result.detail}` : ""}` } : { code: 0, stdout };
   } catch (error) {
     const { code, detail } = errorOf(error);
-    return { code: 1, stderr: `log sessions signIn: ${code}${detail ? `: ${detail}` : ""}` };
+    return { code: 1, error: isErrorCode(code) ? code : "commandFailed", stderr: `log sessions signIn: ${code}${detail ? `: ${detail}` : ""}` };
   }
 }
 
@@ -118,9 +120,9 @@ export const sessionsCommand: Command = {
   args: "check [--platform <p>] [--account <a>] [--json] | signIn --account <a> [--platform <p>] [--route browser|cookies] [--done] [--wait <s>]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(SESSIONS_INPUT));
-    if (!parsed.ok) return { code: 1, stderr: `log sessions: ${parsed.error}\n${SESSIONS_USAGE}` };
+    if (!parsed.ok) return refuseInput("sessions", parsed.error, SESSIONS_USAGE);
     const [sub = "check", ...rest] = parsed.positionals;
-    if ((sub !== "check" && sub !== "signIn") || rest.length) return { code: 1, stderr: `log sessions: pick check or signIn\n${SESSIONS_USAGE}` };
+    if ((sub !== "check" && sub !== "signIn") || rest.length) return { code: 1, error: "inputInvalid", stderr: `log sessions: pick check or signIn\n${SESSIONS_USAGE}` };
     const str = (name: string) => (typeof parsed.flags[name] === "string" ? String(parsed.flags[name]).trim() : undefined);
     if (sub === "signIn") return signIn(context, parsed.flags, str, numberOf(parsed, "wait") ?? 0);
     return check(context, parsed.flags, str);

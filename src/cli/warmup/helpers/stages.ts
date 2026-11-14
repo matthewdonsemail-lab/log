@@ -40,7 +40,7 @@ export async function runStages(context: CommandContext, sub: string | undefined
 
   if (sub === "log") return showStageLog(context, flags);
 
-  if (sub !== "record" && sub !== "run") return { code: 1, stderr: `log facebook warmup stages: pick plan, record, run or log\n${STAGES_USAGE}` };
+  if (sub !== "record" && sub !== "run") return { code: 1, error: "inputInvalid", stderr: `log facebook warmup stages: pick plan, record, run or log\n${STAGES_USAGE}` };
   const picked = pickActivities(typeof flags["only"] === "string" ? flags["only"] : undefined);
   if (!picked.ok) return { code: 1, stderr: `log facebook warmup: ${picked.error}` };
   if (sub === "run") {
@@ -50,7 +50,7 @@ export async function runStages(context: CommandContext, sub: string | undefined
     }
   }
   const gapSeconds = flags["gapSeconds"] === undefined ? 10 : Number(flags["gapSeconds"]);
-  if (!Number.isFinite(gapSeconds) || gapSeconds < 0 || gapSeconds > 36_000) return { code: 1, stderr: "log facebook warmup: --gapSeconds must be 0 to 36000" };
+  if (!Number.isFinite(gapSeconds) || gapSeconds < 0 || gapSeconds > 36_000) return { code: 1, error: "inputInvalid", stderr: "log facebook warmup: --gapSeconds must be 0 to 36000" };
 
   const opened = await openAccount(context, "warmup", STAGES_USAGE, flags["account"], "run", Boolean(flags["bypass"]), true, Boolean(flags["now"]));
   if (!("run" in opened)) return opened;

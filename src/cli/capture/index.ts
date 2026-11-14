@@ -6,8 +6,8 @@ import { captureFromHar, defaultReaRunner, settleRunCapture } from "../../rea/ca
 import { buildPlatformClientMap } from "../../rea/platformClient/index.ts";
 import { PLATFORM_SITES, PLATFORMS } from "../runner/helpers/platforms.ts";
 import type { ReaRunner } from "../../rea/capture/index.ts";
-import { parseArgs } from "../runner/helpers/index.ts";
-import type { Command, CommandResult } from "../runner/types.ts";
+import { JSON_FLAG, parseArgs, parserSpecOf, refuseInput } from "../runner/helpers/index.ts";
+import type { Command, CommandInput, CommandResult } from "../runner/types.ts";
 
 export const CAPTURE_USAGE = [
   "Usage: log facebook capture --har <path> [--out <dir>] [--noRea] [--json]",
@@ -16,13 +16,35 @@ export const CAPTURE_USAGE = [
   "The HAR is the one Playwright writes from the account browser that ran. It is copied raw, and rea reads it. No browser opens.",
 ].join("\n");
 
+export const CAPTURE_INPUT: CommandInput = {
+  forms: [
+    {
+      words: [],
+      summary: "Read a run's raw HAR and its scripts with offline rea, settle a run's capture, or build every platform's client docs; no browser opens",
+      positionals: [],
+      flags: [
+        { name: "har", kind: "string", description: "The HAR a run wrote, to copy raw and read" },
+        { name: "out", kind: "string", description: "Where the read HAR goes (default beside the HAR)" },
+        { name: "settle", kind: "string", description: "A run's capture folder: rea reads it, split per step" },
+        { name: "docs", kind: "boolean", description: "Every run's requests into docs/platforms/<platform>/, one doc per request" },
+        { name: "noRea", kind: "boolean", description: "Skip the rea reading" },
+        JSON_FLAG,
+      ],
+      groups: [
+        { rule: "atLeastOne", names: ["har", "settle", "docs"] },
+        { rule: "atMostOne", names: ["har", "settle", "docs"] },
+      ],
+    },
+  ],
+};
+
 export const FACEBOOK_CLIENT_DOCS = fileURLToPath(new URL("../../../docs/platforms/facebook", import.meta.url));
 
 export const platformClientDocs = (platform: string): string => fileURLToPath(new URL(`../../../docs/platforms/${platform}`, import.meta.url));
 
 export async function runCapture(argv: string[], runner?: ReaRunner, log: (line: string) => void = () => {}): Promise<CommandResult> {
-  const parsed = parseArgs(argv, { boolean: ["json", "noRea", "docs"], valued: ["har", "out", "settle"] });
-  if (!parsed.ok) return { code: 1, stderr: `log facebook capture: ${parsed.error}\n${CAPTURE_USAGE}` };
+  const parsed = parseArgs(argv, parserSpecOf(CAPTURE_INPUT));
+  if (!parsed.ok) return refuseInput("facebook capture", parsed.error, CAPTURE_USAGE);
   if (parsed.flags.docs) {
     const root = capturesRoot();
     const note = await buildClientMap({
@@ -52,9 +74,9 @@ export async function runCapture(argv: string[], runner?: ReaRunner, log: (line:
     writeFileSync(join(dir, "settle.json"), `${JSON.stringify({ at: new Date().toISOString(), note }, null, 2)}\n`);
     return { code: 0, stdout: note ?? "nothing to read" };
   }
-  if (parsed.positionals.length > 0) return { code: 1, stderr: `log facebook capture: unexpected argument "${parsed.positionals[0]}"\n${CAPTURE_USAGE}` };
+  if (parsed.positionals.length > 0) return { code: 1, error: "inputInvalid", stderr: `log facebook capture: unexpected argument "${parsed.positionals[0]}"\n${CAPTURE_USAGE}` };
   const har = parsed.flags.har;
-  if (typeof har !== "string") return { code: 1, stderr: `log facebook capture: --har is required\n${CAPTURE_USAGE}` };
+  if (typeof har !== "string") return { code: 1, error: "inputInvalid", stderr: `log facebook capture: --har is required\n${CAPTURE_USAGE}` };
   const harPath = resolve(har);
   const outDir = typeof parsed.flags.out === "string" ? resolve(parsed.flags.out) : join(harPath, "..", "firefox");
   try {
@@ -72,6 +94,7 @@ export const captureCommand: Command = {
   platform: "facebook",
   name: "capture",
   effect: "write",
+  input: CAPTURE_INPUT,
   summary: "Read a run's raw HAR (any browser driver) and its scripts with offline rea; --docs builds every platform's client docs, rea reading each request's code. No browser.",
   args: "--har <path> [--out <dir>] [--noRea] [--json] | --settle <dir> | --docs [--noRea]",
   run(context, argv) {

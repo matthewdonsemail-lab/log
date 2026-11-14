@@ -176,9 +176,9 @@ function sendCommand(shape: SendShape): Command {
     async run(context, argv) {
       const parsed = parseArgs(argv, parserSpecOf(input));
       if (!parsed.ok) return { code: 1, stderr: `log ${label}: ${parsed.error}\n${usage}` };
-      if (parsed.positionals.length) return { code: 1, stderr: `log ${label}: takes no words, only flags\n${usage}` };
+      if (parsed.positionals.length) return { code: 1, error: "inputInvalid", stderr: `log ${label}: takes no words, only flags\n${usage}` };
       const ref = parsed.flags["account"];
-      if (typeof ref !== "string") return { code: 1, stderr: `log ${label}: --account is needed\n${usage}` };
+      if (typeof ref !== "string") return { code: 1, error: "inputInvalid", stderr: `log ${label}: --account is needed\n${usage}` };
       const str = (name: string) => (typeof parsed.flags[name] === "string" ? (parsed.flags[name] as string) : undefined);
       const live = parsed.flags["live"] === true;
       let media: string[] | undefined;

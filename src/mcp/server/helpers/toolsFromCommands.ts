@@ -6,6 +6,7 @@ import { TERMINAL_ONLY, TOOL_RESULT_SCHEMA } from "../types.ts";
 import { cite, rulesLine } from "./agentRules.ts";
 import { guideLine, guideOfCommand } from "./guides.ts";
 import { annotationsOf, LIVE_SUFFIX, titleOf } from "./toolAnnotations.ts";
+import { ARGS_TOOLS_GIVEN_FORMS } from "./toolAliases.ts";
 
 export const LONG_RUNNING: ReadonlySet<string> = new Set(["inspect", "join", "read", "poll", "check", "connect", "publish", "profile", "scan", "status", "watch", "warmup", "host", "flow", "capture", "doctor", "campaign", "queue", "sessions"]);
 
@@ -60,6 +61,24 @@ export function commandTools(commands: readonly Command[]): CommandTool[] {
     });
 }
 
+export function identityOf(entry: Pick<CommandTool, "command" | "form">, argv: readonly string[]): { platform: string | null; capability: string } {
+  const { command } = entry;
+  const platform = isPlatform(command.platform) ? command.platform : command.platform === "byArgument" && isPlatform(argv[0]) ? argv[0] : null;
+  return { platform, capability: [command.name, ...(entry.form?.words ?? [])].join(".") };
+}
+
+export function legacyArgsTool(name: string, commands: readonly Command[]): CommandTool | null {
+  if (!ARGS_TOOLS_GIVEN_FORMS.has(name)) return null;
+  for (const command of commands) {
+    if (!command.input || command.name in TERMINAL_ONLY) continue;
+    const base = toolBaseName(command);
+    const live = name === `${base}${LIVE_SUFFIX}`;
+    if (name !== base && !live) continue;
+    return { tool: name, command, form: null, live, forced: [], effect: command.effect };
+  }
+  return null;
+}
+
 export interface ToolOptions {
   full?: boolean;
   shell?: boolean;
@@ -92,18 +111,18 @@ function formUsage(command: Command, form: InputForm): string[] {
 }
 
 export const NOTES: Readonly<Record<string, string[]>> = {
-  connect: [`Runs --noPrompt: saved cookies that work end it at once; otherwise it signs in by itself from the account's saved email, password and 2FA secret (the local accounts file, or Twenty for an account kept there) (${cite(21)}), and anything it can't handle waits for the owner in the visible window (up to --wait seconds, default 600). Progress streams to the live log.`],
+  facebookConnect: [`Runs --noPrompt: saved cookies that work end it at once; otherwise it signs in by itself from the account's saved email, password and 2FA secret (the local accounts file, or Twenty for an account kept there) (${cite(21)}), and anything it can't handle waits for the owner in the visible window (up to --wait seconds, default 600). Progress streams to the live log.`],
   inspectStart: ["Opens the account's browser as its own process (detach: true) and returns once the gate and self-check passed. It stays open until `inspectDo` with action stop (or 30 idle minutes)."],
   inspectDo: ["Sends one step to the open session and returns its snapshot (element refs), requests and rea reading. Steps that act on the platform (click, type, press, solve, signIn, code, pin…) are `inspectDoLive`."],
   inspectDoLive: ["Sends one step that acts on the platform to the open session and returns its snapshot (element refs), requests and rea reading."],
-  join: [
+  facebookJoinGroup: [
     "Needs the account's browser open first: inspectStart { account, detach: true }. Then, in order:",
     "1. join group --account <a> --group <url|id> : reads the group page (Facebook's viewer_join_state from the page itself), clicks nothing. Run again later to check pending → accepted.",
-    "2. facebookJoinLive: join group … --live (confirmLive) : presses Join; the questions, rules and join path go to the group's record (agencyGroups.joinSubmission.options, in Twenty).",
+    "2. facebookJoinGroupLive: join group … --live (confirmLive) : presses Join; the questions, rules and join path go to the group's record (agencyGroups.joinSubmission.options, in Twenty).",
     "3. join group … --answer --set 1=<option label or text> --set 2=… --agree : the answers (the Clack stepper needs a terminal; --set is the same over MCP). Saved to the group's record in Twenty, not sent.",
-    "4. join group … --fill (dry run), then facebookJoinLive: --fill --live --submit (confirmLive) : the answers into the group's dialog, Submit confirmed by Facebook (QUESTIONNAIRE_COMPLETED). --show reads the record at any time.",
+    "4. join group … --fill (dry run), then facebookJoinGroupLive: --fill --live --submit (confirmLive) : the answers into the group's dialog, Submit confirmed by Facebook (QUESTIONNAIRE_COMPLETED). --show reads the record at any time.",
   ],
-  profile: [`Without --live it only reads the profile and lists its controls in the run's profileFound.txt. facebookProfileLive with --live uploads socialAccounts.profilePhoto and coverPhoto in one run (${cite(28)}): only when the owner asked.`],
+  facebookProfileSetup: [`Without --live it only reads the profile and lists its controls in the run's profileFound.txt. facebookProfileSetupLive with --live uploads socialAccounts.profilePhoto and coverPhoto in one run (${cite(28)}): only when the owner asked.`],
 };
 
 function guideLines(command: Command): string[] {

@@ -123,7 +123,7 @@ export function toolRunner(callTool: ToolCaller): RunTool {
     const answer = withCallFooter(tool, args, (await callTool(tool, args, scope)) as Parameters<typeof withCallFooter>[2], scope);
     const content = (answer.structuredContent ?? {}) as Record<string, unknown>;
     const { browsers: _browsers, ...result } = content;
-    return answer.isError ? { state: "failed", result, error: { code: typeof content.error === "string" && /^[a-zA-Z]{1,60}$/.test(content.error) ? content.error : "toolFailed", message: String(content.stderr ?? content.message ?? "the tool failed").slice(0, 2000) } } : { state: "succeeded", result };
+    return answer.isError ? { state: "failed", result, error: { code: [content.code, content.error].find((c): c is string => typeof c === "string" && /^[a-zA-Z]{1,60}$/.test(c)) ?? "toolFailed", message: String(content.stderr ?? content.message ?? "the tool failed").slice(0, 2000) } } : { state: "succeeded", result };
   };
 }
 
