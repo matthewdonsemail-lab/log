@@ -66,6 +66,35 @@ describe("catching up after a gap (rule 135)", () => {
     expect(handleOfUserId("twitter", "other", "1987816842371743744")).toBeNull();
   });
 
+  test("the catch-up machine says how each run ended", async () => {
+    expect(await catchUpRunner("slack", "none", async () => ({ appended: 1 })).run()).toMatchObject({ end: "nothingBehind" });
+    openGap("slack", "acct", "2026-11-04T00:00:00Z", "socketDropped");
+    expect(await catchUpRunner("slack", "acct", undefined).run()).toMatchObject({ end: "noCatchUp" });
+    expect(await catchUpRunner("slack", "acct", async () => { throw new Error("engine crashed"); }).run()).toMatchObject({ end: "retryLater", detail: "engine crashed" });
+    expect(behindOf("slack", "acct")).toMatchObject({ status: "open" });
+    expect(await catchUpRunner("slack", "acct", async () => ({ appended: 0, refused: "ImportError: DLL load failed while importing win32clipboard" })).run()).toMatchObject({ end: "retryLater" });
+    expect(behindOf("slack", "acct")).toMatchObject({ status: "open" });
+    expect(await catchUpRunner("slack", "acct", async () => ({ appended: 2 })).run()).toMatchObject({ end: "caughtUp", appended: 2 });
+    expect(behindOf("slack", "acct")).toBeNull();
+  });
+
+  test("a gap held for our own error, from before this fix, is reopened by the next run and caught up", async () => {
+    const gap = openGap("instagram", "acct", "2026-11-14T10:12:30Z", "ownerRestarted");
+    markGap(gap.id, "refused", "reading the inbox: ImportError: cannot import name 'ArgsKwargs' from 'pydantic_core._pydantic_core' (unknown location)");
+    let calls = 0;
+    expect(await catchUpRunner("instagram", "acct", async () => (calls++, { appended: 4 })).run()).toMatchObject({ end: "caughtUp", appended: 4 });
+    expect(calls).toBe(1);
+    expect(behindOf("instagram", "acct")).toBeNull();
+  });
+
+  test("a gap the platform refused is held, and nothing is read", async () => {
+    const gap = openGap("twitter", "held", "2026-11-04T00:00:00Z", "socketDropped");
+    markGap(gap.id, "refused", "429: rate limited");
+    let calls = 0;
+    expect(await catchUpRunner("twitter", "held", async () => (calls++, { appended: 1 })).run()).toMatchObject({ end: "held" });
+    expect(calls).toBe(0);
+  });
+
   test("only one catch-up runs at a time", async () => {
     openGap("slack", "acct", "2026-11-04T00:00:00Z", "socketDropped");
     let calls = 0;
