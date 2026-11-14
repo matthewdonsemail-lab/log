@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 49 domains, 559 requirements. Each one's anchors are proved against its code by the syntax tree on every commit, push and pull request (`bun run check:specs`). SubQ reads a requirement against its code only when asked (`bun run check:specs --subq`, rule 170). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 50 domains, 565 requirements. Each one's anchors are proved against its code by the syntax tree on every commit, push and pull request (`bun run check:specs`). SubQ reads a requirement against its code only when asked (`bun run check:specs --subq`, rule 170). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -545,6 +545,17 @@ While an account's X Chat watch is open, its one session keeps X's own notificat
 - **REQ-XLIVE-05** The X live hook puts new events in front of the agent
 - **REQ-XLIVE-06** Each Claude session reads from its own cursor
 - **REQ-XLIVE-07** A refused read is said to matt
+
+## [X notifications](./xNotifications.md)
+
+Who liked, reposted, replied to, quoted or followed an X account, read through the account's one session and kept in `~/.logCli/twitter/<account>/notifications.json`, one row per person per thing they did. X's notifications name only some of the people behind an aggregated notification, so the read also unrolls a post's whole likers and reposters lists into the same rows. Rules 6, 94 and 105.
+
+- **REQ-XNOTIFICATIONS-01** The feed is read new first, then back through the history, and kept
+- **REQ-XNOTIFICATIONS-02** A post's likers and reposters are paged through the same session
+- **REQ-XNOTIFICATIONS-03** Unrolled people merge into the same rows, once each
+- **REQ-XNOTIFICATIONS-04** Each list's place is kept so a stopped read goes on
+- **REQ-XNOTIFICATIONS-05** One state machine drives the read and stops on a refusal
+- **REQ-XNOTIFICATIONS-06** The command says per post what came from where, and when it stopped early
 
 ## [Platform scaffold](./platformScaffold.md)
 

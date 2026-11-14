@@ -11,6 +11,12 @@ export const NOTIFICATION_TYPES = {
 
 export type NotificationType = keyof typeof NOTIFICATION_TYPES
 
+export type NotificationSource = 'notification' | 'engagements'
+
+export const ENGAGER_KINDS = ['like', 'repost'] as const satisfies readonly NotificationKind[]
+
+export type EngagerKind = (typeof ENGAGER_KINDS)[number]
+
 export interface TwitterNotification {
   key: string
   kind: NotificationKind
@@ -29,7 +35,20 @@ export interface TwitterNotification {
   text?: string
   notificationId?: string
   message?: string
+  source?: NotificationSource
 }
+
+export interface EngagerProgress {
+  cursor: string | null
+  done: boolean
+  pages: number
+  seen: number
+  added: number
+  ownAction?: boolean
+  syncedAt: string | null
+}
+
+export type PostEngagements = Partial<Record<EngagerKind, EngagerProgress>>
 
 export interface NotificationStore {
   version: number
@@ -38,6 +57,45 @@ export interface NotificationStore {
   historyDone: boolean
   syncedAt: string | null
   rows: Record<string, TwitterNotification>
+  engagements?: Record<string, PostEngagements>
+}
+
+export interface EngagerCounts {
+  fromNotifications: number
+  addedByUnroll: number
+  total: number
+}
+
+export type EngagerReadState = 'readToTheEnd' | 'stoppedBeforeTheEnd' | 'notUnrolled'
+
+export interface EngagerSummary extends EngagerCounts {
+  state: EngagerReadState
+  pages: number
+  syncedAt: string | null
+}
+
+export interface PostEngagerSummary {
+  postId: string
+  likes: EngagerSummary
+  reposts: EngagerSummary
+}
+
+export interface EngagerSync {
+  postId: string
+  kind: EngagerKind
+  pages: number
+  newRows: number
+  resumed: boolean
+  done: boolean
+  stoppedBy: 'end' | 'pageCap'
+  counts: EngagerCounts
+  syncedAt: string | null
+}
+
+export interface UnrollCandidate {
+  postId: string
+  kinds: EngagerKind[]
+  latestAt: string | null
 }
 
 export interface NotificationSync {

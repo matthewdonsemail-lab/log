@@ -2316,6 +2316,13 @@ export const ERROR_CATALOG = {
     raisedIn: ['inbox/senders'],
     action: "Read that platform's inbox first, or ask about a platform that has chats."
   },
+  engagersOperationUnknown: {
+    layer: 'twitter',
+    meaning: "X's live Favoriters or Retweeters operation (the query id and feature switches its own web app sends) isn't in xOperations.json, so a post's likers or reposters weren't asked for. X was not called.",
+    retryable: false,
+    raisedIn: ['python/twitterApi'],
+    action: "Run log twitter session webClient for the account so X's current operations are read, then run the notifications read again."
+  },
   identityProfileMissing: {
     layer: 'tool',
     meaning: 'log.db holds no stored profile for that person on that platform. No platform was asked.',
