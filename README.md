@@ -3,8 +3,8 @@
 </p>
 
 <p align="center">
-  <a href="https://x.com/xAccount/status/2120938715820474690"><img src="media/readme/hermesIntro.gif" alt="Introducing log by ListeningKit, in collaboration with Hermes Agent: Hermes asks who is waiting for a reply, log reads every inbox, and the answer lands on Discord in your own voice" width="100%" /></a>
-  <br><sub>Introducing log, in collaboration with Hermes Agent. <a href="https://x.com/xAccount/status/2120938715820474690">Watch the launch video with sound on X →</a></sub>
+  <a href="https://x.com/i/status/2120938715820474690"><img src="media/readme/hermesIntro.gif" alt="Introducing log by ListeningKit, in collaboration with Hermes Agent: Hermes asks who is waiting for a reply, log reads every inbox, and the answer lands on Discord in your own voice" width="100%" /></a>
+  <br><sub>Introducing log, in collaboration with Hermes Agent. <a href="https://x.com/i/status/2120938715820474690">Watch the launch video with sound on X →</a></sub>
 </p>
 
 <h3 align="center">One command for every social account you run.</h3>
@@ -152,7 +152,10 @@ Then ask in plain words: *"read my X DMs and tell me who's waiting on me"*. log'
 ## Highlights
 
 - **Start from a play.** Each [use case](docs/useCases/README.md) is a workflow written step by step: what to run, and what tells you each step worked. With `--skills all`, your agent picks the right one from what you say.
-- **Your voice, checked.** A draft is read against how you really write to that person, for AI phrasing and for hidden characters, before it can be sent.
+- **Your voice, checked.** A draft is read against how you really write to that person, grounded in your own past replies, and scored once against a bar set on your own messages. It's also checked for hidden characters, and for an agent copying the other person's style instead of yours ([#238](https://github.com/matthewdonsemail-lab/log/pull/238)).
+- **AI writing caught, trained on you.** A small detector learns the difference between your messages and drafts that frontier models wrote for your chats, with a separate bar for short, medium and long messages. It runs on your machine in about 6 ms; `log voice train` builds it ([#245](https://github.com/matthewdonsemail-lab/log/pull/245)).
+- **Who each person is, and where they are.** Every chat is labelled with who the person is (community, lead, client, partner, friend, bot) and where they are in your sales cycle. A small model labels them on your CPU, and asks a larger model only when it's unsure. The same person on different platforms is suggested as one, and you approve each link ([#242](https://github.com/matthewdonsemail-lab/log/pull/242), [#249](https://github.com/matthewdonsemail-lab/log/pull/249)).
+- **What actually gets replies.** `log inbox outcomes` compares the reply rate of messages log sent with yours, matched by person and stage, and shows which plays work ([#246](https://github.com/matthewdonsemail-lab/log/pull/246)).
 - **One session per account.** Each account keeps one connection open, the way the platform's own app does, never a new one per command.
 - **Live inbox.** New messages are pushed into your agent's context as they arrive, and two agents never answer the same chat.
 - **Kept human.** Every account has its own daily limits, pacing and local waking hours. A refusal from the platform stops the run, and nothing is retried.
@@ -428,15 +431,17 @@ A video with no sound, like motion graphics, says `no sound` and is told by what
 
 ### The models it uses
 
-Three models run on your own machine, with no key. Four are hosted, and each needs its key:
+Five models run on your own machine, with no key. Four are hosted, and each needs its key:
 
 | Model | Runs | What it does |
 |---|---|---|
 | all-MiniLM-L6-v2 (23 MB) | your machine | meaning search over every conversation, your voice index, matching what you typed to a play |
 | LFM2.5-VL-450M (352 MB) | your machine | describes every picture and video frame as text |
 | wolf-defender prompt injection small | your machine | the judge's model: flags prompt injection in what comes in |
-| SubQ `subq-snap-1.1` | hosted, `SUBQ_API_KEY` | the voice gate: does a draft sound like you |
-| Jina embeddings v5 and reranker v3.5 | hosted, `JINA_API_KEY` | the AI tells check, ranking a chat's history for the gate, and a meaning vector for each piece of media |
+| Your AI-writing detector | your machine, trained by `log voice train` | the voice gate's AI reading: your messages against drafts frontier models wrote for your chats, a bar per message length |
+| Your pipeline labeller | your machine, trained by `log inbox label train` | who each person is and where they are in your sales cycle, on MiniLM's vectors |
+| SubQ `subq-snap-1.1` | hosted, `SUBQ_API_KEY` | the voice gate: does a draft sound like you; and the teacher for the labeller, asked when the local one is unsure |
+| Jina embeddings v5 and reranker v3.5 | hosted, `JINA_API_KEY` | ranking a chat's history for the gate (capped at 4 s, with a local fallback), and a meaning vector for each piece of media |
 | AssemblyAI | hosted, `ASSEMBLYAI_API_KEY` | what was said in a voice note or a video |
 | Inworld or Fish Audio | hosted, `INWORLD_API_KEY` or `FISH_API_KEY` | a voice note in your cloned voice, only when you ask |
 
@@ -459,7 +464,8 @@ flowchart LR
 **Building the indexes** on a new machine, in this order:
 1. `log search index` reads every conversation once and builds the keyword and meaning indexes.
 2. `log voice index` builds your voice from what step 1 saved.
-3. `log voice aiIndex` builds the AI tells check.
+3. `log voice train` trains your AI-writing detector.
+4. `log inbox label teach --apply`, then `log inbox label train`, labels your chats and trains the local labeller.
 
 After that, new messages are added as they arrive, and pictures are described as they land.
 
@@ -530,17 +536,18 @@ What's built, what's next and what's planned is kept in one pinned issue: **[Roa
 | The record ([soron](docs/proposals/soron.md), [#197](https://github.com/matthewdonsemail-lab/log/issues/197)) | search by DM, group or channel | keeping edits and deletions, capturing the conversation around a personal mention (kept after a ban), judging each message the moment it arrives |
 | Turn awareness ([spec](https://github.com/matthewdonsemail-lab/log/blob/turnAware/docs/proposals/turnAware.md)) | typing on Discord and Slack | X Chat |
 | Tools | tool health | recording which tools the router offered, so unused tools can be told apart from unseen ones |
-| Your day | | a morning debrief: who is waiting, what you owe, what was held overnight |
-| Voice | cloned voice notes | voice-note replies in your voice, then calls, with your yes per call |
+| Your day | the hottest deals in your DMs, from the pipeline labels | a morning debrief: who is waiting, what you owe, what was held overnight |
+| Voice | cloned voice notes; the grounding pack and one calibrated score; an AI-writing detector trained on you | a higher catch rate on short messages, voice-note replies in your voice, then calls, with your yes per call |
+| Pipeline ([#236](https://github.com/matthewdonsemail-lab/log/issues/236)) | who and where per chat on the CPU, the larger model when unsure, one person across platforms (suggested), reply outcomes | your own labels to measure the labeller against, the next step suggested per stage |
 | Browser | human mouse: Fitts's-law timing, corrective moves, tremor ([#201](https://github.com/matthewdonsemail-lab/log/pull/201)) | sign-ins moving from AdsPower to Camoufox, browser-fingerprinted HTTP for X and Discord |
 | Every harness ([spec](https://github.com/matthewdonsemail-lab/log/blob/genuiEverywhere/docs/proposals/genuiEverywhere.md), [#196](https://github.com/matthewdonsemail-lab/log/pull/196)) | views in Cursor, Claude and ChatGPT where the host draws MCP Apps | a ChatGPT connector, a smaller inbox tool profile, a Claude Desktop extension, a render test on every PR |
-| Speed | | the prompt hook under 150 ms |
+| Speed | hooks off the slow paths, one push loop per session, Discord catch-up in 4 calls, watchers that stay up | the prompt hook under 150 ms |
 
-Built here means written, tested and in an open PR; each lands in a release once merged.
+Built means merged into `main`. It reaches npm in the next release (see [Releases](#releases)).
 
 ## Releases
 
-Newest first. Each release pins the local models it runs with (`log models`), and `log update` moves code, harness plugins and models to the release together ([docs/updates.md](docs/updates.md)).
+Newest first. Work merged into `main` collects in the open release PR, and merging that PR tags the version and publishes it to npm. Each release pins the local models it runs with (`log models`), and `log update` moves code, harness plugins and models to the release together ([docs/updates.md](docs/updates.md)).
 
 <!-- releases:start: written by `bun run docs:releases` from CHANGELOG.md and src/models/manifest, not edited by hand -->
 | Version | Date | What's in it | Models |

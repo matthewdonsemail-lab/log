@@ -147,13 +147,22 @@ async function run(tool: CommandTool, input: Record<string, unknown>): Promise<{
   const built = argvOfInput(tool.form!, input);
   if (!built.ok) return { built: false, code: -1, err: "", message: built.message };
   const err: string[] = [];
+  const started = performance.now();
   try {
-    const code = await runCli(commandLine(tool.command, built.argv), stubContext(err));
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const deadline = new Promise<number>((resolve) => (timer = setTimeout(() => resolve(-3), TOOL_DEADLINE_MS)));
+    const code = await Promise.race([runCli(commandLine(tool.command, built.argv), stubContext(err)), deadline]).finally(() => clearTimeout(timer));
+    const ms = Math.round(performance.now() - started);
+    if (code === -3 || ms > SLOW_TOOL_MS) slow.push(`${tool.tool} ${code === -3 ? `hung past ${TOOL_DEADLINE_MS} ms` : `${ms} ms`}`);
     return { built: true, code, err: err.join("\n") };
   } catch (error) {
     return { built: true, code: -2, err: [...err, `threw: ${String(error)}`].join("\n") };
   }
 }
+
+const TOOL_DEADLINE_MS = 8_000;
+const SLOW_TOOL_MS = 3_000;
+const slow: string[] = [];
 
 const formTools = commandTools(COMMANDS).filter((t) => t.form && !t.live);
 const driven = formTools.filter((t) => !(t.tool in SKIP));
@@ -247,6 +256,10 @@ describe("every form tool, driven through its command's own run", () => {
     }
     expect(disagree).toEqual([]);
   }, 60_000);
+
+  test("no tool hangs or runs slow when its engine is stubbed", () => {
+    expect(slow).toEqual([]);
+  });
 
   test("every live tool whose command refuses --live without approvedBy requires it in its schema", () => {
     const live = toolsFromCommands(COMMANDS).filter((t) => t.name.endsWith("Live"));

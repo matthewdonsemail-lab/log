@@ -232,14 +232,12 @@ describe('who each person is and where they are (the pipeline labeller)', () => 
     expect(conversations[0]).toContain("log's read of them: who lead, where needFound")
   })
 
-  test('the owner edits both lists in settings.json, each label with a one-line meaning', () => {
+  test('the owner edits both lists in settings.json, each label with a one-line meaning', async () => {
     const file = `${process.env.LOG_INBOX_STATE}/pipelineSettings.json`
-    Bun.write(file, JSON.stringify({ pipelineLabels: { who: { buyer: 'pays for things', friend: 'a friend' } } }))
-    return Bun.sleep(10).then(() => {
-      expect(Object.keys(pipelineLabels(file).who)).toEqual(['buyer', 'friend'])
-      expect(pipelineLabels(file).where).toEqual(WHERE_LABELS)
-      expect(pipelineLabels(`${file}.missing`).who).toEqual(WHO_LABELS)
-    })
+    await Bun.write(file, JSON.stringify({ pipelineLabels: { who: { buyer: 'pays for things', friend: 'a friend' } } }))
+    expect(Object.keys(pipelineLabels(file).who)).toEqual(['buyer', 'friend'])
+    expect(pipelineLabels(file).where).toEqual(WHERE_LABELS)
+    expect(pipelineLabels(`${file}.missing`).who).toEqual(WHO_LABELS)
   })
 
   test('a bot needs the bot signal and the teacher, and never a chat the owner is talking in both ways', async () => {
