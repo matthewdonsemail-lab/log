@@ -3,7 +3,7 @@
   "label": "log",
   "description": "Your accounts, who is waiting on a reply, and what log sent today, read from log's own files on this machine.",
   "icon": "MessageSquare",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "tab": {
     "path": "/log",
     "position": "after:skills"
