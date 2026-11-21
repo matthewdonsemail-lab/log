@@ -50,6 +50,7 @@ With no prompt hook, getGuide({ ask }) routes the owner's words to the one that 
 | `getGuide({ useCase: "log/toolFromOneOff" })` | Turning a hand-rolled one-off into a log tool |
 | `getGuide({ useCase: "log/toolHealth" })` | Tool health |
 | `getGuide({ useCase: "log/updateLog" })` | Update log |
+| `getGuide({ useCase: "network/relationshipMachine" })` | Relationship state machine |
 | `getGuide({ useCase: "network/whoToTalkTo" })` | Who to talk to next |
 | `getGuide({ useCase: "reddit/contributorMaxxing" })` | Contributor maxxing: finding talented builders through what they share |
 | `getGuide({ useCase: "slack/dmReply" })` | Reading and answering a Slack DM |
@@ -116,13 +117,13 @@ Each tool's description names its guide. Load it with `getGuide({ topic })` befo
 | `linkedin` | A LinkedIn account: saving its cookies, checking its session, posting or deleting its own posts, inviting people LinkedIn suggests, liking and reposting posts, seeing how its own posts are doing, and reading and writing in its conversations |
 | `accountsAndProxies` | Every account in the workspace with its session state, and each account's proxy: checking it, giving it one from a provider in its home city, and providers' traffic; and the interactive launcher that sets log up and adds accounts |
 | `runsAndEvidence` | What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs, every call's timings, log.db's typed tables checked and rebuilt from its events, and the MCP server itself |
-| `knowledgeAndSearch` | Finding context: the knowledge base, search, the Relate graph (who connects to whom, your network), people across platforms, voice notes |
+| `knowledgeAndSearch` | Context: the knowledge base, search, the Relate graph, people, voice notes |
 | `extensions` | Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context, the owner's cloned voice (Inworld or Fish Audio) for the voice notes they ask for, every paid provider's balance, and treg's catalog of endpoints for every lookup |
 | `console` | The local console: this machine's log.db, MCP, accounts, usage, events, AI client config, settings and provider keys, read in the terminal, as JSON per screen, or in the web console on loopback with no sign-in |
 | `governor` | Every platform account's governor: its daily count of requests and writes, reading it, and putting it back to 0 when the owner says so, recorded in log.db |
 | `newPlatform` | Making a new platform whole with one command, and where every new file goes |
 | `instagram` | An Instagram account: its session, reading its DMs, sending text and photos, and the live realtime watch |
-| `ui` | Generative UI in the chat: the report tool, where you write a small React view against log's kit (in the spirit of Lynx workspaces) and log draws it with data from log.db, or send just data for a starter view; text everywhere else |
+| `ui` | Generative UI in the chat: the report tool, where you write a small React view against log's kit and log draws it with data from log.db, or send just data for a starter view; text everywhere else |
 | `tiktok` | A TikTok account's session, and how it is doing: followers and each post's views, likes, comments, shares and saves |
 
 ## How a run reports back

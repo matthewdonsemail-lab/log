@@ -417,4 +417,7 @@ stateDiagram-v2
 | `reportFieldInvalid` | no | `mcp/apps/report`, `cli/report` | command exits | A report's input doesn't fit its source's fields: a field is missing, of the wrong kind, or one the source doesn't take. Nothing was read. | Fix the fields the refusal names and ask again. |
 | `reportSourceNoData` | no | `inbox/senders` | command exits | log.db holds no conversations on that platform, so there is nothing to count. | Read that platform's inbox first, or ask about a platform that has chats. |
 | `identityProfileMissing` | no | `inbox/profiles` | command exits | log.db holds no stored profile for that person on that platform. No platform was asked. | Profiles are kept when a session check or a followers read sees the person; ask after one has. |
+| `relateMachineNoGraph` | no | `relate/machine` | command exits | This log.db has no Relate graph yet, so there is nothing to draw the state machine from. | Run log relate build, then ask again. |
+| `relateMachineNobody` | no | `relate/machine` | command exits | Nobody in the Relate graph matches that handle or name. | Check the handle (log people or search finds it), or rebuild the graph with log relate build if they are new. |
+| `graphUnreadable` | yes | `relate/graph` | command exits | The current Relate graph file can't be opened read-only; a process may still hold it open for writing. | Run log relate build to write a fresh graph, then ask again. |
 

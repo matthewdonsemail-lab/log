@@ -15,6 +15,7 @@ What log-cli is built to do, one page each, by platform. Each page gives the ide
 | X | [Checking who really follows you](twitter/followers.md) | a live follows check before anyone is called a follower |
 | X | [Finding who needs something from you, or who matters](twitter/whoNeedsYou.md) | reads every conversation for what it's about and sorts people by need, importance and how close to money, sends nothing |
 | X | [Following up in your own voice](twitter/followUps.md) | drafts each follow-up from how you write to that person, gates it, and sends one message per line after you say yes |
+| Network | [Relationship state machine](network/relationshipMachine.md) | draws where you stand with someone, the route to them through people you know, or your whole network by state, each move labelled with its tool |
 | Network | [Who to talk to next](network/whoToTalkTo.md) | asks the Relate graph who in your network to talk to next and why, then hands the picks to networkMaxing's first DMs |
 | X | [Network maxing: grow the network, the niche map](twitter/networkMaxing.md) | gets to know everyone who messaged and new people from the niche map, each conversation about them and what they're doing, never a pitch |
 | X | [Collab maxxing: turn open conversations into collabs](twitter/collabMaxxing.md) | turns the people already talking to the owner, and the missed openings, into collabs: scope, position the open-source collab, then the small ask, with money always the owner's call |

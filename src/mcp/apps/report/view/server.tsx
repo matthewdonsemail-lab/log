@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { renderToStaticMarkup } from "react-dom/server";
 import { transform } from "sucrase";
+import { machineCss } from "../../../../relate/machine/theme.ts";
 import { KitProvider, setHost } from "./kit.tsx";
 import type { KitHost } from "./kit.tsx";
 import { VIEW_MODULES, viewFromModule } from "./run.ts";
@@ -116,7 +117,7 @@ export function scopeKitCss(css: string, scope = ".logview"): string {
 const HERMES_FRAME = ".logview { display: block; margin: 8px 0; border-radius: 16px; overflow: hidden; max-width: 1100px; line-height: 1.45; } .logview .sb-page { padding: 20px 22px 24px; } .logview button { font: inherit; }";
 
 export function hermesKitCss(): string {
-  return `${geistFace()}${scopeKitCss(readFileSync(KIT_CSS, "utf8"))}${HERMES_FRAME}`;
+  return `${geistFace()}${scopeKitCss(readFileSync(KIT_CSS, "utf8"))}${scopeKitCss(machineCss())}${HERMES_FRAME}`;
 }
 
 let built: Promise<string> | null = null;

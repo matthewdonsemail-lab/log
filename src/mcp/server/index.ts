@@ -40,7 +40,7 @@ import { viewerState } from "../../browser/viewer/index.ts";
 import { accountOfArgs, appTools, BROWSER_VIEW_TOOL, httpLocation, isAppTool, MCP_APP_MIME_TYPE, runAppTool, settleLocation, UI_EXTENSION_ID, uiCapable, withBrowserView } from "../apps/browserView/index.ts";
 import { browserViewLocation } from "../../cli/browser/index.ts";
 import { CARDS, cardResources, readCard, withCard } from "../apps/cards.ts";
-import { hermesClient, REPORT_TOOL, reportTool, runReport } from "../apps/report/index.ts";
+import { hermesClient, MACHINE_TOOL, REPORT_TOOL, reportTool, runMachine, runReport } from "../apps/report/index.ts";
 import { deferredElicitation, isSignInCall, localSignInSurface, SIGN_IN_INPUT_KEY, signInCall } from "../apps/signIn/index.ts";
 import { answeredAction, argumentsDigest, dualEraTransport, hostAllowed, isModernHttp, statelessHttp, urlInputRequired } from "../stateless/index.ts";
 import type { StatelessHandlers } from "../stateless/index.ts";
@@ -263,6 +263,7 @@ export async function runToolCall(
   if (renamedTool(name)) return withRenamedNote(name, await again(currentToolName(name), input, appCaller, caller === "mcp" ? "alias" : caller));
   if (isAppTool(name)) return runAppTool(name, given, appCaller || caller === "mcp" || caller === "stateless");
   if (name === REPORT_TOOL) return runReport(given, appCaller, {}, { hermes: hermesClient(client) });
+  if (name === MACHINE_TOOL) return runMachine(given, appCaller, { hermes: hermesClient(client) });
   if (name === GUIDE_TOOL) {
     const answer = guideAnswer(input, scope, shell);
     const play = answer.play === undefined ? undefined : playMeta(answer.play);
@@ -327,7 +328,7 @@ export async function runToolCall(
 }
 
 export function withCallFooter(name: string, input: LogToolInput | undefined, result: CallToolResult, scope: PlayScope = processPlayScope()): CallToolResult {
-  if (name === GUIDE_TOOL || name === REPORT_TOOL) return result;
+  if (name === GUIDE_TOOL || name === REPORT_TOOL || name === MACHINE_TOOL) return result;
   const target = name === CALL_TOOL ? resolveCall(catalog(COMMANDS, savedFlows()), withoutHandle(input)) : null;
   const tool = target?.ok ? target.tool : currentToolName(name);
   return withPlayFooter(tool, capResult(tool, result, narrowingFlags(commandOfTool(tool)?.form?.flags ?? [])), activePlay(scope, handleOf(input)));

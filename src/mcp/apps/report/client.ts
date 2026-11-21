@@ -42,7 +42,7 @@ export const reportInput = z.strictObject({
   subtitle: line(L.title).optional(),
   code: z.string().min(1).max(60_000).optional().describe('A React view: JSX that imports from "log" (and "react") and ends with export default function App({ data, title, subtitle }) { … }'),
   data: z.record(z.string().regex(/^[A-Za-z][A-Za-z0-9]{0,39}$/), reportDataSource).optional().describe("Named reads from log.db, handed to the view as data.<name> in the same call"),
-  blocks: z.array(z.record(z.string(), z.unknown())).min(1).max(L.blocks).optional().describe("The older block list (heading, text, stat, barChart, lineChart, table, personList, callout)"),
+  blocks: z.array(z.record(z.string(), z.unknown())).min(1).max(L.blocks).optional().describe("The older block list (heading, text, stat, barChart, lineChart, table, personList, callout, stateMachine)"),
 });
 
 const reportOutput = z.object({ title: z.string(), subtitle: z.string().optional(), shown: z.boolean().optional(), rows: z.record(z.string(), z.number()).optional(), compiled: z.string().optional(), data: z.record(z.string(), z.unknown()).optional(), hermesView: z.string().optional() });
@@ -154,6 +154,18 @@ export async function runReport(input: unknown, ui: boolean, given: Partial<Repo
   }
   const drawn = hermesDrawn(view, compiled.compiled, data, head, text, host);
   return { content: [{ type: "text", text: drawn ? `${text}\n\n${hermesViewNote(drawn)}` : text }], structuredContent: drawn ? { ...payload, hermesView: drawn } : payload };
+}
+
+export async function runMachine(input: unknown, ui: boolean, host: ReportHost = {}): Promise<CallToolResult> {
+  const { relateMachine } = await import("../../../relate/machine/index.ts");
+  const ask = (input ?? {}) as Record<string, unknown>;
+  const pick = (name: string) => (typeof ask[name] === "string" && (ask[name] as string).trim() ? (ask[name] as string) : undefined);
+  const view = pick("view");
+  if (view && !["person", "route", "network"].includes(view)) return refused("reportFieldInvalid", ["view: person, route or network"]);
+  const answer = relateMachine({ view: view as "person" | "route" | "network" | undefined, person: pick("person"), to: pick("to") });
+  if (!answer.ok) return { isError: true, content: [{ type: "text", text: `${answer.code}: ${answer.problem}` }], structuredContent: { error: answer.code, message: answer.problem } };
+  const block = answer.block;
+  return runReport({ title: block.title ?? "Relationship state machine", subtitle: `Relate graph through event ${answer.throughSeq}`, blocks: [block] }, ui, {}, host);
 }
 
 export const REPORT_RESOURCE_DESCRIPTION = "A view the agent built for the question: stats, charts, tables and people, drawn from log's data";

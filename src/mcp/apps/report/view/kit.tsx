@@ -4,6 +4,8 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { faSvg } from "./icons.ts";
 
+export { StateMachine } from "./machine.tsx";
+
 const cx = (...parts: (string | false | null | undefined)[]) => parts.filter(Boolean).join(" ");
 
 export type ToolCaller = (tool: string, args: Record<string, unknown>) => Promise<unknown>;

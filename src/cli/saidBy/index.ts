@@ -3,7 +3,7 @@ import { defaultDbPath, openDatabase } from "../../storage/schema/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
 
-export const SAID_BY_USAGE = "Usage: log saidBy [--name <name>] [--limit <n>] [--json]   (Someone's messages on every platform, found by name, newest first)";
+export const SAID_BY_USAGE = "Usage: log saidBy [--name <name>] [--limit <n>] [--json]";
 
 export const SAID_BY_INPUT: CommandInput = {
   forms: [{ words: [], summary: "Someone's messages on every platform, found by name, newest first", positionals: [], flags: [{ name: "name", kind: "string", description: "Part of their name or handle, as stored" }, { name: "limit", kind: "integer", min: 1, max: 500, description: "How many, default 60" }, JSON_FLAG] }],

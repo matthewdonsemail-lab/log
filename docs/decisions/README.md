@@ -13,6 +13,7 @@ Every research note, test matrix and proposal behind log's design, in one place.
 | mcpReload | [Research findings (Parallel and GitHub, 2026-11-07)](mcpReload/research.md) | [issue](mcpReload/issue.md), [readme_mcp-reloader](mcpReload/readme_mcp-reloader.md), [readme_mcpmon](mcpReload/readme_mcpmon.md), [readme_reloaderoo](mcpReload/readme_reloaderoo.md) |
 | pipeline | [Research: labelling conversations, sales stages, and linking people](pipeline/research.md) | [issue](pipeline/issue.md), [proposal](pipeline/proposal.md), [results](pipeline/results.md) |
 | processLimits | [Research: processes and IPC, from the fundamentals and measured on the owner's machine](processLimits/research.md) | [issue](processLimits/issue.md), [results](processLimits/results.md), [tools](processLimits/tools.md), [transcripts](processLimits/transcripts.md) |
+| relateApp | [Research: the Relate state machine view (#267)](relateApp/research.md) | [stately](relateApp/stately.md) |
 | slopDetector | [Research: frontier-model writing conventions](slopDetector/research.md) | [issue](slopDetector/issue.md), [proposal](slopDetector/proposal.md), [repos](slopDetector/repos.md), [results](slopDetector/results.md) |
 | voiceOptions | [Research: writing like one person from their own messages](voiceOptions/research.md) | [issue](voiceOptions/issue.md), [results](voiceOptions/results.md) |
 

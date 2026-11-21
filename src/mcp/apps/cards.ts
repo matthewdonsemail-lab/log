@@ -4,7 +4,7 @@ import { BROWSER_VIEW_TOOL, BROWSER_VIEW_URI, MCP_APP_MIME_TYPE } from "./browse
 import { appToolMeta } from "./meta.ts";
 import type { AppCsp } from "./meta.ts";
 import { readReportResource, REPORT_RESOURCE_DESCRIPTION } from "./report/client.ts";
-import { REPORT_TOOL, REPORT_URI, REPORT_VIEW_META_KEY } from "./report/types.ts";
+import { MACHINE_TOOL, REPORT_TOOL, REPORT_URI, REPORT_VIEW_META_KEY } from "./report/types.ts";
 import { SIGN_IN_TOOL } from "./signIn/types.ts";
 
 export const VIEW_META_KEY = REPORT_VIEW_META_KEY;
@@ -57,6 +57,19 @@ export const CARDS: AppCard[] = [
     csp: () => ({ connectDomains: [], resourceDomains: [] }),
     read: () => readReportResource() as Promise<CardResource>,
   },
+  {
+    uri: REPORT_URI,
+    name: "View",
+    description: REPORT_RESOURCE_DESCRIPTION,
+    tools: [MACHINE_TOOL],
+    asks: "Draw where the owner stands with someone as a state machine, the route to them, or the network by state.",
+    prompts: ["show me where I am with grace_ships", "who could introduce me to linus_k", "show my network as a state machine"],
+    invoking: "Drawing the state machine",
+    invoked: "State machine drawn",
+    uiOnly: true,
+    csp: () => ({ connectDomains: [], resourceDomains: [] }),
+    read: () => readReportResource() as Promise<CardResource>,
+  },
 ];
 
 export function cardOfTool(name: string): AppCard | null {
@@ -74,7 +87,7 @@ export function withCard<T extends { name: string; _meta?: Record<string, unknow
 }
 
 export function cardResources(capable: boolean) {
-  return CARDS.filter((card) => capable || !card.uiOnly).map((card) => ({ uri: card.uri, name: card.name, description: card.description, mimeType: MCP_APP_MIME_TYPE }));
+  return CARDS.filter((card, i) => (capable || !card.uiOnly) && CARDS.findIndex((other) => other.uri === card.uri) === i).map((card) => ({ uri: card.uri, name: card.name, description: card.description, mimeType: MCP_APP_MIME_TYPE }));
 }
 
 export async function readCard(uri: string): Promise<CardResource | null> {

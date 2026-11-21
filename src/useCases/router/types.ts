@@ -169,7 +169,7 @@ export const TOOL_SYNONYMS: Readonly<Record<string, string>> = {
   latency: 'slow',
 }
 
-export const TOOL_STOP_WORDS: ReadonlySet<string> = new Set(['about', 'any', 'all', 'being', 'give', 'please', 'see', 'show', 'tell', 'were'])
+export const TOOL_STOP_WORDS: ReadonlySet<string> = new Set(['about', 'any', 'all', 'being', 'give', 'machine', 'please', 'see', 'show', 'tell', 'were'])
 
 export const TOOL_WEAK_WORDS: ReadonlySet<string> = new Set(['check', 'find', 'list', 'look', 'read'])
 

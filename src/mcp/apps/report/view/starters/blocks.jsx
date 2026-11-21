@@ -1,6 +1,6 @@
-import { Avatar, Bars, Card, Grid, LineChart, Page, Row, Stack, Stat, Table, fmt } from "log";
+import { Avatar, Bars, Card, Grid, LineChart, Page, Row, Stack, Stat, StateMachine, Table, fmt } from "log";
 
-function Block({ block }) {
+function Block({ block, pageTitle }) {
   switch (block.type) {
     case "heading":
       return <h2 className="sb-section">{block.text}</h2>;
@@ -49,6 +49,12 @@ function Block({ block }) {
           </Stack>
         </Card>
       );
+    case "stateMachine":
+      return (
+        <Card title={block.title === pageTitle ? undefined : block.title} pad={false}>
+          <StateMachine machine={block} />
+        </Card>
+      );
     case "callout":
       return (
         <Card title={block.title}>
@@ -64,7 +70,7 @@ export default function App({ data, title, subtitle }) {
   return (
     <Page title={title} subtitle={subtitle}>
       {data.blocks.map((block, i) => (
-        <Block key={i} block={block} />
+        <Block key={i} block={block} pageTitle={title} />
       ))}
     </Page>
   );

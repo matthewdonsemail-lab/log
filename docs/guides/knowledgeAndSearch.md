@@ -1,6 +1,6 @@
 # knowledgeAndSearch
 
-Finding context: the knowledge base, search, the Relate graph (who connects to whom, your network), people across platforms, voice notes.
+Context: the knowledge base, search, the Relate graph, people, voice notes.
 
 Written by `bun run docs:build` from the code, the skills and AGENTS.md. Not edited by hand: change the command's usage, its skill or the rule, and rebuild.
 
@@ -15,6 +15,7 @@ When the owner asks for one of these, follow its page step by step.
 | `getGuide({ useCase: "inbox/saidBy" })` | Someone's messages on every platform, found by name, newest first | "what did he say", "find his messages", "everything they said" |
 | `getGuide({ useCase: "inbox/scopeAJob" })` | Scoping a job out of someone in a DM | "probe <person> so we can scope out what the task is", "scope it out with him", "find out what he actually wants done", "go through and then scope it out". |
 | `getGuide({ useCase: "log/toolFromOneOff" })` | Turning a hand-rolled one-off into a log tool | "turn that one-off into a tool", "make that script a log command", "stop hand-rolling that", "vendor that query into log" |
+| `getGuide({ useCase: "network/relationshipMachine" })` | Relationship state machine | "show me where I am with <person>", "how do I get to <person>", "show my network as a state machine". |
 | `getGuide({ useCase: "network/whoToTalkTo" })` | Who to talk to next | "who in my network should I talk to", "who's in my network", "who do I need to speak to". |
 | `getGuide({ useCase: "twitter/affiliateMarketing" })` | Affiliate marketing through your DMs | "answer the people asking about <tool> in my dms with my affiliate link", "turn the dms about <tool> into affiliate money", "follow up everyone who asked about the tool", "get me onto <company>'s affiliate program and book the call". |
 | `getGuide({ useCase: "twitter/collabMaxxing" })` | Collab maxxing: turn open conversations into collabs | "position a collab first then be like just a few quid so i can make a video about it", "start network maxxing and collab maxxing and trying to see what hes doing get him to reveal it all", "follow up on <someone> and the other people, small commitment from deals, not just new people but already open convos", "respond with the collabmaxxing", "selling the outcome", "let him name it", "check in with <someone> whats good there he is keen but isnt liquid", "just be nice to them there the poor people", "ask <someone> if i could become a contributor", "look on my twitter for missed opportunities". |
@@ -29,12 +30,13 @@ Each tool's own description carries its full usage, notes, live line and rules; 
 | Tool | What it does | Usage |
 |---|---|---|
 | `routerIndex` | Is the prompt router's meaning index of plays, tools and skills… | `log router index [--apply] [--json]   (is the prompt router's meaning index current; --apply builds it)` |
-| `relateBuild` | Project log.db into a new Relate graph file and make it the current… | `log relate build [--json]` |
-| `relateStatus` | Show the current Relate graph file, the event it was built through… | `log relate status [--json]           (the current graph and how far behind log.db it is)` |
-| `relateVerify` | Compare every node and edge count in the Relate graph with what… | `log relate verify [--json]` |
-| `relateAsk` | Show the connected context | `log relate ask "<text>" [--json]     (the context the hook injects)` |
-| `relateQuery` | Run a read-only Cypher query on the current Relate graph | `log relate query "<cypher>" [--json] (read-only, at most 100 rows)` |
-| `people` | List everyone linked across platforms, with each person's identities | `log people [--json]                                        (everyone linked across platforms: each person and their identities)` |
+| `relateBuild` | Project log.db into a new Relate graph and make it current | `log relate build [--json]` |
+| `relateStatus` | The current Relate graph and how far behind log.db it is | `log relate status [--json]` |
+| `relateVerify` | Check every Relate graph count against log.db | `log relate verify [--json]` |
+| `relateAsk` | Show the connected context | `log relate ask "<text>" [--json]` |
+| `relateMachine` | Draw relationships as a state machine | `log relate machine [--person\|--to <handle>] [--view <view>] [--json]` |
+| `relateQuery` | Run a read-only Cypher query on the current Relate graph | `log relate query "<cypher>" [--json]` |
+| `people` | List everyone linked across platforms, with each person's identities | `log people [--json]` |
 | `peopleShow` | The person card for someone across every platform | `log people show <who> [--json]                             (the person card: every platform, one-to-one chats and groups, who is waiting, the last lines across platforms)` |
 | `peopleSuggest` | Accounts on different platforms that are probably one person, with… | `log people suggest [--limit <n>] [--check] [--json]        (probably one person across platforms, every factor; --check asks SubQ)` |
 | `peopleLink` | Make these identities one person, after the owner says yes | `log people link <identity> <identity>... --approvedBy "<the owner's words>" [--name "<name>"] [--evidence "<why>"]   (one person across these identities, appended to log.db as events)` |
@@ -55,7 +57,7 @@ Each tool's own description carries its full usage, notes, live line and rules; 
 | `kbShow` | Show one knowledge base article in full | `log kb show <key> [--json]   (one article in full, e.g. rule:73, skill:inspect, pageState:messengerPinCreate)` |
 | `transcribe` | Transcribe every voice note in the saved X and Discord conversations… | `log transcribe [--platform twitter\|discord] [--account <a>] [--list] [--noIndex] [--json]` |
 | `transcribeFile` | Transcribe one audio file with AssemblyAI, kept by its hash | `log transcribe file <path> [--json]   (one audio file, transcribed and kept by its hash)` |
-| `saidBy` | Someone's messages on every platform, found by name, newest first | `log saidBy [--name <name>] [--limit <n>] [--json]   (Someone's messages on every platform, found by name, newest first)` |
+| `saidBy` | Someone's messages on every platform, found by name, newest first | `log saidBy [--name <name>] [--limit <n>] [--json]` |
 
 ## The work, step by step: knowledgeBase
 

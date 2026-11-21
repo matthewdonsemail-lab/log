@@ -3360,5 +3360,32 @@
       "inbox/profiles"
     ],
     "action": "Profiles are kept when a session check or a followers read sees the person; ask after one has."
+  },
+  "relateMachineNoGraph": {
+    "layer": "tool",
+    "meaning": "This log.db has no Relate graph yet, so there is nothing to draw the state machine from.",
+    "retryable": false,
+    "raisedIn": [
+      "relate/machine"
+    ],
+    "action": "Run log relate build, then ask again."
+  },
+  "relateMachineNobody": {
+    "layer": "tool",
+    "meaning": "Nobody in the Relate graph matches that handle or name.",
+    "retryable": false,
+    "raisedIn": [
+      "relate/machine"
+    ],
+    "action": "Check the handle (log people or search finds it), or rebuild the graph with log relate build if they are new."
+  },
+  "graphUnreadable": {
+    "layer": "tool",
+    "meaning": "The current Relate graph file can't be opened read-only; a process may still hold it open for writing.",
+    "retryable": true,
+    "raisedIn": [
+      "relate/graph"
+    ],
+    "action": "Run log relate build to write a fresh graph, then ask again."
   }
 }

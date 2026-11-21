@@ -227,7 +227,7 @@ flowchart LR
   agent["Agent (Claude Code, Codex)"]
   owner["the owner, in a terminal"]
   shell["Bash / PowerShell / Monitor"]
-  mcp["MCP server log: 313 command tools + saved flows"]
+  mcp["MCP server log: 314 command tools + saved flows"]
   bin["bin/log.ts"]
   runCli["runCli: 143 commands (COMMANDS)"]
   live[("~/.logCli/mcp/day.log: the live log")]
@@ -327,7 +327,7 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | [`log version`](#log-version) | Which log runs here and the newest release | any (none) | `[--check]` `[--json]` | none | none | `version` | PreToolUse, PostToolUse · PostToolUse | no | 73, 167, 30, 38, 39, 40, 41 |
 | [`log update`](#log-update) | Update log to the newest release and resume what ran | any (none) | `[--to <v>]` `[--track <stable|nightly>]` `[--approvedBy <who>]` `[--apply]` `[--json]` | none | none | `updateLog`, `updateLogLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 73, 167, 30, 38, 39, 40, 41 |
 | [`log models`](#log-models) | Is each pinned local model here | any (none) | `[--approvedBy <who>]` `[--fetch]` `[--json]` | none | none | `models`, `modelsLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 73, 167, 30, 38, 39, 40, 41 |
-| [`log relate`](#log-relate) | A Relate graph of who talks, engages and shares rooms with the owner, and your network, projected from log.db | any (none) | `[--json]` | none | none | `relateBuild`, `relateStatus`, `relateVerify`, `relateAsk`, `relateQuery` | PreToolUse, PostToolUse · PostToolUse | no | 89, 134, 154, 163, 30, 38, 39, 40, 41 |
+| [`log relate`](#log-relate) | The Relate graph of the owner's people, rooms and network, from log.db | any (none) | `[--json]` `[--person <text>]` `[--to <handle>]` `[--view <person|route|network>]` | none | none | `relateBuild`, `relateStatus`, `relateVerify`, `relateAsk`, `relateMachine`, `relateQuery` | PreToolUse, PostToolUse · PostToolUse | no | 89, 134, 154, 163, 30, 38, 39, 40, 41 |
 | [`log people`](#log-people) | One person across platforms: link identities into a person, Fellegi-Sunter suggestions, the person card | any (none) | `[--json]` `[--limit <integer 1..200>]` `[--check]` `[--approvedBy <text>]` `[--name <text>]` `[--evidence <text>]` | none | none | `people`, `peopleShow`, `peopleSuggest`, `peopleLink`, `peopleUnlink`, `peopleDifferent` | PreToolUse, PostToolUse · PostToolUse | no | 30, 89, 134, 154, 163, 30, 38, 39, 40, 41 |
 | [`log network`](#log-network) | The owner's network in log.db, for the Relate graph | any (none) | `[--from <dir>]` `[--account <handle>]` `[--json]` | none | none | `networkImport`, `networkStatus` | PreToolUse, PostToolUse · PostToolUse | no | 89, 134, 154, 163, 30, 38, 39, 40, 41 |
 | [`log timing`](#log-timing) | Where the time goes: p50, p95, p99 per tool and stage from log.db, one call as a waterfall, or landed to pushed per platform | any (none) | `[--tool <name>]` `[--hours <number>]` `[--stages <number>]` `[--top <number>]` `[--all]` `[--call <callId>]` `[--turns]` `[--landed]` `[--json]` | none | none | `timing` | PreToolUse, PostToolUse · PostToolUse | no | 26, 73, 165, 30, 38, 39, 40, 41 |
@@ -1610,15 +1610,15 @@ log models [--fetch --approvedBy <who>] [--json]
 
 #### log relate
 
-A Relate graph of who talks, engages and shares rooms with the owner, and your network, projected from log.db MCP tools: `relateBuild`, `relateStatus`, `relateVerify`, `relateAsk`, `relateQuery`, one per form, with named fields.
+The Relate graph of the owner's people, rooms and network, from log.db MCP tools: `relateBuild`, `relateStatus`, `relateVerify`, `relateAsk`, `relateMachine`, `relateQuery`, one per form, with named fields.
 
 ```text
 log relate build [--json]
-log relate status [--json]           (the current graph and how far behind log.db it is)
+log relate status [--json]
 log relate verify [--json]
-log relate ask "<text>" [--json]     (the context the hook injects)
-log relate query "<cypher>" [--json] (read-only, at most 100 rows)
-The graph is a projection: log.db's events stay the record, and a build can always be thrown away and redone (docs/relateGraph.md).
+log relate ask "<text>" [--json]
+log relate query "<cypher>" [--json]
+log relate machine [--person|--to <handle>] [--view <view>] [--json]
 ```
 
 #### log people
@@ -1626,7 +1626,7 @@ The graph is a projection: log.db's events stay the record, and a build can alwa
 One person across platforms: link identities into a person, Fellegi-Sunter suggestions, the person card MCP tools: `people`, `peopleShow`, `peopleSuggest`, `peopleLink`, `peopleUnlink`, `peopleDifferent`, one per form, with named fields.
 
 ```text
-log people [--json]                                        (everyone linked across platforms: each person and their identities)
+log people [--json]
 log people show <who> [--json]                             (the person card: every platform, one-to-one chats and groups, who is waiting, the last lines across platforms)
 log people suggest [--limit <n>] [--check] [--json]        (probably one person across platforms, every factor; --check asks SubQ)
 log people link <identity> <identity>... --approvedBy "<the owner's words>" [--name "<name>"] [--evidence "<why>"]   (one person across these identities, appended to log.db as events)
@@ -2669,7 +2669,7 @@ TikTok's own answer decides. The result goes to socialAccounts.sessionState, and
 Someone's messages on every platform, found by name, newest first MCP tools: `saidBy`, one per form, with named fields.
 
 ```text
-log saidBy [--name <name>] [--limit <n>] [--json]   (Someone's messages on every platform, found by name, newest first)
+log saidBy [--name <name>] [--limit <n>] [--json]
 ```
 
 #### log tiktok stats

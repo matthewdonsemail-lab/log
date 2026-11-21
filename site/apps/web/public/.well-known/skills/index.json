@@ -285,6 +285,14 @@
       "summary": "Update log"
     },
     {
+      "name": "log-network-relationship-machine",
+      "description": "Relationship state machine. A log play (docs/useCases/network/relationshipMachine.md): Where you stand with someone, drawn as a state machine in the stately look: the states a relationship moves through (new, follows you, talks to your followers, engaged with you, you reached out, in conversation), the moves between them (follow, like their post, reply, DM, intro, they replied), each labelled with the log tool that makes it. The person's real history from log.db is the path taken, timestamped; where it stands now is highlighted, and the next move is the outgoing transition. The same machine shows the route to someone through the people you know, and your whole network with a count in each state.",
+      "files": [
+        "SKILL.md"
+      ],
+      "summary": "Relationship state machine"
+    },
+    {
       "name": "log-network-who-to-talk-to",
       "description": "Who to talk to next. A log play (docs/useCases/network/whoToTalkTo.md): Your network is everyone around the communities and leaders in your space: each person's band (what they could be to you), their ring (how close they sit to you), and whose circles they are in. Once it is in log.db and the Relate graph, one query answers who to talk to next: the people one step from you, in the most leaders' circles, who could collaborate or join, and whom you haven't talked to yet. Each comes with why: the circles, who already connects you, and their last post. The ones you pick go to the first-DM steps of [networkMaxing.md](../twitter/networkMaxing.md).",
       "files": [

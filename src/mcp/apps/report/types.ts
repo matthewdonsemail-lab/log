@@ -1,8 +1,11 @@
+import type { StateMachineBlock } from "../../../relate/machine/types.ts";
+
 export const REPORT_URI = "ui://log/report";
 export const REPORT_VIEW_META_KEY = "log/view";
 export const REPORT_TOOL = "report";
+export const MACHINE_TOOL = "relateMachine";
 export const REPORT_GUIDE = "ui";
-export const REPORT_BLOCK_TYPES = ["heading", "text", "stat", "barChart", "lineChart", "table", "personList", "callout"] as const;
+export const REPORT_BLOCK_TYPES = ["heading", "text", "stat", "barChart", "lineChart", "table", "personList", "callout", "stateMachine"] as const;
 export type ReportBlockType = (typeof REPORT_BLOCK_TYPES)[number];
 export const REPORT_REFUSALS = ["reportBlockUnknown", "reportFieldInvalid", "reportTooLarge", "reportSeriesMismatch", "reportColumnUnknown", "reportSourceNoData", "identityProfileMissing"] as const;
 export type ReportRefusal = (typeof REPORT_REFUSALS)[number];
@@ -109,7 +112,7 @@ export interface CalloutBlock {
   text: string;
 }
 
-export type ReportBlock = HeadingBlock | TextBlock | StatBlock | BarChartBlock | LineChartBlock | TableBlock | PersonListBlock | CalloutBlock;
+export type ReportBlock = HeadingBlock | TextBlock | StatBlock | BarChartBlock | LineChartBlock | TableBlock | PersonListBlock | CalloutBlock | StateMachineBlock;
 
 export interface ReportSpec {
   title: string;

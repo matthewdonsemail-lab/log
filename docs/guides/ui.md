@@ -1,6 +1,6 @@
 # ui
 
-Generative UI in the chat: the report tool, where you write a small React view against log's kit (in the spirit of Lynx workspaces) and log draws it with data from log.db, or send just data for a starter view; text everywhere else.
+Generative UI in the chat: the report tool, where you write a small React view against log's kit and log draws it with data from log.db, or send just data for a starter view; text everywhere else.
 
 Written by `bun run docs:build` from the code, the skills and AGENTS.md. Not edited by hand: change the command's usage, its skill or the rule, and rebuild.
 

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { MACHINE_DIRECTIONS, MACHINE_LIMITS as M, MACHINE_TONES, MACHINE_VIEWS } from "../../../../relate/machine/types.ts";
 import { REPORT_BLOCK_TYPES, REPORT_LIMITS as L } from "../types.ts";
 import type { ReportCheck, ReportRefusal, ReportSpec } from "../types.ts";
 
@@ -54,7 +55,54 @@ const personList = z.strictObject({
 });
 const callout = z.strictObject({ type: z.literal("callout"), tone: z.enum(["info", "success", "warning"]).optional(), title: line().optional(), text: line(L.text) });
 
-const block = z.discriminatedUnion("type", [heading, text, stat, barChart, lineChart, table, personList, callout]);
+const ms = finite.min(0).nullable().optional();
+const machineState = z.strictObject({
+  id: line(40),
+  label: line(M.label),
+  note: line(M.note).optional(),
+  tone: z.enum(MACHINE_TONES).optional(),
+  count: finite.min(0).optional(),
+  chips: z.array(line(M.label)).max(M.chips).optional(),
+  at: ms,
+  current: z.boolean().optional(),
+  visited: z.boolean().optional(),
+  initial: z.boolean().optional(),
+  final: z.boolean().optional(),
+  details: z.array(z.strictObject({ label: line(), value: line(M.note) })).max(M.details).optional(),
+});
+const machineTransition = z.strictObject({
+  id: line(40),
+  from: line(40),
+  to: line(40),
+  event: line(M.event),
+  tool: line(M.tool).optional(),
+  by: z.enum(["you", "them"]).optional(),
+  at: ms,
+  count: finite.min(0).optional(),
+  taken: z.boolean().optional(),
+  next: z.boolean().optional(),
+  dashed: z.boolean().optional(),
+  note: line(M.note).optional(),
+});
+const stateMachine = z
+  .strictObject({
+    type: z.literal("stateMachine"),
+    title: line(L.title).optional(),
+    view: z.enum(MACHINE_VIEWS).optional(),
+    direction: z.enum(MACHINE_DIRECTIONS).optional(),
+    summary: line(L.text).optional(),
+    states: z.array(machineState).min(1).max(M.states),
+    transitions: z.array(machineTransition).max(M.transitions),
+  })
+  .superRefine((block, ctx) => {
+    const ids = new Set(block.states.map((s) => s.id));
+    if (ids.size !== block.states.length) ctx.addIssue({ code: "custom", path: ["states"], message: "state ids repeat" });
+    block.transitions.forEach((t, i) => {
+      for (const end of ["from", "to"] as const) if (!ids.has(t[end])) ctx.addIssue({ code: "custom", path: ["transitions", i, end], message: `no state has id "${t[end]}"` });
+    });
+  });
+
+const block = z.discriminatedUnion("type", [heading, text, stat, barChart, lineChart, table, personList, callout, stateMachine]);
 
 export const reportSchema = z.strictObject({
   title: line(L.title),
