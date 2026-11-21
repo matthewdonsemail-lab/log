@@ -207,6 +207,23 @@ describe('one person across platforms, and the platform filter', () => {
     expect(machineTextOf(block)).toContain(`Suggested link, not merged: @grace_ships on ${suggested.platform}`)
   })
 
+  test('reads platform:handle as that platform and that handle, the way people show does, never as a person named after the platform', async () => {
+    const path = join(mkdtempSync(join(tmpdir(), 'relateMachinePlatformHandle-')), 'log.db')
+    const db = openDatabase(path)
+    seedMachineWorld(db)
+    const at = new Date(MACHINE_NOW).toISOString()
+    db.prepare("INSERT INTO identities (platform, userId, handle, displayName, firstSeenAt, lastSeenAt) VALUES ('discord', '9000000099', 'Discord', 'Discord', ?, ?)").run(at, at)
+    buildGraph(path, new Date(MACHINE_NOW))
+    for (const platform of ['discord', 'twitter']) {
+      const block = blockOf(await relateMachine({ person: `${platform}:grace_ships` }, path, MACHINE_NOW))
+      expect(block.accounts?.find((a) => a.link === 'linked')).toEqual({ platform, handle: 'grace_ships', link: 'linked' })
+      expect(machineTextOf(block)).not.toContain('@Discord')
+    }
+    expect(blockOf(await relateMachine({ person: 'discord:@grace_ships' }, path, MACHINE_NOW)).accounts?.find((a) => a.link === 'linked')?.platform).toBe('discord')
+    const nobody = await relateMachine({ person: 'discord:ivy_ops' }, path, MACHINE_NOW)
+    expect(nobody.ok ? null : nobody.code).toBe('relateMachineNobody')
+  })
+
   test('filters the network by platform and keeps a count per platform', async () => {
     const all = blockOf(await relateMachine({ view: 'network' }, world, MACHINE_NOW))
     const views = new Map((all.platforms ?? []).map((v) => [v.platform, v]))

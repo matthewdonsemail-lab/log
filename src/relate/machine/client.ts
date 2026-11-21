@@ -3,6 +3,7 @@ import { existsSync } from 'node:fs'
 import { defaultDbPath } from '../../storage/schema/index'
 import { findPeople, GraphUnreadable, pointerOf, readFromFile, readOffset } from '../graph/index'
 import { ownerRequest } from '../owner/helpers/index'
+import { identitySpec } from '../../people/helpers/identity'
 import type { Ask, PersonFound } from '../graph/index'
 import { evidenceOf, firstInteractions, networkBlock, ownerAccounts, personBlock, rankLinks, routeBlock, routeCandidates, standingOf } from './helpers/index'
 import { machineText } from './render/text'
@@ -64,8 +65,21 @@ function merged(keys: readonly string[], evidence: Map<string, StageEvidence>, p
   return base
 }
 
+async function identityOn(read: Ask, platform: string, who: string): Promise<PersonFound | null> {
+  const bare = who.replace(/^@/, '').toLowerCase()
+  const rows = await read('MATCH (i:Identity) WHERE NOT i.owner AND i.platform = $platform AND (i.handleLower = $bare OR toLower(i.handle) = $bare OR i.key = $key OR any(a IN coalesce(i.aliases, []) WHERE a = $bare)) RETURN i.key AS key, i.platform AS platform, i.handle AS handle, i.name AS name, i.personId AS personId ORDER BY key', { platform, bare, key: `${platform}:${who}` })
+  if (!rows.length) return null
+  const first = rows[0]
+  const personId = (first.personId as string | null) ?? null
+  const linked = personId ? (await read('MATCH (j:Identity) WHERE j.personId = $personId RETURN j.key AS key ORDER BY key', { personId })).map((r) => String(r.key)) : []
+  const keys = [String(first.key), ...rows.slice(1).map((r) => String(r.key)), ...linked]
+  return { key: String(first.key), keys: [...new Set(keys)], personId, platform: String(first.platform), handle: (first.handle as string | null) ?? null, name: (first.name as string | null) ?? null }
+}
+
 async function personOf(read: Ask, text: string): Promise<PersonFound | null> {
   const asked = text.trim()
+  const named = identitySpec(asked)
+  if (named.platform && named.who && !/\s/.test(asked)) return identityOn(read, named.platform, named.who)
   const tagged = asked.startsWith('@') || asked.includes(' ') ? asked : `@${asked}`
   const found = (await findPeople(read, tagged))[0]
   if (found) return found

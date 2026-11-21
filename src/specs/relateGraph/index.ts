@@ -62,6 +62,9 @@ const anchors: RequirementAnchors = {
     { kind: 'value', file: types, name: 'MENTIONED_PEOPLE', equals: 3 },
     { kind: 'value', file: types, name: 'TOKEN_MIN', equals: 4 },
     { kind: 'string', file: registry, includes: 'scripts/hooks/relate.ts' },
+    { kind: 'symbol', file: 'src/people/helpers/identity.ts', name: 'identitySpec' },
+    { kind: 'uses', file: machine, name: 'identitySpec' },
+    { kind: 'symbol', file: machine, name: 'identityOn' },
   ],
   'REQ-RELATE-06': [
     { kind: 'symbol', file: client, name: 'connectedContext' },
@@ -186,7 +189,7 @@ export const relateGraph = {
     'REQ-RELATE-02': noul('Does a full build run in a separate short-lived process (buildGraph spawns buildGraphHere, the owner spawns buildFileHere), write a new graph-<throughSeq>-<ms>.rl file in one Relate transaction with its offsets and generation on the Snapshot node, checkpoint and close it before putPointer stores the relateGraph pointer inside a generation-checked transaction, does buildGraphHere take the graph owner claim for its run, and does prune keep the newest KEPT_SNAPSHOTS files and the current one?'),
     'REQ-RELATE-03': noul('Does verifyGraph compare every count of expectedCounts(projectionOf) with countsIn of the current graph, and report a graph behind log.db as behind instead of comparing it?'),
     'REQ-RELATE-04': noul('Does pointerOf return null when the stored pointer\'s workspace differs from workspaceOf(dbPath), its projector version differs from PROJECTOR_VERSION, or its file does not exist?'),
-    'REQ-RELATE-05': noul('Does relateAnswer return nothing for an empty prompt or one starting with <, and does findPeople match handles, aliases and display or sender names (multi-word anywhere, one-word only capitalised or tagged), skip owner identities, merge identities of one platform with the same handle into one person, and keep at most MENTIONED_PEOPLE people?'),
+    'REQ-RELATE-05': noul('Does relateAnswer return nothing for an empty prompt or one starting with <, and does findPeople match handles, aliases and display or sender names (multi-word anywhere, one-word only capitalised or tagged), skip owner identities, merge identities of one platform with the same handle into one person, and keep at most MENTIONED_PEOPLE people; and does relateMachine split a platform:handle with identitySpec and resolve it through identityOn to that handle or id on that platform only?'),
     'REQ-RELATE-06': noul('Does renderContext say, for each person, the talks, engagement, groups, introducers and same-orbit people from connectedContext, name throughSeq and how far behind log.db the graph is, and cut the text to CONTEXT_CHARS?'),
     'REQ-RELATE-07': noul('Does the after-install routine build the graph after migrations, and do the relate hook and the MCP server only call ensureGraphOwner, which reads the owners row and starts the owner as a detached hidden process only when it is not alive and no relateOwnerStart claim is younger than OWNER_START_BACKOFF_MS, never spawning a build or an apply?'),
     'REQ-RELATE-08': noul('Does queryGraph run the statement on the current graph through the owner or a read-only open of the last file, refuse a statement whose EXPLAIN query type is not a read, and return at most QUERY_ROWS rows with whether more were cut?'),

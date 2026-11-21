@@ -38,6 +38,8 @@ Checked by: code and SubQ
 
 On UserPromptSubmit the `relate` hook reads the prompt's `@handle`s and its other words of four letters or more (leaving out common words), finds identities whose handle or a known alias matches, or whose handle, display name or a name they sent messages under (`senderLabel`, as `saidBy` matches) appears in the prompt: a name of two or more words anywhere, a one-word name only when written with a capital or an @, ignores the owner's own, merges identities on one platform with the same handle, and keeps at most three people. A prompt naming nobody the graph knows, a system text starting with `<`, or a missing graph gives no context at all.
 
+`relateMachine` takes its `person` or `to` the same way, except a `platform:handle` (`discord:someone`, `twitter:@someone`, `discord:<id>`), which it splits with `identitySpec` (`src/people/helpers/identity.ts`, the split `people show` uses) and resolves only to that handle or id on that platform, with the identities linked to it (`identityOn`, `src/relate/machine/client.ts`), never to someone whose name is the platform's.
+
 Checked by: code and SubQ
 
 ### REQ-RELATE-06: The context is what the graph connects, as facts
