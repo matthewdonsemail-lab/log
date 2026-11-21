@@ -65,6 +65,7 @@ function Panel({ machine, selected, names }: { machine: StateMachineBlock; selec
     <aside className="rmPanel" aria-label="State details">
       <span className="rmPanelKind">{state.current ? "Where it stands now" : "State details"}</span>
       <h3>{state.label}</h3>
+      {state.explain && <div className="rmField rmWhy"><label>What it means</label><div>{state.explain}</div></div>}
       {state.note && <Field label="Description">{state.note}</Field>}
       {typeof state.count === "number" && <Field label="People here">{state.count}</Field>}
       {(state.details ?? []).map((d, i) => (

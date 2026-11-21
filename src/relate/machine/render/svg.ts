@@ -32,6 +32,7 @@ interface NodeShape {
   lead: number
   notes: string[]
   chipRows: Chip[][]
+  explains: string[]
 }
 
 interface ActionShape {
@@ -109,7 +110,10 @@ function nodeShape(state: MachineState): NodeShape {
   const chipsW = chips.reduce((s, c) => s + c.w + S.chipGap, 0) - S.chipGap
   const notes = state.note ? wrapText(state.note, inner, F.body) : []
   const notesW = Math.max(0, ...notes.map((n) => textWidth(n, F.body)))
-  const w = Math.min(S.nodeMaxWidth, Math.max(S.nodeMinWidth, titleW, notesW + 2 * S.bodyPadX, Math.min(chipsW, inner) + 2 * S.bodyPadX))
+  const plain = Math.min(S.nodeMaxWidth, Math.max(S.nodeMinWidth, titleW, notesW + 2 * S.bodyPadX, Math.min(chipsW, inner) + 2 * S.bodyPadX))
+  const explains = state.explain ? wrapText(state.explain, Math.min(inner, Math.max(S.explainMinWidth, plain - 2 * S.bodyPadX)), F.explain, F.explain.lines) : []
+  const explainW = Math.max(0, ...explains.map((n) => textWidth(n, F.explain)))
+  const w = Math.min(S.nodeMaxWidth, Math.max(plain, explainW + 2 * S.bodyPadX))
   const rows: Chip[][] = []
   let row: Chip[] = []
   let used = 0
@@ -124,9 +128,10 @@ function nodeShape(state: MachineState): NodeShape {
   }
   if (row.length) rows.push(row)
   const chipsH = rows.length ? rows.length * (S.chipHeight + S.chipGap) - S.chipGap : 0
-  const content = notes.length * F.body.line + (notes.length && rows.length ? S.bodyGap : 0) + chipsH
+  const upper = notes.length * F.body.line + (notes.length && rows.length ? S.bodyGap : 0) + chipsH
+  const content = upper + (explains.length ? (upper ? 2 * S.explainGap + S.explainRule : 0) + explains.length * F.explain.line : 0)
   const bodyH = content ? Math.ceil(2 * S.bodyPadY + content + S.border) : 0
-  return { state, w: Math.ceil(w), h: S.headerH + bodyH, lead, notes, chipRows: rows }
+  return { state, w: Math.ceil(w), h: S.headerH + bodyH, lead, notes, chipRows: rows, explains }
 }
 
 const pillInner = S.pillPadLeft + S.eventPad
@@ -225,6 +230,7 @@ function nodeSvg(shape: NodeShape, box: Box, near: boolean, slug: string): strin
   const visited = st.visited !== false
   const cls = ['rmNode', `rmTone${tone[0].toUpperCase()}${tone.slice(1)}`, visited ? '' : 'rmUnvisited', st.current ? 'rmCurrent' : '', near ? 'rmNear' : ''].filter(Boolean).join(' ')
   parts.push(`<g class="${cls}" data-id="${escapeXml(st.id)}" tabindex="0" role="button" aria-label="${escapeXml(`${st.label}${st.current ? ', where it stands now' : ''}`)}">`)
+  if (st.explain) parts.push(`<title>${escapeXml(`${st.label}: ${st.explain}`)}</title>`)
   if (st.initial) parts.push(initialMarker(box))
   const hasBody = box.h > S.headerH
   parts.push(`<rect class="rmNodeShadow" x="${box.x}" y="${box.y + 1}" width="${box.w}" height="${box.h}" rx="${S.radius}" filter="url(#${slug}NodeBlur)"/>`)
@@ -263,6 +269,18 @@ function nodeSvg(shape: NodeShape, box: Box, near: boolean, slug: string): strin
         cx += c.w + S.chipGap
       }
       y += S.chipHeight + S.chipGap
+    }
+    top = y - S.chipGap
+  }
+  if (shape.explains.length) {
+    if (shape.notes.length || shape.chipRows.length) {
+      const ruleY = top + S.explainGap + S.explainRule / 2
+      parts.push(`<path class="rmExplainRule" d="M${box.x + S.border} ${ruleY} H${box.x + box.w - S.border}"/>`)
+      top += 2 * S.explainGap + S.explainRule
+    }
+    for (const line of shape.explains) {
+      parts.push(`<text class="rmExplain" x="${bx}" y="${baselineIn(top, F.explain.line, F.explain.size)}">${escapeXml(line)}</text>`)
+      top += F.explain.line
     }
   }
   parts.push('</g>')

@@ -190,14 +190,19 @@ def show_blocks(params: dict, **kwargs) -> str:
     return paste_instruction(store.save(blocks))
 
 
-SHOW_BLOCKS_SCHEMA = {
-    "name": "show_blocks",
-    "description": (
+def description() -> str:
+    """The text the model reads: the drawing rules, then every block in the catalog (registered ones included)."""
+    return (
         "Draw visual blocks in the reply (Hermes Desktop): itineraries, trends, comparisons, headline numbers, "
         "photos. Use it when the answer reads better drawn than written. "
         "Paste the returned tag on its own line exactly as returned. "
         "Use only numbers and image URLs a tool returned.\n\n" + describe()
-    ),
+    )
+
+
+SHOW_BLOCKS_SCHEMA = {
+    "name": "show_blocks",
+    "description": description(),
     "parameters": {
         "type": "object",
         "properties": {

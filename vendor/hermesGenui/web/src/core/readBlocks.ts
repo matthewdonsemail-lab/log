@@ -1,7 +1,7 @@
 // Reading stored blocks: JSON from the plugin's store → blocks the drawing code can draw. Each type has its own reader
 // in blocks/<type>/read.ts, with a comment and a worked example, listed in registry.tsx. The rule throughout: drop what
 // doesn't fit and note why; never show broken data.
-import { REGISTRY, type Block } from "../registry";
+import { blockEntry, REGISTRY, type Block } from "../registry";
 import { Trail, type Diagnostic } from "./fields";
 
 /** Every block type that can be drawn, containers included. */
@@ -44,7 +44,7 @@ function readOne(raw: unknown, here: Trail, depth: number): Block[] {
     return [];
   }
   const kind = (raw as any).type;
-  const entry = Object.hasOwn(REGISTRY, kind) ? REGISTRY[kind as Block["type"]] : undefined;
+  const entry = blockEntry(kind);
   if (!entry) {
     here.drop(`unknown type "${kind}"`);
     return [];

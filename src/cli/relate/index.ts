@@ -3,7 +3,7 @@ import { buildGraph, GraphOwned, GraphReadOnly, pointerOf, eventsThrough, queryG
 import { ensureGraphOwner, graphOwnerAlive, graphOwnerStatus, OWNER_BATCH_MS, OWNER_START_WAIT_MS, startGraphOwner, stopGraphOwner } from "../../relate/owner/index.ts";
 import type { GraphPointer } from "../../relate/graph/index.ts";
 import type { GraphCounts, NetworkGraphCounts } from "../../relate/graph/index.ts";
-import { MACHINE_PLATFORMS, MACHINE_VIEWS, relateMachine } from "../../relate/machine/index.ts";
+import { MACHINE_FORMS, MACHINE_PLATFORMS, MACHINE_VIEWS, machineGenuiBlock, relateMachine } from "../../relate/machine/index.ts";
 import type { MachinePlatform, MachineView } from "../../relate/machine/index.ts";
 import { defaultDbPath, openDatabase } from "../../storage/schema/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseInput } from "../runner/helpers/index.ts";
@@ -16,15 +16,15 @@ export const RELATE_USAGE = [
   "       log relate verify [--json]",
   "       log relate ask \"<text>\" [--json]",
   "       log relate query \"<cypher>\" [--platform <p>] [--json]",
-  "       log relate machine [--person|--to <h>] [--view <v>] [--platform <p>] [--json]",
+  "       log relate machine [--person|--to <h>] [--view|--platform|--form <v>] [--json]",
   "       log relate owner status|start|stop [--json]",
-  "The graph is a projection of log.db; a build can always be redone (docs/relateGraph.md).",
+  "The graph is a projection of log.db; a build can be redone (docs/relateGraph.md).",
 ].join("\n");
 
 export const RELATE_INPUT: CommandInput = {
   forms: [
     { words: ["build"], effect: "write", summary: "Project log.db into a new current Relate graph (local only)", positionals: [], flags: [JSON_FLAG] },
-    { words: ["status"], summary: "The Relate graph and how far behind log.db it is", positionals: [], flags: [{ name: "owner", kind: "string", description: "start or stop the graph owner" }, JSON_FLAG] },
+    { words: ["status"], summary: "The Relate graph and how far it lags log.db", positionals: [], flags: [{ name: "owner", kind: "string", description: "start or stop the graph owner" }, JSON_FLAG] },
     { words: ["verify"], summary: "Check every Relate graph count against log.db", positionals: [], flags: [JSON_FLAG] },
     { words: ["ask"], summary: "The connected context (chats, engagement, groups, introducers, orbit) of the people a text names", positionals: [{ name: "text", kind: "string", required: true, description: "A prompt or note naming people, e.g. \"reply to @someone\"" }], flags: [JSON_FLAG] },
     {
@@ -35,7 +35,8 @@ export const RELATE_INPUT: CommandInput = {
         { name: "person", kind: "string", description: "Who: where you stand and the next move" },
         { name: "to", kind: "string", description: "Who: the route to them through people you know" },
         { name: "view", kind: "enum", values: MACHINE_VIEWS, description: "person, route or network" },
-        { name: "platform", kind: "enum", values: MACHINE_PLATFORMS, description: "Only this platform's accounts: all, twitter, discord, instagram, slack, reddit, facebook or linkedin" },
+        { name: "platform", kind: "enum", values: MACHINE_PLATFORMS, description: "Only this platform's accounts" },
+        { name: "form", kind: "enum", values: MACHINE_FORMS, description: "genui: the block to pass to show_blocks" },
         JSON_FLAG,
       ],
     },
@@ -149,7 +150,9 @@ export const relateCommand: Command = {
       const flag = (name: string) => (typeof parsed.flags[name] === "string" ? (parsed.flags[name] as string) : undefined);
       const answer = await relateMachine({ view: flag("view") as MachineView | undefined, person: flag("person"), to: flag("to"), platform: flag("platform") as MachinePlatform | undefined }, dbPath);
       if (!answer.ok) return refuse("relate machine", answer.code, answer.problem);
-      if (json) return { code: 0, stdout: JSON.stringify({ block: answer.block, text: answer.text, throughSeq: answer.throughSeq }, null, 2) };
+      const block = flag("form") === "genui" ? machineGenuiBlock(answer.block) : answer.block;
+      if (json) return { code: 0, stdout: JSON.stringify({ block, text: answer.text, throughSeq: answer.throughSeq }, null, 2) };
+      if (flag("form") === "genui") return { code: 0, stdout: JSON.stringify(block) };
       return { code: 0, stdout: answer.text };
     }
     return refuseInput("relate", 'say build, status, verify, ask "<text>", query "<cypher>", machine or owner status|start|stop', RELATE_USAGE);

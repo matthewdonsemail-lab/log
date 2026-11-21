@@ -30,6 +30,11 @@ swaps the line for text on chats that can't draw. log uses the same delivery for
 - Left out to keep the copy small: `assets/` (screenshots and videos, 9.5 MB), `tests/`, every `*.test.*` file and
   the test helpers (`web/src/core/testing.tsx`, `web/src/lib/locale.testing.ts`), `.github/`, `README.md`,
   `CHANGELOG.md`, `CONTRIBUTING.md`, `SECURITY.md`, `web/package-lock.json` and `web/vitest.config.ts`.
+- **One extension point, for log's `stateMachine` block** (an upstream PR candidate): `registerBlock` and
+  `blockEntry` in `web/src/registry.tsx` (readBlocks and Blocks look types up through it, built-in names first) and
+  `register_block` in `core/extensions.py` (adds a type's checker, text fallback and catalog entry, and rewrites the
+  show_blocks description, which `tools/show_blocks.py` now builds in `description()`). log registers `stateMachine`
+  through both from `src/mcp/apps/report/view/genuiMachine.tsx` and `hermesPlugin/genuiMachine.py`.
 - Nothing else is edited: the Python tools, hooks, blocks, recipes and templates are upstream's as of that commit.
 
 This folder is not installed as a Hermes plugin by log. To use upstream's own blocks (show_blocks and the rest) with

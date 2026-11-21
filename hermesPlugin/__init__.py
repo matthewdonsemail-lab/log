@@ -35,6 +35,8 @@ APP_ATTR = re.compile(r"""([A-Za-z]+)=(?:"([^"]*)"|'([^']*)')""")
 APP_ELSEWHERE = "(log's {tool} view, which shows only in Hermes Desktop)"
 GENUI = ("vendor", "hermesGenui")
 GENUI_PACKAGE = "log_hermes_genui"
+GENUI_MACHINE = ("hermesPlugin", "genuiMachine.py")
+GENUI_MACHINE_PACKAGE = "log_hermes_genui_machine"
 SKILLS = ("hermesPlugin", "skills")
 MCP_SERVER = "log"
 MCP_SETUP = 'hermes mcp add log --command logMcp --env "LOG_ACCOUNTS=${LOG_ACCOUNTS}"'
@@ -636,11 +638,26 @@ def combined_llm_output(response_text="", platform="", **kwargs):
     return text if text != response_text else None
 
 
+def register_genui_blocks(genui, root):
+    path = root.joinpath(*GENUI_MACHINE)
+    if not path.is_file() or not hasattr(genui, "register_block"):
+        return False
+    try:
+        spec = importlib.util.spec_from_file_location(GENUI_MACHINE_PACKAGE, path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return bool(module.register_machine(genui))
+    except Exception:
+        return False
+
+
 def register_genui(ctx):
     try:
-        genui = load_genui(log_root())
+        root = log_root()
+        genui = load_genui(root)
         if genui is None:
             return False
+        register_genui_blocks(genui, root)
         wrapped = GenuiContext(ctx)
         genui.register(wrapped)
         GENUI_TRANSFORMS[:] = wrapped.transforms

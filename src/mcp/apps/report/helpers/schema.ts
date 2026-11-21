@@ -56,10 +56,11 @@ const personList = z.strictObject({
 const callout = z.strictObject({ type: z.literal("callout"), tone: z.enum(["info", "success", "warning"]).optional(), title: line().optional(), text: line(L.text) });
 
 const ms = finite.min(0).nullable().optional();
-const machineState = z.strictObject({
-  id: line(40),
+export const machineState = z.strictObject({
+  id: line(M.id),
   label: line(M.label),
   note: line(M.note).optional(),
+  explain: line(M.explain).optional(),
   tone: z.enum(MACHINE_TONES).optional(),
   count: finite.min(0).optional(),
   chips: z.array(line(M.label)).max(M.chips).optional(),
@@ -71,10 +72,10 @@ const machineState = z.strictObject({
   details: z.array(z.strictObject({ label: line(), value: line(M.note) })).max(M.details).optional(),
   platform: line(M.platform).optional(),
 });
-const machineTransition = z.strictObject({
-  id: line(40),
-  from: line(40),
-  to: line(40),
+export const machineTransition = z.strictObject({
+  id: line(M.id),
+  from: line(M.id),
+  to: line(M.id),
   event: line(M.event),
   tool: line(M.tool).optional(),
   by: z.enum(["you", "them"]).optional(),
@@ -94,7 +95,7 @@ const machinePlatformView = z.strictObject({
   states: z.array(machineState).min(1).max(M.states),
   transitions: z.array(machineTransition).max(M.transitions),
 });
-const stateMachine = z
+export const stateMachine = z
   .strictObject({
     type: z.literal("stateMachine"),
     title: line(L.title).optional(),
@@ -111,7 +112,7 @@ const stateMachine = z
     const ids = new Set(block.states.map((s) => s.id));
     if (ids.size !== block.states.length) ctx.addIssue({ code: "custom", path: ["states"], message: "state ids repeat" });
     block.transitions.forEach((t, i) => {
-      for (const end of ["from", "to"] as const) if (!ids.has(t[end])) ctx.addIssue({ code: "custom", path: ["transitions", i, end], message: `no state has id "${t[end]}"` });
+      for (const [end, id] of Object.entries({ from: t.from, to: t.to })) if (!ids.has(id)) ctx.addIssue({ code: "custom", path: ["transitions", i, end], message: `no state has id "${id}"` });
     });
   });
 

@@ -144,6 +144,27 @@ function baseTransition(spec: MachineEdgeSpec, ladder: Ladder): MachineTransitio
 
 const clip = (text: string, n: number): string => (text.length > n ? `${text.slice(0, n - 1)}…` : text)
 
+const explained = (text: string): string => clip(text, MACHINE_LIMITS.explain)
+
+const either = (words: readonly string[]): string => (words.length > 1 ? `${words.slice(0, -1).join(', ')} or ${words[words.length - 1]}` : words[0] ?? '')
+
+const moveOf = (t: MachineTransition): string => `${t.event}${t.tool ? ` with ${t.tool}` : ''}`
+
+function personExplain(state: LadderState, ladder: Ladder, standing: PersonStanding, step: StageStep | undefined, next: MachineTransition | undefined, leadName: string | null): string {
+  const rank = rankIn(ladder)
+  if (state.id === standing.stage) {
+    const why = step ? `since ${isoDay(step.at)}: ${step.event}` : 'because nothing has passed between you yet'
+    const last = rank(state.id) === ladder.states.length - 1
+    const move = next ? (next.by === 'them' ? `the next move is theirs: ${next.event}` : `the next move is yours: ${moveOf(next)}`) : last ? 'you are both writing, so keep the thread going' : leadName ? `the next move is on ${leadName}, where you are further along` : 'log has no move for this here yet'
+    return explained(`You stand here ${why}; ${move}.`)
+  }
+  if (step) return explained(`Behind you: ${step.event} on ${isoDay(step.at)}.`)
+  if (rank(state.id) === 0) return explained('Where every relationship starts.')
+  const current = stateIn(ladder, standing.stage)
+  if (rank(state.id) < rank(standing.stage)) return explained(`Skipped on the way to ${(current?.label ?? standing.stage).toLowerCase()}.`)
+  return explained(`Ahead, reached by: ${either(ladder.edges.filter((x) => x.to === state.id).map((x) => x.event))}.`)
+}
+
 function ladderState(state: LadderState, ladder: Ladder, extra: Partial<MachineState> = {}): MachineState {
   const last = ladder.states[ladder.states.length - 1].id
   return { id: state.id, label: state.label, note: state.note, tone: state.tone, ...(state.id === ladder.states[0].id ? { initial: true } : {}), ...(state.id === last && ladder.states.length > 1 ? { final: true } : {}), ...extra }
@@ -154,7 +175,7 @@ interface Lane {
   transitions: MachineTransition[]
 }
 
-function laneOf(standing: PersonStanding, accounts: readonly MachineAccount[], leading: boolean): Lane {
+function laneOf(standing: PersonStanding, accounts: readonly MachineAccount[], leading: boolean, leadName: string | null = null): Lane {
   const e = standing.evidence
   const platform = standing.platform
   const ladder = ladderOf(platform)
@@ -207,13 +228,14 @@ function laneOf(standing: PersonStanding, accounts: readonly MachineAccount[], l
     }
     return out.slice(0, MACHINE_LIMITS.details)
   }
+  const nextT = transitions.find((t) => t.next)
   const introAt = [...ladder.states].reverse().find((st) => st.tier === 'nearYou' && reached.has(st.id))?.id
   const states = ladder.states.map((state) => {
     const step = reached.get(state.id)
     const visited = state.id === ladder.states[0].id || Boolean(step)
     const intro = state.id === introAt && e.introducers?.length ? [clip(`intro: @${e.introducers[0]}`, 28)] : []
     const chips = [...(step?.chip ? [step.chip] : []), ...intro]
-    return ladderState(state, ladder, { ...(step?.where ? { note: clip(step.where, MACHINE_LIMITS.note) } : {}), visited, ...(step?.at ? { at: step.at } : {}), ...(state.id === standing.stage ? { current: true } : {}), ...(chips.length ? { chips: chips.slice(0, MACHINE_LIMITS.chips) } : {}), details: details(state) })
+    return ladderState(state, ladder, { ...(step?.where ? { note: clip(step.where, MACHINE_LIMITS.note) } : {}), explain: personExplain(state, ladder, standing, step, nextT, leadName), visited, ...(step?.at ? { at: step.at } : {}), ...(state.id === standing.stage ? { current: true } : {}), ...(chips.length ? { chips: chips.slice(0, MACHINE_LIMITS.chips) } : {}), details: details(state) })
   })
   return { states, transitions }
 }
@@ -230,7 +252,7 @@ function joinedLanes(lanes: { platform: string; lane: Lane; lead: boolean }[]): 
     const id = (s: string) => (s === start ? s : `${platform}.${s}`)
     for (const st of lane.states) {
       if (st.id === start) {
-        if (!states.some((x) => x.id === start)) states.push({ id: st.id, label: st.label, note: st.note, tone: st.tone, initial: true, visited: true })
+        if (!states.some((x) => x.id === start)) states.push({ id: st.id, label: st.label, note: st.note, explain: explained('Where every relationship starts; each platform below is its own lane.'), tone: st.tone, initial: true, visited: true })
         continue
       }
       const here = st.current && !lead
@@ -261,7 +283,7 @@ export function personBlock(standing: PersonStanding, throughSeq: number | null,
     if (linkedCount < 2) for (const t of lane.transitions) delete t.platform
     return { ...head, summary, states: lane.states, transitions: lane.transitions.slice(0, MACHINE_LIMITS.transitions) }
   }
-  const joined = joinedLanes(lanes.map((l, i) => ({ platform: l.platform, lane: laneOf(l, accounts, i === 0), lead: i === 0 })))
+  const joined = joinedLanes(lanes.map((l, i) => ({ platform: l.platform, lane: laneOf(l, accounts, i === 0, i === 0 ? null : nameOf(lead.platform)), lead: i === 0 })))
   const others = lanes.slice(1).map((l) => `${nameOf(l.platform)} "${labelOf(l)}"`).join(', ')
   const summary = `${whoOf(e)} across ${lanes.length} platforms is furthest along on ${nameOf(lead.platform)}, at "${labelOf(lead)}"${others ? `; ${others}` : ''}${nextText(joined.transitions.find((t) => t.next))}${through(throughSeq)}`
   return { ...head, summary, states: joined.states, transitions: joined.transitions }
@@ -294,7 +316,9 @@ export function networkBlock(standings: readonly PersonStanding[], throughSeq: n
     const quiet = state.id === ids[0] ? 0 : stuck(people)
     const chips = [...(quiet ? [`${quiet} quiet 14d+`] : []), ...names]
     const details: MachineDetail[] = [{ label: 'People here', value: String(people.length) }, ...(quiet ? [{ label: 'Quiet for 14 days or more', value: String(quiet) }] : []), ...people.slice(0, 8).map((s) => ({ label: whoOf(s.evidence), value: `${s.evidence.platform}, last ${isoDay(s.evidence.lastAt)}` }))]
-    return ladderState(state, ladder, { count: people.length, visited: people.length > 0, chips: chips.slice(0, MACHINE_LIMITS.chips), details: details.slice(0, MACHINE_LIMITS.details) })
+    const onward = transitions.filter((t) => t.from === state.id).map((t) => t.event)
+    const explain = explained(`${people.length.toLocaleString('en-US')} ${people.length === 1 ? 'person stands' : 'people stand'} here${quiet ? `, ${quiet} quiet for 14 days or more` : ''}${onward.length ? `; the way on: ${either(onward)}` : '; the end of the road: keep these conversations going'}.`)
+    return ladderState(state, ladder, { count: people.length, visited: people.length > 0, explain, chips: chips.slice(0, MACHINE_LIMITS.chips), details: details.slice(0, MACHINE_LIMITS.details) })
   })
   const most = [...states].filter((s) => s.id !== ids[0]).sort((a, b) => (b.count ?? 0) - (a.count ?? 0))[0]
   const summary = `${standings.length.toLocaleString('en-US')} people across ${ids.length} states${most?.count ? `; most stand at "${most.label}" (${most.count})` : ''}${through(throughSeq)}`
@@ -305,23 +329,23 @@ const stageLabel = (platform: string, stage: Stage): string => stateIn(ladderOf(
 
 export function routeBlock(owner: { label: string; note: string }, target: PersonStanding, links: readonly RouteLink[], throughSeq: number | null): StateMachineBlock {
   const t = target.evidence
-  const states: MachineState[] = [{ id: 'you', label: 'You', note: owner.note, tone: 'gray', initial: true, current: true, visited: true, details: [{ label: 'Accounts', value: owner.note }] }]
+  const best = links[0]
+  const states: MachineState[] = [{ id: 'you', label: 'You', note: owner.note, explain: explained(best ? `You start here; the best move is to ask @${best.handle} for an intro.` : `You start here; nobody you know connects to ${whoOf(t)} yet, so reach out directly.`), tone: 'gray', initial: true, current: true, visited: true, details: [{ label: 'Accounts', value: owner.note }] }]
   const transitions: MachineTransition[] = []
   links.forEach((link, i) => {
     const id = `via${i + 1}`
     const standing = stageLabel(link.platform, link.stage)
-    states.push({ id, label: clip(`@${link.handle}`, 28), note: standing, tone: stateIn(ladderOf(link.platform), link.stage)?.tone ?? 'gray', visited: true, chips: link.reasons.slice(0, 2).map((r) => clip(r, 28)), ...(link.lastAt ? { at: link.lastAt } : {}), details: [{ label: 'With you', value: standing }, { label: 'Platform', value: link.platform }, ...link.reasons.map((r) => ({ label: 'Link to the target', value: r }))] })
+    states.push({ id, label: clip(`@${link.handle}`, 28), note: standing, explain: explained(`${i === 0 ? 'Best connector' : 'Another connector'} (${standing.toLowerCase()}): ${link.reasons[0] ?? 'close to the target'}.`), tone: stateIn(ladderOf(link.platform), link.stage)?.tone ?? 'gray', visited: true, chips: link.reasons.slice(0, 2).map((r) => clip(r, 28)), ...(link.lastAt ? { at: link.lastAt } : {}), details: [{ label: 'With you', value: standing }, { label: 'Platform', value: link.platform }, ...link.reasons.map((r) => ({ label: 'Link to the target', value: r }))] })
     const dm = toolFor(link.platform, 'dm')
     transitions.push({ id: `ask${i + 1}`, from: 'you', to: id, event: 'ask for an intro', ...(dm ? { tool: dm } : {}), by: 'you', ...(i === 0 ? { next: true } : {}) })
     transitions.push({ id: `intro${i + 1}`, from: id, to: 'target', event: 'introduces you', by: 'them', note: clip(link.reasons[0] ?? '', 40), ...(i === 0 ? {} : { dashed: true }) })
   })
   const lead = target.lanes?.[0] ?? target
   const now = stageLabel(lead.platform, lead.stage)
-  states.push({ id: 'target', label: clip(whoOf(t), 28), note: now, tone: 'purple', final: true, visited: true, ...(t.lastAt ? { at: t.lastAt } : {}), details: [{ label: 'With you now', value: now }, { label: 'Platform', value: t.platform }, ...(t.near.length ? [{ label: 'Shared', value: t.near.join(', ') }] : [])] })
+  states.push({ id: 'target', label: clip(whoOf(t), 28), note: now, explain: explained(`Where they stand: ${now.toLowerCase()}; ${best ? `an intro from @${best.handle} is the warmest way in` : 'a direct message is the only way in so far'}.`), tone: 'purple', final: true, visited: true, ...(t.lastAt ? { at: t.lastAt } : {}), details: [{ label: 'With you now', value: now }, { label: 'Platform', value: t.platform }, ...(t.near.length ? [{ label: 'Shared', value: t.near.join(', ') }] : [])] })
   const early = tierRank(lead.tier) <= tierRank('followsYou')
   const direct = toolFor(t.platform, early && toolFor(t.platform, 'follow') ? 'follow' : 'dm')
   transitions.push({ id: 'direct', from: 'you', to: 'target', event: links.length ? 'cold opener' : 'reach out directly', ...(direct ? { tool: direct } : {}), by: 'you', dashed: links.length > 0, ...(links.length ? {} : { next: true }) })
-  const best = links[0]
   const summary = best ? `Best route to ${whoOf(t)}: ask @${best.handle} (${stageLabel(best.platform, best.stage).toLowerCase()} with you; ${best.reasons[0] ?? 'shares their circles'}) for an intro${links.length > 1 ? `, or ${links.slice(1).map((l) => `@${l.handle}`).join(', ')}` : ''}${through(throughSeq)}` : `No one you know connects to ${whoOf(t)} in the graph yet: reach out directly.`
   return { type: MACHINE_BLOCK, title: `How to reach ${whoOf(t)}`, view: 'route', summary, states, transitions }
 }

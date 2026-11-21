@@ -36,6 +36,7 @@ flowchart TD
 ## What to know
 
 - **It is a block.** `relateMachine` returns a `stateMachine` block in the `report` view, so any report can carry one too: `report` { title, blocks: [{ type: "stateMachine", states, transitions }] }.
+- **In a Hermes GenUI page.** `relateMachine` { person, form: "genui" } returns the same block as JSON; pass it unchanged as one of `show_blocks`' blocks, between text and callouts that make the point. Each state's `explain` (where they stand, why, the next move) shows on the node, on hover and in the panel on a click.
 - **Light and dark** follow the host's theme; the colours, sizes and fonts all live in `src/relate/machine/theme.ts`.
 - **Where the states come from:** one ladder per platform in `LADDERS` (`src/relate/machine/types.ts`). Follows and engagements come from log.db's interactions (their first time), servers, channels and groups from the graph's rooms (a channel counts once you have both written in it), replies and mentions from the graph's `REPLIED_TO` and `MENTIONED` edges either way, DMs from the first message each way, and the network map's ring when log.db has nothing else.
 - **Layout:** a machine wider than the view is laid out top-down, so one person's machine never renders as a single long row.

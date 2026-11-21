@@ -1,0 +1,30 @@
+import { MACHINE_BLOCK } from './types'
+import type { StateMachineBlock } from './types'
+
+export const MACHINE_GENUI_FILE = ['hermesPlugin', 'genuiMachine.json'] as const
+
+export const MACHINE_GENUI_CATALOG = {
+  kind: MACHINE_BLOCK,
+  for: "A relationship state machine in log's stately look: the states someone moves through with the owner, the moves between them labelled with the log tool that makes each, where it stands now and the next move. Each state's explain is shown on the node, on hover and in the side panel on a click.",
+  use_when: 'Explaining where the owner stands with a person, the route to someone through people he knows, or his whole network by state. Get the block from the log tool relateMachine with form "genui" and pass it unchanged; mix it with text, callouts and tables.',
+  fields: 'title, view: person | route | network, summary, direction: right | down (optional). states: [{id, label, note, explain, tone, current, visited, initial, final, at, count, chips, details: [{label, value}], platform}]. transitions: [{id, from, to, event, tool, by: you | them, at, count, taken, next, dashed, note, platform}]. accounts: [{platform, handle, link: linked | suggested}] (optional).',
+  example: {
+    type: MACHINE_BLOCK,
+    title: 'Where you are with @someone',
+    view: 'person',
+    states: [
+      { id: 'new', label: 'New', note: 'Known to log, nothing between you yet', explain: 'Where every relationship starts.', tone: 'gray', initial: true, visited: true },
+      { id: 'mentioned', label: 'Replied or mentioned', note: 'Replied to or mentioned each other in a channel', explain: 'You stand here since they replied to you in a channel; the next move is yours: DM them with discordSend.', tone: 'orange', current: true, visited: true },
+      { id: 'dmOpened', label: 'DM opened', explain: 'Ahead, reached by: DM them.', tone: 'yellow', visited: false },
+    ],
+    transitions: [
+      { id: 'mention', from: 'new', to: 'mentioned', event: 'replied or mentioned', by: 'them', taken: true },
+      { id: 'dm', from: 'mentioned', to: 'dmOpened', event: 'DM them', tool: 'discordSend', by: 'you', next: true },
+    ],
+  },
+}
+
+export function machineGenuiBlock(block: StateMachineBlock): StateMachineBlock {
+  const { platforms, ...rest } = block
+  return rest
+}
