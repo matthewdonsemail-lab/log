@@ -4,6 +4,10 @@ export const MACHINE_VIEWS = ['person', 'route', 'network'] as const
 
 export type MachineView = (typeof MACHINE_VIEWS)[number]
 
+export const MACHINE_FORMS = ['view', 'genui'] as const
+
+export type MachineForm = (typeof MACHINE_FORMS)[number]
+
 export const MACHINE_TONES = ['gray', 'blue', 'teal', 'green', 'yellow', 'orange', 'red', 'pink', 'purple'] as const
 
 export type MachineTone = (typeof MACHINE_TONES)[number]
@@ -12,7 +16,7 @@ export const MACHINE_DIRECTIONS = ['right', 'down'] as const
 
 export type MachineDirection = (typeof MACHINE_DIRECTIONS)[number]
 
-export const MACHINE_LIMITS = { states: 16, transitions: 24, chips: 6, details: 12, label: 60, note: 200, event: 40, tool: 40, accounts: 12, platform: 20 } as const
+export const MACHINE_LIMITS = { states: 16, transitions: 24, chips: 6, details: 12, id: 40, label: 60, note: 200, explain: 400, event: 40, tool: 40, accounts: 12, platform: 20 } as const
 
 export const MACHINE_PLATFORMS = ['all', 'twitter', 'discord', 'instagram', 'slack', 'reddit', 'facebook', 'linkedin'] as const
 
@@ -31,6 +35,7 @@ export interface MachineState {
   id: string
   label: string
   note?: string
+  explain?: string
   tone?: MachineTone
   count?: number
   chips?: string[]

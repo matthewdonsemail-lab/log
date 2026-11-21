@@ -2,11 +2,10 @@
 // through the same lookup. One list is one board: its blocks share which flow node a steps block has lit.
 import type { ReactNode } from "react";
 import { FlowLightBoard } from "../blocks/flow/highlight";
-import { REGISTRY, type Block } from "../registry";
-import type { BlockEntry } from "./types";
+import { blockEntry, type Block } from "../registry";
 
 function BlockView({ block }: { block: Block }) {
-  const entry = REGISTRY[block.type] as BlockEntry<Block> | undefined;
+  const entry = blockEntry(block.type);
   if (!entry) return null;
   const { Component } = entry;
   return <Component block={block} draw={drawAll} />;

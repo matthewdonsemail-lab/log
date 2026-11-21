@@ -200,6 +200,12 @@ Hermes Desktop doesn't draw MCP Apps (NousResearch/hermes-agent#61095), and its 
 
 Checked by: code and SubQ
 
+### REQ-MCP-29: The relationship state machine is a Hermes GenUI block, drawn with log's own machine
+
+`show_blocks` (the vendored hermes-genui, `vendor/hermesGenui`) takes a `stateMachine` block next to its own blocks, so the agent can compose one page where the machine's states explain a point (where the owner stands with someone, why, the next move) between text, callouts and tables. hermes-genui's block types are a closed registry, so log adds one extension point to its copy, written as an upstream patch: `registerBlock` in `web/src/registry.tsx` (readBlocks and Blocks look a type up with `blockEntry`, built-in names first, so none can be taken) and `register_block` in `core/extensions.py` (adds the checker, text fallback and catalog entry, and rewrites the show_blocks description). log's Desktop half (`hermesDesktop.tsx`) registers `MACHINE_GENUI_ENTRY` (`src/mcp/apps/report/view/genuiMachine.tsx`) before GenUI's own register: it reads the block with the report's `stateMachine` schema and draws it with the report's `StateMachine`, so `drawMachine` and `theme.ts` (stately look, Satoshi, light and dark from Hermes's `.dark`) are the one copy; inside `.rmFrame` the side panel stacks under the canvas when the block is narrower than `MACHINE_SIZE.stackBelow`. The Python half (`register_genui_blocks` in `hermesPlugin/__init__.py`) loads `hermesPlugin/genuiMachine.py` from log's root and calls `register_machine`, which checks fields, limits, tones and that every transition names a state, from `hermesPlugin/genuiMachine.json` that `bun run docs:build` writes from `MACHINE_LIMITS` and the schema's keys (`scripts/hermes/genuiMachine.ts`). Every state carries `explain`: one plain sentence drawn on the node under a hairline, the node's hover title and the panel's first field on a click (`personBlock`, `routeBlock`, `networkBlock`). `relateMachine { form: "genui" }` returns that block (`machineGenuiBlock`, without the per-platform copies) as JSON in its text and as `structuredContent.block`, to pass unchanged into show_blocks. The owner, 2026-11-22: the state machine inside GenUI pages, its nodes explaining the point.
+
+Checked by: code and SubQ
+
 ## What reaches the model, by capability and platform
 
 ### REQ-MCP-22: Guides are scoped by capability and platform, fit every host, and say "the owner"

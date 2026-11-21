@@ -5,6 +5,7 @@ import { BlockActions, composerActions, type Rest } from "./host/actions";
 import { BlockTag } from "./host/BlockTag";
 import { registerLive } from "./live/register";
 import { openAndFill } from "./live/open";
+import { registerBlock } from "./registry";
 import css from "./styles";
 
 const ID = "hermes-genui";
@@ -24,6 +25,7 @@ function injectStyles(): void {
 export default {
   id: ID,
   name: "Hermes GenUI",
+  registerBlock,
   register(ctx: any) {
     injectStyles();
     const load = (blockId: string) => ctx.rest(`/blocks/${blockId}`);

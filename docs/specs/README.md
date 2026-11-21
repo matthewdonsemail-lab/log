@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 57 domains, 678 requirements. Each one's anchors are proved against its code by the syntax tree on every commit, push and pull request (`bun run check:specs`). SubQ reads a requirement against its code only when asked (`bun run check:specs --subq`, rule 170). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 57 domains, 679 requirements. Each one's anchors are proved against its code by the syntax tree on every commit, push and pull request (`bun run check:specs`). SubQ reads a requirement against its code only when asked (`bun run check:specs --subq`, rule 170). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -60,6 +60,7 @@ The log MCP server is how every agent works with log-cli: it carries the owner's
 - **REQ-MCP-19** browserView shows an account's live browser where the person is, and only their own gated input reaches it
 - **REQ-MCP-20** report draws a report from log's block catalog in every host, inline where the host can and as markdown where it can't
 - **REQ-MCP-27** log's MCP App views draw in Hermes Desktop through one vendored host card (`::logapp`)
+- **REQ-MCP-29** The relationship state machine is a Hermes GenUI block, drawn with log's own machine
 - **REQ-MCP-22** Guides are scoped by capability and platform, fit every host, and say "the owner"
 - **REQ-MCP-23** Every result carries its code, platform and capability
 - **REQ-MCP-24** Both servers serve revision 2026-07-28 statelessly beside the older revisions

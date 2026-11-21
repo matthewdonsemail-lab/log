@@ -34,6 +34,7 @@ Say: **"go on docs/useCases/network/relationshipMachine.md"**. The agent reads t
 ## What to know
 
 - **It is a block.** `relateMachine` returns a `stateMachine` block in the `report` view, so any report can carry one too: `report` { title, blocks: [{ type: "stateMachine", states, transitions }] }.
+- **In a Hermes GenUI page.** `relateMachine` { person, form: "genui" } returns the same block as JSON; pass it unchanged as one of `show_blocks`' blocks, between text and callouts that make the point. Each state's `explain` (where they stand, why, the next move) shows on the node, on hover and in the panel on a click.
 - **Light and dark** follow the host's theme; the colours, sizes and fonts all live in `src/relate/machine/theme.ts`.
 - **Where the states come from:** follows and likes from log.db's interactions (their first time), DMs from the first message each way, groups and circles from the graph, and the network map's ring when log.db has nothing else.
 - A DM you sent to someone who never wrote in it only shows once the chat lists them as a member.

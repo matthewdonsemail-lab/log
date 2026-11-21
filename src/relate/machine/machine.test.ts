@@ -156,7 +156,13 @@ describe('drawing the machine', () => {
     expect(doc.querySelectorAll('.rmNodeBox').length).toBe(ivy.states.length)
     const first0 = ivy.states[0]
     const box0 = drawn.layout.nodes.get(first0.id)!
-    if (!first0.chips?.length && !first0.current && !first0.at) expect(box0.h).toBe(MACHINE_SIZE.headerH + Math.ceil(2 * MACHINE_SIZE.bodyPadY + MACHINE_FONT.body.line + MACHINE_SIZE.border))
+    const plainDrawn = drawMachine({ ...ivy, states: ivy.states.map(({ explain, ...st }) => st) }, { direction: 'right' })
+    const plain0 = plainDrawn.layout.nodes.get(first0.id)!
+    if (!first0.chips?.length && !first0.current && !first0.at) expect(plain0.h).toBe(MACHINE_SIZE.headerH + Math.ceil(2 * MACHINE_SIZE.bodyPadY + MACHINE_FONT.body.line + MACHINE_SIZE.border))
+    const explainLines = (drawn.svg.match(new RegExp(`data-id="${first0.id}"[^]*?</g>`))?.[0].match(/class="rmExplain"/g) ?? []).length
+    expect(first0.explain).toBeTruthy()
+    expect(explainLines).toBeGreaterThan(0)
+    if (!first0.chips?.length && !first0.current && !first0.at) expect(box0.h).toBe(MACHINE_SIZE.headerH + Math.ceil(2 * MACHINE_SIZE.bodyPadY + MACHINE_FONT.body.line + 2 * MACHINE_SIZE.explainGap + MACHINE_SIZE.explainRule + explainLines * MACHINE_FONT.explain.line + MACHINE_SIZE.border))
     const placed = ivy.states.map((st) => ({ st, box: drawn.layout.nodes.get(st.id)! }))
     const first = Math.min(...placed.map((n) => n.box.x))
     const last = Math.max(...placed.map((n) => n.box.x))

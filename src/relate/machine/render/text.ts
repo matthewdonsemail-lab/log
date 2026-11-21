@@ -14,6 +14,7 @@ export function machineText(block: StateMachineBlock): string {
   if (block.platforms?.length) lines.push(`Platforms: ${block.platforms.map((p) => `${p.platform}${p.platform === (block.platform ?? 'all') ? ' (shown)' : ''} ${p.count}`).join(' · ')}`)
   const states = block.states.map((s) => `${s.current ? '▶ ' : ''}${s.label}${typeof s.count === 'number' ? ` (${s.count})` : ''}${s.chips?.length ? ` [${s.chips.join(', ')}]` : ''}${s.visited === false ? '' : s.at ? ` since ${when(s.at)}` : ''}`)
   lines.push(`States: ${states.join(' · ')}`)
+  for (const s of block.states.filter((x) => x.explain)) lines.push(`- ${s.label}: ${s.explain}`)
   const taken = block.transitions.filter((t) => t.taken && t.at).sort((a, b) => (a.at ?? 0) - (b.at ?? 0))
   if (taken.length) {
     lines.push('Path taken:')

@@ -32,10 +32,10 @@ Each tool's own description carries its full usage, notes, live line and rules; 
 |---|---|---|
 | `routerIndex` | Is the prompt router's meaning index of plays, tools and skills… | `log router index [--apply] [--json]   (is the prompt router's meaning index current; --apply builds it)` |
 | `relateBuild` | Project log.db into a new current Relate graph | `log relate build [--json]` |
-| `relateStatus` | The Relate graph and how far behind log.db it is | `log relate status [--owner start\|stop] [--json]` |
+| `relateStatus` | The Relate graph and how far it lags log.db | `log relate status [--owner start\|stop] [--json]` |
 | `relateVerify` | Check every Relate graph count against log.db | `log relate verify [--json]` |
 | `relateAsk` | The connected context | `log relate ask "<text>" [--json]` |
-| `relateMachine` | A relationship state machine | `log relate machine [--person\|--to <h>] [--view <v>] [--platform <p>] [--json]` |
+| `relateMachine` | A relationship state machine | `log relate machine [--person\|--to <h>] [--view\|--platform\|--form <v>] [--json]` |
 | `relateQuery` | A read-only Cypher query on the Relate graph | `log relate query "<cypher>" [--platform <p>] [--json]` |
 | `people` | List everyone linked across platforms, with each person's identities | `log people [--json]` |
 | `peopleShow` | The person card for someone across every platform | `log people show <who> [--json]` |

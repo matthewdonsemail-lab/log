@@ -1,9 +1,12 @@
+import "../../widgetKit/jitless.ts";
 import { host, TRANSCRIPT_DIRECTIVE_AREA } from "@hermes/plugin-sdk";
 import kitCss from "logViewCss";
 import { useEffect, useState } from "react";
 import type { MouseEvent } from "react";
 import { composerActions } from "../../../../../vendor/hermesGenui/web/src/host/actions.ts";
 import genui from "../../../../../vendor/hermesGenui/web/src/plugin.tsx";
+import { MACHINE_BLOCK } from "../../../../relate/machine/types.ts";
+import { MACHINE_GENUI_ENTRY } from "./genuiMachine.tsx";
 import { APP_DIRECTIVE, appApi, parseAppDirective } from "./appBridge.ts";
 import { injectAppStyles, LogApp } from "./hermesApp.tsx";
 import { cleanViewHtml } from "./hermesClean.ts";
@@ -79,6 +82,7 @@ export default {
   id: HERMES_PLUGIN_ID,
   name: "log",
   register(ctx: { rest: (path: string, opts?: { method?: string; body?: unknown }) => Promise<unknown>; register: (contribution: unknown) => unknown }) {
+    genui.registerBlock(MACHINE_BLOCK, MACHINE_GENUI_ENTRY);
     genui.register(ctx);
     injectStyles();
     injectAppStyles();

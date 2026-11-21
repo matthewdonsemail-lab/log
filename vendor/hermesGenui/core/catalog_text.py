@@ -5,6 +5,9 @@ from pathlib import Path
 
 CATALOG_PATH = Path(__file__).resolve().parent / "catalog.json"
 
+# Entries other plugins add with core.extensions.register_block, by kind, listed after the built-in blocks.
+EXTRA: dict[str, dict] = {}
+
 
 def _example(entry: dict) -> str:
     return json.dumps(entry["example"], ensure_ascii=False, separators=(",", ":"))
@@ -22,7 +25,7 @@ def describe() -> str:
     catalog = json.loads(CATALOG_PATH.read_text(encoding="utf-8"))
     lines = [catalog["about"], "Icons: " + ", ".join(catalog["icons"]) + ".", ""]
     atoms = [entry for entry in catalog["blocks"] if entry.get("group") == "atom"]
-    for entry in catalog["blocks"]:
+    for entry in [*catalog["blocks"], *EXTRA.values()]:
         if entry.get("group") == "atom":
             continue
         lines.append(f"{entry['kind']}: {entry['for']} Use for: {entry['use_when']} Fields: {entry['fields']}")

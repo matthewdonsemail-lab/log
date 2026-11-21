@@ -157,17 +157,25 @@ export async function runReport(input: unknown, ui: boolean, given: Partial<Repo
   return { content: [{ type: "text", text: drawn ? `${text}\n\n${hermesViewNote(drawn)}` : text }], structuredContent: drawn ? { ...payload, hermesView: drawn } : payload };
 }
 
+export const MACHINE_GENUI_NOTE = "The stateMachine block below goes into show_blocks unchanged, as one of its blocks, next to markdown, callouts or tables that explain it:";
+
 export async function runMachine(input: unknown, ui: boolean, host: ReportHost = {}): Promise<CallToolResult> {
-  const { relateMachine, MACHINE_PLATFORMS } = await import("../../../relate/machine/index.ts");
+  const { relateMachine, machineGenuiBlock, MACHINE_FORMS, MACHINE_PLATFORMS } = await import("../../../relate/machine/index.ts");
   const ask = (input ?? {}) as Record<string, unknown>;
   const pick = (name: string) => (typeof ask[name] === "string" && (ask[name] as string).trim() ? (ask[name] as string) : undefined);
   const view = pick("view");
   if (view && !["person", "route", "network"].includes(view)) return refused("reportFieldInvalid", ["view: person, route or network"]);
   const platform = pick("platform");
   if (platform && !(MACHINE_PLATFORMS as readonly string[]).includes(platform)) return refused("reportFieldInvalid", [`platform: one of ${MACHINE_PLATFORMS.join(", ")}`]);
+  const form = pick("form");
+  if (form && !(MACHINE_FORMS as readonly string[]).includes(form)) return refused("reportFieldInvalid", [`form: one of ${MACHINE_FORMS.join(", ")}`]);
   const answer = await relateMachine({ view: view as "person" | "route" | "network" | undefined, person: pick("person"), to: pick("to"), platform: platform as MachinePlatform | undefined });
   if (!answer.ok) return { isError: true, content: [{ type: "text", text: `${answer.code}: ${answer.problem}` }], structuredContent: { error: answer.code, message: answer.problem } };
   const block = answer.block;
+  if (form === "genui") {
+    const genui = machineGenuiBlock(block);
+    return { content: [{ type: "text", text: `${answer.text}\n\n${MACHINE_GENUI_NOTE}\n${JSON.stringify(genui)}` }], structuredContent: { block: genui, text: answer.text, throughSeq: answer.throughSeq } };
+  }
   return runReport({ title: block.title ?? "Relationship state machine", subtitle: `Relate graph through event ${answer.throughSeq}`, blocks: [block] }, ui, {}, host);
 }
 

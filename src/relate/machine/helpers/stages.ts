@@ -73,6 +73,24 @@ function baseTransition(spec: MachineEdgeSpec, platform: string): MachineTransit
 
 const clip = (text: string, n: number): string => (text.length > n ? `${text.slice(0, n - 1)}…` : text)
 
+const explained = (text: string): string => clip(text, MACHINE_LIMITS.explain)
+
+const either = (words: readonly string[]): string => (words.length > 1 ? `${words.slice(0, -1).join(', ')} or ${words[words.length - 1]}` : words[0] ?? '')
+
+const moveOf = (t: MachineTransition): string => `${t.event}${t.tool ? ` with ${t.tool}` : ''}`
+
+function personExplain(stage: Stage, standing: PersonStanding, step: StageStep | undefined, next: MachineTransition | undefined): string {
+  if (stage === standing.stage) {
+    const why = step ? `since ${isoDay(step.at)}: ${step.event}` : 'because nothing has passed between you yet'
+    const move = next ? (next.by === 'them' ? `the next move is theirs: ${next.event}` : `the next move is yours: ${moveOf(next)}`) : 'you are both writing, so keep the thread going'
+    return explained(`You stand here ${why}; ${move}.`)
+  }
+  if (step) return explained(`Behind you: ${step.event} on ${isoDay(step.at)}.`)
+  if (stage === 'new') return explained('Where every relationship starts.')
+  if (rankOf(stage) < rankOf(standing.stage)) return explained(`Skipped on the way to ${STAGE_FACTS[standing.stage].label.toLowerCase()}.`)
+  return explained(`Ahead, reached by: ${either(MACHINE_EDGES.filter((x) => x.to === stage).map((x) => x.event))}.`)
+}
+
 function stageState(stage: Stage, extra: Partial<MachineState> = {}): MachineState {
   const facts = STAGE_FACTS[stage]
   return { id: stage, label: facts.label, note: facts.note, tone: facts.tone, ...(stage === 'new' ? { initial: true } : {}), ...(stage === 'inConversation' ? { final: true } : {}), ...extra }
@@ -107,6 +125,7 @@ export function personBlock(standing: PersonStanding, throughSeq: number | null,
     }
   }
   if (next.dynamic) transitions.push(next.dynamic)
+  const nextT = transitions.find((t) => t.next)
   const details = (stage: Stage): MachineDetail[] => {
     const out: MachineDetail[] = []
     const step = reached.get(stage)
@@ -128,9 +147,8 @@ export function personBlock(standing: PersonStanding, throughSeq: number | null,
     const step = reached.get(stage)
     const visited = stage === 'new' || Boolean(step)
     const chips = stage === 'nearYou' && e.near.length ? [clip(e.near[0], 28)] : []
-    return stageState(stage, { visited, ...(step?.at ? { at: step.at } : {}), ...(stage === standing.stage ? { current: true } : {}), ...(chips.length ? { chips } : {}), details: details(stage) })
+    return stageState(stage, { visited, explain: personExplain(stage, standing, step, nextT), ...(step?.at ? { at: step.at } : {}), ...(stage === standing.stage ? { current: true } : {}), ...(chips.length ? { chips } : {}), details: details(stage) })
   })
-  const nextT = transitions.find((t) => t.next)
   const linkedCount = accounts.filter((a) => a.link === 'linked').length
   const where = linkedCount > 1 ? `across ${linkedCount} linked accounts` : `on ${platform}`
   const summary = `${whoOf(e)} ${where} stands at "${STAGE_FACTS[standing.stage].label}"${standing.steps.length ? ` after ${standing.steps.length} step${standing.steps.length === 1 ? '' : 's'}` : ''}${nextT ? `; next: ${nextT.event}${nextT.tool ? ` (${nextT.tool})` : ''}` : ''}${throughSeq !== null ? `. Relate graph through event ${throughSeq}.` : '.'}`
@@ -167,7 +185,9 @@ export function networkBlock(standings: readonly PersonStanding[], throughSeq: n
     const quiet = stage === 'new' ? 0 : stuck(list)
     const chips = [...(quiet ? [`${quiet} quiet 14d+`] : []), ...names]
     const details: MachineDetail[] = [{ label: 'People here', value: String(list.length) }, ...(quiet ? [{ label: 'Quiet for 14 days or more', value: String(quiet) }] : []), ...list.slice(0, 8).map((s) => ({ label: whoOf(s.evidence), value: `${s.evidence.platform}, last ${isoDay(s.evidence.lastAt)}` }))]
-    return stageState(stage, { count: list.length, visited: list.length > 0, chips: chips.slice(0, MACHINE_LIMITS.chips), details: details.slice(0, MACHINE_LIMITS.details) })
+    const onward = transitions.filter((t) => t.from === stage).map((t) => t.event)
+    const explain = explained(`${list.length.toLocaleString('en-US')} ${list.length === 1 ? 'person stands' : 'people stand'} here${quiet ? `, ${quiet} quiet for 14 days or more` : ''}${onward.length ? `; the way on: ${either(onward)}` : '; the end of the road: keep these conversations going'}.`)
+    return stageState(stage, { count: list.length, visited: list.length > 0, explain, chips: chips.slice(0, MACHINE_LIMITS.chips), details: details.slice(0, MACHINE_LIMITS.details) })
   })
   const most = [...states].filter((s) => s.id !== 'new').sort((a, b) => (b.count ?? 0) - (a.count ?? 0))[0]
   const summary = `${standings.length.toLocaleString('en-US')} people across ${STAGES.length} states${most?.count ? `; most stand at "${most.label}" (${most.count})` : ''}${throughSeq !== null ? `. Relate graph through event ${throughSeq}.` : '.'}`
@@ -176,20 +196,20 @@ export function networkBlock(standings: readonly PersonStanding[], throughSeq: n
 
 export function routeBlock(owner: { label: string; note: string }, target: PersonStanding, links: readonly RouteLink[], throughSeq: number | null): StateMachineBlock {
   const t = target.evidence
-  const states: MachineState[] = [{ id: 'you', label: 'You', note: owner.note, tone: 'gray', initial: true, current: true, visited: true, details: [{ label: 'Accounts', value: owner.note }] }]
+  const best = links[0]
+  const states: MachineState[] = [{ id: 'you', label: 'You', note: owner.note, explain: explained(best ? `You start here; the best move is to ask @${best.handle} for an intro.` : `You start here; nobody you know connects to ${whoOf(t)} yet, so reach out directly.`), tone: 'gray', initial: true, current: true, visited: true, details: [{ label: 'Accounts', value: owner.note }] }]
   const transitions: MachineTransition[] = []
   links.forEach((link, i) => {
     const id = `via${i + 1}`
-    states.push({ id, label: clip(`@${link.handle}`, 28), note: STAGE_FACTS[link.stage].label, tone: STAGE_FACTS[link.stage].tone, visited: true, chips: link.reasons.slice(0, 2).map((r) => clip(r, 28)), ...(link.lastAt ? { at: link.lastAt } : {}), details: [{ label: 'With you', value: STAGE_FACTS[link.stage].label }, { label: 'Platform', value: link.platform }, ...link.reasons.map((r) => ({ label: 'Link to the target', value: r }))] })
+    states.push({ id, label: clip(`@${link.handle}`, 28), note: STAGE_FACTS[link.stage].label, explain: explained(`${i === 0 ? 'Best connector' : 'Another connector'} (${STAGE_FACTS[link.stage].label.toLowerCase()}): ${link.reasons[0] ?? 'close to the target'}.`), tone: STAGE_FACTS[link.stage].tone, visited: true, chips: link.reasons.slice(0, 2).map((r) => clip(r, 28)), ...(link.lastAt ? { at: link.lastAt } : {}), details: [{ label: 'With you', value: STAGE_FACTS[link.stage].label }, { label: 'Platform', value: link.platform }, ...link.reasons.map((r) => ({ label: 'Link to the target', value: r }))] })
     const dm = toolFor(link.platform, 'dm')
     transitions.push({ id: `ask${i + 1}`, from: 'you', to: id, event: 'ask for an intro', ...(dm ? { tool: dm } : {}), by: 'you', ...(i === 0 ? { next: true } : {}) })
     transitions.push({ id: `intro${i + 1}`, from: id, to: 'target', event: 'introduces you', by: 'them', note: clip(link.reasons[0] ?? '', 40), ...(i === 0 ? {} : { dashed: true }) })
   })
   const tStage = target.stage
-  states.push({ id: 'target', label: clip(whoOf(t), 28), note: STAGE_FACTS[tStage].label, tone: 'purple', final: true, visited: true, ...(t.lastAt ? { at: t.lastAt } : {}), details: [{ label: 'With you now', value: STAGE_FACTS[tStage].label }, { label: 'Platform', value: t.platform }, ...(t.near.length ? [{ label: 'Shared', value: t.near.join(', ') }] : [])] })
+  states.push({ id: 'target', label: clip(whoOf(t), 28), note: STAGE_FACTS[tStage].label, explain: explained(`Where they stand: ${STAGE_FACTS[tStage].label.toLowerCase()}; ${best ? `an intro from @${best.handle} is the warmest way in` : 'a direct message is the only way in so far'}.`), tone: 'purple', final: true, visited: true, ...(t.lastAt ? { at: t.lastAt } : {}), details: [{ label: 'With you now', value: STAGE_FACTS[tStage].label }, { label: 'Platform', value: t.platform }, ...(t.near.length ? [{ label: 'Shared', value: t.near.join(', ') }] : [])] })
   const direct = toolFor(t.platform, tStage === 'new' || tStage === 'followsYou' ? (toolFor(t.platform, 'follow') ? 'follow' : 'dm') : 'dm')
   transitions.push({ id: 'direct', from: 'you', to: 'target', event: links.length ? 'cold opener' : 'reach out directly', ...(direct ? { tool: direct } : {}), by: 'you', dashed: links.length > 0, ...(links.length ? {} : { next: true }) })
-  const best = links[0]
   const summary = best ? `Best route to ${whoOf(t)}: ask @${best.handle} (${STAGE_FACTS[best.stage].label.toLowerCase()} with you; ${best.reasons[0] ?? 'shares their circles'}) for an intro${links.length > 1 ? `, or ${links.slice(1).map((l) => `@${l.handle}`).join(', ')}` : ''}${throughSeq !== null ? `. Relate graph through event ${throughSeq}.` : '.'}` : `No one you know connects to ${whoOf(t)} in the graph yet: reach out directly.`
   return { type: MACHINE_BLOCK, title: `How to reach ${whoOf(t)}`, view: 'route', summary, states, transitions }
 }

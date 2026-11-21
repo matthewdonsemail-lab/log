@@ -64,7 +64,9 @@ import { readPrepared, type PreparedBlock } from "./blocks/prepared/read";
 import { readTracker, type TrackerBlock } from "./blocks/tracker/read";
 import { Tracker } from "./blocks/tracker/Tracker";
 import { Timeline } from "./blocks/timeline/Timeline";
-import type { BlockEntry } from "./core/types";
+import type { ReactNode } from "react";
+import type { Trail } from "./core/fields";
+import type { BlockEntry, DrawChildren, ReadChild } from "./core/types";
 
 /** Every block that can be drawn, as its reader returns it. */
 export type Block =
@@ -123,3 +125,35 @@ export const REGISTRY: Registry = {
   columns: { read: readContainer, Component: ({ block, draw }) => <Columns>{draw(block.children)}</Columns> },
   tabs: { read: readTabs, Component: ({ block, draw }) => <Tabs labels={block.tabs.map((t) => t.label)} badges={block.tabs.map((t) => t.badge)} panel={(i) => draw(block.tabs[i].children)} /> },
 };
+
+/** A block type another plugin adds: its reader returns the block it draws, with `type` set to the registered name. */
+export type ExtraBlockEntry = {
+  read: (raw: any, here: Trail, depth: number, readChild: ReadChild) => { type: string } | null;
+  Component: (props: { block: any; draw: DrawChildren }) => ReactNode;
+};
+
+const EXTRA = new Map<string, ExtraBlockEntry>();
+
+/**
+ * Adds a block type from another plugin bundled with this one (call it before register): readBlocks and Blocks look it
+ * up after the built-in types, so a built-in name can't be taken. The Python half's register_block adds its checker,
+ * text and catalog entry. Returns false when the name is taken or not a plain word.
+ *   registerBlock("stateMachine", { read: readMachine, Component: ({ block }) => <Machine block={block} /> }) → true
+ */
+export function registerBlock(type: string, entry: ExtraBlockEntry): boolean {
+  if (!/^[A-Za-z][A-Za-z0-9]{0,39}$/.test(type) || Object.hasOwn(REGISTRY, type) || EXTRA.has(type)) return false;
+  EXTRA.set(type, entry);
+  return true;
+}
+
+/** The reader and drawing for a type, built-in first, then the registered ones; undefined when unknown. */
+export function blockEntry(type: unknown): BlockEntry<Block> | undefined {
+  if (typeof type !== "string") return undefined;
+  if (Object.hasOwn(REGISTRY, type)) return REGISTRY[type as Block["type"]] as BlockEntry<Block>;
+  return EXTRA.get(type) as unknown as BlockEntry<Block> | undefined;
+}
+
+/** Every type that can be drawn right now, the registered ones included. */
+export function blockTypes(): string[] {
+  return [...Object.keys(REGISTRY), ...EXTRA.keys()];
+}

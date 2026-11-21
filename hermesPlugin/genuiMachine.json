@@ -1,0 +1,150 @@
+{
+  "kind": "stateMachine",
+  "catalog": {
+    "kind": "stateMachine",
+    "for": "A relationship state machine in log's stately look: the states someone moves through with the owner, the moves between them labelled with the log tool that makes each, where it stands now and the next move. Each state's explain is shown on the node, on hover and in the side panel on a click.",
+    "use_when": "Explaining where the owner stands with a person, the route to someone through people he knows, or his whole network by state. Get the block from the log tool relateMachine with form \"genui\" and pass it unchanged; mix it with text, callouts and tables.",
+    "fields": "title, view: person | route | network, summary, direction: right | down (optional). states: [{id, label, note, explain, tone, current, visited, initial, final, at, count, chips, details: [{label, value}]}]. transitions: [{id, from, to, event, tool, by: you | them, at, count, taken, next, dashed, note, platform}]. accounts: [{platform, handle, link: linked | suggested}] (optional).",
+    "example": {
+      "type": "stateMachine",
+      "title": "Where you are with @someone",
+      "view": "person",
+      "states": [
+        {
+          "id": "new",
+          "label": "New",
+          "note": "Known to log, nothing between you yet",
+          "explain": "Where every relationship starts.",
+          "tone": "gray",
+          "initial": true,
+          "visited": true
+        },
+        {
+          "id": "engaged",
+          "label": "Engaged with you",
+          "note": "Liked, replied to or mentioned you",
+          "explain": "You stand here because they replied to your post; the next move is yours: DM with discordSend.",
+          "tone": "orange",
+          "current": true,
+          "visited": true
+        },
+        {
+          "id": "inConversation",
+          "label": "In conversation",
+          "explain": "Ahead: reached when you answer their DM.",
+          "tone": "green",
+          "final": true,
+          "visited": false
+        }
+      ],
+      "transitions": [
+        {
+          "id": "theyEngaged",
+          "from": "new",
+          "to": "engaged",
+          "event": "they engaged",
+          "by": "them",
+          "taken": true
+        },
+        {
+          "id": "dm",
+          "from": "engaged",
+          "to": "inConversation",
+          "event": "DM",
+          "tool": "discordSend",
+          "by": "you",
+          "next": true
+        }
+      ]
+    }
+  },
+  "limits": {
+    "states": 16,
+    "transitions": 24,
+    "chips": 6,
+    "details": 12,
+    "id": 40,
+    "label": 60,
+    "note": 200,
+    "explain": 400,
+    "event": 40,
+    "tool": 40,
+    "accounts": 12,
+    "platform": 20,
+    "detailLabel": 80
+  },
+  "views": [
+    "person",
+    "route",
+    "network"
+  ],
+  "tones": [
+    "gray",
+    "blue",
+    "teal",
+    "green",
+    "yellow",
+    "orange",
+    "red",
+    "pink",
+    "purple"
+  ],
+  "directions": [
+    "right",
+    "down"
+  ],
+  "platforms": [
+    "all",
+    "twitter",
+    "discord",
+    "instagram",
+    "slack",
+    "reddit",
+    "facebook",
+    "linkedin"
+  ],
+  "keys": {
+    "block": [
+      "type",
+      "title",
+      "view",
+      "direction",
+      "summary",
+      "states",
+      "transitions",
+      "platform",
+      "accounts",
+      "platforms"
+    ],
+    "state": [
+      "id",
+      "label",
+      "note",
+      "explain",
+      "tone",
+      "count",
+      "chips",
+      "at",
+      "current",
+      "visited",
+      "initial",
+      "final",
+      "details"
+    ],
+    "transition": [
+      "id",
+      "from",
+      "to",
+      "event",
+      "tool",
+      "by",
+      "at",
+      "count",
+      "taken",
+      "next",
+      "dashed",
+      "note",
+      "platform"
+    ]
+  }
+}

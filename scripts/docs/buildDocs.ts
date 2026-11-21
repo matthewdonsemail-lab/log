@@ -13,6 +13,7 @@ import { SPEC_ORDER, specDomains, specsIndex, specSummary } from "../../src/spec
 import { REPORT_DESCRIPTION, REPORT_TOOL, reportTool } from "../../src/mcp/apps/index.ts";
 import { withCardAsks } from "../../src/mcp/apps/cards.ts";
 import { DESKTOP_BUNDLES, desktopBundle } from "../hermes/desktopBundles.ts";
+import { GENUI_MACHINE_OUT, genuiMachineJson } from "../hermes/genuiMachine.ts";
 import { toolFactsOf } from "../../src/useCases/router/client.ts";
 
 const SERVER_TOOLS: Record<string, { name: string; title: string; description: string }> = { [REPORT_TOOL]: reportTool() };
@@ -55,6 +56,7 @@ for (const file of readdirSync(diagramDir)) {
 }
 
 for (const bundle of DESKTOP_BUNDLES) put(bundle.out, await desktopBundle(bundle.entry));
+put(GENUI_MACHINE_OUT, genuiMachineJson());
 
 put("docs/specs/README.md", specsIndex(specDomains(root).filter((d) => existsSync(join(root, "docs/specs", `${d}.md`))).map((d) => specSummary(d, readFileSync(join(root, "docs/specs", `${d}.md`), "utf8"))), SPEC_ORDER));
 
