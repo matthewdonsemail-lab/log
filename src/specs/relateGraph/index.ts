@@ -26,6 +26,9 @@ const fence = 'src/relate/owner/helpers/fence.ts'
 const link = 'src/relate/owner/helpers/link.ts'
 const mcpServer = 'src/mcp/server/index.ts'
 const machine = 'src/relate/machine/client.ts'
+const machineTypes = 'src/relate/machine/types.ts'
+const machineStages = 'src/relate/machine/helpers/stages.ts'
+const machineDraw = 'src/relate/machine/render/svg.ts'
 
 const anchors: RequirementAnchors = {
   'REQ-RELATE-01': [
@@ -177,12 +180,21 @@ const anchors: RequirementAnchors = {
     { kind: 'symbol', file: owner, name: 'graphOwnerStatus' },
     { kind: 'symbol', file: client, name: 'renderContext' },
   ],
+  'REQ-RELATE-23': [
+    { kind: 'symbol', file: machineTypes, name: 'LADDERS' },
+    { kind: 'symbol', file: machineTypes, name: 'SIGNALS' },
+    { kind: 'symbol', file: machineTypes, name: 'TIERS' },
+    { kind: 'symbol', file: machineStages, name: 'SIGNAL_STEPS' },
+    { kind: 'symbol', file: machineStages, name: 'joinedStanding' },
+    { kind: 'symbol', file: machineDraw, name: 'fitDirection' },
+    { kind: 'uses', file: machine, name: 'joinedStanding' },
+  ],
 }
 
 export const relateGraph = {
   description: "The Relate graph projected from log.db and the connected context its hook injects for the people a prompt names",
   specPath: 'docs/specs/relateGraph.md',
-  codePaths: [client, types, project, mentions, cli, answers, postInstallTypes, rings, networkClient, networkRead, networkPeople, networkCli, graphNetwork, storeClient, store, owner, ownerTypes, fence, link, machine],
+  codePaths: [client, types, project, mentions, cli, answers, postInstallTypes, rings, networkClient, networkRead, networkPeople, networkCli, graphNetwork, storeClient, store, owner, ownerTypes, fence, link, machine, machineTypes, machineStages, machineDraw],
   anchors,
   rubrics: {
     'REQ-RELATE-01': noul('Does projectionOf run every read inside one read transaction (readOnce), take throughSeq as the highest events seq in that same transaction, and mark as owner the identities that are an account\'s own id, a self: id or an account\'s own handle?'),
@@ -207,6 +219,7 @@ export const relateGraph = {
     'REQ-RELATE-20': noul('Do relateContext, graphPriorFor, queryGraph, verifyGraph and relateMachine ask the owner first through ownerRequest with a timeout, does the owner serve each read on its own connection while a batch applies, and with the owner down do they open the last file read-only for one read, close it and mark the answer served from the file and behind?'),
     'REQ-RELATE-21': noul('Does the owner run a full rebuild through buildFileAsync in a child process on one read snapshot while its loop keeps applying, then open the new file, catch up the events since its throughSeq, swap it in after reads on the old store finish, and move the pointer?'),
     'REQ-RELATE-22': noul('Do log relate status, log relate owner status and the hook context say how many events the graph is behind, from the owner offset against the highest events seq?'),
+    'REQ-RELATE-23': noul('Do the relationship machine\'s states, moves and tools come only from LADDERS, one ladder per platform with no state its platform cannot reach (no follows on Discord, Instagram, Slack or Facebook), is each step read through SIGNAL_STEPS from log.db and the graph, does a linked person show one lane per platform joined on New and stand where joinedStanding finds them furthest along, is the next move an open edge with that platform\'s tool, and does drawMachine lay out top-down through fitDirection when the row is wider than fitWidth?'),
     unspecifiedBehavior: noul('Does the Relate graph or network code write to log.db anything other than its relateGraph pointer, its owners row, its relateOwnerStart claim, the network import and the ring tables, read a platform, or send anything off the machine?'),
   },
   assertions: {
@@ -232,6 +245,7 @@ export const relateGraph = {
     'REQ-RELATE-20': MET,
     'REQ-RELATE-21': MET,
     'REQ-RELATE-22': MET,
+    'REQ-RELATE-23': MET,
     unspecifiedBehavior: NOT_VIOLATED,
   },
 }

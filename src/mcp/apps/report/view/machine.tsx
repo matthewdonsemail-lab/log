@@ -1,17 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { KeyboardEvent, MouseEvent, ReactNode } from "react";
-import { drawMachine, shortDate } from "../../../../relate/machine/render/svg.ts";
+import { drawMachine, fitDirection, shortDate } from "../../../../relate/machine/render/svg.ts";
 import { machineCss } from "../../../../relate/machine/theme.ts";
 import { MACHINE_PLATFORMS, PLATFORM_MARKS, PLATFORM_NAMES } from "../../../../relate/machine/types.ts";
 import type { MachineAccount, MachineDirection, MachinePlatform, MachineState, MachineTransition, StateMachineBlock } from "../../../../relate/machine/types.ts";
 
-const FIT_WIDTH = 1100;
 const MIN_SCALE = 0.72;
-
-function startDirection(machine: StateMachineBlock): MachineDirection {
-  if (machine.direction) return machine.direction;
-  return drawMachine(machine, { direction: "right" }).width <= FIT_WIDTH ? "right" : "down";
-}
 
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
@@ -140,7 +134,7 @@ export function StateMachine({ machine: given, theme }: { machine: StateMachineB
   const showAccounts = (given.accounts?.length ?? 0) > 1 || (given.accounts ?? []).some((a) => a.link === "suggested");
   const current = machine.states.find((s) => s.current)?.id ?? null;
   const [selected, setSelected] = useState<string | null>(null);
-  const [direction, setDirection] = useState<MachineDirection>(() => startDirection(machine));
+  const [direction, setDirection] = useState<MachineDirection>(() => fitDirection(machine));
   const [actual, setActual] = useState(false);
   const canvas = useRef<HTMLDivElement>(null);
   const names = useMemo(() => new Map(machine.states.map((s) => [s.id, s.label])), [machine]);

@@ -5,10 +5,10 @@ import { findPeople, GraphUnreadable, pointerOf, readFromFile, readOffset } from
 import { ownerRequest } from '../owner/helpers/index'
 import { identitySpec } from '../../people/helpers/identity'
 import type { Ask, PersonFound } from '../graph/index'
-import { evidenceOf, firstInteractions, networkBlock, ownerAccounts, personBlock, rankLinks, routeBlock, routeCandidates, standingOf } from './helpers/index'
+import { evidenceOf, firstInteractions, joinedStanding, networkBlock, ownerAccounts, personBlock, rankLinks, routeBlock, routeCandidates, standingOf } from './helpers/index'
 import { machineText } from './render/text'
 import { MACHINE_READ_MS, ROUTE_CONNECTORS } from './types'
-import { MACHINE_PLATFORMS } from './types'
+import { LADDERS, MACHINE_PLATFORMS } from './types'
 import type { EvidenceTime, MachineAccount, MachinePlatform, MachinePlatformView, MachineView, PersonStanding, StageEvidence, StateMachineBlock } from './types'
 
 export interface MachineAsk {
@@ -57,6 +57,9 @@ function merged(keys: readonly string[], evidence: Map<string, StageEvidence>, p
     earliest('youWroteAt', e)
     base.lastAt = max(base.lastAt, e.lastAt)
     base.ring = base.ring === null ? e.ring : e.ring === null ? base.ring : Math.min(base.ring, e.ring)
+    if (e !== first) base.rooms = [...(base.rooms ?? []), ...(e.rooms ?? [])]
+    if (e.pointedAt != null && (base.pointedAt == null || e.pointedAt < base.pointedAt)) Object.assign(base, { pointedAt: e.pointedAt, pointedBy: e.pointedBy, pointedIn: e.pointedIn })
+    if (e !== first && e.introducers?.length) base.introducers = [...new Set([...(base.introducers ?? []), ...e.introducers])]
   }
   base.handle ??= person.handle
   base.name ??= person.name
@@ -119,7 +122,16 @@ function withPlatforms(views: MachinePlatformView[], chosen: MachinePlatform | u
   return { ...fallback, states: pick.states, transitions: pick.transitions, ...(pick.summary ? { summary: pick.summary } : {}), platform: pick.platform, ...(views.length > 2 ? { platforms: views } : {}) }
 }
 
-function people(evidence: Map<string, StageEvidence>): StageEvidence[] {
+function lanesOf(keys: readonly string[], evidence: Map<string, StageEvidence>, person: PersonFound): PersonStanding[] {
+  const byPlatform = new Map<string, string[]>()
+  for (const k of keys) {
+    const e = evidence.get(k)
+    if (e) byPlatform.set(e.platform, [...(byPlatform.get(e.platform) ?? []), k])
+  }
+  return [...byPlatform.entries()].map(([platform, held]) => standingOf(merged(held, evidence, { ...person, key: held.includes(person.key) ? person.key : held[0], keys: held, platform })))
+}
+
+function people(evidence: Map<string, StageEvidence>): PersonStanding[] {
   const groups = new Map<string, string[]>()
   for (const e of evidence.values()) {
     const group = e.personId ? `person:${e.personId}` : `${e.platform}:${(e.handle ?? e.key).toLowerCase()}`
@@ -127,16 +139,16 @@ function people(evidence: Map<string, StageEvidence>): StageEvidence[] {
   }
   return [...groups.values()].map((keys) => {
     const first = evidence.get(keys[0])!
-    return merged(keys, evidence, { key: first.key, keys, personId: first.personId, platform: first.platform, handle: first.handle, name: first.name })
+    return joinedStanding(lanesOf(keys, evidence, { key: first.key, keys, personId: first.personId, platform: first.platform, handle: first.handle, name: first.name }))
   })
 }
 
 async function standingFor(read: Ask, person: PersonFound, firsts: ReturnType<typeof firstInteractions>, platform?: MachinePlatform): Promise<PersonStanding | null> {
   const evidence = await evidenceOf(read, person.keys, firsts)
   const keys = person.keys.filter((k) => { const e = evidence.get(k); return e ? onPlatform(platform)(e) : platform === undefined || platform === 'all' })
-  if (!keys.length) return null
-  const lead = evidence.get(keys[0])
-  return standingOf(merged(keys, evidence, lead ? { ...person, key: keys.includes(person.key) ? person.key : keys[0], platform: lead.platform } : person))
+  const lanes = lanesOf(keys, evidence, person)
+  if (!lanes.length) return platform === undefined || platform === 'all' ? standingOf(merged(person.keys, evidence, person)) : null
+  return joinedStanding(lanes)
 }
 
 export async function machineFrom(read: Ask, ask: MachineAsk, throughSeq: number | null, handle: Database | null = null, now: number = Date.now()): Promise<MachineAnswer> {
@@ -147,10 +159,10 @@ export async function machineFrom(read: Ask, ask: MachineAsk, throughSeq: number
     const evidence = await evidenceOf(read, null, firsts)
     const everyone = people(evidence)
     const views = platformViews((platform) => {
-      const kept = platform === 'all' ? everyone : people(new Map([...evidence].filter(([, e]) => e.platform === platform)))
-      return { block: networkBlock(kept.map(standingOf), throughSeq, now), count: kept.length }
+      const kept = platform === 'all' ? everyone : people(new Map([...evidence].filter(([, e]) => e.platform === platform))).map((s) => s.lanes?.[0] ?? s)
+      return { block: networkBlock(kept, throughSeq, now, LADDERS[platform]), count: kept.length }
     })
-    block = withPlatforms(views, ask.platform, networkBlock(everyone.map(standingOf), throughSeq, now))
+    block = withPlatforms(views, ask.platform, networkBlock(everyone, throughSeq, now))
   } else {
     const asked = view === 'route' ? ask.to ?? ask.person : ask.person ?? ask.to
     if (!asked) return { ok: false, code: 'relateMachineNobody', problem: `the ${view} view needs ${view === 'route' ? 'to' : 'person'}: a handle or name` }
@@ -176,7 +188,7 @@ export async function machineFrom(read: Ask, ask: MachineAsk, throughSeq: number
           if (!e || !e.handle) return []
           const standing = standingOf(e)
           const reasons = [...c.rooms.map((r) => `both in ${r}`), ...c.circles.map((l) => `circle of @${l}`), ...(c.mentions ? [`mentioned them ×${c.mentions}`] : []), ...(c.orbit ? [`engaged the same posts ×${c.orbit}`] : [])]
-          return [{ key: c.key, handle: e.handle, platform: e.platform, stage: standing.stage, reasons, score: 0, lastAt: e.lastAt, rooms: c.rooms.length, circles: c.circles.length, mentions: c.mentions, orbit: c.orbit }]
+          return [{ key: c.key, handle: e.handle, platform: e.platform, stage: standing.stage, tier: standing.tier, reasons, score: 0, lastAt: e.lastAt, rooms: c.rooms.length, circles: c.circles.length, mentions: c.mentions, orbit: c.orbit }]
         }),
         ROUTE_CONNECTORS,
       )

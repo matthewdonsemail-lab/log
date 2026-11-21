@@ -6,7 +6,8 @@ import { openDatabase } from '../../storage/schema/index'
 import { buildGraph } from '../graph/index'
 import { checkReport, reportText } from '../../mcp/apps/report/index'
 import { MACHINE_NOW, MACHINE_TARGET, seedMachineWorld } from './fixtures/machineWorld'
-import { drawMachine, machineText as machineTextOf, MACHINE_FONT, MACHINE_PALETTE, MACHINE_SIZE, machineCss, relateMachine, standingOf } from './index'
+import { DISCORD_CHANNELS, DISCORD_PEOPLE, DISCORD_SERVER, seedDiscordWorld } from './fixtures/discordWorld'
+import { drawMachine, LADDERS, machineText as machineTextOf, MACHINE_FONT, MACHINE_PALETTE, MACHINE_SIZE, machineCss, relateMachine, standingOf } from './index'
 import type { MachineAnswer, StageEvidence, StateMachineBlock } from './index'
 
 type XmlDoc = { getElementsByTagName: (n: string) => { length: number }; documentElement: { getAttribute: (n: string) => string | null; firstElementChild: { tagName: string } | null }; querySelectorAll: (s: string) => { length: number } }
@@ -239,5 +240,97 @@ describe('the stateMachine block in a report', () => {
     const broken = checkReport({ title: 'Nora', blocks: [{ ...block, transitions: [{ id: 'x', from: 'new', to: 'nowhere', event: 'go' }] }] })
     expect(broken.ok).toBe(false)
     if (checked.ok) expect(reportText(checked.spec)).toContain('Next move: they replied with twitterDms')
+  })
+})
+
+describe('each platform has its own states and moves', () => {
+  const discordWorld = (linkX: boolean) => {
+    const path = join(mkdtempSync(join(tmpdir(), 'relateMachineDiscord-')), 'log.db')
+    seedDiscordWorld(openDatabase(path), linkX)
+    buildGraph(path, new Date(MACHINE_NOW))
+    return path
+  }
+  const plain = discordWorld(false)
+  const linked = discordWorld(true)
+  const discordIds = LADDERS.discord.states.map((s) => s.id)
+  const xOnly = LADDERS.twitter.states.filter((s) => !discordIds.includes(s.id))
+  const xOnlyWords = [...xOnly.map((s) => s.label), 'Talks to your followers', 'Follows you']
+  const p = DISCORD_PEOPLE
+
+  test('a Discord regular who shares a server and a channel, DMed the owner and got an answer walks the Discord states only, named after the real server and channel', async () => {
+    const block = blockOf(await relateMachine({ person: `discord:${p.regular.handle}` }, plain, MACHINE_NOW))
+    expect(block.states.map((s) => s.id)).toEqual(discordIds)
+    for (const st of block.states) expect(xOnlyWords).not.toContain(st.label)
+    for (const word of xOnlyWords) expect(machineTextOf(block)).not.toContain(word)
+    expect(block.states.find((s) => s.current)?.id).toBe('inConversation')
+    const state = (id: string) => block.states.find((s) => s.id === id)!
+    expect(state('sharesServer').note).toContain(DISCORD_SERVER.name)
+    expect(state('sameChannel').note).toContain(`#${DISCORD_CHANNELS.talk.name}`)
+    expect(state('dmOpened').chips).toContain('opened by them')
+    expect(state('mentioned').visited).toBe(false)
+    expect(state('sameChannel').details?.find((d) => d.label === 'Could introduce')?.value).toContain(`@${p.introducer.handle}`)
+    const taken = block.transitions.filter((t) => t.taken).sort((a, b) => (a.at ?? 0) - (b.at ?? 0))
+    expect(taken.map((t) => [t.from, t.to])).toEqual([['new', 'sharesServer'], ['sharesServer', 'sameChannel'], ['sameChannel', 'dmOpened'], ['dmOpened', 'inConversation']])
+    expect(taken.map((t) => t.note)).toEqual([`in ${DISCORD_SERVER.name}`, `you both write in #${DISCORD_CHANNELS.talk.name}`, 'they DMed you', 'you answered'])
+    for (const t of block.transitions) if (t.tool) expect(t.tool.startsWith('discord')).toBe(true)
+  })
+
+  test('the next Discord move uses Discord tools: write in their channel, DM someone who replied in a channel, or wait on a DM the owner opened', async () => {
+    const lurker = blockOf(await relateMachine({ person: `discord:${p.lurker.handle}` }, plain, MACHINE_NOW))
+    expect(lurker.states.find((s) => s.current)?.id).toBe('sharesServer')
+    expect(lurker.states.find((s) => s.id === 'sharesServer')?.note).toContain(DISCORD_SERVER.name)
+    expect(lurker.transitions.find((t) => t.next)).toMatchObject({ id: 'write', tool: 'discordSend', to: 'sameChannel' })
+    const replier = blockOf(await relateMachine({ person: `discord:${p.replier.handle}` }, plain, MACHINE_NOW))
+    expect(replier.states.find((s) => s.current)?.id).toBe('mentioned')
+    expect(replier.transitions.find((t) => t.taken && t.to === 'mentioned')?.note).toBe(`they replied to or mentioned you in #${DISCORD_CHANNELS.talk.name}`)
+    expect(replier.transitions.find((t) => t.next)).toMatchObject({ id: 'dm', tool: 'discordSend' })
+    const waiting = blockOf(await relateMachine({ person: `discord:${p.waiting.handle}` }, plain, MACHINE_NOW))
+    expect(waiting.states.find((s) => s.current)).toMatchObject({ id: 'dmOpened', chips: ['opened by you'] })
+    expect(waiting.transitions.find((t) => t.next)).toMatchObject({ id: 'theyReplied', tool: 'discordRead', note: 'waiting on them' })
+  })
+
+  test('every platform ladder keeps its states as data: a final conversation where DMs exist, and every tool belongs to its platform', () => {
+    for (const [platform, ladder] of Object.entries(LADDERS)) {
+      const ids = new Set(ladder.states.map((s) => s.id))
+      for (const e of ladder.edges) expect(ids.has(e.from) && ids.has(e.to)).toBe(true)
+      if (platform !== 'all') for (const tool of Object.values(ladder.tools)) expect(tool!.startsWith(platform)).toBe(true)
+    }
+    for (const platform of ['discord', 'instagram', 'slack', 'facebook'] as const) expect(LADDERS[platform].states.some((s) => s.signals.includes('follows'))).toBe(false)
+    expect(LADDERS.twitter.states.some((s) => s.signals.includes('follows'))).toBe(true)
+  })
+
+  test('a linked person shows each platform as its own lane joined on the person, standing where they are furthest along', async () => {
+    const block = blockOf(await relateMachine({ person: `discord:${p.regular.handle}` }, linked, MACHINE_NOW))
+    expect(block.platforms?.map((v) => v.platform)).toEqual(['all', 'twitter', 'discord'])
+    expect(block.states.filter((s) => s.initial).map((s) => s.id)).toEqual(['new'])
+    const lane = (platform: string) => block.states.filter((s) => s.platform === platform).map((s) => s.id.slice(platform.length + 1))
+    expect(lane('discord')).toEqual(discordIds.slice(1))
+    expect(lane('twitter')).toEqual(LADDERS.twitter.states.slice(1).map((s) => s.id))
+    expect(block.states.filter((s) => s.current).map((s) => s.id)).toEqual(['discord.inConversation'])
+    expect(block.states.find((s) => s.id === 'twitter.engaged')?.chips?.[0]).toBe('here')
+    for (const t of block.transitions) for (const id of [t.from, t.to]) if (id !== 'new') expect(id.startsWith(`${t.platform}.`)).toBe(true)
+    for (const t of block.transitions) if (t.tool) expect(t.tool.startsWith(t.platform!)).toBe(true)
+    expect(block.summary).toContain('furthest along on Discord')
+    const discordOnly = block.platforms!.find((v) => v.platform === 'discord')!
+    expect(discordOnly.states.map((s) => s.id)).toEqual(discordIds)
+    expect(checkReport({ title: 'Linked', blocks: [block] }).ok).toBe(true)
+    expect(drawMachine(block, {}).svg).toContain('class="rmMark"')
+  })
+
+  test('the Discord network counts people in the Discord states', async () => {
+    const block = blockOf(await relateMachine({ view: 'network', platform: 'discord' }, plain, MACHINE_NOW))
+    expect(block.states.map((s) => s.id)).toEqual(discordIds)
+    expect(block.states.find((s) => s.id === 'mentioned')?.count).toBeGreaterThan(0)
+  })
+
+  test('a single person machine fits the width instead of one long row', async () => {
+    const block = blockOf(await relateMachine({ person: `discord:${p.regular.handle}` }, plain, MACHINE_NOW))
+    const wide = drawMachine(block, { direction: 'right' })
+    const fit = drawMachine(block, { standalone: true })
+    expect(fit.width).toBeLessThanOrEqual(Math.max(MACHINE_SIZE.fitWidth, Math.min(wide.width, MACHINE_SIZE.fitWidth)))
+    expect(fit.width).toBeLessThan(wide.width)
+    const linkedBlock = blockOf(await relateMachine({ person: `discord:${p.regular.handle}` }, linked, MACHINE_NOW))
+    const linkedFit = drawMachine(linkedBlock, {})
+    expect(linkedFit.width / linkedFit.height).toBeLessThan(drawMachine(linkedBlock, { direction: 'right' }).width / drawMachine(linkedBlock, { direction: 'right' }).height)
   })
 })

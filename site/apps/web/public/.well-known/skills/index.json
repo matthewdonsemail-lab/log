@@ -286,7 +286,7 @@
     },
     {
       "name": "log-network-relationship-machine",
-      "description": "Relationship state machine. A log play (docs/useCases/network/relationshipMachine.md): Where you stand with someone, drawn as a state machine in the stately look: the states a relationship moves through (new, follows you, talks to your followers, engaged with you, you reached out, in conversation), the moves between them (follow, like their post, reply, DM, intro, they replied), each labelled with the log tool that makes it. The person's real history from log.db is the path taken, timestamped; where it stands now is highlighted, and the next move is the outgoing transition. The same machine shows the route to someone through the people you know, and your whole network with a count in each state.",
+      "description": "Relationship state machine. A log play (docs/useCases/network/relationshipMachine.md): Where you stand with someone, drawn as a state machine in the stately look. Each platform has its own states and moves, read from what really happens there: on X follows, groups and circles, engagements on your posts (like, reply, quote, repost, mention), the DM and the conversation; on Discord a shared server, the same channel, replies or mentions in a channel, a DM opened (by them or by you) and the conversation, named with the real server and channel and who could introduce you; Instagram, Slack and the rest have their own. Every move is labelled with that platform's log tool. Someone linked across platforms shows one lane per platform, joined on them, standing where they are furthest along. The person's real history from log.db is the path taken, timestamped; where it stands now is highlighted, and",
       "files": [
         "SKILL.md"
       ],

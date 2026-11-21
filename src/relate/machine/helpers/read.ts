@@ -1,6 +1,7 @@
 import type { Database } from 'bun:sqlite'
 import type { Ask } from '../../graph/types'
-import type { StageEvidence } from '../types'
+import { INTRODUCERS } from '../types'
+import type { RoomFact, StageEvidence } from '../types'
 
 type Row = Record<string, unknown>
 
@@ -96,6 +97,28 @@ export async function evidenceOf(ask: Ask, keys: readonly string[] | null, first
     e.nearAt = minOf(e.nearAt, isoMs(r.first))
     e.near.push(...((r.rooms as string[] | null) ?? []).map(String))
     e.lastAt = maxOf(e.lastAt, isoMs(r.last))
+  }
+  for (const r of (await ask(`MATCH (i:Identity)-[:MEMBER_OF|SAID]->(g:Room) WHERE ${FILTER} AND g.kind <> 'dm' WITH DISTINCT i, g OPTIONAL MATCH (i)-[m:MEMBER_OF]->(g) OPTIONAL MATCH (i)-[s:SAID]->(g) OPTIONAL MATCH (:Account)-[o:SAID]->(g) RETURN i.key AS key, g.key AS room, g.name AS name, g.server AS server, g.kind AS kind, min(m.firstSeenAt) AS member, min(s.firstAtMs) AS said, min(o.firstAtMs) AS owner`, params))) {
+    const e = at(r.key)
+    if (!e) continue
+    const fact: RoomFact = { key: String(r.room), name: (r.name as string | null) ?? null, server: (r.server as string | null) ?? null, kind: String(r.kind ?? ''), theirAt: minOf(isoMs(r.member), num(r.said)), ownerAt: num(r.owner) }
+    e.rooms = [...(e.rooms ?? []), fact]
+  }
+  for (const [cypher, by] of [[`MATCH (i:Identity)-[x:REPLIED_TO|MENTIONED]->(:Account) WHERE ${FILTER}`, 'them'], [`MATCH (:Account)-[x:REPLIED_TO|MENTIONED]->(i:Identity) WHERE ${FILTER}`, 'you']] as const) {
+    for (const r of (await ask(`${cypher} MATCH (g:Room) WHERE g.key = x.room AND g.kind <> 'dm' RETURN i.key AS key, min(x.firstAtMs) AS first, collect(DISTINCT coalesce(g.name, g.conversationId))[0] AS room`, params))) {
+      const e = at(r.key)
+      const first = num(r.first)
+      if (!e || first === null || (e.pointedAt != null && e.pointedAt <= first)) continue
+      e.pointedAt = first
+      e.pointedBy = by
+      e.pointedIn = (r.room as string | null) ?? null
+    }
+  }
+  if (keys !== null) {
+    for (const r of (await ask(`MATCH (i:Identity)-[:MEMBER_OF|SAID]->(g:Room)<-[:MEMBER_OF|SAID]-(c:Identity)-[:SAID]->(d:Room {kind: 'dm'})<-[:SAID]-(:Account) WHERE ${FILTER} AND g.kind <> 'dm' AND NOT c.owner AND NOT c.key IN $keys RETURN i.key AS key, collect(DISTINCT coalesce(c.handle, c.name))[0..${INTRODUCERS}] AS people`, params))) {
+      const e = at(r.key)
+      if (e) e.introducers = ((r.people as string[] | null) ?? []).filter(Boolean).map(String)
+    }
   }
   for (const r of (await ask(`MATCH (i:Identity)-[:IN_CIRCLE_OF]->(l:Leader)<-[:IN_CIRCLE_OF]-(c:Identity)-[:SAID]->(:Room {kind: 'dm'}) WHERE ${FILTER} AND c.key <> i.key RETURN i.key AS key, collect(DISTINCT l.handle)[0..2] AS leaders`, params))) {
     const e = at(r.key)

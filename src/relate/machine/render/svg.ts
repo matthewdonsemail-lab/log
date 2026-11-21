@@ -95,11 +95,14 @@ function chipsOf(state: MachineState): { text: string; now: boolean }[] {
   return chips
 }
 
+const markWidth = (platform: string | undefined): number => (platform && PLATFORM_MARKS[platform] ? textWidth(PLATFORM_MARKS[platform], F.mark) + 2 * S.markPadX : 0)
+
 const toneOf = (state: MachineState): string => state.tone ?? 'gray'
 
 function nodeShape(state: MachineState): NodeShape {
   const dot = toneOf(state) === 'gray' ? 0 : S.toneDot + S.toneGap
-  const lead = S.headerPadX + S.namePad + dot + (state.final ? S.finalSize + S.finalGap : 0)
+  const mark = markWidth(state.platform)
+  const lead = S.headerPadX + S.namePad + dot + (mark ? mark + S.markGap : 0) + (state.final ? S.finalSize + S.finalGap : 0)
   const titleW = lead + textWidth(state.label, F.title) + S.headerPadX + S.namePad
   const inner = S.nodeMaxWidth - 2 * S.bodyPadX
   const chips = chipsOf(state).map((c) => ({ ...c, w: textWidth(c.text, F.chip) + 2 * S.chipPadX }))
@@ -125,8 +128,6 @@ function nodeShape(state: MachineState): NodeShape {
   const bodyH = content ? Math.ceil(2 * S.bodyPadY + content + S.border) : 0
   return { state, w: Math.ceil(w), h: S.headerH + bodyH, lead, notes, chipRows: rows }
 }
-
-const markWidth = (platform: string | undefined): number => (platform && PLATFORM_MARKS[platform] ? textWidth(PLATFORM_MARKS[platform], F.mark) + 2 * S.markPadX : 0)
 
 const pillInner = S.pillPadLeft + S.eventPad
 
@@ -236,6 +237,11 @@ function nodeSvg(shape: NodeShape, box: Box, near: boolean, slug: string): strin
   if (tone !== 'gray') {
     parts.push(`<circle class="rmToneDot" cx="${x + S.toneDot / 2}" cy="${mid}" r="${S.toneDot / 2}"/>`)
     x += S.toneDot + S.toneGap
+  }
+  const mark = markWidth(st.platform)
+  if (mark) {
+    parts.push(markSvg(st.platform!, x, nameTop, F.title.box, mark))
+    x += mark + S.markGap
   }
   if (st.final) {
     const c = S.finalSize / 2
@@ -347,9 +353,7 @@ export function machineDescription(block: StateMachineBlock): string {
   return [`A state machine of ${block.states.length} states and ${block.transitions.length} transitions`, current ? `; it stands at ${current.label}` : '', taken ? `, ${taken} transitions already taken` : '', next.length ? `; the next move is ${next.map((t) => `${t.event}${t.tool ? ` (${t.tool})` : ''}`).join(' or ')}` : '', '.'].join('')
 }
 
-export function drawMachine(block: StateMachineBlock, options: MachineDrawOptions = {}): MachineDrawing {
-  const direction = options.direction ?? block.direction ?? 'right'
-  const slug = options.slug ?? slugOf(block.title ?? block.view ?? 'machine')
+function laid(block: StateMachineBlock, direction: MachineDirection): { layout: MachineLayout; shapes: Map<string, NodeShape>; pills: Map<string, PillShape> } {
   const shapes = new Map(block.states.map((s) => [s.id, nodeShape(s)]))
   const pills = new Map(block.transitions.map((t) => [t.id, pillShape(t)]))
   const layout = layoutMachine(
@@ -358,6 +362,18 @@ export function drawMachine(block: StateMachineBlock, options: MachineDrawOption
     direction,
     { nodeSep: S.nodeSep, dummySep: S.dummySep, rankGap: S.rankGap, laneGap: S.laneGap, laneStep: S.laneStep, margin: S.margin, port: S.port, corner: S.corner, stagger: S.stagger },
   )
+  return { layout, shapes, pills }
+}
+
+export function fitDirection(block: StateMachineBlock, width: number = S.fitWidth): MachineDirection {
+  if (block.direction) return block.direction
+  return laid(block, 'right').layout.width <= width ? 'right' : 'down'
+}
+
+export function drawMachine(block: StateMachineBlock, options: MachineDrawOptions = {}): MachineDrawing {
+  const direction = options.direction ?? fitDirection(block)
+  const slug = options.slug ?? slugOf(block.title ?? block.view ?? 'machine')
+  const { layout, shapes, pills } = laid(block, direction)
   const near = nearOf(block, options.selected)
   const title = block.title ?? 'Relationship state machine'
   const head = [

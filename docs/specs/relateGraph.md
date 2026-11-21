@@ -152,3 +152,8 @@ Checked by: code and SubQ
 
 Checked by: code and SubQ
 
+### REQ-RELATE-23: The relationship machine has each platform's own states and moves
+
+`relateMachine` reads one ladder per platform from `LADDERS` (`src/relate/machine/types.ts`), the only place the states, their moves and each move's tool live. A ladder state lists the evidence it is reached by (`SIGNALS`: follows, rooms with or without a server, a channel both sides write in, replies and mentions either way, engagements, who opened the DM, both writing), and `SIGNAL_STEPS` (`src/relate/machine/helpers/stages.ts`) reads each signal from log.db's interactions and the Relate graph. X has follows, groups and circles, engagements on posts (like, reply, quote, repost, mention), the DM and the conversation. Discord has a shared server, the same channel, replies or mentions in a channel, a DM opened (by them or by you, said which) and the conversation, each state named with its real server and channel names and the people who could introduce. Instagram, Slack, Reddit, Facebook and LinkedIn have their own states, and no ladder has a state its platform can't reach (no follows on Discord, Instagram, Slack or Facebook). Every state also has a tier on one shared scale (`TIERS`), used by the network view over all platforms and to compare lanes. For a person linked across platforms, the person view shows each platform's ladder as its own lane joined on one New state, and stands where the person is furthest along (`joinedStanding`). The next move is the first open edge out of the current state whose `needs` and `unless` signals hold, with that platform's tool. Without a set direction a drawing wider than `fitWidth` is laid out top-down (`fitDirection`).
+
+Checked by: `src/relate/machine/machine.test.ts`

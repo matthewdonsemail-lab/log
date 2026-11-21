@@ -39,6 +39,7 @@ export const MACHINE_SIZE = {
   toneGap: 6,
   nodeMinWidth: 96,
   nodeMaxWidth: 360,
+  fitWidth: 1100,
   pillRadius: 20,
   pillHeaderPadY: 8,
   pillPadLeft: 16,

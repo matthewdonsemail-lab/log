@@ -1,6 +1,6 @@
 # Relationship state machine
 
-Where you stand with someone, drawn as a state machine in the stately look: the states a relationship moves through (new, follows you, talks to your followers, engaged with you, you reached out, in conversation), the moves between them (follow, like their post, reply, DM, intro, they replied), each labelled with the log tool that makes it. The person's real history from log.db is the path taken, timestamped; where it stands now is highlighted, and the next move is the outgoing transition. The same machine shows the route to someone through the people you know, and your whole network with a count in each state.
+Where you stand with someone, drawn as a state machine in the stately look. Each platform has its own states and moves, read from what really happens there: on X follows, groups and circles, engagements on your posts (like, reply, quote, repost, mention), the DM and the conversation; on Discord a shared server, the same channel, replies or mentions in a channel, a DM opened (by them or by you) and the conversation, named with the real server and channel and who could introduce you; Instagram, Slack and the rest have their own. Every move is labelled with that platform's log tool. Someone linked across platforms shows one lane per platform, joined on them, standing where they are furthest along. The person's real history from log.db is the path taken, timestamped; where it stands now is highlighted, and the next move is the outgoing transition. The same machine shows the route to someone through the people you know, and your whole network with a count in each state.
 
 How the owner asks for it: "where am I with <person>", "how do I reach <person>".
 
@@ -37,7 +37,8 @@ flowchart TD
 
 - **It is a block.** `relateMachine` returns a `stateMachine` block in the `report` view, so any report can carry one too: `report` { title, blocks: [{ type: "stateMachine", states, transitions }] }.
 - **Light and dark** follow the host's theme; the colours, sizes and fonts all live in `src/relate/machine/theme.ts`.
-- **Where the states come from:** follows and likes from log.db's interactions (their first time), DMs from the first message each way, groups and circles from the graph, and the network map's ring when log.db has nothing else.
+- **Where the states come from:** one ladder per platform in `LADDERS` (`src/relate/machine/types.ts`). Follows and engagements come from log.db's interactions (their first time), servers, channels and groups from the graph's rooms (a channel counts once you have both written in it), replies and mentions from the graph's `REPLIED_TO` and `MENTIONED` edges either way, DMs from the first message each way, and the network map's ring when log.db has nothing else.
+- **Layout:** a machine wider than the view is laid out top-down, so one person's machine never renders as a single long row.
 - A DM you sent to someone who never wrote in it only shows once the chat lists them as a member.
 - Rebuild the graph (`relateBuild`) after new conversations so the machine moves on.
 
