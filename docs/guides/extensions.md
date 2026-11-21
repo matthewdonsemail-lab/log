@@ -1,6 +1,6 @@
 # extensions
 
-Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context, the owner's cloned voice (Inworld or Fish Audio) for the voice notes they ask for, every paid provider's balance, and treg's catalog of endpoints for every lookup.
+Extensions that make an account more human: Memelord's memes sent in context, the owner's cloned voice (Inworld or Fish Audio) for voice notes, every paid provider's balance, and treg's catalog of endpoints for every lookup.
 
 Written by `bun run docs:build` from the code, the skills and AGENTS.md. Not edited by hand: change the command's usage, its skill or the rule, and rebuild.
 

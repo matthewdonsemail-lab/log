@@ -152,7 +152,7 @@ describe('the chatGroups repair', () => {
     rebuildRings(handle)
     expect(ringOf(handle, 'instagram', '7000000031')).toEqual({ ring: 1, reason: 'dm', via: null })
     handle.exec('PRAGMA user_version = 30')
-    expect(migrate(handle).map((m) => m.name)).toEqual(['chatGroups'])
+    expect(migrate(handle).map((m) => m.name)).toEqual(['chatGroups', 'personFacts'])
     expect(kindOf(handle, 'igOld')).toBe('group')
     expect(kindOf(handle, 'igPair')).toBe('dm')
     expect(ringOf(handle, 'instagram', '7000000031')).toBeNull()

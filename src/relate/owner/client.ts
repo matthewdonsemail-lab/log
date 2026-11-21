@@ -230,6 +230,7 @@ export async function runGraphOwner(options: OwnerOptions): Promise<OwnerOutcome
         try {
           await catchUp(held)
           failures = 0
+          void options.facts?.tick()
         } catch (error) {
           if (error instanceof GraphOwnerFenced) throw error
           failures++
@@ -245,6 +246,7 @@ export async function runGraphOwner(options: OwnerOptions): Promise<OwnerOutcome
     return { ok: false, code: (error as { code?: string }).code ?? 'graphOwnerError', reason: error instanceof Error ? error.message : String(error) }
   } finally {
     server?.stop(true)
+    options.facts?.stop()
     const last = held as Held | null
     if (last) await drain(last)
     releaseGraphOwner(handle, generation, pid)

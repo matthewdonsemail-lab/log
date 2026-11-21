@@ -52,11 +52,12 @@ This is the separation security research recommends for agents: the model choose
 
 ## What leaves your machine
 
-Five pinned models and two you train run locally with no key: the prompt-injection model, meaning search, message emotions, picture descriptions and mouse paths, plus your AI-writing detector and your pipeline labeller ([local models](models.md)). Four hosted services are used only when you add their key, and each gets only what its job needs:
+Six pinned models and two you train run locally with no key: the prompt-injection model, meaning search, message emotions, picture descriptions, mouse paths and the fact screen, plus your AI-writing detector and your pipeline labeller ([local models](models.md)). Four hosted services are used only when you add their key, and each gets only what its job needs:
 
 | Service | What it receives | When |
 |---|---|---|
 | SubQ | the draft and the recent messages of that one chat | the voice gate checks a draft |
+| SubQ | a DM line the local fact screen marked, the few lines before it, and that person's current facts | `log people facts extract` decides which lasting facts to keep (`LOG_FACTS_DECIDER`) |
 | Jina | text from that chat's history, and media descriptions | ranking history for the gate (local fallback when it is off or slow) |
 | AssemblyAI | the audio of a voice note or video | transcribing it |
 | Inworld or Fish Audio | the text of a voice note you asked for | making it in your cloned voice |

@@ -20,7 +20,7 @@ export function judgeModelDir(env: Env = process.env): string {
 }
 
 export function placeOf(model: LocalModel, env: Env = process.env): string | null {
-  if (model.loader === 'huggingfaceHub') return judgeModelDir(env)
+  if (model.loader === 'huggingfaceHub') return model.key === 'judge' ? judgeModelDir(env) : join(hfCacheDir(env), model.id, model.revision)
   if (model.loader === 'transformersJs') return join(hfCacheDir(env), model.id, model.revision)
   return null
 }

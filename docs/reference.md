@@ -227,7 +227,7 @@ flowchart LR
   agent["Agent (Claude Code, Codex)"]
   owner["the owner, in a terminal"]
   shell["Bash / PowerShell / Monitor"]
-  mcp["MCP server log: 314 command tools + saved flows"]
+  mcp["MCP server log: 317 command tools + saved flows"]
   bin["bin/log.ts"]
   runCli["runCli: 143 commands (COMMANDS)"]
   live[("~/.logCli/mcp/day.log: the live log")]
@@ -328,7 +328,7 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | [`log update`](#log-update) | Update log to the newest release and resume what ran | any (none) | `[--to <v>]` `[--track <stable|nightly>]` `[--approvedBy <who>]` `[--apply]` `[--json]` | none | none | `updateLog`, `updateLogLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 73, 167, 30, 38, 39, 40, 41 |
 | [`log models`](#log-models) | Is each pinned local model here | any (none) | `[--approvedBy <who>]` `[--fetch]` `[--json]` | none | none | `models`, `modelsLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 73, 167, 30, 38, 39, 40, 41 |
 | [`log relate`](#log-relate) | The Relate graph of the owner's people, rooms and network | any (none) | `[--json]` `[--owner <text>]` `[--person <text>]` `[--to <h>]` `[--view <person|route|network>]` `[--platform <all|twitter|discord|instagram|slack|reddit|facebook|linkedin>]` | none | none | `relateBuild`, `relateStatus`, `relateVerify`, `relateAsk`, `relateMachine`, `relateQuery` | PreToolUse, PostToolUse · PostToolUse | no | 89, 134, 154, 163, 30, 38, 39, 40, 41 |
-| [`log people`](#log-people) | One person across platforms: link identities into a person, Fellegi-Sunter suggestions, the person card | any (none) | `[--json]` `[--limit <integer 1..200>]` `[--check]` `[--approvedBy <text>]` `[--name <text>]` `[--evidence <text>]` | none | none | `people`, `peopleShow`, `peopleSuggest`, `peopleLink`, `peopleUnlink`, `peopleDifferent` | PreToolUse, PostToolUse · PostToolUse | no | 30, 89, 134, 154, 163, 30, 38, 39, 40, 41 |
+| [`log people`](#log-people) | People across platforms: links, suggestions, cards, facts | any (none) | `[--json]` `[--limit <integer 1..200>]` `[--check]` `[--approvedBy <text>]` `[--name <text>]` `[--evidence <text>]` `[--all]` `[--who <w>]` `[--since <t>]` `[--platform <p>]` | none | none | `people`, `peopleShow`, `peopleSuggest`, `peopleLink`, `peopleUnlink`, `peopleFacts`, `peopleFactsExtract`, `peopleFactsRecall`, `peopleDifferent` | PreToolUse, PostToolUse · PostToolUse | no | 30, 89, 134, 154, 163, 30, 38, 39, 40, 41 |
 | [`log network`](#log-network) | The owner's network in log.db | any (none) | `[--from <dir>]` `[--account <handle>]` `[--json]` `[--platform <facebook|twitter|reddit|discord|linkedin|slack|instagram|tiktok>]` | none | none | `networkImport`, `networkStatus` | PreToolUse, PostToolUse · PostToolUse | no | 89, 134, 154, 163, 30, 38, 39, 40, 41 |
 | [`log timing`](#log-timing) | Where the time goes: p50, p95, p99 per tool and stage from log.db, one call as a waterfall, or landed to pushed per platform | any (none) | `[--tool <name>]` `[--hours <number>]` `[--stages <number>]` `[--top <number>]` `[--all]` `[--call <callId>]` `[--turns]` `[--landed]` `[--json]` | none | none | `timing` | PreToolUse, PostToolUse · PostToolUse | no | 26, 73, 165, 30, 38, 39, 40, 41 |
 | [`log tool`](#log-tool) | Turn a one-off into a log tool, and see which tools are used | any (none) | `[--summary <text>]` `[--acts]` `[--flags <a,b,…>]` `[--area <f>]` `[--asks <a,b,…>]` `[--guide <g>]` `[--apply]` `[--json]` `[--days <integer 1..90>]` | none | none | `toolScaffold`, `toolScaffoldLive`, `toolHealth` | PreToolUse, PostToolUse · PostToolUse | no | 30, 73, 163, 165, 30, 38, 39, 40, 41 |
@@ -1625,15 +1625,18 @@ The graph is a projection of log.db; a build can always be redone (docs/relateGr
 
 #### log people
 
-One person across platforms: link identities into a person, Fellegi-Sunter suggestions, the person card MCP tools: `people`, `peopleShow`, `peopleSuggest`, `peopleLink`, `peopleUnlink`, `peopleDifferent`, one per form, with named fields.
+People across platforms: links, suggestions, cards, facts MCP tools: `people`, `peopleShow`, `peopleSuggest`, `peopleLink`, `peopleUnlink`, `peopleFacts`, `peopleFactsExtract`, `peopleFactsRecall`, `peopleDifferent`, one per form, with named fields.
 
 ```text
-log people [--json]                                        (everyone linked across platforms)
-log people show <who> [--json]                             (the person card: every platform, chats, who is waiting, last lines)
-log people suggest [--limit <n>] [--check] [--json]        (probably one person across platforms, every factor; --check asks SubQ)
-log people link <identity> <identity>... --approvedBy "<the owner's words>" [--name "<name>"] [--evidence "<why>"]   (one person across these identities, appended to log.db as events)
-log people unlink <identity> --approvedBy "<the owner's words>"   (that identity is no longer part of its person; the link stays in the history)
-log people different <identity> <identity> --approvedBy "<the owner's words>"   (not the same person, so they are never suggested again)
+log people [--json]
+log people show <who> [--json]
+log people suggest [--limit <n>] [--check] [--json]   (--check asks SubQ)
+log people link <identity> <identity>... --approvedBy "<the owner's words>" [--name "<name>"] [--evidence "<why>"]
+log people unlink <identity> --approvedBy "<the owner's words>"
+log people different <identity> <identity> --approvedBy "<the owner's words>"
+log people facts <who> [--all]
+log people facts extract [--who <w>] [--since <t>] [--limit <n>] [--platform <p>]
+log people facts recall "<q>" [--limit <n>]
 <who> is a person id (p_…), a linked person's name, or an identity. An identity is platform:handle or platform:id, e.g. discord:someone, twitter:@someone, twitter:1234567890.
 ```
 
@@ -1851,7 +1854,7 @@ Hybrid search across every conversation (BM25 keyword + vector meaning, fused wi
 
 ```text
 log search "<query>" [--limit <n>] [--fusion <rrf|bayes>] [--platform <p>] [--account <a>] [--with <handle>] [--after <YYYY-MM-DD>] [--kind <k>] [--server <s>] [--channel <c>] [--full] [--json]
-log search index [--platform <twitter|discord>] [--account <a>] [--saved] [--rebuild]   (only new or changed chunks are embedded and gone ones removed; --rebuild embeds all again. --saved indexes the conversations already kept, reading nothing; otherwise reads every conversation through the platform's engine: X's DMs with X Chat decrypted with the saved PIN, and every Discord DM and group (its whole history, up to 20,000 messages each), keeps them in log.db, and builds the keyword and meaning indexes in ~/.logCli/search)
+log search index [--platform <twitter|discord>] [--account <a>] [--saved] [--rebuild]   (embeds only new or changed chunks, --rebuild all; --saved indexes what log.db holds, else reads every DM and group through the platform's engine first)
 log search bench [--rounds <n>]   (times realistic queries on the built index, cold and warm, and prints p50, p95 and p99 beside a plain linear scan)
 Hybrid search across every conversation: BM25 keyword ranking (bm25s) and meaning ranking (verso-db HNSW over local all-MiniLM-L6-v2 embeddings) run in parallel and are fused with reciprocal rank fusion. Each hit names where it was said (DM, group or channel), when, and its matching lines.
 ```
@@ -1862,7 +1865,7 @@ The knowledge base: search it, sync every source into Twenty and Redis, remember
 
 ```text
 log kb search "<query>" [--kind <kind>] [--limit <n>] [--json]
-log kb sync [--noAccounts] [--json]   (collects AGENTS.md rules and sections, skills, docs, infra notes, every Claude memory file, the known page states and the accounts from log-cli's Twenty, writes them to the knowledge base in ListeningKit's Twenty, and indexes what changed into Redis)
+log kb sync [--noAccounts] [--json]   (collects rules, skills, docs, infra notes, memory files, page states and accounts into the knowledge base, and indexes what changed into Redis)
 log kb remember "<text>" [--title <t>] [--tags <a,b>] [--json]   (saves an agent memory as a note in Twenty and Redis at once)
 log kb show <key> [--json]   (one article in full, e.g. rule:73, skill:inspect, pageState:messengerPinCreate)
 Kinds: rule, section, skill, doc, infra, memory, pageState, account, note. Twenty (your own server, reached over a private network) holds every article and can be edited there; Redis 8 holds the search index: BM25 keyword and HNSW meaning (local all-MiniLM-L6-v2) fused with reciprocal rank fusion. Secrets are scrubbed before anything is written.

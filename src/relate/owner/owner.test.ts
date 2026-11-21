@@ -11,6 +11,7 @@ import * as graphModule from '../graph/index'
 import { applyBatch, buildGraph, countsOf, eventsThrough, expectedCounts, fenceStore, openStoreRetry, pointerOf, projectionOf, queryGraph, readFromFile, readOffset, relateContext } from '../graph/index'
 import { askOf } from '../graph/helpers/store'
 import { relateMachine } from '../machine/index'
+import { recordFact } from '../../people/facts/index'
 import { claimGraphOwner, ensureGraphOwner, GraphOwnerFenced, graphOwnerStatus, ownerRowOf, releaseGraphOwner, runGraphOwner } from './index'
 
 const roots: string[] = []
@@ -107,6 +108,26 @@ describe('the graph owner: one consumer of log.db events per log.db', () => {
     const resumed = await dump(caught.file)
     const full = buildGraph(dbPath, new Date(DEMO_NOW + 60_000))
     expect(resumed).toEqual(await dump(full.file))
+  })
+
+  test('person facts go through the owner: a fact event is applied in its microbatch, the graph equals a full build, and the fact screen runs after each batch', async () => {
+    const dbPath = world()
+    const handle = openDatabase(dbPath)
+    insertEventRow(handle, { platform: 'discord', account: DEMO_OWNER.discordAccount, conversationId: 'dmOwnerFacts', type: 'message', with: 'zoe_new', text: 'i work at a shipyard now', box: 'dm', payload: { id: 'ownerFact1', senderId: '9000000009' }, sourceAt: iso(1), receivedAt: iso(1), source: 'live' })
+    const key = (handle.prepare('SELECT messageKey FROM messages WHERE text = ?').get('i work at a shipyard now') as { messageKey: string }).messageKey
+    const recorded = recordFact(handle, { platform: 'discord', userId: '9000000009', slot: 'workplace', text: 'i work at a shipyard now', quote: 'i work at a shipyard now', sourceMessageKeys: [key], validFrom: iso(1), confidence: 0.9, extractedBy: 'test' }, new Date(DEMO_NOW + 120_000))
+    expect(recorded.ok).toBe(true)
+    const head = eventsThrough(handle)
+    let ticks = 0
+    let screenStopped = false
+    const done = await runGraphOwner({ dbPath, serve: false, batchMs: 10, facts: { tick: async () => void ticks++, stop: () => void (screenStopped = true) }, stopped: () => pointerOf(dbPath, handle)!.throughSeq >= head && ticks > 0 })
+    expect(done.ok).toBe(true)
+    expect(screenStopped).toBe(true)
+    const file = pointerOf(dbPath, handle)!.file
+    expect(await readFromFile(file, (ask) => ask("MATCH (f:Fact)-[:FROM]->(e:Episode) MATCH (f)-[:ABOUT]->(i:Identity) RETURN f.text AS fact, e.text AS evidence, i.key AS about"))).toEqual([{ fact: 'i work at a shipyard now', evidence: 'i work at a shipyard now', about: 'discord:9000000009' }])
+    const applied = await dump(file)
+    const full = buildGraph(dbPath, new Date(DEMO_NOW + 60_000))
+    expect(applied).toEqual(await dump(full.file))
   })
 
   test("a replaced owner's commit is refused by its generation, and the store keeps its offset", async () => {

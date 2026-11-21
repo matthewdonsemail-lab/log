@@ -10,10 +10,10 @@ import { getState, putState } from '../../storage/state/index'
 import { ensureRings } from '../network/client'
 import { checkGraphFence, claimGraphOwner, fencedWrite, GraphOwnerFenced, ownerRequest, releaseGraphOwner } from '../owner/helpers/index'
 import { OWNER_REBUILD_MS } from '../owner/types'
-import { EMPTY_NETWORK, mentionedTokens, networkCountsIn, networkCountsOf, paddedPrompt, pointedAt, projectionOf, writeNetwork } from './helpers/index'
+import { EMPTY_MEMORY, RECALL_CYPHER, currentFactsAbout, ensureMemoryIndexes, recallParams, recalledOf, writeMemory, EMPTY_NETWORK, mentionedTokens, networkCountsIn, networkCountsOf, paddedPrompt, pointedAt, projectionOf, writeNetwork } from './helpers/index'
 import { askOf, openStore } from './helpers/store'
-import { APPLY_MAX_EVENTS, BUILD_CHILD_MS, CHECKPOINT_ROWS, CONTEXT_CHARS, QUERY_ROWS, GRAPH_FILE_PREFIX, GRAPH_FILE_SUFFIX, KEPT_SNAPSHOTS, KEYED_LABELS, LISTED, MENTIONED_PEOPLE, OPEN_RETRY_MS, PLATFORM_PARAM, OPEN_RETRY_STEP_MS, PRIOR_FLOOR, PRIOR_KAPPA, PRIOR_WEIGHT_NEAR, PRIOR_WEIGHT_SPOKE, PROJECTOR_VERSION, WRITE_BATCH } from './types'
-import type { Ask, BuiltFile, ConnectedContext, GraphCounts, GraphPointer, GraphStore, GraphVerify, NetworkGraphCounts, PersonFound, Projection, ProjectionScope, StoreOffset } from './types'
+import { APPLY_MAX_EVENTS, MEMORY_EVENTS, MEMORY_RECALL, BUILD_CHILD_MS, CHECKPOINT_ROWS, CONTEXT_CHARS, QUERY_ROWS, GRAPH_FILE_PREFIX, GRAPH_FILE_SUFFIX, KEPT_SNAPSHOTS, KEYED_LABELS, LISTED, MENTIONED_PEOPLE, OPEN_RETRY_MS, PLATFORM_PARAM, OPEN_RETRY_STEP_MS, PRIOR_FLOOR, PRIOR_KAPPA, PRIOR_WEIGHT_NEAR, PRIOR_WEIGHT_SPOKE, PROJECTOR_VERSION, WRITE_BATCH } from './types'
+import type { Ask, BuiltFile, RecalledFact, ConnectedContext, GraphCounts, GraphPointer, GraphStore, GraphVerify, NetworkGraphCounts, PersonFound, Projection, ProjectionScope, StoreOffset } from './types'
 
 export function graphDir(dbPath: string = defaultDbPath()): string {
   return join(dirname(resolve(dbPath)), 'relate')
@@ -106,6 +106,7 @@ export function writeEdges(projection: Projection, merge: boolean, put: (cypher:
 
 export function writeProjection(conn: Connection, projection: Projection, meta: { workspace: string; builtAt: string; stamps: Stamps; generation: number }): void {
   for (const label of KEYED_LABELS) conn.query(`CREATE CONSTRAINT ${label.toLowerCase()}Key IF NOT EXISTS FOR (n:${label}) REQUIRE n.key IS UNIQUE`)
+  ensureMemoryIndexes(conn)
   conn.begin()
   try {
     write(conn, 'UNWIND $rows AS r CREATE (n:Account) SET n = r', projection.accounts)
@@ -116,6 +117,7 @@ export function writeProjection(conn: Connection, projection: Projection, meta: 
     write(conn, 'UNWIND $rows AS r CREATE (n:Person) SET n = r', projection.persons)
     writeEdges(projection, false, (cypher, rows) => write(conn, cypher, rows))
     writeNetwork(conn, projection.network ?? EMPTY_NETWORK)
+    writeMemory(projection.memory ?? EMPTY_MEMORY, (cypher, rows) => write(conn, cypher, rows), (cypher) => conn.query(cypher))
     conn.query('CREATE (:Snapshot {key: $key, throughSeq: $throughSeq, schemaVersion: $schemaVersion, projectorVersion: $projectorVersion, workspace: $workspace, builtAt: $builtAt, interactionsThrough: $interactionsThrough, mergesThrough: $mergesThrough, networkStamp: $networkStamp, generation: $generation})', { key: 'snapshot', throughSeq: projection.throughSeq, schemaVersion: projection.schemaVersion, projectorVersion: PROJECTOR_VERSION, workspace: meta.workspace, builtAt: meta.builtAt, interactionsThrough: meta.stamps.interactionsThrough, mergesThrough: meta.stamps.mergesThrough, networkStamp: meta.stamps.networkStamp, generation: meta.generation })
     conn.commit()
   } catch (error) {
@@ -165,6 +167,7 @@ export function applyProjection(delta: Projection, meta: { builtAt: string; offs
     put("UNWIND $rows AS r MATCH (a:Identity {key: r.from}), (b:Identity {key: r.to}) CREATE (a)-[:MENTIONED {source: 'network', times: r.times, lastAtMs: r.lastAtMs}]->(b)", delta.network?.mentioned ?? [])
   }
   writeEdges(delta, true, put)
+  if (delta.memory) writeMemory(delta.memory, put, one, delta.memoryWhole === false)
   one('MATCH (s:Snapshot {key: $key}) SET s.throughSeq = $throughSeq, s.builtAt = $builtAt, s.interactionsThrough = $interactionsThrough, s.mergesThrough = $mergesThrough, s.networkStamp = $networkStamp, s.generation = $generation', { key: 'snapshot', throughSeq: meta.offset.throughSeq, builtAt: meta.builtAt, interactionsThrough: meta.offset.interactionsThrough, mergesThrough: meta.offset.mergesThrough, networkStamp: meta.offset.networkStamp, generation: meta.offset.generation })
   return statements
 }
@@ -329,7 +332,8 @@ export function deltaScopeOf(handle: SqlDatabase, from: { throughSeq: number; in
   const rooms = handle.prepare('SELECT c.chatId AS id FROM events e JOIN chats c ON c.platform = e.platform AND c.account = e.account AND c.conversationId = e.conversationId WHERE e.seq > ?1 AND e.seq <= ?2 UNION SELECT m.chatId AS id FROM events e JOIN messages m ON m.messageKey = e.messageKey WHERE e.seq > ?1 AND e.seq <= ?2 AND e.messageKey IS NOT NULL').all(after, upTo) as { id: string }[]
   const actors = handle.prepare("SELECT DISTINCT platform || ':' || actorUserId AS id FROM interactions WHERE seq > ?").all(from.interactionsThrough ?? 0) as { id: string }[]
   const ringed = handle.prepare("SELECT platform || ':' || userId AS id FROM networkRings WHERE seq > ?1 AND seq <= ?2").all(after, upTo) as { id: string }[]
-  return { rooms: new Set(rooms.map((r) => r.id)), actors: new Set(actors.map((r) => r.id)), identities: new Set(ringed.map((r) => r.id)) }
+  const memory = Boolean(handle.prepare(`SELECT 1 FROM events WHERE seq > ?1 AND seq <= ?2 AND type IN (${MEMORY_EVENTS.map(() => '?').join(', ')}) LIMIT 1`).get(after, upTo, ...MEMORY_EVENTS))
+  return { rooms: new Set(rooms.map((r) => r.id)), actors: new Set(actors.map((r) => r.id)), identities: new Set(ringed.map((r) => r.id)), memory }
 }
 
 interface Renamed {
@@ -364,7 +368,7 @@ async function renamedIn(ask: Ask, delta: Projection): Promise<Renamed> {
 }
 
 function rowsOf(delta: Projection): number {
-  return delta.accounts.length + delta.identities.length + delta.rooms.length + delta.posts.length + delta.servers.length + delta.persons.length + delta.members.length + delta.said.length + delta.engaged.length + delta.replies.length + delta.mentions.length + delta.links.length + (delta.network?.mentioned.length ?? 0) + 4 * (delta.network?.takeovers?.length ?? 0)
+  return delta.accounts.length + delta.identities.length + delta.rooms.length + delta.posts.length + delta.servers.length + delta.persons.length + delta.members.length + delta.said.length + delta.engaged.length + delta.replies.length + delta.mentions.length + delta.links.length + (delta.network?.mentioned.length ?? 0) + 4 * (delta.network?.takeovers?.length ?? 0) + (delta.memory ? (delta.memoryWhole === false ? delta.memory.about.length + delta.memory.mentions.length : delta.memory.facts.length + delta.memory.episodes.length) : 0)
 }
 
 function onlyChanged(delta: Projection, renamed: Renamed): Projection {
@@ -608,6 +612,7 @@ export async function connectedContext(ask: Ask, person: PersonFound): Promise<C
     introducers: introducers.map((r) => ({ handle: String(r.handle), rooms: Number(r.rooms), lastDmAtMs: num(r.lastDmAtMs) })),
     sameOrbit: orbit.map((r) => ({ handle: String(r.handle), posts: Number(r.posts) })),
     otherAccounts: [...new Set([...talked.map((t) => t.account), ...engaged.map((e) => e.account)])],
+    facts: await currentFactsAbout(ask, keys, person.personId),
   }
 }
 
@@ -698,6 +703,7 @@ export function renderContext(contexts: readonly ConnectedContext[], pointer: Gr
     const lines = [who]
     if (c.talks.length) lines.push(`  talks: ${c.talks.map((t) => `${t.kind}${t.threads > 1 ? ` (${t.threads} threads)` : ''} on ${t.account}, they said ${t.theirs}, the owner said ${t.ours}, last ${ago(t.lastAtMs, now)}`).join('; ')}`)
     else lines.push('  talks: no chat with any of the owner\'s accounts in log.db')
+    if (c.facts?.length) lines.push(`  lasting facts (current, from their messages): ${c.facts.map((f) => `${f.slot} "${clip(f.text, 70)}" (${f.validFrom.slice(0, 10)})`).join('; ')}`)
     if (c.engaged.length) lines.push(`  engaged the owner: ${c.engaged.map((e) => `${e.kind}${e.times > 1 ? ` x${e.times}` : ''}${e.post ? ` "${clip(e.post, 50)}"` : ''} (${e.account}, ${ago(e.lastAtMs, now)})`).join('; ')}`)
     if (c.replied.length) lines.push(`  replied to or mentioned the owner: ${c.replied.map((r) => `${r.times}x in "${clip(roomLabel(r), 40)}" (last ${ago(r.lastAtMs, now)})`).join('; ')}`)
     if (c.sharedRooms.length) lines.push(`  in groups: ${c.sharedRooms.map((r) => `"${clip(roomLabel(r), 40)}" on ${r.account} (${r.members} members)`).join('; ')}`)
@@ -771,6 +777,21 @@ export async function queryGraph(cypher: string, given: Record<string, string> =
   const pointer = pointerOf(dbPath, handle)
   if (!pointer) throw new Error('no Relate graph for this log.db yet: build it with `log relate build`')
   return viaFile(handle, pointer, async (ask, through, _behind, conn) => ({ ...(await readOnlyRows(ask, conn, cypher, params)), throughSeq: through, served: 'file' as const }))
+}
+
+export async function recallGraph(vector: ArrayLike<number>, k: number = MEMORY_RECALL, dbPath: string = defaultDbPath()): Promise<{ facts: RecalledFact[]; throughSeq: number; served: 'owner' | 'file' }> {
+  const params = recallParams(vector, k)
+  const handle = openDatabase(dbPath)
+  const reply = await ownerRequest<QueryResult>(handle, 'query', { cypher: RECALL_CYPHER, params })
+  if (reply?.ok) return { facts: recalledOf(reply.value.rows), throughSeq: reply.value.throughSeq, served: 'owner' }
+  if (reply) throw new Error(reply.error)
+  const pointer = pointerOf(dbPath, handle)
+  if (!pointer) throw new FactsNoGraph('factsNoGraph: no Relate graph for this log.db yet: build it with `log relate build`')
+  return viaFile(handle, pointer, async (ask, through) => ({ facts: recalledOf(await ask(RECALL_CYPHER, params)), throughSeq: through, served: 'file' as const }))
+}
+
+export class FactsNoGraph extends Error {
+  readonly code = 'factsNoGraph'
 }
 
 export async function rebuildThroughOwner(dbPath: string = defaultDbPath()): Promise<GraphPointer | null> {

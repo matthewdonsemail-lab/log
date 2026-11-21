@@ -107,7 +107,7 @@ const CONFIRM_BYPASS = { type: "boolean", description: "Set true only when the o
 function formUsage(command: Command, form: InputForm): string[] {
   const lines = command.usage.split("\n").map((line) => line.replace(/^\s*Usage:\s*/, "").trim()).filter(Boolean);
   const head = `${commandWords(command)}${form.words.length ? ` ${form.words.join(" ")}` : ""}`;
-  const otherWords = new Set((command.input?.forms ?? []).flatMap((f) => (f === form ? [] : f.words.slice(0, 1))));
+  const otherWords = new Set((command.input?.forms ?? []).flatMap((f) => (f === form ? [] : f.words.length > form.words.length && form.words.every((w, i) => f.words[i] === w) ? [f.words[form.words.length]] : f.words.slice(0, 1))));
   const own = lines.filter((line) => (line === `log ${head}` || line.startsWith(`log ${head} `)) && !otherWords.has(line.slice(`log ${head} `.length).split(" ")[0]));
   const notes = lines.filter((line) => !line.startsWith("log "));
   return [...(own.length ? own : lines.filter((line) => line.startsWith("log "))), ...notes];

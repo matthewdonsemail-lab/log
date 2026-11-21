@@ -37,6 +37,7 @@ export type StateScope =
   | 'watcherCodeStamp'
   | 'hermesPush'
   | 'hookBlocks'
+  | 'factOffsets'
 
 export interface StateRow<T> {
   body: T

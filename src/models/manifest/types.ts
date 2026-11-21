@@ -6,7 +6,7 @@ export const MODEL_LOADERS = ['huggingfaceHub', 'transformersJs', 'pip'] as cons
 
 export type ModelLoader = (typeof MODEL_LOADERS)[number]
 
-export const MODEL_KEYS = ['judge', 'embed', 'emotion', 'vision', 'mouse'] as const
+export const MODEL_KEYS = ['judge', 'embed', 'emotion', 'vision', 'mouse', 'facts'] as const
 
 export type ModelKey = (typeof MODEL_KEYS)[number]
 
@@ -112,6 +112,23 @@ export const LOCAL_MODELS: readonly LocalModel[] = [
     process: 'every browser session in LOG_PYTHON (python/human)',
     files: [],
     bytes: 0,
+  },
+  {
+    key: 'facts',
+    id: 'fastino/gliner2.5-small-v1',
+    purpose: 'marks messages that carry a lasting fact or a promise, with the slot, the people and things named (person facts, tier 1)',
+    source: 'huggingFace',
+    loader: 'huggingfaceHub',
+    revision: 'b5d42bf7dc7d01c40304ae4ed43c2f13c325a75b',
+    process: 'the fact screen (python/facts/screen.py), started by log people facts extract',
+    files: [
+      { path: 'config.json', size: 4104, gitSha1: 'cfd76c9f59461050dd1c00ac0b670eaac7d1495d' },
+      { path: 'encoder_config/config.json', size: 856, gitSha1: 'cdaf6bb43684ee0c7623598df371099ed8b453e6' },
+      { path: 'model.safetensors', size: 295567700, sha256: '4ee982787ace270d4bf15dbcb28ced38e0aa201372347114ceedd6336055de2b' },
+      { path: 'tokenizer.json', size: 8341713, gitSha1: 'a93077b30f99647415b09c3534fed78681ffc853' },
+      { path: 'tokenizer_config.json', size: 645, gitSha1: '5efd586306801b08ca13390b0619a94c943046e4' },
+    ],
+    bytes: 303915018,
   },
 ]
 

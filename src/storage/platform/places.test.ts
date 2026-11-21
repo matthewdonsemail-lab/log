@@ -80,7 +80,7 @@ describe('the chatPlaces repair', () => {
     typeEvent(handle, event({}))
     catalog(handle)
     handle.exec('PRAGMA user_version = 27')
-    expect(migrate(handle).map((m) => m.name)).toEqual(['chatPlaces', 'networkRings', 'networkFit', 'chatGroups'])
+    expect(migrate(handle).map((m) => m.name)).toEqual(['chatPlaces', 'networkRings', 'networkFit', 'chatGroups', 'personFacts'])
     expect(stored(handle)).toEqual({ kind: 'channel', name: 'buildNight', serverId: SERVER.id })
   })
 })

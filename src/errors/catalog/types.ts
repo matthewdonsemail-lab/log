@@ -278,6 +278,27 @@ export const ERROR_CATALOG = {
     raisedIn: ['cli/inbox'],
     action: 'Run log models --fetch to download the pinned model, then run the label tool again; the labels already stored are untouched.'
   },
+  factScreenUnavailable: {
+    layer: 'tool',
+    meaning: 'The local fact screen (GLiNER2 in LOG_PYTHON) could not start or answer, so no message was marked and no fact was written.',
+    retryable: true,
+    raisedIn: ['people/facts'],
+    action: 'Run log models --fetch for the facts model and log update so gliner2 is installed in LOG_PYTHON, then run log people facts extract again.'
+  },
+  factDeciderUnavailable: {
+    layer: 'tool',
+    meaning: 'The fact decider (tier 2, the model named by LOG_FACTS_DECIDER) has no key or is not wired, so the marked messages stay queued and no fact was written.',
+    retryable: true,
+    raisedIn: ['cli/people'],
+    action: 'Save SUBQ_API_KEY with log credentials, or point LOG_FACTS_DECIDER at a SubQ model, then run log people facts extract again; the queued marks are decided then.'
+  },
+  factsNoGraph: {
+    layer: 'tool',
+    meaning: 'There is no Relate graph for this log.db yet, so facts cannot be recalled by meaning.',
+    retryable: true,
+    raisedIn: ['cli/people'],
+    action: 'Build it with log relate build, then ask again; log people facts <who> reads the facts from log.db without the graph.'
+  },
   modelFetchFailed: {
     layer: 'tool',
     meaning: 'log models --fetch could not download a local model at its pinned revision, or the download did not match the pinned hash; nothing half-written was kept.',

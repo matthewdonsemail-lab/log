@@ -123,6 +123,7 @@ function stubContext(err: string[]): Partial<CommandContext> {
     cancelled: () => true,
     worker: fail as never,
     embedder: fail as never,
+    factScreener: fail as never,
     session: fail as never,
     connectSession: fail as never,
     profileSession: fail as never,

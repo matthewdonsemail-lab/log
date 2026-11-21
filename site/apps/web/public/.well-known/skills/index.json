@@ -301,6 +301,14 @@
       "summary": "Who to talk to next"
     },
     {
+      "name": "log-people-facts",
+      "description": "Person facts. A log play (docs/useCases/people/facts.md): log keeps what people said that stays true (their job, where they work, what they are building, what the owner promised them, money owed) as events in log.db, each with the exact message it came from. A draft that says a promise again is held by the voice gate as already promised, and the person card, the conversation card and the Relate graph show the current facts.",
+      "files": [
+        "SKILL.md"
+      ],
+      "summary": "Person facts"
+    },
+    {
       "name": "log-reddit-contributor-maxxing",
       "description": "Contributor maxxing: finding talented builders through what they share. A log play (docs/useCases/reddit/contributorMaxxing.md): Find talented people who are into the same things as the owner, through the GitHub repos they post on Reddit. Read a subreddit's last few days through the owner's Reddit account, keep the posts that link to GitHub, and rank them. It reads only. It posts, votes and messages nothing.",
       "files": [

@@ -2,6 +2,7 @@ import type { Database } from 'bun:sqlite'
 import { channelNameOf, roomCatalog } from '../../../storage/platform/helpers/places'
 import { TOKEN_MIN } from '../types'
 import { applyPersonRings, applyRings, networkProjectionOf } from './network'
+import { memoryProjectionOf } from './memory'
 import type { AccountRow, EngagedRow, IdentityRow, LinkRow, MemberRow, PersonRow, PointedRow, PostRow, Projection, ProjectionScope, RoomRow, SaidRow, ServerRow } from '../types'
 import { nameKeyOf, namesOf, pointedAt } from './mentions'
 
@@ -249,6 +250,8 @@ export function projectionOf(handle: Database, scope?: ProjectionScope): Project
       replies: [...replies.values()],
       mentions: [...mentions.values()],
       network,
+      memory: memoryProjectionOf(handle, !scope || scope.memory === true),
+      memoryWhole: !scope || scope.memory === true,
     }
   })
 }

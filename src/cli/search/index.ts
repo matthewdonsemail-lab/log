@@ -11,7 +11,7 @@ import { chatIdOf } from "../../storage/platform/helpers/ids.ts";
 
 export const SEARCH_USAGE = [
   "Usage: log search \"<query>\" [--limit <n>] [--fusion <rrf|bayes>] [--platform <p>] [--account <a>] [--with <handle>] [--after <YYYY-MM-DD>] [--kind <k>] [--server <s>] [--channel <c>] [--full] [--json]",
-  "       log search index [--platform <twitter|discord>] [--account <a>] [--saved] [--rebuild]   (only new or changed chunks are embedded and gone ones removed; --rebuild embeds all again. --saved indexes the conversations already kept, reading nothing; otherwise reads every conversation through the platform's engine: X's DMs with X Chat decrypted with the saved PIN, and every Discord DM and group (its whole history, up to 20,000 messages each), keeps them in log.db, and builds the keyword and meaning indexes in ~/.logCli/search)",
+  "       log search index [--platform <twitter|discord>] [--account <a>] [--saved] [--rebuild]   (embeds only new or changed chunks, --rebuild all; --saved indexes what log.db holds, else reads every DM and group through the platform's engine first)",
   "       log search bench [--rounds <n>]   (times realistic queries on the built index, cold and warm, and prints p50, p95 and p99 beside a plain linear scan)",
   "Hybrid search across every conversation: BM25 keyword ranking (bm25s) and meaning ranking (verso-db HNSW over local all-MiniLM-L6-v2 embeddings) run in parallel and are fused with reciprocal rank fusion. Each hit names where it was said (DM, group or channel), when, and its matching lines.",
 ].join("\n");

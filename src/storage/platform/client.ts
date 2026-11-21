@@ -2,7 +2,7 @@ import { Database } from 'bun:sqlite'
 import { timedSync } from '../../observability/timing/index'
 import { createHash } from 'node:crypto'
 import { gunzipSync, gzipSync } from 'node:zlib'
-import { chatIdOf, eventIdFrom, extenderOf, groupByMembers, handleIdOf, isBareId, messageKeyOf, msOf, normalHandle, placedChat, platformMessageIdOf, profileFieldsOf, readConversations, serverKindsSql, writeConversation } from './helpers'
+import { chatIdOf, derivePersonFact, eventIdFrom, factsFollowLink, factsLeaveLink, extenderOf, groupByMembers, handleIdOf, isBareId, messageKeyOf, msOf, normalHandle, placedChat, platformMessageIdOf, profileFieldsOf, readConversations, serverKindsSql, writeConversation } from './helpers'
 import type { StoredConversation } from './helpers'
 import { moveRings, rebuildRingsIn, ringState, ringsFromEvent } from '../../relate/network/helpers/rings'
 import { DERIVED_TABLES, EXTENDER_VERSION, MESSAGE_TYPES, RAW_BLOB_KINDS, RING_MOVING_EVENTS } from './types'
@@ -211,10 +211,12 @@ function deriveInternal(handle: Database, event: EventInput): boolean | 'regroup
     const active = handle.prepare('SELECT personId FROM identityLinks WHERE platform = ? AND userId = ? AND revokedAt IS NULL').get(platform, userId) as { personId: string } | null
     if (active) return true
     handle.prepare('INSERT OR IGNORE INTO identityLinks (personId, platform, userId, evidence, linkedBy, linkedAt, linkedEventId) VALUES (?, ?, ?, ?, ?, ?, ?)').run(personId, platform, userId, typeof event.payload.evidence === 'string' ? event.payload.evidence : null, String(event.payload.by ?? 'owner'), event.receivedAt, event.eventId)
+    factsFollowLink(handle, personId, platform, userId, event.receivedAt)
     return true
   }
   if (event.type === 'identityUnlinked') {
     handle.prepare('UPDATE identityLinks SET revokedAt = ?, revokedBy = ? WHERE personId = ? AND platform = ? AND userId = ? AND revokedAt IS NULL').run(event.receivedAt, String(event.payload.by ?? 'owner'), String(event.payload.personId ?? ''), String(event.payload.platform ?? ''), String(event.payload.userId ?? ''))
+    factsLeaveLink(handle, String(event.payload.personId ?? ''), String(event.payload.platform ?? ''), String(event.payload.userId ?? ''))
     return true
   }
   if (event.type === 'identityNotLinked') {
@@ -222,6 +224,10 @@ function deriveInternal(handle: Database, event: EventInput): boolean | 'regroup
     const b = event.payload.b as { platform?: string; userId?: string } | undefined
     if (!a?.platform || !a.userId || !b?.platform || !b.userId) return true
     handle.prepare('INSERT OR IGNORE INTO identityNotLinked (platformA, userIdA, platformB, userIdB, decidedBy, decidedAt) VALUES (?, ?, ?, ?, ?, ?)').run(a.platform, a.userId, b.platform, b.userId, String(event.payload.by ?? 'owner'), event.receivedAt)
+    return true
+  }
+  if (event.type === 'personFactRecorded') {
+    derivePersonFact(handle, event)
     return true
   }
   if (event.type === 'messageEdited') {
@@ -349,6 +355,7 @@ const FINGERPRINT_COLUMNS: Record<string, string> = {
   persons: 'personId, name',
   identityLinks: 'personId, platform, userId, evidence, linkedBy, linkedEventId, revokedAt, revokedBy',
   identityNotLinked: 'platformA, userIdA, platformB, userIdB, decidedBy',
+  personFacts: 'factId, personId, platform, userId, slot, text, quote, sourceMessageKeys, validFrom, validTo, closedAt, supersededBy, confidence, extractedBy',
   identityProfiles: 'platform, userId, bio, avatarHash, followerCount, verified, extra, fetchedAt',
 }
 

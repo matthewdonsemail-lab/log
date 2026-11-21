@@ -1,4 +1,6 @@
-export const PROJECTOR_VERSION = 4
+export const PROJECTOR_VERSION = 5
+
+export const MEMORY_RECALL = 5
 
 export const GRAPH_FILE_PREFIX = 'graph-'
 
@@ -145,7 +147,10 @@ export interface ProjectionScope {
   rooms: ReadonlySet<string>
   actors: ReadonlySet<string>
   identities: ReadonlySet<string>
+  memory?: boolean
 }
+
+export const MEMORY_EVENTS: readonly string[] = ['personFactRecorded', 'identityLinked', 'identityUnlinked']
 
 export interface RoomRow {
   key: string
@@ -249,6 +254,29 @@ export interface Projection {
   replies: PointedRow[]
   mentions: PointedRow[]
   network?: NetworkProjection
+  memory?: MemoryProjection
+  memoryWhole?: boolean
+}
+
+export interface MemoryProjection {
+  episodes: { key: string; id: string; at: string; text: string; platform: string; room: string }[]
+  facts: { key: string; id: string; text: string; slot: string; validFrom: string; validTo: string | null; closedAt: string | null; recordedAt: string; embedding: number[] | null }[]
+  from: { fact: string; episode: string }[]
+  about: { fact: string; subject: string; label: 'Person' | 'Identity' }[]
+  supersedes: { fact: string; old: string }[]
+  mentions: { episode: string; subject: string; label: 'Person' | 'Identity' }[]
+}
+
+export interface RecalledFact {
+  id: string
+  memory: string
+  slot: string
+  validFrom: string
+  score: number
+  evidence: string[]
+  evidenceAt: string[]
+  about: string[]
+  replaced: string[]
 }
 
 export interface NetworkProjection {
@@ -289,6 +317,7 @@ export interface ConnectedContext {
   introducers: { handle: string; rooms: number; lastDmAtMs: number | null }[]
   sameOrbit: { handle: string; posts: number }[]
   otherAccounts: string[]
+  facts?: { slot: string; text: string; validFrom: string; quote: string | null }[]
 }
 
 export interface GraphVerify {

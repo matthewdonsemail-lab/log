@@ -55,7 +55,23 @@ answerEvent → relateAnswer → relateContext ──► the graph owner (one pr
 | `(Identity)-[:MENTIONED {source: 'network', times, lastAtMs}]->(Identity)` | one mentioned the other in a post | `networkMentions` |
 | `(Identity)-[:FOLLOWS]->(Account)` | they follow the owner's X account | `networkPeople.followsOwner` |
 
-Message text stays in log.db. The graph holds counts and times, plus the post text people engaged with.
+Message text stays in log.db. The graph holds counts and times, plus the post text people engaged with, and the source lines of person facts (below).
+
+## Person facts: Relate's agent-memory model
+
+Lasting facts about people (job, workplace, what they are building, promises either way, money owed; the fixed slot list in `FACT_SLOTS`) are `personFactRecorded` events in log.db ([spec](specs/personFacts.md)). The same graph projection that both the full build and the in-place apply call (`writeMemory`, fed by `memoryProjectionOf`) writes them in the shape of Relate's agent memory ([Give an agent a memory](https://relatedb.ai/docs/get-started/agent-memory/)):
+
+| Node or edge | Meaning | From |
+| --- | --- | --- |
+| `(:Episode {id, at, text, platform, room})` | one source message, quoted whole | `messages`, for each key in a fact's `sourceMessageKeys` |
+| `(:Fact {id, text, slot, validFrom, validTo, closedAt, recordedAt, embedding})` | one fact; `closedAt` is set once a later fact replaced it | `personFacts` |
+| `(Fact)-[:FROM]->(Episode)` | the evidence | `sourceMessageKeys` |
+| `(Fact)-[:ABOUT]->(Person\|Identity)` | the person when the identity is linked, else the identity | `personFacts.personId`, else `platform:userId` |
+| `(Fact)-[:SUPERSEDES]->(Fact)` | the correction and what it replaced; nothing is deleted | `personFacts.supersededBy` |
+| `(Episode)-[:MENTIONS]->(Person\|Identity)` | who the message is about | the fact's subject |
+
+`factEmbedding` is a vector index on `Fact.embedding` (log's MiniLM vectors, 384 dimensions, cosine) with `closedAt` declared on it, so recall skips replaced facts before it counts. `log people facts recall "<question>"` embeds the question with the same model and runs `RECALL_CYPHER`: the nearest current facts, each with its evidence line and the facts it replaced. The hook's connected context lists a person's current facts on a `lasting facts` line.
+
 
 ## Your network
 

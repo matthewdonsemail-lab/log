@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 56 domains, 672 requirements. Each one's anchors are proved against its code by the syntax tree on every commit, push and pull request (`bun run check:specs`). SubQ reads a requirement against its code only when asked (`bun run check:specs --subq`, rule 170). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 57 domains, 678 requirements. Each one's anchors are proved against its code by the syntax tree on every commit, push and pull request (`bun run check:specs`). SubQ reads a requirement against its code only when asked (`bun run check:specs --subq`, rule 170). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -684,6 +684,17 @@ One person often has several identities: a Discord account, an X account, an Ins
 - **REQ-PEOPLE-06** One card across every platform of a person
 - **REQ-PEOPLE-07** The hook and the graph see a person, not one identity
 - **REQ-PEOPLE-08** Vetoes, merge re-checks, accounts together, and SubQ on the review band
+
+## [Person facts](./personFacts.md)
+
+log keeps lasting facts about the people the owner talks to: their job, where they work, what they are building, where they live, what they are into, how they know the owner, what the owner promised them, what they promised, and money owed either way. Without them every draft re-reads raw chats, and a reply can repeat a promise the owner already made to the same person. Each fact is an event in log.db with the exact message it came from, projected into the Relate graph in the shape of Relate's own agent memory, and checked by the voice gate before a draft goes out.
+
+- **REQ-FACTS-01** A fact is an event with its source, and the table is derived from it
+- **REQ-FACTS-02** A correction supersedes, it never edits
+- **REQ-FACTS-03** A fact follows the identity onto the person
+- **REQ-FACTS-04** Two tiers over new lines only
+- **REQ-FACTS-05** Promises the owner made are checked before a draft goes out
+- **REQ-FACTS-06** Projected into Relate's agent-memory model, recalled with evidence
 
 ## [Local accounts](./localAccounts.md)
 

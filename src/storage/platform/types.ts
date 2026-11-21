@@ -151,12 +151,35 @@ export const MESSAGE_TYPES: readonly string[] = ['message', 'ownMessage']
 
 export const RING_MOVING_EVENTS: readonly string[] = ['identityLinked', 'identityUnlinked']
 
-export const DERIVED_EVENT_TYPES: readonly string[] = ['attachmentsSeen', 'messageEdited', 'conversationSeen', 'identityLearned', 'accountIdentified', 'profileSeen', 'personNamed', 'identityLinked', 'identityUnlinked', 'identityNotLinked']
+export const DERIVED_EVENT_TYPES: readonly string[] = ['attachmentsSeen', 'messageEdited', 'conversationSeen', 'identityLearned', 'accountIdentified', 'profileSeen', 'personNamed', 'identityLinked', 'identityUnlinked', 'identityNotLinked', 'personFactRecorded']
+
+export const FACT_SLOTS = ['job', 'workplace', 'building', 'location', 'relationship', 'promisedByOwner', 'promisedByThem', 'owes', 'owedToOwner', 'interest'] as const
+
+export type FactSlot = (typeof FACT_SLOTS)[number]
+
+export const SINGLE_SLOTS: ReadonlySet<string> = new Set(['job', 'workplace', 'building', 'location', 'relationship'])
+
+export const PROMISE_SLOTS: ReadonlySet<string> = new Set(['promisedByOwner', 'owes'])
+
+export interface PersonFactInput {
+  factId?: string
+  personId?: string | null
+  platform?: string | null
+  userId?: string | null
+  slot: FactSlot
+  text: string
+  quote: string
+  sourceMessageKeys: readonly string[]
+  validFrom: string
+  confidence: number
+  extractedBy: string
+  supersedes?: readonly string[]
+}
 
 export const PEOPLE_PLATFORM = 'log'
 
 export const PEOPLE_ACCOUNT = 'people'
 
-export const DERIVED_TABLES: readonly string[] = ['attachments', 'memberships', 'messages', 'interactions', 'chats', 'identityProfiles', 'identities', 'accounts', 'handleAliases', 'identityMerges', 'persons', 'identityLinks', 'identityNotLinked']
+export const DERIVED_TABLES: readonly string[] = ['attachments', 'memberships', 'messages', 'interactions', 'chats', 'identityProfiles', 'identities', 'accounts', 'handleAliases', 'identityMerges', 'persons', 'identityLinks', 'identityNotLinked', 'personFacts']
 
 export const EXTENDER_VERSION = 2

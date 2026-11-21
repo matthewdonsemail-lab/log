@@ -8,6 +8,7 @@ import type { TwentyClient } from "../../twenty/graphql/index.ts";
 import type { AdsPowerClient } from "../../browser/adsPower/index.ts";
 import type { DecisionsClient } from "../../subq/decisions/index.ts";
 import type { Embedder } from "../../search/conversations/types.ts";
+import type { Screener } from "../../people/facts/types.ts";
 import type { Platform } from "./helpers/platforms.ts";
 
 export interface CommandResult {
@@ -34,6 +35,7 @@ export interface CommandContext {
   adsPower?: AdsPowerClient;
   decisions?: DecisionsClient;
   embedder?: () => Embedder;
+  factScreener?: () => Screener;
   connectTiming?: Partial<ConnectTiming>;
   out: (line: string) => void;
   err: (line: string) => void;

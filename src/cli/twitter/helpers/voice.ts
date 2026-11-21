@@ -7,6 +7,8 @@ import type { Room, RoomKind } from "../../../voice/room/index.ts";
 import { NOT_SAID, REACTION } from "../../../inbox/lastWord/index.ts";
 import { join } from "node:path";
 import { db, storedEmbedder, ownTextsSince, personOf } from "../../../inbox/store/index.ts";
+import { alreadyPromisedBlock, factsForChats, openPromises, promiseLines, repeatedPromise } from "../../../people/facts/index.ts";
+import type { FactRow } from "../../../people/facts/index.ts";
 import { answerOwed, cardFor, renderCard, scopedToThisChat } from "../../../inbox/card/index.ts";
 import type { ConversationCard } from "../../../inbox/card/index.ts";
 import { SAMENESS_WINDOW_HOURS, samenessLine, samenessOf } from "../../../voice/sameness/index.ts";
@@ -110,7 +112,7 @@ export const VOICE_INPUT: CommandInput = {
 
 let warmEmbedder: Embedder | null = null;
 
-export const voiceDeps: { decisions: () => DecisionsClient; embedder: () => Embedder; aiEmbedder: () => AiEmbedder; aiBuilder: () => AiEmbedder; scrambler: (text: string) => ScramblerReading; howOwnerTalks: () => string[]; owned: (texts: readonly string[]) => (OwnMatch | null)[]; jinaMs: number } = { jinaMs: JINA_GATE_MS, owned: (texts) => ownersSentMatches(db(), texts), decisions: () => createDecisionsClient(), embedder: () => (warmEmbedder ??= storedEmbedder(localEmbedder(), "voice")), aiEmbedder: () => jinaEmbedder(undefined, undefined, { timeoutMs: JINA_GATE_MS, retries: 0 }), aiBuilder: () => jinaEmbedder(), scrambler: (text) => scramblerReadingOf(text), howOwnerTalks: () => howOwnerTalks() };
+export const voiceDeps: { decisions: () => DecisionsClient; embedder: () => Embedder; aiEmbedder: () => AiEmbedder; aiBuilder: () => AiEmbedder; scrambler: (text: string) => ScramblerReading; howOwnerTalks: () => string[]; owned: (texts: readonly string[]) => (OwnMatch | null)[]; facts: (card: ConversationCard) => FactRow[]; jinaMs: number } = { jinaMs: JINA_GATE_MS, facts: (card) => factsOfCard(card), owned: (texts) => ownersSentMatches(db(), texts), decisions: () => createDecisionsClient(), embedder: () => (warmEmbedder ??= storedEmbedder(localEmbedder(), "voice")), aiEmbedder: () => jinaEmbedder(undefined, undefined, { timeoutMs: JINA_GATE_MS, retries: 0 }), aiBuilder: () => jinaEmbedder(), scrambler: (text) => scramblerReadingOf(text), howOwnerTalks: () => howOwnerTalks() };
 
 export function renderVoice(reading: VoiceReading & { notHere?: string[]; aiTells?: AiReading; conventions?: ConventionsReading; phrases?: PhraseReading; scrambler?: ScramblerReading; score?: VoiceScore }): string {
   const scores = `voice ${reading.voice.toFixed(2)} · answers them ${reading.inContext.toFixed(2)} · reads like a mate ${reading.friendLike.toFixed(2)} · opener only ${reading.openerOnly.toFixed(2)}${reading.toThem === null ? "" : ` · like his replies there ${reading.toThem.toFixed(2)}`}${reading.buildsOn === null || reading.buildsOn === undefined ? "" : ` · builds on the chat ${reading.buildsOn.toFixed(2)}`}`;
@@ -156,9 +158,17 @@ function cardOrNull(platform: string, account: string, who: { conversationId?: s
   }
 }
 
-function cardFacts(card: ConversationCard | null | undefined): { card?: string; cardAnswerOwed?: boolean } {
+function factsOfCard(card: ConversationCard): FactRow[] {
+  try {
+    return factsForChats(db(), card.key.split("|"));
+  } catch {
+    return [];
+  }
+}
+
+function cardFacts(card: ConversationCard | null | undefined, facts: readonly FactRow[] = []): { card?: string; cardAnswerOwed?: boolean } {
   if (!card) return {};
-  return { card: renderCard(card), ...(card.fromOwner > 0 ? { cardAnswerOwed: answerOwed(card) } : {}) };
+  return { card: [renderCard(card), ...promiseLines(facts)].join("\n"), ...(card.fromOwner > 0 ? { cardAnswerOwed: answerOwed(card) } : {}) };
 }
 
 export function profileLine(profile: VoiceProfile): string {
@@ -427,7 +437,7 @@ export const voiceCommand: Command = {
   },
 };
 
-export type GateReading = VoiceReading & { owned?: OwnMatch; notHere: string[]; aiTells?: AiReading; conventions?: ConventionsReading; phrases?: PhraseReading; scrambler: ScramblerReading; ranked: RankedMoment[]; room?: Room; strictPass?: boolean; score?: VoiceScore; nearest?: { cosine: number; reply: string } | null; convergence?: Convergence };
+export type GateReading = VoiceReading & { alreadyPromised?: { factId: string; quote: string; at: string; how: string }; owned?: OwnMatch; notHere: string[]; aiTells?: AiReading; conventions?: ConventionsReading; phrases?: PhraseReading; scrambler: ScramblerReading; ranked: RankedMoment[]; room?: Room; strictPass?: boolean; score?: VoiceScore; nearest?: { cosine: number; reply: string } | null; convergence?: Convergence };
 
 export interface RankedMoment {
   from: string;
@@ -517,7 +527,10 @@ export async function gateReadings(context: CommandContext, draft: Omit<GateDraf
   const hisHere = [...(evidence?.recent ?? []), ...(evidence?.replies ?? []).filter((r) => r.tier === "sameChat")].filter((p) => p.reply.trim() !== draft.leaveOut?.reply.trim());
   const theirLast = said.trim() ? said.split("\n") : ranked.filter((m) => m.from !== "the owner").slice(-3).map((m) => m.text);
   const converging = texts.map((text) => convergenceOf({ draft: text, theirLast, hisHere, hisBaseline, baselinePairs: baseline }));
-  const shared = { to, text: texts[0] ?? "", ...(draft.card?.fromOwner ? { ownerWroteHere: draft.card.fromOwner } : {}), ...(draft.card?.messages ? { messagesHere: draft.card.messages } : {}), ...cardFacts(draft.card), ...(said ? { context: said } : {}), ...(evidence ? { evidence } : {}), ...(everywhere ? { everywhere } : {}), ...(ranked.length ? { conversation: ranked } : {}), ...(draft.spoken ? { spoken: true, howOwnerTalks: voiceDeps.howOwnerTalks() } : {}), ...(draft.publicReply ? { publicReply: true } : {}), ...(draft.room ? { room: draft.room } : {}) };
+  const facts = draft.card ? voiceDeps.facts(draft.card) : [];
+  const promises = openPromises(facts);
+  const repeats = await Promise.all(texts.map((text) => repeatedPromise(text, promises, (batch) => voiceDeps.embedder().embed(batch))));
+  const shared = { to, text: texts[0] ?? "", ...(draft.card?.fromOwner ? { ownerWroteHere: draft.card.fromOwner } : {}), ...(draft.card?.messages ? { messagesHere: draft.card.messages } : {}), ...cardFacts(draft.card, facts), ...(said ? { context: said } : {}), ...(evidence ? { evidence } : {}), ...(everywhere ? { everywhere } : {}), ...(ranked.length ? { conversation: ranked } : {}), ...(draft.spoken ? { spoken: true, howOwnerTalks: voiceDeps.howOwnerTalks() } : {}), ...(draft.publicReply ? { publicReply: true } : {}), ...(draft.room ? { room: draft.room } : {}) };
   const options = texts.map((text, i) => ({ text, ...(locals[i].phrases ? { phrasesNewToOwner: locals[i].phrases!.newPhrasing } : {}), ...(locals[i].scrambler.ran ? { scrambler: { suspicious: locals[i].scrambler.suspicious, kinds: [...new Set(locals[i].scrambler.hits.map((h) => h.kind))] } } : {}) }));
   const readings = await readVoices(shared, options, guide, voiceDeps.decisions());
   const threshold = currentThreshold();
@@ -528,8 +541,9 @@ export async function gateReadings(context: CommandContext, draft: Omit<GateDraf
     const convention = read && mine ? ownedConventions(read, ownLineSummary(mine)) : read;
     const strictPass = scored.pass && !local.notHere.length && (local.aiTells?.pass ?? true) && !convention?.flagged && (local.phrases?.pass ?? true) && local.scrambler.suspicious === 0;
     const input = { ...scored, nobodyToAnswer: nobodyToAnswer({ room: draft.room }), scrambler: local.scrambler, notHere: local.notHere, nearestCosine: local.nearest?.cosine ?? null, convergence: converging[i].signal, theyWrote: theirLast.some((t) => t.trim().length > 0), ...(local.phrases ? { phrases: local.phrases } : {}), ...(local.aiTells ? { aiTells: local.aiTells } : {}), ...(convention ? { conventions: convention } : {}) };
-    const score = scoreOf(signalsOf(input), hardBlocks(input, CONTEXT_PASS), threshold);
-    return { ...scored, ...(mine ? { owned: mine } : {}), notHere: local.notHere, ...(local.aiTells ? { aiTells: local.aiTells } : {}), ...(convention ? { conventions: convention } : {}), ...(local.phrases ? { phrases: local.phrases } : {}), scrambler: local.scrambler, ranked, ...(draft.room ? { room: draft.room } : {}), nearest: local.nearest, convergence: converging[i], strictPass, score, pass: score.pass };
+    const repeat = repeats[i];
+    const score = scoreOf(signalsOf(input), [...hardBlocks(input, CONTEXT_PASS), ...(repeat ? [alreadyPromisedBlock(repeat)] : [])], threshold);
+    return { ...scored, ...(repeat ? { alreadyPromised: { factId: repeat.fact.factId, quote: repeat.fact.quote, at: repeat.fact.validFrom, how: repeat.how } } : {}), ...(mine ? { owned: mine } : {}), notHere: local.notHere, ...(local.aiTells ? { aiTells: local.aiTells } : {}), ...(convention ? { conventions: convention } : {}), ...(local.phrases ? { phrases: local.phrases } : {}), scrambler: local.scrambler, ranked, ...(draft.room ? { room: draft.room } : {}), nearest: local.nearest, convergence: converging[i], strictPass, score, pass: score.pass };
   });
 }
 

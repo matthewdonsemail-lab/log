@@ -8,7 +8,7 @@ import { fetchModels, liveModelsDeps } from '../../../models/store/index'
 import { refreshHarnesses } from '../../harnesses/index'
 import type { PostInstallDeps, StepResult } from '../types'
 
-export const PYTHON_VENDORS = ['-r', 'vendor/twikit/requirements.txt', './vendor/fbk', './vendor/endcord', './vendor/openLinkedinApi', './vendor/instagrapi', 'brotli', 'pycurl', 'cryptography>=42', ...pipSpecs()]
+export const PYTHON_VENDORS = ['-r', 'vendor/twikit/requirements.txt', './vendor/fbk', './vendor/endcord', './vendor/openLinkedinApi', './vendor/instagrapi', 'brotli', 'pycurl', 'cryptography>=42', 'gliner2[local]==2.2.0', ...pipSpecs()]
 
 const STEP_MS = 10 * 60 * 1000
 

@@ -1,19 +1,26 @@
 import { cardFor, linkIdentities, linkReport, listPeople, markNotLinked, reviewBand, unlinkIdentity } from "../../people/index.ts";
 import type { Cluster, LinkReport, Recheck, Suggestion } from "../../people/index.ts";
 import { localEmbedder } from "../../search/conversations/index.ts";
+import { DEFAULT_DECIDER, extractFacts, factDecider, factLine, factsAbout, gliner2Screener, percentile, promiseLines, resolveWho as whoOf } from "../../people/index.ts";
+import type { ExtractReport, FactDecider, Screener } from "../../people/index.ts";
+import { storedEmbedder } from "../../inbox/store/index.ts";
+import { pointerOf, recallGraph } from "../../relate/graph/index.ts";
 import { createDecisionsClient } from "../../subq/decisions/index.ts";
 import type { DecisionsClient } from "../../subq/decisions/index.ts";
 import { defaultDbPath, openDatabase } from "../../storage/schema/index.ts";
-import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuseInput } from "../runner/helpers/index.ts";
+import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuse, refuseError, refuseInput } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
 
 export const PEOPLE_USAGE = [
-  "Usage: log people [--json]                                        (everyone linked across platforms)",
-  "       log people show <who> [--json]                             (the person card: every platform, chats, who is waiting, last lines)",
-  "       log people suggest [--limit <n>] [--check] [--json]        (probably one person across platforms, every factor; --check asks SubQ)",
-  "       log people link <identity> <identity>... --approvedBy \"<the owner's words>\" [--name \"<name>\"] [--evidence \"<why>\"]   (one person across these identities, appended to log.db as events)",
-  "       log people unlink <identity> --approvedBy \"<the owner's words>\"   (that identity is no longer part of its person; the link stays in the history)",
-  "       log people different <identity> <identity> --approvedBy \"<the owner's words>\"   (not the same person, so they are never suggested again)",
+  "Usage: log people [--json]",
+  "       log people show <who> [--json]",
+  "       log people suggest [--limit <n>] [--check] [--json]   (--check asks SubQ)",
+  "       log people link <identity> <identity>... --approvedBy \"<the owner's words>\" [--name \"<name>\"] [--evidence \"<why>\"]",
+  "       log people unlink <identity> --approvedBy \"<the owner's words>\"",
+  "       log people different <identity> <identity> --approvedBy \"<the owner's words>\"",
+  "       log people facts <who> [--all]",
+  "       log people facts extract [--who <w>] [--since <t>] [--limit <n>] [--platform <p>]",
+  "       log people facts recall \"<q>\" [--limit <n>]",
   "<who> is a person id (p_…), a linked person's name, or an identity. An identity is platform:handle or platform:id, e.g. discord:someone, twitter:@someone, twitter:1234567890.",
 ].join("\n");
 
@@ -26,6 +33,9 @@ export const PEOPLE_INPUT: CommandInput = {
     { words: ["suggest"], summary: "Accounts on different platforms that are probably one person, with every factor", positionals: [], flags: [{ name: "limit", kind: "integer", min: 1, max: 200, description: "How many, default 20" }, { name: "check", kind: "boolean", description: "Ask SubQ about the review band" }, JSON_FLAG] },
     { words: ["link"], effect: "write", summary: "Make these identities one person, after the owner says yes (appended to log.db as events; nothing is sent)", positionals: [{ name: "identities", kind: "rest", required: true, description: "Two or more identities, platform:handle or platform:id" }], flags: [APPROVED, { name: "name", kind: "string", description: "The person's name" }, { name: "evidence", kind: "string", description: "Why, e.g. the suggestion's evidence" }, JSON_FLAG] },
     { words: ["unlink"], effect: "write", summary: "Take an identity out of its person, after the owner says so (the link stays in the history)", positionals: [{ name: "identity", kind: "string", required: true, description: "platform:handle or platform:id" }], flags: [APPROVED, JSON_FLAG] },
+    { words: ["facts"], summary: "Someone's lasting facts (job, promises, money owed) with date and source", positionals: [{ name: "who", kind: "string", required: true, description: "A person id, a linked person's name, or platform:handle" }], flags: [{ name: "all", kind: "boolean", description: "Also the replaced ones" }, JSON_FLAG] },
+    { words: ["facts", "extract"], effect: "write", summary: "Find facts in new DM lines and record them as events (sends nothing)", positionals: [], flags: [{ name: "who", kind: "string", description: "Only this person" }, { name: "since", kind: "string", description: "Only lines since this time" }, { name: "limit", kind: "integer", min: 1, max: 200, description: "How many recent DMs, default 20" }, { name: "platform", kind: "string", description: "One platform" }, JSON_FLAG] },
+    { words: ["facts", "recall"], summary: "Recall current facts by meaning, with evidence", positionals: [{ name: "question", kind: "string", required: true, description: "What to recall" }], flags: [{ name: "limit", kind: "integer", min: 1, max: 50, description: "How many, default 5" }, JSON_FLAG] },
     { words: ["different"], effect: "write", summary: "Record that two identities are not the same person, after the owner says so, so they are never suggested again", positionals: [{ name: "first", kind: "string", required: true, description: "platform:handle or platform:id" }, { name: "second", kind: "string", required: true, description: "platform:handle or platform:id" }], flags: [APPROVED, JSON_FLAG] },
   ],
 };
@@ -62,10 +72,24 @@ export function reportText(report: LinkReport, limit: number, checked: { checked
   ].join("\n");
 }
 
-export const peopleDeps: { embedder: () => { embed: (texts: string[]) => Promise<Float32Array[]>; stop?: () => void } | null; decisions: () => DecisionsClient } = {
+export const peopleDeps: { embedder: () => { embed: (texts: string[]) => Promise<Float32Array[]>; stop?: () => void } | null; decisions: () => DecisionsClient; decider: () => FactDecider; screener: () => Screener; factEmbedder: () => { embed: (texts: string[]) => Promise<Float32Array[]>; stop?: () => void } | null } = {
   embedder: () => localEmbedder(),
   decisions: () => createDecisionsClient(),
+  screener: () => gliner2Screener(),
+  decider: () => factDecider(),
+  factEmbedder: () => storedEmbedder(localEmbedder(), "fact"),
 };
+
+export function extractText(report: ExtractReport): string {
+  const ms = report.screenMs;
+  const head = `log people facts extract: ${report.chats} chat${report.chats === 1 ? "" : "s"}, ${report.messages} new message${report.messages === 1 ? "" : "s"}, ${report.marked} marked by ${report.screenModel} (${report.messages ? Math.round((report.marked / report.messages) * 100) : 0}%, ${percentile(ms, 50).toFixed(1)} ms p50 / ${percentile(ms, 95).toFixed(1)} ms p95 per message), ${report.decideCalls} call${report.decideCalls === 1 ? "" : "s"} to ${report.decideModel ?? "no decider"}, ${report.dropped} dropped, ${report.queued} queued.`;
+  const people = report.people.filter((p) => p.added.length || p.repeats.length).map((p) => [
+    `${p.label}: ${p.added.length} new fact${p.added.length === 1 ? "" : "s"}, ${p.repeats.length} repeat${p.repeats.length === 1 ? "" : "s"}`,
+    ...p.added.map((f) => `  + ${factLine(f)}`),
+    ...p.repeats.map((r) => `  = said again "${r.text.slice(0, 80)}", already ${r.repeatOf.slot} since ${r.repeatOf.validFrom.slice(0, 10)}`),
+  ].join("\n"));
+  return [head, ...people].join("\n");
+}
 
 export const peopleCommand: Command = {
   usage: PEOPLE_USAGE,
@@ -73,8 +97,8 @@ export const peopleCommand: Command = {
   name: "people",
   effect: "read",
   input: PEOPLE_INPUT,
-  summary: "One person across platforms: link identities into a person, Fellegi-Sunter suggestions, the person card",
-  args: "[show <who>|suggest|link <identity>...|unlink <identity>|different <a> <b>] [--json]",
+  summary: "People across platforms: links, suggestions, cards, facts",
+  args: "[show <who>|facts <who>|facts extract|facts recall <q>|suggest|link <identity>...|unlink <identity>|different <a> <b>] [--json]",
   async run(_context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(PEOPLE_INPUT));
     if (!parsed.ok) return refuseInput("people", parsed.error, PEOPLE_USAGE);
@@ -92,6 +116,50 @@ export const peopleCommand: Command = {
       const found = cardFor(handle, rest[0]);
       if (!found.ok) return refuseInput("people", found.problem, PEOPLE_USAGE);
       return { code: 0, stdout: json ? JSON.stringify(found.card, null, 2) : found.card.text };
+    }
+    if (sub === "facts" && rest[0] === "extract" && rest.length === 1) {
+      let screener: Screener | null = null;
+      let embedder: { embed: (texts: string[]) => Promise<Float32Array[]>; stop?: () => void } | null = null;
+      try {
+        const decider: FactDecider = _context.decisions ? { ok: true, model: DEFAULT_DECIDER, decisions: _context.decisions } : peopleDeps.decider();
+        screener = (_context.factScreener ?? peopleDeps.screener)();
+        embedder = _context.embedder ? storedEmbedder(_context.embedder(), "fact") : peopleDeps.factEmbedder();
+        const report = await extractFacts(handle, { screener, decisions: decider.ok ? decider.decisions : null, ...(decider.ok ? { decideModel: decider.model } : {}), ...(embedder ? { embed: embedder.embed.bind(embedder) } : {}), ...(typeof parsed.flags["who"] === "string" ? { who: parsed.flags["who"] as string } : {}), ...(typeof parsed.flags["since"] === "string" ? { since: parsed.flags["since"] as string } : {}), ...(numberOf(parsed, "limit") ? { chats: numberOf(parsed, "limit")! } : {}), ...(typeof parsed.flags["platform"] === "string" ? { platforms: [parsed.flags["platform"] as string] } : {}), log: (line) => _context.err(line) });
+        if ("problem" in report) return refuseInput("people", report.problem, PEOPLE_USAGE);
+        if (!decider.ok) return { ...refuse("people facts extract", "factDeciderUnavailable", `${decider.problem}; ${report.queued} marked message${report.queued === 1 ? "" : "s"} stay queued`), stdout: json ? JSON.stringify(report, null, 2) : extractText(report) };
+        return { code: 0, stdout: json ? JSON.stringify(report, null, 2) : extractText(report) };
+      } catch (error) {
+        return refuseError("people facts extract", error);
+      } finally {
+        screener?.stop?.();
+        embedder?.stop?.();
+      }
+    }
+    if (sub === "facts" && rest[0] === "recall" && rest.length === 2) {
+      const pointer = pointerOf();
+      if (!pointer) return refuse("people facts recall", "factsNoGraph");
+      let embedder: { embed: (texts: string[]) => Promise<Float32Array[]>; stop?: () => void } | null = null;
+      try {
+        embedder = _context.embedder ? _context.embedder() : peopleDeps.embedder();
+        if (!embedder) return refuse("people facts recall", "factScreenUnavailable", "no embedder");
+        const [vector] = await embedder.embed([rest[1]]);
+        const { facts: found } = await recallGraph(vector, numberOf(parsed, "limit") ?? 5);
+        if (json) return { code: 0, stdout: JSON.stringify({ facts: found }, null, 2) };
+        if (!found.length) return { code: 0, stdout: "log people facts recall: no current fact is near that." };
+        return { code: 0, stdout: found.map((f) => `${f.score.toFixed(2)}  ${f.slot} about ${f.about.join(", ") || "?"} since ${f.validFrom.slice(0, 10)}: "${f.memory}"\n      evidence: ${f.evidence.map((e, i) => `"${e.slice(0, 120)}" (${(f.evidenceAt[i] ?? "").slice(0, 10)})`).join("; ")}${f.replaced.length ? `\n      replaced: ${f.replaced.map((r) => `"${r.slice(0, 80)}"`).join("; ")}` : ""}`).join("\n") };
+      } catch (error) {
+        return refuseError("people facts recall", error);
+      } finally {
+        embedder?.stop?.();
+      }
+    }
+    if (sub === "facts" && rest.length === 1) {
+      const who = whoOf(handle, rest[0]);
+      if (!who.ok) return refuseInput("people", who.problem, PEOPLE_USAGE);
+      const facts = factsAbout(handle, { personId: who.personId, identities: who.identities }, { all: parsed.flags["all"] === true });
+      if (json) return { code: 0, stdout: JSON.stringify({ personId: who.personId, identities: who.identities, facts }, null, 2) };
+      if (!facts.length) return { code: 0, stdout: `log people facts: no lasting facts about ${rest[0]} yet. log people facts extract --who ${rest[0]} reads their chats for them.` };
+      return { code: 0, stdout: [`log people facts: ${rest[0]}, ${facts.length} fact${facts.length === 1 ? "" : "s"}, newest first`, ...facts.map((f) => `  ${factLine(f)}\n    source: "${f.quote.slice(0, 160)}" (${f.source?.sentAt.slice(0, 16).replace("T", " ") ?? "?"})`), ...promiseLines(facts)].join("\n") };
     }
     if (sub === "suggest" && rest.length === 0) {
       const limit = numberOf(parsed, "limit") ?? 20;
@@ -122,6 +190,6 @@ export const peopleCommand: Command = {
         return { code: 0, stdout: json ? JSON.stringify(result, null, 2) : `log people different: ${rest[0]} and ${rest[1]} are recorded as different people and won't be suggested again.` };
       }
     }
-    return refuseInput("people", "say show <who>, suggest, link <identity> <identity>..., unlink <identity> or different <a> <b>", PEOPLE_USAGE);
+    return refuseInput("people", "say show <who>, facts <who>, facts extract, facts recall <question>, suggest, link <identity> <identity>..., unlink <identity> or different <a> <b>", PEOPLE_USAGE);
   },
 };

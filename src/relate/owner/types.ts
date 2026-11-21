@@ -74,6 +74,7 @@ export interface OwnerOptions {
   startedOf?: (pid: number) => string | null
   kill?: (pid: number) => void
   sleep?: (ms: number) => Promise<void>
+  facts?: { tick: () => Promise<unknown>; stop: () => void } | null
 }
 
 export type OwnerOutcome = { ok: true; batches: number; reason: string } | { ok: false; code: string; reason: string }

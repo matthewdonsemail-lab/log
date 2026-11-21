@@ -1,6 +1,8 @@
 import type { Database } from 'bun:sqlite'
 import { CARD_CHARS, CARD_CHATS, CARD_LINES, ONE_TO_ONE_SHARE } from '../types'
 import type { CardChat, CardLine, IdentityInfo, PersonCard } from '../types'
+import { factLine, factsAbout, promiseLines } from '../facts/client'
+import { PROMISE_SLOTS } from '../../storage/platform/types'
 
 const dayOf = (ms: number | null): string => (ms ? new Date(ms).toISOString().slice(0, 10) : '?')
 
@@ -58,7 +60,8 @@ export function personCardOf(handle: Database, personId: string | null, identiti
   })
   const throughSeq = (handle.prepare(`SELECT COALESCE(MAX(m.seq), 0) AS seq FROM messages m WHERE ${them}`).get(...themArgs) as { seq: number }).seq
   const name = (personId ? (handle.prepare('SELECT name FROM persons WHERE personId = ?').get(personId) as { name: string | null } | null)?.name : null) ?? identities.find((i) => i.name)?.name ?? null
-  const card: PersonCard = { personId, name, identities: [...identities], arrived: arrivedFrom[0] ?? null, waitingOn: newest ? (newest.fromOwner ? 'them' : 'owner') : null, perPlatform, chats, onTheirAccounts, last, throughSeq, text: '' }
+  const facts = factsAbout(handle, { personId, identities })
+  const card: PersonCard = { personId, name, identities: [...identities], arrived: arrivedFrom[0] ?? null, waitingOn: newest ? (newest.fromOwner ? 'them' : 'owner') : null, perPlatform, chats, onTheirAccounts, last, facts, throughSeq, text: '' }
   card.text = renderCard(card, now)
   return card
 }
@@ -73,6 +76,10 @@ export function renderCard(card: PersonCard, now: number = Date.now()): string {
     const engaged = p.engaged.length ? `; engaged: ${p.engaged.map((e) => `${e.kind} x${e.times} on ${e.account}`).join(', ')}` : ''
     lines.push(`  ${p.platform}: ${p.oneToOne} one-to-one chat${p.oneToOne === 1 ? '' : 's'} (they said ${p.theirs}, the owner ${p.ours}), ${p.groups} group${p.groups === 1 ? '' : 's'} together (they said ${p.theirsInGroups} there), last ${agoOf(p.lastAtMs, now)}${engaged}`)
   }
+  const promised = promiseLines(card.facts)
+  const known = card.facts.filter((f) => !PROMISE_SLOTS.has(f.slot))
+  if (promised.length) lines.push(...promised.map((l) => `  ${l}`))
+  if (known.length) lines.push('  lasting facts (current, newest first):', ...known.map((f) => `    ${factLine(f)}`))
   if (card.onTheirAccounts) lines.push(`  ${card.onTheirAccounts} chat${card.onTheirAccounts === 1 ? '' : 's'} on their own account that log runs, left out: their conversations, not the owner's with them`)
   const unread = card.chats.filter((c) => !c.backfilled).length
   if (unread) lines.push(`  ${unread} of these chats were never read from the start, so counts can be low`)

@@ -151,6 +151,14 @@ export const NETWORK_RING_TABLES: readonly string[] = [
   'CREATE TABLE IF NOT EXISTS networkRingState (id INTEGER PRIMARY KEY CHECK (id = 1), throughSeq INTEGER NOT NULL, lastAtMs INTEGER, builtAt TEXT NOT NULL, builtMs INTEGER NOT NULL)',
 ]
 
+export const PERSON_FACT_TABLES: readonly string[] = [
+  'CREATE TABLE IF NOT EXISTS personFacts (factId TEXT PRIMARY KEY, eventId TEXT NOT NULL, personId TEXT, platform TEXT, userId TEXT, slot TEXT NOT NULL, text TEXT NOT NULL, quote TEXT NOT NULL, sourceMessageKeys TEXT NOT NULL, validFrom TEXT NOT NULL, validTo TEXT, recordedAt TEXT NOT NULL, closedAt TEXT, supersededBy TEXT, confidence REAL NOT NULL, extractedBy TEXT NOT NULL) WITHOUT ROWID',
+  'CREATE INDEX IF NOT EXISTS personFactsByIdentity ON personFacts (platform, userId, slot)',
+  'CREATE INDEX IF NOT EXISTS personFactsByPerson ON personFacts (personId, slot)',
+  'CREATE TABLE IF NOT EXISTS factCandidates (messageKey TEXT PRIMARY KEY, chatId TEXT NOT NULL, kind TEXT NOT NULL, confidence REAL NOT NULL, marks TEXT NOT NULL, model TEXT NOT NULL, decided TEXT, markedAt TEXT NOT NULL) WITHOUT ROWID',
+  'CREATE INDEX IF NOT EXISTS factCandidatesOpen ON factCandidates (chatId) WHERE decided IS NULL',
+]
+
 export const MIN_READER_VERSION = 1
 
 export const MIGRATIONS: readonly Migration[] = [
@@ -426,6 +434,14 @@ export const MIGRATIONS: readonly Migration[] = [
     apply(handle) {
       const moved = repairChatPlaces(handle) + repairChatGroups(handle)
       if (moved && ringState(handle)) rebuildRingsIn(handle)
+    },
+  },
+  {
+    version: 32,
+    name: 'personFacts',
+    creates: ['personFacts', 'personFactsByIdentity', 'personFactsByPerson', 'factCandidates', 'factCandidatesOpen'],
+    apply(handle) {
+      for (const statement of PERSON_FACT_TABLES) handle.exec(statement)
     },
   },
 ]

@@ -98,7 +98,7 @@ export const people = {
     'REQ-PEOPLE-06': noul('Does personCardOf cover every linked identity, treat a chat as one-to-one when no other sender wrote twice or the two wrote ONE_TO_ONE_SHARE of it, leave out chats on an account log runs for that person, dedupe repeated lines, show empty lines as [attachment], flag chats never read from the start, and keep CARD_LINES lines in time order tagged by platform?'),
     'REQ-PEOPLE-08': noul('Are pairs with different real names or with identities on one platform that talk in the same chat vetoed, are links already made re-checked, are accounts suggested together grouped as one person, and does --check ask SubQ about the review band in at most two steps without linking anything?'),
     'REQ-PEOPLE-07': noul('Does relateAnswer add cardsNamedIn cards (by any linked handle or a word of the name, at most PEOPLE_IN_PROMPT), does the projection set personId and personNames on linked identities, and does findPeople group by person, expand to every identity of the person and match by name?'),
-    unspecifiedBehavior: noul('Does any people code send anything off the machine other than the --check review to SubQ, or write a link without the owner\'s approval?'),
+    unspecifiedBehavior: noul('Does any people code send anything off the machine other than the --check review and the person-facts tier 2 to SubQ, or write a link without the owner\'s approval?'),
   },
   assertions: {
     'REQ-PEOPLE-01': MET,

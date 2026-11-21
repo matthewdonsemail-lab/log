@@ -1,5 +1,6 @@
 export * from './client'
 export * from './types'
+export * from './facts/index'
 export { identitiesIn, linkCandidates, linkReport, reviewBand, reviewState, linksIn, loose, meaningOf, scoreLinks, suggestLinks } from './helpers/index'
 export type { LinkContext } from './helpers/index'
 export { personCardOf, renderCard } from './helpers/index'

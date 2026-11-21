@@ -1,3 +1,5 @@
+import type { FactRow } from './facts/types'
+
 export const PERSON_ID_PREFIX = 'p_'
 
 export const PRIOR_MATCH_SHARE = 0.04
@@ -212,6 +214,7 @@ export interface PersonCard {
   chats: CardChat[]
   onTheirAccounts: number
   last: CardLine[]
+  facts: FactRow[]
   throughSeq: number
   text: string
 }
