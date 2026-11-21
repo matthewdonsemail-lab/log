@@ -30,7 +30,7 @@ For platform work, read the relevant skill/use-case and current domain spec. Pla
 
 4. 2026-10-18 · Commit and push as The owner to GitHub origin. Preserve unrelated work and inspect current changes before editing. Never skip hooks.
 
-5. 2026-10-18 · Each commit needs its AST-backed day-log entry, written by the pre-commit hook to the private devlog (`LOG_DEVLOG_DIR`, default `~/.logCli/devlog/<UTC-date>.md`), never into the repo. Follow skills/commitLog/SKILL.md; never fabricate or hand-edit the generated AST evidence.
+5. 2026-10-18 · Each commit needs its AST-backed day-log entry, written by the commit-msg hook (from the message's What changed / Why / Checked lines) to the private devlog (`LOG_DEVLOG_DIR`, default `~/.logCli/devlog/<UTC-date>.md`), never into the repo. Follow skills/commitLog/SKILL.md; never fabricate or hand-edit the generated AST evidence.
 
 6. 2026-10-18 · Processes that run over time use XState machines and observable stages through the existing CLI/trace infrastructure.
 

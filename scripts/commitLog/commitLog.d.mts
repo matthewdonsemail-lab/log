@@ -17,3 +17,7 @@ export function splitEntries(text: string): Map<string, string[]>;
 export function renderDay(day: string, entries: string[]): string;
 export function renderIndex(days: Map<string, number>): string;
 export function countEntries(text: string): number;
+export function fieldsFromMessage(text: string): Record<string, string> | null;
+export function fillEntry(entry: string, fields: Record<string, string>): string;
+export function fillEntryInText(text: string, heading: string, fields: Record<string, string>): string;
+export function recordFromMessage(input: { dir: string; repoRoot: string; ast: string[]; fields: Record<string, string>; when: string; branch: string }): string;

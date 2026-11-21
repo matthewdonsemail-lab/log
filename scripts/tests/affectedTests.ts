@@ -9,7 +9,10 @@ export const FULL_RUN_PATHS = ["package.json", "bun.lock", "bunfig.toml", "tscon
 export const SMOKE_TESTS = ["src/config/logHome/logHome.test.ts", "src/mcp/server/server.test.ts", "src/cli/runner/commandInput.test.ts", "src/storage/schema/upgrade.test.ts", "scripts/tests/affectedTests.test.ts"];
 export const FULL_RUN_SHARE = 0.6;
 export const HUB_IMPORTS = 40;
+export const TEST_CAP = 100;
 
+const RE_EXPORT = /export\s+(?:type\s+)?(?:\*(?:\s+as\s+\w+)?|\{[^}]*\})\s+from\s+["'][^"'\n]+["'];?/g;
+const RE_EXPORT_ONE = /export\s+(?:type\s+)?(?:\*|\{)/;
 const SOURCE = /\.(ts|tsx|mts|js|mjs|cjs|py)$/;
 const SCRIPT = /\.(ts|tsx|mts|js|mjs|cjs)$/;
 const TEST = /\.test\.(ts|tsx|js|mjs)$/;
@@ -122,22 +125,88 @@ export function ownTests(changed: readonly string[], allTests: readonly string[]
   return allTests.map(norm).filter((t) => folders.has(posix.dirname(t)));
 }
 
+export function isBarrel(text: string): boolean {
+  const rest = text.replace(RE_EXPORT, "").trim();
+  return rest === "" && RE_EXPORT_ONE.test(text);
+}
+
+export function barrelsOf(files: readonly string[], read: (path: string) => string): Set<string> {
+  const out = new Set<string>();
+  for (const file of files.map(norm)) {
+    if (!SCRIPT.test(file)) continue;
+    try {
+      if (isBarrel(read(file))) out.add(file);
+    } catch {}
+  }
+  return out;
+}
+
+export function distancesFrom(changed: readonly string[], importedBy: Graph, barrels: ReadonlySet<string> = new Set(), hubs: ReadonlySet<string> = new Set()): Map<string, number> {
+  const starts = changed.map(norm);
+  const distance = new Map<string, number>(starts.map((file) => [file, 0]));
+  const queue = [...starts];
+  while (queue.length) {
+    const file = queue.shift()!;
+    const at = distance.get(file)!;
+    if (hubs.has(file) && !barrels.has(file) && !starts.includes(file)) continue;
+    const step = barrels.has(file) && at > 0 ? 0 : 1;
+    for (const user of importedBy.get(file) ?? []) {
+      const next = at + step;
+      if ((distance.get(user) ?? Infinity) <= next) continue;
+      distance.set(user, next);
+      if (step === 0) queue.unshift(user);
+      else queue.push(user);
+    }
+  }
+  return distance;
+}
+
 export interface Selection {
   full: boolean;
   reason: string;
   tests: string[];
+  leftToCi?: number;
 }
 
-export function selectTests(changed: readonly string[], allTests: readonly string[], importedBy: Graph, smoke: readonly string[] = SMOKE_TESTS): Selection {
+export interface SelectOptions {
+  barrels?: ReadonlySet<string>;
+  cap?: number;
+}
+
+const tierLine = (tiers: Map<number, string[]>): string =>
+  [...tiers]
+    .sort(([a], [b]) => a - b)
+    .map(([d, t]) => `${t.length} at ${d}`)
+    .join(", ");
+
+export function selectTests(changed: readonly string[], allTests: readonly string[], importedBy: Graph, smoke: readonly string[] = SMOKE_TESTS, options: SelectOptions = {}): Selection {
   const paths = changed.map(norm);
   const global = paths.find((p) => FULL_RUN_PATHS.some((g) => (g.endsWith("/") ? p.startsWith(g) : p === g)));
   if (global) return { full: true, reason: `${global} changed, which every test depends on`, tests: [...allTests] };
+  const cap = options.cap ?? TEST_CAP;
   const runnable = new Set(allTests.map(norm));
-  const reached = reachedFrom(paths, importedBy, hubsOf(importedBy));
-  const affected = [...new Set([...ownTests(paths, allTests), ...[...reached].filter((p) => runnable.has(p))])];
-  const tests = [...new Set([...affected, ...smoke.filter((s) => runnable.has(s))])].sort();
-  if (runnable.size && tests.length / runnable.size >= FULL_RUN_SHARE) return { full: true, reason: `${affected.length} of ${runnable.size} test files are affected`, tests: [...allTests] };
-  return { full: false, reason: `${paths.length} changed file(s) reach ${affected.length} test file(s), plus ${tests.length - affected.length} smoke`, tests };
+  const distance = distancesFrom(paths, importedBy, options.barrels ?? new Set(), hubsOf(importedBy));
+  const required = new Set([...ownTests(paths, allTests), ...[...distance].filter(([p, d]) => d <= 1 && runnable.has(p)).map(([p]) => p)]);
+  if (runnable.size && required.size / runnable.size >= FULL_RUN_SHARE) return { full: true, reason: `${required.size} of ${runnable.size} test files import a changed file directly`, tests: [...allTests] };
+  const tiers = new Map<number, string[]>();
+  for (const [file, d] of distance) if (d > 1 && runnable.has(file) && !required.has(file)) tiers.set(d, [...(tiers.get(d) ?? []), file]);
+  const chosen = new Set(required);
+  let reach = 1;
+  let leftToCi = 0;
+  for (const d of [...tiers.keys()].sort((a, b) => a - b)) {
+    const tier = tiers.get(d)!;
+    if (leftToCi || chosen.size + tier.length > cap) leftToCi += tier.length;
+    else {
+      for (const file of tier) chosen.add(file);
+      reach = d;
+    }
+  }
+  const tests = [...new Set([...chosen, ...smoke.filter((s) => runnable.has(s))])].sort();
+  const extra = tests.length - chosen.size;
+  const head = `${paths.length} changed file(s): ${required.size} test file(s) import them directly`;
+  const further = tiers.size ? `; further out by import distance: ${tierLine(tiers)}` : "";
+  const capped = leftToCi ? `; ran up to distance ${reach} and left ${leftToCi} further test file(s) to CI's full suite, over the cap of ${cap} (LOG_TEST_CAP)` : "";
+  return { full: false, reason: `${head}${further}${capped}; ${tests.length} run, ${extra} of them smoke`, tests, leftToCi };
 }
 
 function git(args: string[]): string {
@@ -172,7 +241,14 @@ export function main(argv: string[] = process.argv.slice(2), env: Record<string,
   const changed = named ? named.split(",").map((p) => norm(p.trim())).filter(Boolean) : changedFiles(base);
   const files = trackedFiles();
   const tests = allTestFiles();
-  const selection = env.LOG_TEST_FULL === "1" ? { full: true, reason: "LOG_TEST_FULL=1", tests } : selectTests(changed, tests, buildGraph([...files, ...changed], (p) => readFileSync(join(root, p), "utf8")));
+  const texts = new Map<string, string>();
+  const read = (p: string): string => {
+    if (!texts.has(p)) texts.set(p, readFileSync(join(root, p), "utf8"));
+    return texts.get(p)!;
+  };
+  const cap = Number(flag(argv, "--cap") ?? env.LOG_TEST_CAP ?? TEST_CAP);
+  const known = [...files, ...changed];
+  const selection = env.LOG_TEST_FULL === "1" ? { full: true, reason: "LOG_TEST_FULL=1", tests } : selectTests(changed, tests, buildGraph(known, read), SMOKE_TESTS, { barrels: barrelsOf(known, read), cap: Number.isFinite(cap) && cap > 0 ? cap : TEST_CAP });
   console.log(`affected tests against ${named ? "--changed" : base}: ${selection.full ? "the full suite" : `${selection.tests.length} file(s)`} (${selection.reason})`);
   if (argv.includes("--list")) {
     for (const test of selection.tests) console.log(test);

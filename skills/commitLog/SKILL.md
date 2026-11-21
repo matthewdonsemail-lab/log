@@ -1,6 +1,6 @@
 ---
 name: commitLog
-description: Write the day-log entry every log-cli commit needs, in the private devlog (LOG_DEVLOG_DIR, default ~/.logCli/devlog/<date>.md, indexed by log.md there), never in the repo. On commit, the pre-commit hook parses the staged code into an abstract syntax tree (AST), writes which declarations and tests were added, changed or removed into a template entry, and feeds that back to the agent. The agent then writes What changed, Why and Checked from the AST before the commit can go through.
+description: Write the day-log entry every log-cli commit needs, in the private devlog (LOG_DEVLOG_DIR, default ~/.logCli/devlog/<date>.md, indexed by log.md there), never in the repo. On commit, the commit-msg hook parses the staged code into an abstract syntax tree (AST), writes which declarations and tests were added, changed or removed into a template entry, and feeds that back to the agent. The agent writes What changed, Why and Checked in the commit message (one commit) or under the template (two).
 ---
 
 # commitLog
@@ -9,8 +9,8 @@ The day log is the running record of the work, one entry per commit. It is
 private: the repo is public, and day logs quote requests, people and infra
 steps. It lives in `LOG_DEVLOG_DIR` (default `~/.logCli/devlog/`), one file per
 day, `<date>.md` (the day in UTC, newest entry at the bottom), and `log.md` in
-the same folder is the index of every day, newest first. lefthook's pre-commit
-(`lefthook.yml`) runs `scripts/commitLog/commitLog.mjs`, which uses
+the same folder is the index of every day, newest first. lefthook's commit-msg
+hook (`lefthook.yml`) runs `scripts/commitLog/commitLog.mjs --message <file>`, which uses
 `scripts/commitLog/astSummary.mjs`:
 
 - `.ts` / `.mjs` files are parsed with the TypeScript compiler API.
@@ -34,8 +34,23 @@ the same folder is the index of every day, newest first. lefthook's pre-commit
 
 ## The routine
 
+Commit once, with the three fields in the message:
+
 ```bash
 GIT_CONFIG_COUNT=0 git add <files>
+GIT_CONFIG_COUNT=0 git commit -F <message file>
+# the message carries, after its subject and body:
+#   What changed: <plain facts>
+#   Why: <the reason>
+#   Checked: <what was run, and what wasn't>
+# the hook parses the staged code, writes the entry (AST block plus the three
+# fields) to today's ~/.logCli/devlog/<date>.md, prints the AST, and the commit
+# goes through
+```
+
+Without the three lines in the message, it is two tries, as before:
+
+```bash
 GIT_CONFIG_COUNT=0 git commit -m "..."
 # 1st try: the hook prints the AST of the staged change, appends the entry
 #          to today's ~/.logCli/devlog/<date>.md, updates the index log.md
@@ -45,6 +60,9 @@ GIT_CONFIG_COUNT=0 git commit -m "..."
 # 2nd try: the hook re-parses the staged code; if it matches the block and the
 #          fields are written, the commit goes through
 ```
+
+A pending template left by a stopped commit is filled from the message's three
+lines when the next commit carries them, so it is never written twice.
 
 The pending entry is kept per checkout in `<devlog>/.pending/`, and lefthook's
 post-commit clears it once the commit lands, so a commit stopped by a later

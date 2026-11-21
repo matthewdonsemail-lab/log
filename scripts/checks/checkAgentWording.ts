@@ -1,4 +1,5 @@
-import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join, relative } from "node:path";
 
 type Rule = { id: string; pattern: RegExp; instead: string; why: string };
@@ -20,11 +21,20 @@ export const RULES: Rule[] = [
 
 const SURFACES = ["README.md", "AGENTS.md", "llms.txt", "docs/trust.md", "docs/accounts.md", "docs/guides", "docs/useCases", "hermesPlugin", ".claude/skills"];
 
-function filesOf(path: string): string[] {
-  const full = join(ROOT, path);
-  if (!existsSync(full)) return [];
-  if (!statSync(full).isDirectory()) return [full];
-  return readdirSync(full).flatMap((name) => filesOf(join(path, name))).filter((f) => /\.(md|txt|ya?ml)$/.test(f));
+export const SURFACE_FILE = /\.(md|txt|ya?ml)$/;
+
+export function trackedSurfaceFiles(listed: string, surfaces: readonly string[] = SURFACES): string[] {
+  const roots = surfaces.map((s) => s.replace(/\/$/, ""));
+  return listed
+    .split(/\r?\n/)
+    .map((f) => f.trim().replaceAll("\\", "/"))
+    .filter((f) => f && roots.some((r) => f === r || f.startsWith(`${r}/`)) && (roots.includes(f) || SURFACE_FILE.test(f)));
+}
+
+function filesOf(): string[] {
+  const listed = spawnSync("git", ["ls-files", "--cached", "--", ...SURFACES], { cwd: ROOT, encoding: "utf8", windowsHide: true });
+  if (listed.status !== 0) throw new Error(`agentWording: git ls-files failed: ${(listed.stderr ?? "").trim()}`);
+  return trackedSurfaceFiles(listed.stdout).map((f) => join(ROOT, f)).filter((f) => existsSync(f));
 }
 
 export function prose(text: string): string {
@@ -38,7 +48,7 @@ export function countsOf(text: string): Record<string, number> {
 
 function measure(): Record<string, Record<string, number>> {
   const out: Record<string, Record<string, number>> = {};
-  for (const file of [...new Set(SURFACES.flatMap(filesOf))].sort()) {
+  for (const file of [...new Set(filesOf())].sort()) {
     const counts = Object.fromEntries(Object.entries(countsOf(readFileSync(file, "utf8"))).filter(([, n]) => n > 0));
     if (Object.keys(counts).length) out[relative(ROOT, file).replaceAll("\\", "/")] = counts;
   }

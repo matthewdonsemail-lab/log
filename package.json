@@ -59,7 +59,7 @@
     "launch": "bun run bin/log.ts launch",
     "doctor": "bun run bin/log.ts doctor",
     "mcp": "bun run bin/logMcp.ts",
-    "typecheck": "tsc --noEmit && tsc -p src/mcp/apps/browserView/widget && tsc -p src/mcp/apps/report/view",
+    "typecheck": "tsc --noEmit --incremental --tsBuildInfoFile .cache/tsc/root.tsbuildinfo && tsc -p src/mcp/apps/browserView/widget --incremental --tsBuildInfoFile .cache/tsc/widget.tsbuildinfo && tsc -p src/mcp/apps/report/view --incremental --tsBuildInfoFile .cache/tsc/report.tsbuildinfo",
     "test": "bun test",
     "test:full": "bun test",
     "test:affected": "bun scripts/tests/affectedTests.ts",

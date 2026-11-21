@@ -21,6 +21,8 @@ The agent then writes What changed, Why and Checked from it. Never edit old
 entries. Add a new one.
 `;
 
+const save = (path, text) => writeFileSync(path, text);
+
 const git = (...args) => execFileSync('git', args, { windowsHide: true, cwd: root, encoding: 'utf8' }).trim();
 
 export const devlogDir = (env = process.env) => env.LOG_DEVLOG_DIR || join(homedir(), '.logCli', 'devlog');
@@ -145,13 +147,82 @@ function readPending(path) {
 function writeIndex(dir) {
   const index = renderIndex(readDays(dir));
   const path = join(dir, 'log.md');
-  if (!existsSync(path) || readFileSync(path, 'utf8') !== index) writeFileSync(path, index);
+  if (!existsSync(path) || readFileSync(path, 'utf8') !== index) save(path, index);
+}
+
+export function fieldsFromMessage(text) {
+  const lines = text.replace(/\r\n/g, '\n').split('\n').filter((line) => !line.startsWith('#'));
+  const fields = {};
+  let current = null;
+  for (const line of lines) {
+    const field = AGENT_FIELDS.find((f) => line.startsWith(f));
+    if (field) {
+      current = field;
+      fields[field] = [line.slice(field.length).trim()];
+    } else if (current && line.trim()) fields[current].push(line.trimEnd());
+    else if (current && !line.trim() && fields[current].some(Boolean)) current = null;
+  }
+  const filled = Object.fromEntries(Object.entries(fields).map(([field, value]) => [field, value.filter(Boolean).join('\n')]));
+  return AGENT_FIELDS.every((field) => filled[field] && !filled[field].includes(PLACEHOLDER)) ? filled : null;
+}
+
+export function fillEntry(entry, fields) {
+  const lines = entry.replace(/\r\n/g, '\n').split('\n');
+  const out = [];
+  let skipping = false;
+  for (const line of lines) {
+    const field = AGENT_FIELDS.find((f) => line.startsWith(f));
+    if (field) {
+      out.push(`${field} ${fields[field]}`);
+      skipping = true;
+      continue;
+    }
+    if (skipping && line.trim() && !line.startsWith('## ')) continue;
+    skipping = false;
+    out.push(line);
+  }
+  return out.join('\n');
+}
+
+export function fillEntryInText(text, heading, fields) {
+  const lf = text.replace(/\r\n/g, '\n');
+  const span = entrySpan(lf, heading);
+  if (!span) return lf;
+  return `${lf.slice(0, span.start)}${fillEntry(lf.slice(span.start, span.end), fields)}${lf.slice(span.end)}`;
+}
+
+export function recordFromMessage({ dir, repoRoot, ast, fields, when, branch }) {
+  const pendingPath = pendingFile(dir, repoRoot);
+  const pending = readPending(pendingPath);
+  const pendingText = pending && existsSync(pending.file) ? readFileSync(pending.file, 'utf8') : null;
+  if (pendingText !== null && entryLines(pendingText, pending.heading).length) {
+    const refreshed = replaceEntryAstBlock(pendingText, pending.heading, ast);
+    save(pending.file, fillEntryInText(refreshed, pending.heading, fields));
+    writeIndex(dir);
+    return pending.file;
+  }
+  const day = dayOf(when);
+  const path = join(dir, dayFile(day));
+  mkdirSync(dirname(pendingPath), { recursive: true });
+  const current = existsSync(path) ? readFileSync(path, 'utf8') : dayHeader(day);
+  const heading = `## ${when} · ${branch}`;
+  save(path, `${current.trimEnd()}\n\n${fillEntry(renderEntry({ when, branch, ast }), fields)}`);
+  save(pendingPath, `${JSON.stringify({ file: path, heading })}\n`);
+  writeIndex(dir);
+  return path;
 }
 
 export function markCommitted(dir = devlogDir(), repoRoot = root) {
   rmSync(pendingFile(dir, repoRoot), { force: true });
   return 0;
 }
+
+function messageArgument() {
+  const at = process.argv.indexOf('--message');
+  return at >= 0 ? process.argv[at + 1] : undefined;
+}
+
+const stampNow = () => new Date().toISOString().slice(0, 16).replace('T', ' ') + 'Z';
 
 function main() {
   if (process.argv.includes('--committed')) return markCommitted();
@@ -160,20 +231,27 @@ function main() {
   if (staged.length === 0) return 0;
   const dir = devlogDir();
   const ast = summarize();
+  const messagePath = messageArgument();
+  const fields = messagePath && existsSync(resolve(root, messagePath)) ? fieldsFromMessage(readFileSync(resolve(root, messagePath), 'utf8')) : null;
+  if (fields) {
+    const path = recordFromMessage({ dir, repoRoot: root, ast, fields, when: stampNow(), branch: git('rev-parse', '--abbrev-ref', 'HEAD') });
+    console.log([`devlog: the entry in ${path} was written from the commit message's What changed, Why and Checked, under this AST:`, '', ...ast].join('\n'));
+    return 0;
+  }
   const pendingPath = pendingFile(dir, root);
   const pending = readPending(pendingPath);
   const pendingText = pending && existsSync(pending.file) ? readFileSync(pending.file, 'utf8') : null;
   const lines = pendingText === null ? [] : entryLines(pendingText, pending.heading);
 
   if (!lines.length) {
-    const when = new Date().toISOString().slice(0, 16).replace('T', ' ') + 'Z';
+    const when = stampNow();
     const day = dayOf(when);
     const path = join(dir, dayFile(day));
     mkdirSync(dirname(pendingPath), { recursive: true });
     const current = existsSync(path) ? readFileSync(path, 'utf8') : dayHeader(day);
     const branch = git('rev-parse', '--abbrev-ref', 'HEAD');
-    writeFileSync(path, `${current.trimEnd()}\n\n${renderEntry({ when, branch, ast })}`);
-    writeFileSync(pendingPath, `${JSON.stringify({ file: path, heading: `## ${when} · ${branch}` })}\n`);
+    save(path, `${current.trimEnd()}\n\n${renderEntry({ when, branch, ast })}`);
+    save(pendingPath, `${JSON.stringify({ file: path, heading: `## ${when} · ${branch}` })}\n`);
     writeIndex(dir);
     console.error(
       [
@@ -183,6 +261,7 @@ function main() {
         '',
         `It is now the newest entry at the bottom of ${path} (private, outside the repo).`,
         'Under it, write What changed, Why and Checked from that list, then commit again.',
+        'Or commit once: put \"What changed:\", \"Why:\" and \"Checked:\" lines in the commit message and the entry is written from them.',
         'Nothing to stage: the day log never goes in the repo.',
       ].join('\n'),
     );
@@ -191,7 +270,7 @@ function main() {
 
   const problem = checkAdded(lines, ast);
   if (problem === 'stale') {
-    writeFileSync(pending.file, replaceEntryAstBlock(pendingText, pending.heading, ast));
+    save(pending.file, replaceEntryAstBlock(pendingText, pending.heading, ast));
     console.error([`${pending.file}: the staged code changed since the entry was written. New AST:`, '', ...ast, '', 'The block is updated. Check What changed still matches, then commit again.'].join('\n'));
     return 1;
   }
