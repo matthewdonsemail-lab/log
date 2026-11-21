@@ -537,6 +537,7 @@ Newest first. Work merged into `main` collects in the open release PR, and mergi
 <!-- releases:start: written by `bun run docs:releases` from CHANGELOG.md and src/models/manifest, not edited by hand -->
 | Version | Date | What's in it | Models |
 | --- | --- | --- | --- |
+| [0.4.0](https://github.com/matthewdonsemail-lab/log/compare/v0.3.0...v0.4.0) | 2026-11-21 | agentWording keeps risk words out of what agents read; rules reworded (+9 more) | same as 0.3.0 |
 | [0.3.0](https://github.com/matthewdonsemail-lab/log/pull/212) | 2026-11-20 | one live browser view for console and chat, hidden window when streamed (+41 more) | first pinned: wolf-defender-prompt-injection-small@2484cc9, all-MiniLM-L6-v2@751bff3, roberta-base-go_emotions-onnx@90ee0c1, LFM2.5-VL-450M-ONNX@24e6300, myuri@5.0.0 |
 | [0.2.1](https://github.com/matthewdonsemail-lab/log/pull/179) | 2026-11-20 | The relate graph, the live inbox push (messages during tool calls, burst batching, late copies dropped), inbox labels and ignoring a server or chat (+2 more) | not pinned (newest by name) |
 | [0.2.0](https://github.com/matthewdonsemail-lab/log/pull/166) | 2026-11-15 | The one-command Hermes pack, the catalog review, the README rewrite and the catch-up machine (+1 more) | not pinned (newest by name) |
