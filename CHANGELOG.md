@@ -2,6 +2,25 @@
 
 Every release, newest first. release-please writes each new section from the commits; `bun run docs:releases` adds its `Models:` line from `src/models/manifest` and rebuilds the Releases table in the README.
 
+## [0.5.0](https://github.com/matthewdonsemail-lab/log/compare/v0.4.0...v0.5.0) (2026-11-21)
+
+
+### Features
+
+* **network:** live rings from every stored event, and the Relate graph updated in place ([#272](https://github.com/matthewdonsemail-lab/log/issues/272)) ([16789ec](https://github.com/matthewdonsemail-lab/log/commit/16789ec39342bb2838b7bd5977bd2532139650aa))
+* **network:** your network in log.db and the Relate graph, and a who-to-talk-to play ([#268](https://github.com/matthewdonsemail-lab/log/issues/268)) ([39ea853](https://github.com/matthewdonsemail-lab/log/commit/39ea853a63528e906f4a57eee1b4c5cab9ecfdbe))
+
+
+### Bug Fixes
+
+* browser line only when one is open; affected tests on pre-push, isolated test runs ([da2e3e5](https://github.com/matthewdonsemail-lab/log/commit/da2e3e55f125443ff4563fb9b21661210736d5b8))
+* browser line only when one is open; affected tests on pre-push, isolated test runs ([86c2eaa](https://github.com/matthewdonsemail-lab/log/commit/86c2eaae25ed6ed6cd8e4d77daa87db4c33d0205))
+* **release:** release-please bumps the Hermes plugin version ([3dc39b9](https://github.com/matthewdonsemail-lab/log/commit/3dc39b965bdc211f4ac3e3e77d90411173a78e57))
+* **release:** release-please bumps the Hermes plugin version, so check:agentHooks stays green after a release ([9796fca](https://github.com/matthewdonsemail-lab/log/commit/9796fca65a91f42f019cad13a8a967afc85e2065))
+* **storage:** a chat takes its kind and name from the channel catalog, with a repair migration ([c45f572](https://github.com/matthewdonsemail-lab/log/commit/c45f572c8030e879a66f5899442287c81cfe7f30))
+* **voice:** find the chat by any X conversation id and read his own sent words as his ([#224](https://github.com/matthewdonsemail-lab/log/issues/224)) ([511643f](https://github.com/matthewdonsemail-lab/log/commit/511643f79c469a4558c2a8aba65cec67cf138f6f))
+* **voice:** find the chat by any X conversation id and read his own sent words as his ([#224](https://github.com/matthewdonsemail-lab/log/issues/224)) ([2ea3316](https://github.com/matthewdonsemail-lab/log/commit/2ea3316dcf7e13753a2eda82cd412778f5a634b1))
+
 ## [0.4.0](https://github.com/matthewdonsemail-lab/log/compare/v0.3.0...v0.4.0) (2026-11-21)
 
 Models: patronus-studio/wolf-defender-prompt-injection-small@2484cc9a13550aa4f2c29b577ff3ef331dc6ba07, Xenova/all-MiniLM-L6-v2@751bff37182d3f1213fa05d7196b954e230abad9, SamLowe/roberta-base-go_emotions-onnx@90ee0c1c4796d370e68968687b8ba51fc11224f4, onnx-community/LFM2.5-VL-450M-ONNX@24e63007ff1aaafbde27c89eb01a0513f4f61482, myuri@5.0.0

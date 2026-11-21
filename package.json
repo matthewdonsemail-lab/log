@@ -1,6 +1,6 @@
 {
   "name": "@listeningkit/log",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "ListeningKit's go-to-market tool, open-sourced: one CLI and MCP server that runs your accounts on X, Discord, Slack, Instagram, Reddit, LinkedIn and Facebook from your terminal or any agent, self-hosted.",
   "type": "module",
   "bin": {
