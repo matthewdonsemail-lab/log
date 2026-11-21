@@ -10,11 +10,14 @@ export function infoOf(handle: Database, ref: IdentityRef): IdentityInfo {
   return { platform: ref.platform, userId: ref.userId, handle: row?.handle?.replace(/^@/, '') ?? (ref.userId.startsWith('@') ? ref.userId.slice(1) : null), name: row?.displayName ?? null, personId: link?.personId ?? null, runByLogAs: account?.account ?? null }
 }
 
-export function identitiesNamed(handle: Database, spec: string): IdentityRef[] {
+export function identitySpec(spec: string): { platform: string | null; who: string } {
   const text = spec.trim()
   const colon = text.indexOf(':')
-  const platform = colon > 0 ? text.slice(0, colon).toLowerCase() : null
-  const who = (colon > 0 ? text.slice(colon + 1) : text).trim()
+  return { platform: colon > 0 ? text.slice(0, colon).toLowerCase() : null, who: (colon > 0 ? text.slice(colon + 1) : text).trim() }
+}
+
+export function identitiesNamed(handle: Database, spec: string): IdentityRef[] {
+  const { platform, who } = identitySpec(spec)
   const bare = who.replace(/^@/, '').toLowerCase()
   if (!bare) return []
   const onPlatform = platform ? ' AND platform = ?' : ''

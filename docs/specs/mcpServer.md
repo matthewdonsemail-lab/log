@@ -192,6 +192,8 @@ In Hermes the view draws in the chat too. `runToolCall` passes the client's name
 
 On the hosted path, the bridge journals each operation's result in `operations.result` (`journalState`, `src/runtime/bridge/client.ts`). `redactConsoleResult` (`src/console/operations/client.ts`) replaces every top-level field of a result from a tool in `PRIVATE_RESULT_TOOLS` (`report`, `reportData`) with `<redacted>` before it is written, so bios and message text never reach the journal. The live answer to the caller is not redacted; a reconcile read of the journal returns the redacted copy.
 
+`relateMachine` is a command tool, so it lists `TOOL_RESULT_SCHEMA` as its `outputSchema`, but `runToolCall` answers it through `runMachine` and the report view. `withEnvelope` (`src/mcp/server/index.ts`) puts the result envelope (`exit`, `ok`, `code`, `platform`, `capability` `relate.machine`, `stdout`, `stderr`, `log`, `progress`, `browsers`, `next`, `needsOwner`) over the view's own fields, and a refusal's `code` is its catalog code (`relateMachineNobody`), so a client that checks the result against the listed schema (Hermes's MCP client raises `'exit' is a required property` otherwise) accepts it. `src/mcp/server/outputSchema.test.ts` checks every view card tool's answers, refusals included, against the schema the server lists, for a Hermes client, an MCP Apps host and a text host.
+
 Checked by: code and SubQ
 
 ### REQ-MCP-27: log's MCP App views draw in Hermes Desktop through one vendored host card (`::logapp`)

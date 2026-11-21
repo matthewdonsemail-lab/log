@@ -77,6 +77,16 @@ function withBrowsers(base: Omit<ToolResult, "browsers" | "next" | "needsOwner">
 
 const NO_IDENTITY: ResultIdentity = { platform: null, capability: null };
 
+export function withEnvelope(result: CallToolResult, identity: ResultIdentity, read: ReadBrowsers): CallToolResult {
+  const text = (result.content ?? []).flatMap((part) => (part.type === "text" ? [part.text] : [])).join("\n");
+  const failed = result.isError === true;
+  const payload = (result.structuredContent ?? {}) as Record<string, unknown>;
+  const code = failed ? (typeof payload.error === "string" ? payload.error : (/^([A-Za-z]\w*):/.exec(text)?.[1] ?? "commandFailed")) : null;
+  const views = safeViews(read);
+  const envelope: ToolResult = { exit: failed ? 1 : 0, ok: !failed, code, ...identity, stdout: failed ? "" : text, stderr: failed ? text : "", log: [], progress: [], browsers: views, next: views.find((v) => v.next)?.next ?? null, needsOwner: views.find((v) => v.needsOwner)?.needsOwner ?? null };
+  return { ...result, structuredContent: { ...payload, ...envelope } as unknown as Record<string, unknown> };
+}
+
 function refused(message: string, code: string, read: ReadBrowsers, identity: ResultIdentity = NO_IDENTITY): CallToolResult {
   return withBrowsers({ exit: 1, ok: false, code, ...identity, stdout: "", stderr: message, log: [], progress: [] }, message, true, read);
 }
@@ -268,7 +278,10 @@ export async function runToolCall(
   if (renamedTool(name)) return withRenamedNote(name, await again(currentToolName(name), input, appCaller, caller === "mcp" ? "alias" : caller));
   if (isAppTool(name)) return runAppTool(name, given, appCaller || caller === "mcp" || caller === "stateless");
   if (name === REPORT_TOOL) return runReport(given, appCaller, {}, { hermes: hermesClient(client) });
-  if (name === MACHINE_TOOL) return runMachine(given, appCaller, { hermes: hermesClient(client) });
+  if (name === MACHINE_TOOL) {
+    const entry = commandOfTool(name);
+    return withEnvelope(await runMachine(given, appCaller, { hermes: hermesClient(client) }), entry ? identityOf(entry, []) : NO_IDENTITY, readBrowsers);
+  }
   if (name === GUIDE_TOOL) {
     const answer = guideAnswer(input, scope, shell);
     const play = answer.play === undefined ? undefined : playMeta(answer.play);
