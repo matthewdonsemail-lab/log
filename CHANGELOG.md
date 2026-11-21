@@ -2,6 +2,26 @@
 
 Every release, newest first. release-please writes each new section from the commits; `bun run docs:releases` adds its `Models:` line from `src/models/manifest` and rebuilds the Releases table in the README.
 
+## [0.4.0](https://github.com/matthewdonsemail-lab/log/compare/v0.3.0...v0.4.0) (2026-11-21)
+
+
+### Features
+
+* **checks:** agentWording keeps risk words out of what agents read; rules reworded ([#255](https://github.com/matthewdonsemail-lab/log/issues/255)) ([df5fc23](https://github.com/matthewdonsemail-lab/log/commit/df5fc2305d8406b9dbda1dc6e1fc2e37103a12ca))
+* **discord:** message someone new by user id, and send friend requests ([125909e](https://github.com/matthewdonsemail-lab/log/commit/125909e4d28a8802a69f3d1fa3151e379bcb1ab4))
+* **discord:** message someone new by user id, friend requests, and Discord's real refusal ([ee68ae2](https://github.com/matthewdonsemail-lab/log/commit/ee68ae2d5cd239f99f91014ebe00ef69037d42bf))
+* **storage:** recovery passphrase that reopens sealed secrets on a new machine ([#258](https://github.com/matthewdonsemail-lab/log/issues/258)) ([b8ec9f4](https://github.com/matthewdonsemail-lab/log/commit/b8ec9f43b6ee739d758695916b3959620483d25b))
+* **storage:** seal account sessions, login secrets and provider keys in log.db ([#258](https://github.com/matthewdonsemail-lab/log/issues/258)) ([e064a82](https://github.com/matthewdonsemail-lab/log/commit/e064a8206f23aaddc8bd5478505f52c93cb2b836))
+
+
+### Bug Fixes
+
+* **discord:** keep Discord's answer when a send fails, and name closed DMs and captchas ([83dab1f](https://github.com/matthewdonsemail-lab/log/commit/83dab1ff4dc9ffad80eaeeec971e36e52ae72d25))
+* **discord:** shorter friend and send text so the agnostic check passes without a raise ([c424a01](https://github.com/matthewdonsemail-lab/log/commit/c424a014149590b3ddf5d67fa812f7883a53f34e))
+* **inbox:** label tools never wait on a worker when their engine is stubbed ([1df7e45](https://github.com/matthewdonsemail-lab/log/commit/1df7e45b9929f59a7e6f97469e05f31dff54e1cd))
+* **inbox:** label tools never wait on a worker when their engine is stubbed ([1915b65](https://github.com/matthewdonsemail-lab/log/commit/1915b65031666c27d2787476dc458a3700004aa1))
+* **storage:** Python opens a key Bun wrapped with a passphrase, and the other way ([#258](https://github.com/matthewdonsemail-lab/log/issues/258)) ([483ced9](https://github.com/matthewdonsemail-lab/log/commit/483ced910da1d22e5d1565b0fc2c035b35c8c717))
+
 ## [0.3.0](https://github.com/matthewdonsemail-lab/log/pull/212) (2026-11-20)
 
 Models: patronus-studio/wolf-defender-prompt-injection-small@2484cc9a13550aa4f2c29b577ff3ef331dc6ba07, Xenova/all-MiniLM-L6-v2@751bff37182d3f1213fa05d7196b954e230abad9, SamLowe/roberta-base-go_emotions-onnx@90ee0c1c4796d370e68968687b8ba51fc11224f4, onnx-community/LFM2.5-VL-450M-ONNX@24e63007ff1aaafbde27c89eb01a0513f4f61482, myuri@5.0.0
