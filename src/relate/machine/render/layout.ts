@@ -24,6 +24,8 @@ export interface LayoutGaps {
   laneStep: number
   margin: number
   port: number
+  corner: number
+  stagger: number
 }
 
 export interface Point {
@@ -170,7 +172,7 @@ function snapPorts(node: Item, list: Chain[], toward: (c: Chain) => number, gaps
   return out
 }
 
-function orthogonal(points: Point[], direction: MachineDirection): Point[] {
+function orthogonal(points: Point[], direction: MachineDirection, firstShift = 0, lastShift = 0): Point[] {
   const out: Point[] = [points[0]]
   for (let i = 1; i < points.length; i++) {
     const a = out[out.length - 1]
@@ -179,15 +181,28 @@ function orthogonal(points: Point[], direction: MachineDirection): Point[] {
       out.push(b)
       continue
     }
+    const shift = i === 1 ? firstShift : i === points.length - 1 ? lastShift : 0
     if (direction === 'right') {
-      const mid = (a.x + b.x) / 2
+      const mid = (a.x + b.x) / 2 + shift
       out.push({ x: mid, y: a.y }, { x: mid, y: b.y }, b)
     } else {
-      const mid = (a.y + b.y) / 2
+      const mid = (a.y + b.y) / 2 + shift
       out.push({ x: a.x, y: mid }, { x: b.x, y: mid }, b)
     }
   }
   return out.filter((p, i, all) => i === 0 || p.x !== all[i - 1].x || p.y !== all[i - 1].y)
+}
+
+function staggered(list: { id: string; port: number; toward: number }[], step: number, limit: number): Map<string, number> {
+  const out = new Map<string, number>()
+  const down = list.filter((e) => e.toward > e.port).sort((a, b) => b.port - a.port)
+  const up = list.filter((e) => e.toward < e.port).sort((a, b) => a.port - b.port)
+  for (const group of [down, up]) {
+    const span = Math.min(limit, (step * (group.length - 1)) / 2)
+    const gap = group.length > 1 ? (2 * span) / (group.length - 1) : 0
+    group.forEach((e, i) => out.set(e.id, group.length > 1 ? -span + i * gap : 0))
+  }
+  return out
 }
 
 export function layoutMachine(nodes: readonly LayoutNode[], edges: readonly LayoutEdge[], direction: MachineDirection, gaps: LayoutGaps): MachineLayout {
@@ -273,6 +288,11 @@ export function layoutMachine(nodes: readonly LayoutNode[], edges: readonly Layo
     const node = itemOf.get(id)!
     snapPorts(node, sortBy(list, (c) => c.items[c.items.length - 2]), (c) => c.items[c.items.length - 2].c, gaps).forEach((at, id) => portIn.set(id, at))
   }
+  const firstShift = new Map<string, number>()
+  const lastShift = new Map<string, number>()
+  const limit = Math.max(0, gaps.rankGap / 2 - gaps.corner - 2)
+  for (const list of outgoing.values()) staggered(list.map((c) => ({ id: c.edge.id, port: portOut.get(c.edge.id)!, toward: c.items[1].c })), gaps.stagger, limit).forEach((v, id) => firstShift.set(id, v))
+  for (const list of incoming.values()) staggered(list.map((c) => ({ id: c.edge.id, port: portIn.get(c.edge.id)!, toward: c.items[c.items.length - 2].c })), gaps.stagger, limit).forEach((v, id) => lastShift.set(id, v))
   const placed: PlacedEdge[] = []
   for (const ch of chains.filter((c) => !c.back)) {
     const [from, ...rest] = ch.items
@@ -287,7 +307,7 @@ export function layoutMachine(nodes: readonly LayoutNode[], edges: readonly Layo
       } else raw.push(toPoint(direction, item.r, item.c))
     }
     raw.push(toPoint(direction, to.r, portIn.get(ch.edge.id)!))
-    placed.push({ id: ch.edge.id, points: orthogonal(raw, direction), label, back: false })
+    placed.push({ id: ch.edge.id, points: orthogonal(raw, direction, firstShift.get(ch.edge.id) ?? 0, lastShift.get(ch.edge.id) ?? 0), label, back: false })
   }
   const backs = chains.filter((c) => c.back)
   backs.forEach((ch, i) => {

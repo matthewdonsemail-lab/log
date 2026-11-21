@@ -1,6 +1,6 @@
 # Stately's visualizer, reverse-engineered for log's Relate graph app
 
-Back to [the relateApp research](research.md).
+Back to [the relateApp research](research.md). The exact computed values from the signed-in editor are in [statelyEditorExact.md](statelyEditorExact.md).
 
 Research for issue #267 (Relate by Neo4j hackathon, deadline 2026-12-11). Written 2026-11-21. These are design facts and the open-source libraries Stately uses. None of their proprietary code was copied, and nothing was signed into.
 

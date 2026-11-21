@@ -129,13 +129,13 @@ async function widgetScript(): Promise<string> {
   return output.outputs[0].text();
 }
 
-function faceOf(family: string, file: string, weight: string, format: "woff" | "woff2"): string {
+function faceOf(family: string, file: string, weight: string, format: "woff" | "woff2", style = "normal"): string {
   if (!existsSync(file)) return "";
-  return `@font-face{font-family:"${family}";font-style:normal;font-weight:${weight};font-display:swap;src:url(data:font/${format};base64,${readFileSync(file).toString("base64")}) format("${format}")}`;
+  return `@font-face{font-family:"${family}";font-style:${style};font-weight:${weight};font-display:swap;src:url(data:font/${format};base64,${readFileSync(file).toString("base64")}) format("${format}")}`;
 }
 
 function geistFace(): string {
-  const machine = MACHINE_FONT.files.map(({ file, weight }) => faceOf(MACHINE_FONT.face, fileURLToPath(new URL(file, SATOSHI)), String(weight), "woff"));
+  const machine = MACHINE_FONT.files.map(({ file, weight, style }) => faceOf(MACHINE_FONT.face, fileURLToPath(new URL(file, SATOSHI)), String(weight), "woff", style));
   return `${faceOf("Geist", GEIST, "100 900", "woff2")}${machine.join("")}`;
 }
 

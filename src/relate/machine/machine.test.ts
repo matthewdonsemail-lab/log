@@ -140,9 +140,11 @@ describe('drawing the machine', () => {
 
   test('draws with the stately measurements: dim, hit path, rounded corners, dashed guards, initial marker and pills', async () => {
     const css = machineCss()
-    expect(MACHINE_SIZE).toMatchObject({ dim: 0.7, edgeHit: 20, corner: 10, initialSize: 20, initialGap: 4, border: 2, radius: 6, padX: 12, padY: 8, gapY: 2, pillRadius: 14, pillBorder: 2, pillPadX: 8, pillPadY: 4, nodeSep: 50, rankGap: 30, arrow: 5 })
-    expect(MACHINE_FONT.title).toMatchObject({ size: 20, line: 25, weight: 600 })
-    expect(MACHINE_FONT.body).toMatchObject({ size: 12, line: 16 })
+    expect(MACHINE_SIZE).toMatchObject({ dim: 0.7, edgeHit: 20, corner: 8, initialSize: 24, initialGap: 3, border: 1, radius: 4, headerPadX: 12, headerPadY: 8, headerH: 42, bodyPadX: 16, bodyPadY: 12, pillRadius: 20, pillHeaderPadY: 8, pillPadLeft: 16, pillPadRight: 4, actionPadX: 8, actionPadY: 4, grid: 24, nodeSep: 48, rankGap: 40, arrow: 9, arrowWidth: 10 })
+    expect(MACHINE_FONT.title).toMatchObject({ size: 15, line: 22.5, weight: 600, darkWeight: 500 })
+    expect(MACHINE_FONT.body).toMatchObject({ size: 13, line: 19.5 })
+    expect(MACHINE_FONT.event).toMatchObject({ size: 13, line: 19.5, weight: 600 })
+    expect(MACHINE_FONT.action).toMatchObject({ size: 12, line: 18, weight: 500 })
     expect(css).toContain('opacity:0.7')
     expect(css).toContain('.rmEdgeHit{fill:none;stroke:transparent;stroke-width:20')
     expect(css).toContain('.rmDashed .rmEdgePath{stroke-dasharray:5 5;stroke-dashoffset:2.5}')
@@ -154,7 +156,7 @@ describe('drawing the machine', () => {
     expect(doc.querySelectorAll('.rmNodeBox').length).toBe(ivy.states.length)
     const first0 = ivy.states[0]
     const box0 = drawn.layout.nodes.get(first0.id)!
-    if (!first0.chips?.length && !first0.current && !first0.at) expect(box0.h).toBe(2 * MACHINE_SIZE.border + 2 * MACHINE_SIZE.padY + MACHINE_FONT.title.line + MACHINE_SIZE.gapY + MACHINE_FONT.body.line)
+    if (!first0.chips?.length && !first0.current && !first0.at) expect(box0.h).toBe(MACHINE_SIZE.headerH + Math.ceil(2 * MACHINE_SIZE.bodyPadY + MACHINE_FONT.body.line + MACHINE_SIZE.border))
     const placed = ivy.states.map((st) => ({ st, box: drawn.layout.nodes.get(st.id)! }))
     const first = Math.min(...placed.map((n) => n.box.x))
     const last = Math.max(...placed.map((n) => n.box.x))
