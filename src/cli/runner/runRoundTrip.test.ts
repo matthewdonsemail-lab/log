@@ -158,6 +158,7 @@ async function run(tool: CommandTool, input: Record<string, unknown>): Promise<{
   };
   try {
     const first = await timed(err);
+    console.error(`PROBE ${tool.tool} ${first.code} ${first.ms}ms ${err.slice(0, 1).join(" ")}`);
     const { code, ms } = first.code !== -3 && first.ms > SLOW_TOOL_MS ? await timed([]) : first;
     if (code === -3 || ms > SLOW_TOOL_MS) slow.push(`${tool.tool} ${code === -3 ? `hung past ${TOOL_DEADLINE_MS} ms` : `${first.ms} ms, then ${ms} ms`}`);
     return { built: true, code: first.code, err: err.join("\n") };
