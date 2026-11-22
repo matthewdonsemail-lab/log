@@ -41,3 +41,6 @@ jobs:
 
       - name: Check (every lefthook gate, the specs' anchors, then typecheck and tests)
         run: bun run check
+
+      - name: Check the MCP Apps end to end (stdio client, outputSchema, headless Chrome, Hermes Desktop's plugin, light and dark)
+        run: bun run check:mcpApps

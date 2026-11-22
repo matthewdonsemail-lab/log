@@ -25,6 +25,7 @@ const ALLOWED: Record<string, { writes: number; kind: Kind }> = {
   'scripts/checks/checkBrowserParity.ts': { writes: 1, kind: 'repo' },
   'scripts/checks/checkNoComments.ts': { writes: 1, kind: 'repo' },
   'scripts/checks/checkUseCases.ts': { writes: 1, kind: 'repo' },
+  'scripts/checks/mcpApps/render.ts': { writes: 1, kind: 'media' },
   'scripts/commitLog/commitLog.mjs': { writes: 1, kind: 'log' },
   'scripts/datasets/buildInterestEffect.ts': { writes: 1, kind: 'dataset' },
   'scripts/datasets/buildReelViewers.ts': { writes: 1, kind: 'dataset' },

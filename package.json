@@ -94,6 +94,7 @@
     "twenty:client": "node scripts/twenty/emitTwentyClient.mjs",
     "twenty:client:check": "node scripts/twenty/emitTwentyClient.mjs --check",
     "check:siteDocs": "node scripts/docs/syncSiteDocs.mjs --check",
+    "check:mcpApps": "bun scripts/checks/mcpApps/check.ts",
     "skills:build": "node scripts/docs/syncSiteSkills.mjs",
     "check:siteSkills": "node scripts/docs/syncSiteSkills.mjs --check",
     "check:specs": "bun scripts/checks/checkSpecs.ts",

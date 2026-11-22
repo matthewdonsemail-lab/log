@@ -142,7 +142,7 @@ export async function runReport(input: unknown, ui: boolean, given: Partial<Repo
   const compiled = view.compileView(source);
   if (!compiled.ok) return refused("reportFieldInvalid", [`code: ${compiled.error}`]);
   const payload = { ...head, compiled: compiled.compiled, data };
-  if (ui) return { content: [{ type: "text", text: `The view "${spec.title}" is shown to the person. It already carries the data, so reply with what it means in a sentence or two, not the numbers again.` }], structuredContent: { ...head, shown: true, rows: rowCounts(data) }, _meta: { [REPORT_VIEW_META_KEY]: payload } };
+  if (ui && !host.hermes) return { content: [{ type: "text", text: `The view "${spec.title}" is shown to the person. It already carries the data, so reply with what it means in a sentence or two, not the numbers again.` }], structuredContent: { ...head, shown: true, rows: rowCounts(data) }, _meta: { [REPORT_VIEW_META_KEY]: payload } };
   let text: string;
   if (blocksText && !spec.code) text = blocksText;
   else if (reads[0] && !spec.code) text = reportText({ ...head, blocks: sourceBlocks(reads[0].source, reads[0].read) });

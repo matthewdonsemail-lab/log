@@ -9,6 +9,7 @@ import { openDatabase } from "../../../storage/schema/index.ts";
 import { getState, putState } from "../../../storage/state/index.ts";
 import { marketplaceFixture } from "../../../twenty/graphql/index.ts";
 import { createLogMcpServer } from "../../server/index.ts";
+import { MCP_APP_MIME_TYPE, UI_EXTENSION_ID } from "../browserView/index.ts";
 import { HERMES_VIEW_SCOPE, hermesClient, hermesViewTag, runReport } from "./index.ts";
 import { FRESH_DB_MS, SPAWNS_PROCESS_MS } from "../../../../scripts/tests/timeouts.ts";
 
@@ -93,6 +94,32 @@ describe("a report drawn for Hermes", () => {
       expect(await call(HERMES_CLIENT_NAME)).toMatch(TAG);
       expect(await call("fakeHost")).not.toMatch(TAG);
       expect(views(path)).toBe(1);
+    } finally {
+      if (before === undefined) delete process.env.LOG_DB;
+      else process.env.LOG_DB = before;
+    }
+  });
+  test("a Hermes client that declares MCP Apps still gets the line, because its cards draw from it", async () => {
+    const before = process.env.LOG_DB;
+    const path = dbAt("mcpUi.db");
+    process.env.LOG_DB = path;
+    try {
+      const call = async (name: string, capabilities: Record<string, unknown>) => {
+        const server = createLogMcpServer({ twenty: marketplaceFixture() }, { logDir: null, watchFlows: false });
+        const client = new Client({ name, version: "0.0.0" }, { capabilities });
+        const [clientSide, serverSide] = InMemoryTransport.createLinkedPair();
+        await Promise.all([server.connect(serverSide), client.connect(clientSide)]);
+        return (await client.callTool({ name: "report", arguments: SPEC })) as { content: unknown; structuredContent?: Record<string, unknown> };
+      };
+      const ui = { extensions: { [UI_EXTENSION_ID]: { mimeTypes: [MCP_APP_MIME_TYPE] } } };
+      const hermes = await call(HERMES_CLIENT_NAME, ui);
+      const text = textOf(hermes);
+      expect(text).toMatch(TAG);
+      expect(text).not.toContain("is shown to the person");
+      expect(hermes.structuredContent?.hermesView).toBe(TAG.exec(text)?.[1]);
+      const other = await call("fakeHost", ui);
+      expect(textOf(other)).not.toMatch(TAG);
+      expect(textOf(other)).toContain("is shown to the person");
     } finally {
       if (before === undefined) delete process.env.LOG_DB;
       else process.env.LOG_DB = before;
