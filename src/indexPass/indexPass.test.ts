@@ -18,12 +18,17 @@ const NOW = Date.parse('2026-11-22T06:00:00Z')
 const at = (hoursAgo: number): string => new Date(NOW - hoursAgo * 3_600_000).toISOString()
 let seq = 0
 let root = ''
+const saved: { logHome: string | undefined } = { logHome: undefined }
 
 beforeAll(() => {
   root = mkdtempSync(join(tmpdir(), 'indexpass-'))
+  saved.logHome = process.env.LOG_HOME
+  process.env.LOG_HOME = join(root, '.logCli')
 })
 
 afterAll(() => {
+  if (saved.logHome === undefined) delete process.env.LOG_HOME
+  else process.env.LOG_HOME = saved.logHome
   try {
     rmSync(root, { recursive: true, force: true })
   } catch {
@@ -32,6 +37,7 @@ afterAll(() => {
 
 function world(name: string): { on: Database; dirs: { search: string; voice: string } } {
   const dir = mkdtempSync(join(root, `${name}-`))
+  process.env.LOG_HOME = dir
   const on = openDatabase(join(dir, 'log.db'))
   on.prepare('INSERT INTO accounts (platform, account, userId, learnedAt) VALUES (?, ?, ?, ?)').run('discord', 'builder', '9000000001', at(900))
   on.prepare('INSERT INTO identities (platform, userId, handle, displayName, firstSeenAt, lastSeenAt) VALUES (?, ?, ?, ?, ?, ?)').run('discord', '9000000002', 'grace', 'Grace', at(500), at(1))
