@@ -93,11 +93,22 @@ interface MessageRowOut {
   text: string
 }
 
-export function readConversations(handle: Database, account?: string): StoredConversation[] {
-  const chats = handle.prepare(`SELECT chatId, platform, account, conversationId, kind, box, name, serverId FROM chats ${account ? 'WHERE account = ?' : ''} ORDER BY chatId`).all(...(account ? [account] : [])) as ChatRowOut[]
-  const messages = handle.prepare('SELECT chatId, messageKey, platformMessageId, senderLabel, fromOwner, sentAt, text FROM messages ORDER BY chatId, sentAtMs, seq').all() as MessageRowOut[]
-  const attachments = handle.prepare('SELECT messageKey, name, contentType, durationMs FROM attachments ORDER BY messageKey, n').all() as { messageKey: string; name: string | null; contentType: string | null; durationMs: number | null }[]
-  const members = handle.prepare('SELECT m.roomId, m.userId, m.position, i.handle FROM memberships m LEFT JOIN identities i ON i.platform = m.platform AND i.userId = m.userId ORDER BY m.position IS NULL, m.position, m.firstSeenAt').all() as { roomId: string; userId: string; position: number | null; handle: string | null }[]
+export interface ReadConversationsOptions {
+  account?: string
+  chatIds?: readonly string[]
+}
+
+export function readConversations(handle: Database, account?: string | ReadConversationsOptions): StoredConversation[] {
+  const options: ReadConversationsOptions = typeof account === 'string' ? { account } : account ?? {}
+  const chatIds = options.chatIds?.length ? options.chatIds : null
+  const chatWhere = [options.account ? 'account = ?' : null, chatIds ? `chatId IN (${chatIds.map(() => '?').join(', ')})` : null].filter(Boolean).join(' AND ')
+  const chats = handle.prepare(`SELECT chatId, platform, account, conversationId, kind, box, name, serverId FROM chats ${chatWhere ? `WHERE ${chatWhere}` : ''} ORDER BY chatId`).all(...(options.account ? [options.account] : []), ...(chatIds ?? [])) as ChatRowOut[]
+  const messageWhere = chatIds ? `WHERE chatId IN (${chatIds.map(() => '?').join(', ')})` : ''
+  const messages = handle.prepare(`SELECT chatId, messageKey, platformMessageId, senderLabel, fromOwner, sentAt, text FROM messages ${messageWhere} ORDER BY chatId, sentAtMs, seq`).all(...(chatIds ?? [])) as MessageRowOut[]
+  const attachmentWhere = chatIds ? `WHERE messageKey IN (SELECT messageKey FROM messages WHERE chatId IN (${chatIds.map(() => '?').join(', ')}))` : ''
+  const attachments = handle.prepare(`SELECT messageKey, name, contentType, durationMs FROM attachments ${attachmentWhere} ORDER BY messageKey, n`).all(...(chatIds ?? [])) as { messageKey: string; name: string | null; contentType: string | null; durationMs: number | null }[]
+  const memberWhere = chatIds ? `WHERE m.roomId IN (${chatIds.map(() => '?').join(', ')})` : ''
+  const members = handle.prepare(`SELECT m.roomId, m.userId, m.position, i.handle FROM memberships m LEFT JOIN identities i ON i.platform = m.platform AND i.userId = m.userId ${memberWhere} ORDER BY m.position IS NULL, m.position, m.firstSeenAt`).all(...(chatIds ?? [])) as { roomId: string; userId: string; position: number | null; handle: string | null }[]
   const byChat = new Map<string, MessageRowOut[]>()
   for (const m of messages) {
     const list = byChat.get(m.chatId)

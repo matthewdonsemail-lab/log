@@ -3,7 +3,7 @@ import { timedSync } from '../../observability/timing/index'
 import { createHash } from 'node:crypto'
 import { gunzipSync, gzipSync } from 'node:zlib'
 import { chatIdOf, derivePersonFact, eventIdFrom, factsFollowLink, factsLeaveLink, extenderOf, groupByMembers, handleIdOf, isBareId, messageKeyOf, msOf, normalHandle, placedChat, platformMessageIdOf, profileFieldsOf, readConversations, serverKindsSql, writeConversation } from './helpers'
-import type { StoredConversation } from './helpers'
+import type { ReadConversationsOptions, StoredConversation } from './helpers'
 import { moveRings, rebuildRingsIn, ringState, ringsFromEvent } from '../../relate/network/helpers/rings'
 import { DERIVED_TABLES, EXTENDER_VERSION, MESSAGE_TYPES, RAW_BLOB_KINDS, RING_MOVING_EVENTS } from './types'
 import type { BlobCodec, EventInput, EventInsert, ExtenderContext, IdentityProfileFields, IdentityProfileRow, InsertedEvent, TypedRows } from './types'
@@ -465,6 +465,6 @@ export function saveConversationRows(handle: Database, conversations: readonly S
   return written
 }
 
-export function loadConversationRows(handle: Database, account?: string): StoredConversation[] {
+export function loadConversationRows(handle: Database, account?: string | ReadConversationsOptions): StoredConversation[] {
   return readConversations(handle, account)
 }

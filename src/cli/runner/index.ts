@@ -24,6 +24,7 @@ import { joinCommand } from "../join/index.ts";
 import { messengerCommand } from "../messenger/index.ts";
 import { discordSecretsCommand } from "../discord/index.ts";
 import { searchCommand } from "../search/index.ts";
+import { factsCommand, indexCommand } from "../indexPass/index.ts";
 import { kbCommand } from "../kb/index.ts";
 import { runtimeCommand } from "../runtime/index.ts";
 import { memelordCommand } from "../memelord/index.ts";
@@ -140,6 +141,8 @@ export const COMMANDS: Command[] = [
   cookiesCommand,
   voiceCommand,
   searchCommand,
+  indexCommand,
+  factsCommand,
   kbCommand,
   runtimeCommand,
   memelordCommand,

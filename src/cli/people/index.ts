@@ -2,8 +2,10 @@ import { cardFor, linkIdentities, linkReport, listPeople, markNotLinked, reviewB
 import { backfillBots, botBackfillText, defaultBotSources } from "../../people/bots/index.ts";
 import type { Cluster, LinkReport, Recheck, Suggestion } from "../../people/index.ts";
 import { localEmbedder } from "../../search/conversations/index.ts";
-import { DEFAULT_DECIDER, extractFacts, factDecider, factLine, factsAbout, gliner2Screener, percentile, promiseLines, resolveWho as whoOf } from "../../people/index.ts";
-import type { ExtractReport, FactDecider, Screener } from "../../people/index.ts";
+import { DEFAULT_DECIDER, factDecider, factLine, factsAbout, gliner2Screener, percentile, promiseLines, resolveWho as whoOf } from "../../people/index.ts";
+import type { FactDecider, Screener } from "../../people/index.ts";
+import { runIndexPass } from "../../indexPass/index.ts";
+import type { PassReport } from "../../indexPass/index.ts";
 import { storedEmbedder } from "../../inbox/store/index.ts";
 import { pointerOf, recallGraph } from "../../relate/graph/index.ts";
 import { createDecisionsClient } from "../../subq/decisions/index.ts";
@@ -84,15 +86,18 @@ export const peopleDeps: { embedder: () => { embed: (texts: string[]) => Promise
   factEmbedder: () => storedEmbedder(localEmbedder(), "fact"),
 };
 
-export function extractText(report: ExtractReport): string {
-  const ms = report.screenMs;
-  const head = `log people facts extract: ${report.chats} chat${report.chats === 1 ? "" : "s"}, ${report.messages} new message${report.messages === 1 ? "" : "s"}, ${report.marked} marked by ${report.screenModel} (${report.messages ? Math.round((report.marked / report.messages) * 100) : 0}%, ${percentile(ms, 50).toFixed(1)} ms p50 / ${percentile(ms, 95).toFixed(1)} ms p95 per message), ${report.decideCalls} call${report.decideCalls === 1 ? "" : "s"} to ${report.decideModel ?? "no decider"}, ${report.dropped} dropped, ${report.queued} queued.`;
-  const people = report.people.filter((p) => p.added.length || p.repeats.length).map((p) => [
-    `${p.label}: ${p.added.length} new fact${p.added.length === 1 ? "" : "s"}, ${p.repeats.length} repeat${p.repeats.length === 1 ? "" : "s"}`,
-    ...p.added.map((f) => `  + ${factLine(f)}`),
-    ...p.repeats.map((r) => `  = said again "${r.text.slice(0, 80)}", already ${r.repeatOf.slot} since ${r.repeatOf.validFrom.slice(0, 10)}`),
-  ].join("\n"));
-  return [head, ...people].join("\n");
+export function extractText(report: PassReport): string {
+  const tail = report.waiting ? `; ${report.waiting}` : "";
+  return `log people facts extract: ${report.chats} conversation${report.chats === 1 ? "" : "s"} read, ${report.screened} new line${report.screened === 1 ? "" : "s"} screened and marked, ${report.decided} lasting fact${report.decided === 1 ? "" : "s"} recorded, ${report.queued} mark${report.queued === 1 ? "" : "s"} waiting on the decider, ${percentile(report.ms, 50).toFixed(0)} ms p50 / ${percentile(report.ms, 95).toFixed(0)} ms p95 a conversation${tail}. Every room kind is read, not DMs only.`;
+}
+
+function chatsOfIdentities(handle: ReturnType<typeof openDatabase>, identities: readonly { platform: string; userId: string }[]): string[] {
+  if (!identities.length) return [];
+  const pairs = identities.map(() => "(platform = ? AND userId = ?)").join(" OR ");
+  const sent = identities.map(() => "(senderPlatform = ? AND senderUserId = ?)").join(" OR ");
+  const values = [...identities.flatMap((i) => [i.platform, i.userId]), ...identities.flatMap((i) => [i.platform, i.userId])];
+  const rows = handle.prepare(`SELECT DISTINCT chatId FROM chats WHERE chatId IN (SELECT roomId FROM memberships WHERE ${pairs}) OR chatId IN (SELECT chatId FROM messages WHERE ${sent})`).all(...values) as { chatId: string }[];
+  return rows.map((r) => r.chatId);
 }
 
 export const peopleCommand: Command = {
@@ -123,20 +128,29 @@ export const peopleCommand: Command = {
     }
     if (sub === "facts" && rest[0] === "extract" && rest.length === 1) {
       let screener: Screener | null = null;
-      let embedder: { embed: (texts: string[]) => Promise<Float32Array[]>; stop?: () => void } | null = null;
       try {
         const decider: FactDecider = _context.decisions ? { ok: true, model: DEFAULT_DECIDER, decisions: _context.decisions } : peopleDeps.decider();
         screener = (_context.factScreener ?? peopleDeps.screener)();
-        embedder = _context.embedder ? storedEmbedder(_context.embedder(), "fact") : peopleDeps.factEmbedder();
-        const report = await extractFacts(handle, { screener, decisions: decider.ok ? decider.decisions : null, ...(decider.ok ? { decideModel: decider.model } : {}), ...(embedder ? { embed: embedder.embed.bind(embedder) } : {}), ...(typeof parsed.flags["who"] === "string" ? { who: parsed.flags["who"] as string } : {}), ...(typeof parsed.flags["since"] === "string" ? { since: parsed.flags["since"] as string } : {}), ...(numberOf(parsed, "limit") ? { chats: numberOf(parsed, "limit")! } : {}), ...(typeof parsed.flags["platform"] === "string" ? { platforms: [parsed.flags["platform"] as string] } : {}), log: (line) => _context.err(line) });
-        if ("problem" in report) return refuseInput("people", report.problem, PEOPLE_USAGE);
+        const who = typeof parsed.flags["who"] === "string" ? whoOf(handle, parsed.flags["who"] as string) : null;
+        if (who && !who.ok) return refuseInput("people", who.problem, PEOPLE_USAGE);
+        const chatIds = who && who.ok ? chatsOfIdentities(handle, who.identities) : undefined;
+        if (who && chatIds && !chatIds.length) return { code: 0, stdout: `log people facts extract: no chat with ${parsed.flags["who"] as string} in log.db` };
+        const report = await runIndexPass(handle, {
+          only: "facts",
+          screener: () => screener!,
+          decider: () => decider,
+          ...(chatIds ? { chatIds } : {}),
+          ...(typeof parsed.flags["since"] === "string" ? { since: parsed.flags["since"] as string } : {}),
+          ...(numberOf(parsed, "limit") ? { limit: numberOf(parsed, "limit")! } : {}),
+          ...(typeof parsed.flags["platform"] === "string" ? { platform: parsed.flags["platform"] as string } : {}),
+          log: (line) => _context.err(line),
+        });
         if (!decider.ok) return { ...refuse("people facts extract", "factDeciderUnavailable", `${decider.problem}; ${report.queued} marked message${report.queued === 1 ? "" : "s"} stay queued`), stdout: json ? JSON.stringify(report, null, 2) : extractText(report) };
         return { code: 0, stdout: json ? JSON.stringify(report, null, 2) : extractText(report) };
       } catch (error) {
         return refuseError("people facts extract", error);
       } finally {
         screener?.stop?.();
-        embedder?.stop?.();
       }
     }
     if (sub === "facts" && rest[0] === "recall" && rest.length === 2) {

@@ -1,3 +1,5 @@
+import type { PassTick } from '../../indexPass/types'
+
 export const OWNER_PLATFORM = 'relate'
 
 export const OWNER_ACCOUNT = 'graph'
@@ -56,6 +58,7 @@ export interface OwnerStatus {
   rebuilding: boolean
   reads: number
   failures: number
+  pass: PassTick | null
 }
 
 export interface OwnerOptions {
@@ -75,6 +78,7 @@ export interface OwnerOptions {
   kill?: (pid: number) => void
   sleep?: (ms: number) => Promise<void>
   facts?: { tick: () => Promise<unknown>; stop: () => void } | null
+  pass?: { tick: () => Promise<unknown>; stop: () => void; last: () => unknown } | null
   bots?: { tick: () => Promise<unknown>; stop: () => void } | null
 }
 

@@ -20,13 +20,20 @@ ENTITIES = ["person", "company", "product", "project", "place", "money", "date"]
 RELATIONS = ["promised", "owes", "works at", "building", "met"]
 
 
-def load(model_dir, threads):
+def load(model_dir, threads, revision=""):
     import torch
     from gliner2 import AutoExtractor
 
     if threads:
         torch.set_num_threads(threads)
     model = AutoExtractor.from_pretrained(model_dir)
+    if revision:
+        try:
+            import gliner2
+
+            gliner2.load_lora_adapter(getattr(model, "model", model), revision, auto_unload=False)
+        except Exception as error:
+            sys.stderr.write(f"the trained revision {revision} did not load ({type(error).__name__}: {error}); screening with the base model\n")
     model.eval()
     return model
 
@@ -91,10 +98,11 @@ def answer(model, schema, request):
 
 def main():
     model_dir = os.environ.get("LOG_FACTS_MODEL") or (sys.argv[1] if len(sys.argv) > 1 else "")
+    revision = os.environ.get("LOG_FACTS_REVISION") or (sys.argv[2] if len(sys.argv) > 2 else "")
     threads = int(os.environ.get("LOG_FACTS_THREADS") or 0)
     try:
         started = time.perf_counter()
-        model = load(model_dir, threads)
+        model = load(model_dir, threads, revision)
         schema = schema_of(model)
         sys.stdout.write(json.dumps({"ok": True, "ready": True, "loadMs": (time.perf_counter() - started) * 1000}) + "\n")
         sys.stdout.flush()

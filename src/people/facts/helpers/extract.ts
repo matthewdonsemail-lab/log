@@ -34,7 +34,7 @@ export function sideAllows(slot: string, fromOwner: boolean): boolean {
   return true
 }
 
-interface ChatRow {
+export interface ChatRow {
   chatId: string
   platform: string
   account: string
@@ -128,7 +128,7 @@ const labelOf = (subject: Subject): string => (subject.handle ? `${subject.platf
 
 const subjectKey = (subject: Subject): string => subject.personId ?? `${subject.platform}:${subject.userId}`
 
-function markCandidates(handle: Database, subject: Subject, marked: readonly { line: ChatLine; mark: ScreenMark }[], model: string, now: Date): void {
+export function markCandidates(handle: Database, subject: Subject, marked: readonly { line: ChatLine; mark: ScreenMark }[], model: string, now: Date): void {
   const known = new Map<string, string>([[String(subject.handle ?? '').toLowerCase(), `${subject.platform}:${subject.userId}`]])
   const put = handle.prepare('INSERT OR IGNORE INTO factCandidates (messageKey, chatId, kind, confidence, marks, model, decided, markedAt) VALUES (?, ?, ?, ?, ?, ?, NULL, ?)')
   for (const { line, mark } of marked) {
@@ -222,7 +222,7 @@ export async function extractFacts(handle: Database, options: ExtractOptions): P
   return report
 }
 
-async function decideFor(handle: Database, subject: Subject, chatIds: readonly string[], entry: ExtractReport['people'][number], report: ExtractReport, decisions: DecisionsClient, options: ExtractOptions, now: Date): Promise<void> {
+export async function decideFor(handle: Database, subject: Subject, chatIds: readonly string[], entry: ExtractReport['people'][number], report: ExtractReport, decisions: DecisionsClient, options: ExtractOptions, now: Date): Promise<void> {
   const queued = queuedCandidates(handle, chatIds)
   if (!queued.length) return
   const current = () => factsAbout(handle, { personId: subject.personId, identities: [{ platform: subject.platform, userId: subject.userId }] })

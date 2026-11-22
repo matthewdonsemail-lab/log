@@ -38,6 +38,9 @@ export type StateScope =
   | 'hermesPush'
   | 'hookBlocks'
   | 'factOffsets'
+  | 'indexStream'
+  | 'factCorrections'
+  | 'factTraining'
   | 'botBackfill'
 
 export interface StateRow<T> {

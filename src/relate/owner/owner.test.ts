@@ -151,6 +151,25 @@ describe('the graph owner: one consumer of log.db events per log.db', () => {
     handle.prepare("UPDATE owners SET status = 'stopped' WHERE platform = 'relate' AND account = 'graph'").run()
   })
 
+  test('the index pass ticks beside the fact stream and the owner status carries its cost line', async () => {
+    const dbPath = world()
+    const handle = openDatabase(dbPath)
+    let ticks = 0
+    let stop = false
+    let passStopped = false
+    const tick = { chats: 1, queued: 2, embedded: 3, voiced: 4, screened: 5, decided: 1, p50: 12, p95: 30, throughSeq: eventsThrough(handle), head: eventsThrough(handle), backlog: 0, at: iso(3), ms: 14, overran: 0 }
+    const running = runGraphOwner({ dbPath, batchMs: 20, stopped: () => stop, pass: { tick: async () => void ticks++, stop: () => void (passStopped = true), last: () => tick } })
+    await until(() => ownerRowOf(handle)?.status === 'streaming')
+    await until(() => ticks > 0)
+    const status = await graphOwnerStatus(dbPath)
+    expect(status.live?.pass?.queued).toBe(2)
+    expect(status.live?.pass?.screened).toBe(5)
+    expect(status.live?.pass?.p95).toBe(30)
+    stop = true
+    await running
+    expect(passStopped).toBe(true)
+  })
+
   test('a second owner started for the same log.db exits and leaves the first one owning it', async () => {
     const dbPath = world()
     const handle = openDatabase(dbPath)

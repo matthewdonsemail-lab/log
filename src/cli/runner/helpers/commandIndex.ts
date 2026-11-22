@@ -71,6 +71,8 @@ export const COMMAND_INDEX: CommandIndexEntry[] = [
   { name: "cookies", platform: "twitter", module: "src/cli/twitter/index.ts", exportName: "cookiesCommand", terminalOnly: "asks for an X account's session cookies (auth_token, ct0 and twid) in a Clack prompt (masked) and checks them with X before saving. Run `log twitter cookies save --account <handle>` in a terminal." },
   { name: "voice", platform: "any", module: "src/cli/twitter/index.ts", exportName: "voiceCommand" },
   { name: "search", platform: "any", module: "src/cli/search/index.ts", exportName: "searchCommand" },
+  { name: "index", platform: "any", module: "src/cli/indexPass/index.ts", exportName: "indexCommand", terminalOnly: "runs the local CPU models over minutes of history and holds no chat context; the owner runs it in a terminal, and the graph owner's tick runs the same pass by itself" },
+  { name: "facts", platform: "any", module: "src/cli/indexPass/index.ts", exportName: "factsCommand", terminalOnly: "fine-tunes a local model on CPU for minutes as its own job; the owner runs it in a terminal, never inside the pass" },
   { name: "kb", platform: "any", module: "src/cli/kb/index.ts", exportName: "kbCommand" },
   { name: "runtime", platform: "any", module: "src/cli/runtime/index.ts", exportName: "runtimeCommand", terminalOnly: "pairs this workspace with hosted log and keeps its outbound bridge open as a long-lived service. Run `log runtime init --origin <url>`, `log runtime pair --token <t>` and `log runtime connect` in the workspace's terminal or its service manager." },
   { name: "memelord", platform: "any", module: "src/cli/memelord/index.ts", exportName: "memelordCommand" },

@@ -3,6 +3,7 @@ import type { ChildProcessWithoutNullStreams } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import { modelByKey } from '../../../models/manifest/index'
 import { placeOf } from '../../../models/store/index'
+import { latestRevision } from '../../../indexPass/helpers/train'
 import { MARK_MIN, PROMISE_KINDS, PROMISE_MARK_MIN, PRONOUNS_LISTENER, PRONOUNS_SPEAKER, SCREEN_ASK_MS, SCREEN_BATCH, SCREEN_KINDS, SCREEN_MIN_CHARS, SCREEN_MODEL_KEY, SCREEN_START_MS } from '../types'
 import type { Candidate, ChatLine, ScreenAnswer, ScreenMark, Screener } from '../types'
 
@@ -12,7 +13,7 @@ export class ScreenUnavailable extends Error {
   readonly code = 'factScreenUnavailable'
 }
 
-export function gliner2Screener(modelDir: string | null = placeOf(modelByKey(SCREEN_MODEL_KEY)), python: string = process.env.LOG_PYTHON || 'python'): Screener {
+export function gliner2Screener(modelDir: string | null = placeOf(modelByKey(SCREEN_MODEL_KEY)), python: string = process.env.LOG_PYTHON || 'python', revision: string | null = latestRevision()): Screener {
   let child: ChildProcessWithoutNullStreams | null = null
   let buffer = ''
   const waiting: ((line: string) => void)[] = []
@@ -26,7 +27,7 @@ export function gliner2Screener(modelDir: string | null = placeOf(modelByKey(SCR
   const start = async () => {
     if (child) return
     if (!modelDir) throw new ScreenUnavailable('factScreenUnavailable: no place for the fact model; run log models --fetch')
-    child = spawn(python, [SCREEN_PATH, modelDir], { windowsHide: true, env: { ...process.env, PYTHONIOENCODING: 'utf-8' } })
+    child = spawn(python, [SCREEN_PATH, modelDir, ...(revision ? [revision] : [])], { windowsHide: true, env: { ...process.env, PYTHONIOENCODING: 'utf-8' } })
     child.stdout.setEncoding('utf8')
     child.stdout.on('data', (chunk: string) => {
       buffer += chunk

@@ -41,6 +41,8 @@ flowchart TB
     c_whoami["whoami"]
     c_voice["voice"]
     c_search["search"]
+    c_index["index"]
+    c_facts["facts"]
     c_kb["kb"]
     c_runtime["runtime"]
     c_memelord["memelord"]
@@ -311,6 +313,10 @@ flowchart TB
   mcp --> c_voice
   cli --> c_search
   mcp --> c_search
+  cli --> c_index
+  c_index -.- terminal
+  cli --> c_facts
+  c_facts -.- terminal
   cli --> c_kb
   mcp --> c_kb
   cli --> c_runtime

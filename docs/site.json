@@ -60,7 +60,7 @@
         { "title": "Diagrams", "folder": "diagrams" },
         {
           "title": "Working on log",
-          "pages": ["layout.md", "namingConventions.md", "contextLayer.md", "callTiming.md", "knowledgeBase.md", "relateGraph.md", "deployment.md", "twitterPlatform.md", "opencodeHooks.md", "contributing.md"],
+          "pages": ["layout.md", "namingConventions.md", "contextLayer.md", "callTiming.md", "knowledgeBase.md", "relateGraph.md", "indexPass.md", "deployment.md", "twitterPlatform.md", "opencodeHooks.md", "contributing.md"],
           "folders": ["rea", "voice"]
         }
       ]

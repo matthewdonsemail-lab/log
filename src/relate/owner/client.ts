@@ -153,10 +153,15 @@ export async function runGraphOwner(options: OwnerOptions): Promise<OwnerOutcome
     })
   }
 
+  const passTick = (): OwnerStatus['pass'] => {
+    const last = options.pass?.last?.() ?? null
+    return last ? (last as OwnerStatus['pass']) : null
+  }
+
   const statusNow = (): OwnerStatus => {
     const head = eventsThrough(handle)
     const through = held?.offset.throughSeq ?? 0
-    return { pid, generation, file: held?.store.file ?? '', throughSeq: through, head, behind: Math.max(0, head - through), batches, appliedEvents, lastBatch, startedAt, rebuilding: Boolean(rebuild), reads, failures }
+    return { pid, generation, file: held?.store.file ?? '', throughSeq: through, head, behind: Math.max(0, head - through), batches, appliedEvents, lastBatch, startedAt, rebuilding: Boolean(rebuild), reads, failures, pass: passTick() }
   }
 
   const routes: Record<string, (body: Record<string, unknown>) => Promise<OwnerReply<unknown>>> = {
@@ -231,6 +236,7 @@ export async function runGraphOwner(options: OwnerOptions): Promise<OwnerOutcome
           await catchUp(held)
           failures = 0
           void options.facts?.tick()
+          void options.pass?.tick()
           void options.bots?.tick()
         } catch (error) {
           if (error instanceof GraphOwnerFenced) throw error
@@ -248,6 +254,7 @@ export async function runGraphOwner(options: OwnerOptions): Promise<OwnerOutcome
   } finally {
     server?.stop(true)
     options.facts?.stop()
+    options.pass?.stop()
     options.bots?.stop()
     const last = held as Held | null
     if (last) await drain(last)

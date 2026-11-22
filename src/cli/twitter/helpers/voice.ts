@@ -38,7 +38,8 @@ import { attachedOf, briefFailedParts, briefLine, readBrief } from "../../../voi
 import type { DecisionsClient } from "../../../subq/decisions/index.ts";
 import { CONTEXT_PASS, guidePath, nobodyToAnswer, RANKED_CONTEXT, RANKED_POOL, RANKED_SHORTLIST, readGuide, readVoices, VOICE_PASS } from "../../../twitter/copy/voice/index.ts";
 import type { VoiceEvidence, VoiceReading } from "../../../twitter/copy/voice/index.ts";
-import { buildVoiceIndex, closestWording, NEAR_PAIRS, nearestPairs, offProfile, openSharedVoiceIndex, profileFor, recentInChat, voiceDir } from "../../../voice/pairs/index.ts";
+import { closestWording, NEAR_PAIRS, nearestPairs, offProfile, openSharedVoiceIndex, profileFor, recentInChat, voiceDir } from "../../../voice/pairs/index.ts";
+import { updateVoiceFor } from "../../../indexPass/helpers/voice.ts";
 import type { VoicePair } from "../../../voice/pairs/index.ts";
 import type { NearPair, VoiceProfile, VoiceTarget } from "../../../voice/pairs/index.ts";
 import { buildPhraseIndex, openPhraseIndex, phrasesLine, readPhrases, writePhraseIndex } from "../../../voice/phrases/index.ts";
@@ -378,11 +379,11 @@ export const voiceCommand: Command = {
         const conversations = loadConversations();
         const embedder = voiceDeps.embedder();
         context.err(`voice: pairing the owner's replies in ${conversations.length} saved conversations and embedding them with ${embedder.model}`);
-        const built = await buildVoiceIndex(conversations, embedder);
+        const built = await updateVoiceFor(conversations, embedder);
         embedder.stop?.();
-        const line = built.current
+        const line = built.embedded === 0 && !built.created
           ? `log voice index: already current, so nothing was re-paired: ${built.pairs} messages indexed across every chat the owner has written in, ${built.profiles} profiles, at ${voiceDir()}`
-          : `log voice index: ${built.pairs} messages indexed across every chat the owner has written in, each of the owner's replies paired with what was said before it, ${built.profiles} profiles (chat, person, platform), in ${(built.ms / 1000).toFixed(1)} s at ${voiceDir()}`;
+          : `log voice index: ${built.pairs} messages indexed across every chat the owner has written in, each of the owner's replies paired with what was said before it, ${built.embedded} new pair(s) embedded, ${built.profiles} profiles (chat, person, platform), in ${(built.ms / 1000).toFixed(1)} s at ${voiceDir()}`;
         return { code: 0, stdout: parsed.flags["json"] ? JSON.stringify(built, null, 2) : line };
       } catch (error) {
         return refuseError("voice index", error);

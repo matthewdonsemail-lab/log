@@ -76,7 +76,7 @@ flowchart LR
   anyB --> b_slack
   anyB --> b_instagram
   anyB --> b_tiktok
-  anyN["Any platform, no browser: launch, console, credentials, adsPower, localAccount, accounts, proxy, errors, graph, capture, router, runs, storage, version, update, models, relate, people, network, timing, tool, inbox, media, browsers, browser, report, job, mcp, login, logout, whoami, voice, search, kb, runtime, memelord, treg, balance, governor, sessions, chats, messages, watchers, voiceNotes, clone, transcribe, new, saidBy"]
+  anyN["Any platform, no browser: launch, console, credentials, adsPower, localAccount, accounts, proxy, errors, graph, capture, router, runs, storage, version, update, models, relate, people, network, timing, tool, inbox, media, browsers, browser, report, job, mcp, login, logout, whoami, voice, search, index, facts, kb, runtime, memelord, treg, balance, governor, sessions, chats, messages, watchers, voiceNotes, clone, transcribe, new, saidBy"]
   anyN -.-> twenty
   newP["log new platform name: one more platform, wired whole (rule 83)"] -.-> twenty
   drivers --> api
@@ -114,7 +114,7 @@ Source: [`docs/diagrams/browsers.mmd`](diagrams/browsers.mmd).
 
 - **The account's browser, through the driver:** `facebook host`, `inspect`, `flow`, `<platform> warmup`, `facebook join`, `facebook read`, `facebook poll`, `facebook check`, `reddit read`, `discord read`, `slack read`. They run on whichever browser the account uses: whatever `socialAccounts.browserDriver` names (Camoufox, AdsPower, Brave), else AdsPower when it has a linked profile (`socialAccounts.adsPowerProfileId`), else `LOG_BROWSER_DRIVER`, else Camoufox.
 - **Camoufox only, not on the driver yet:** `facebook doctor`, `facebook connect`, `facebook profile`, `facebook scan`, `facebook status`, `facebook watch`, `facebook publish`, `facebook campaign`, `discord watch`, `linkedin connect`, `slack watch`, `instagram watch`. They launch Camoufox themselves (facebook-camofox-client's worker, or the publish, connect and profile sessions), so on an AdsPower account they don't open its AdsPower profile. Moving one onto the driver is moving it into `OPENER_ACTIONS` (`src/browser/run`).
-- **No browser:** `launch`, `console`, `credentials`, `facebook listings`, `facebook listing`, `facebook accounts`, `facebook account`, `adsPower`, `localAccount`, `accounts`, `facebook lifecycle`, `facebook preflight`, `proxy`, `facebook conversations`, `facebook conversation`, `facebook messenger`, `errors`, `graph`, `capture`, `router`, `runs`, `storage`, `version`, `update`, `models`, `relate`, `people`, `network`, `timing`, `tool`, `inbox`, `media`, `browsers`, `browser`, `report`, `job`, `mcp`, `login`, `logout`, `whoami`, `twitter session`, `twitter follows`, `twitter dms`, `twitter chat`, `twitter cookies`, `voice`, `search`, `kb`, `runtime`, `memelord`, `treg`, `balance`, `governor`, `sessions`, `chats`, `messages`, `watchers`, `voiceNotes`, `clone`, `transcribe`, `twitter followers`, `twitter posts`, `twitter notifications`, `twitter reply`, `twitter quote`, `twitter post`, `twitter like`, `twitter list`, `twitter repost`, `twitter delete`, `twitter follow`, `twitter dm`, `twitter react`, `twitter queue`, `new`, `reddit session`, `reddit post`, `reddit reply`, `reddit vote`, `discord session`, `discord secrets`, `discord chats`, `discord servers`, `discord channels`, `discord posts`, `discord search`, `discord send`, `discord delete`, `discord friend`, `discord react`, `discord voice`, `linkedin session`, `linkedin cookies`, `linkedin post`, `linkedin delete`, `linkedin suggestions`, `linkedin like`, `linkedin repost`, `linkedin message`, `linkedin inbox`, `linkedin posts`, `linkedin messages`, `slack session`, `slack workspaces`, `slack chats`, `slack send`, `slack cookies`, `slack react`, `slack voice`, `instagram session`, `instagram dms`, `instagram send`, `instagram react`, `instagram voice`, `twitter voice`, `tiktok session`, `saidBy`, `tiktok stats`, `tiktok post`, `tiktok delete`.
+- **No browser:** `launch`, `console`, `credentials`, `facebook listings`, `facebook listing`, `facebook accounts`, `facebook account`, `adsPower`, `localAccount`, `accounts`, `facebook lifecycle`, `facebook preflight`, `proxy`, `facebook conversations`, `facebook conversation`, `facebook messenger`, `errors`, `graph`, `capture`, `router`, `runs`, `storage`, `version`, `update`, `models`, `relate`, `people`, `network`, `timing`, `tool`, `inbox`, `media`, `browsers`, `browser`, `report`, `job`, `mcp`, `login`, `logout`, `whoami`, `twitter session`, `twitter follows`, `twitter dms`, `twitter chat`, `twitter cookies`, `voice`, `search`, `index`, `facts`, `kb`, `runtime`, `memelord`, `treg`, `balance`, `governor`, `sessions`, `chats`, `messages`, `watchers`, `voiceNotes`, `clone`, `transcribe`, `twitter followers`, `twitter posts`, `twitter notifications`, `twitter reply`, `twitter quote`, `twitter post`, `twitter like`, `twitter list`, `twitter repost`, `twitter delete`, `twitter follow`, `twitter dm`, `twitter react`, `twitter queue`, `new`, `reddit session`, `reddit post`, `reddit reply`, `reddit vote`, `discord session`, `discord secrets`, `discord chats`, `discord servers`, `discord channels`, `discord posts`, `discord search`, `discord send`, `discord delete`, `discord friend`, `discord react`, `discord voice`, `linkedin session`, `linkedin cookies`, `linkedin post`, `linkedin delete`, `linkedin suggestions`, `linkedin like`, `linkedin repost`, `linkedin message`, `linkedin inbox`, `linkedin posts`, `linkedin messages`, `slack session`, `slack workspaces`, `slack chats`, `slack send`, `slack cookies`, `slack react`, `slack voice`, `instagram session`, `instagram dms`, `instagram send`, `instagram react`, `instagram voice`, `twitter voice`, `tiktok session`, `saidBy`, `tiktok stats`, `tiktok post`, `tiktok delete`.
 - **No browser path at all:** X. Its accounts run on the direct API only (rule 80).
 
 Each browser's capabilities, built or not: [`docs/browsers.md`](browsers.md) (generated, `bun run check:browsers`). AdsPower's setup: [`docs/adsPower.md`](adsPower.md).
@@ -229,7 +229,7 @@ flowchart LR
   shell["Bash / PowerShell / Monitor"]
   mcp["MCP server log: 318 command tools + saved flows"]
   bin["bin/log.ts"]
-  runCli["runCli: 143 commands (COMMANDS)"]
+  runCli["runCli: 145 commands (COMMANDS)"]
   live[("~/.logCli/mcp/day.log: the live log")]
   engine{"commandEngine: DIRECT_ROUTES"}
   direct["Direct-API engine: fbk, twikit, reverseChud, endcord, openLinkedinApi, gabrielSlack, instagrapi, tiktokApi (curl_cffi, TikTok Studio calls) (vendor/), the account's saved session, a governor per account"]
@@ -349,6 +349,8 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | [`log twitter cookies`](#log-twitter-cookies) | Add or refresh an X account in Twenty: its session cookies from a masked prompt, checked against X, and its copy style | `twitter` first | `--account <handle>` `[--style <copyStyle>]` `[--name <label>]` | direct API only | none | terminal only: asks for an X account's session cookies (auth_token, ct0 and twid) in a Clack prompt (masked) and checks them with X before saving. Run `log twitter cookies save --account <handle>` in a terminal. | PreToolUse, PostToolUse · n/a | no | 35, 73, 105, 30, 38, 39, 40, 41 |
 | [`log voice`](#log-voice) | Gate a draft against the owner's own writing guide with SubQ before anything is sent as the owner, sending nothing | any (none) | `--to <handle>` `[--text <text>]` `[--options <value,…>]` `[--context <text>]` `[--with <person or chat>]` `[--spoken]` `[--json]` `[--fresh <integer 1..1000>]` `[--spend <number>]` `[--drafts <file>]` `[--count <integer 5..200>]` | none | none | `voice`, `voiceAiIndex`, `voiceIndex`, `voiceTrain`, `voiceCalibrate` | PreToolUse, PostToolUse · PostToolUse | no | 30, 39, 41, 109, 137, 142, 30, 38, 39, 40, 41 |
 | [`log search`](#log-search) | Hybrid search across every conversation (BM25 keyword + vector meaning, fused with RRF), and building its indexes | any (none) | `[--limit <integer 1..100>]` `[--fusion <rrf|bayes>]` `[--platform <p>]` `[--account <a>]` `[--with <handle>]` `[--after <date>]` `[--kind <k>]` `[--server <s>]` `[--channel <c>]` `[--full]` `[--json]` `[--saved]` `[--rebuild]` `[--rounds <integer 1..1000>]` | none | none | `search`, `searchIndex`, `searchBench` | PreToolUse, PostToolUse · PostToolUse | no | 26, 89, 105, 30, 38, 39, 40, 41 |
+| [`log index`](#log-index) | One CPU pass per conversation: embed, voice, facts | any (none) | `[--platform <p>]` `[--account <a>]` `[--since <t>]` `[--limit <integer 1..100000>]` `[--only <search|voice|facts>]` `[--json]` | none | none | terminal only: runs the local CPU models over minutes of history and holds no chat context; the owner runs it in a terminal, and the graph owner's tick runs the same pass by itself | PreToolUse, PostToolUse · n/a | no | 30, 38, 39, 40, 41 |
+| [`log facts`](#log-facts) | Train the fact screen on its corrections, on CPU, and see what it learned | any (none) | `[--epochs <integer 1..20>]` `[--json]` | none | none | terminal only: fine-tunes a local model on CPU for minutes as its own job; the owner runs it in a terminal, never inside the pass | PreToolUse, PostToolUse · n/a | no | 30, 38, 39, 40, 41 |
 | [`log kb`](#log-kb) | The knowledge base: search it, sync every source into Twenty and Redis, remember a note, show an article | any (none) | `[--kind <rule|section|skill|doc|infra|memory|pageState|account|note>]` `[--limit <integer 1..50>]` `[--json]` `[--noAccounts]` `[--title <t>]` `[--tags <a,b,…>]` | none | none | `kbSearch`, `kbSync`, `kbRemember`, `kbShow` | PreToolUse, PostToolUse · PostToolUse | no | 26, 30, 30, 38, 39, 40, 41 |
 | [`log runtime`](#log-runtime) | Pair this workspace with hosted log and keep its outbound bridge open, so the team's console and AI clients run their requests here | any (none) | `[--origin <https://app.log.listeningkit.com>]` `[--json]` `[--token <pairing token>]` | none | none | terminal only: pairs this workspace with hosted log and keeps its outbound bridge open as a long-lived service. Run `log runtime init --origin <url>`, `log runtime pair --token <t>` and `log runtime connect` in the workspace's terminal or its service manager. | PreToolUse, PostToolUse · n/a | no | 26, 73, 171, 172, 30, 38, 39, 40, 41 |
 | [`log memelord`](#log-memelord) | The Memelord extension: search memes for a moment, read one template, see what is trending, list the image tools (free tools only) | any (none) | `[--type <meme|video|sticker>]` `[--method <context|combined|media|fulltext|fuzzy>]` `[--limit <integer 1..100>]` `[--noTaste]` `[--json]` `[--media <image|video>]` `[--category <imageToImage|imageTextToImage|textToImage>]` `[--build]` `[--from <posts.json>]` | none | none | `memelordSearch`, `memelordTemplate`, `memelordTrending`, `memelordTools`, `memelordTaste` | PreToolUse, PostToolUse · PostToolUse | no | 41, 94, 142, 30, 38, 39, 40, 41 |
@@ -502,6 +504,8 @@ flowchart TB
     c_whoami["whoami"]
     c_voice["voice"]
     c_search["search"]
+    c_index["index"]
+    c_facts["facts"]
     c_kb["kb"]
     c_runtime["runtime"]
     c_memelord["memelord"]
@@ -772,6 +776,10 @@ flowchart TB
   mcp --> c_voice
   cli --> c_search
   mcp --> c_search
+  cli --> c_index
+  c_index -.- terminal
+  cli --> c_facts
+  c_facts -.- terminal
   cli --> c_kb
   mcp --> c_kb
   cli --> c_runtime
@@ -1859,6 +1867,24 @@ log search "<query>" [--limit <n>] [--fusion <rrf|bayes>] [--platform <p>] [--ac
 log search index [--platform <twitter|discord>] [--account <a>] [--saved] [--rebuild]   (embeds only new or changed chunks, --rebuild all; --saved indexes what log.db holds, else reads every DM and group through the platform's engine first)
 log search bench [--rounds <n>]   (times realistic queries on the built index, cold and warm, and prints p50, p95 and p99 beside a plain linear scan)
 Hybrid search across every conversation: BM25 keyword ranking (bm25s) and meaning ranking (verso-db HNSW over local all-MiniLM-L6-v2 embeddings) run in parallel and are fused with reciprocal rank fusion. Each hit names where it was said (DM, group or channel), when, and its matching lines.
+```
+
+#### log index
+
+One CPU pass per conversation: embed, voice, facts Terminal only: runs the local CPU models over minutes of history and holds no chat context; the owner runs it in a terminal, and the graph owner's tick runs the same pass by itself
+
+```text
+log index [--platform <p>] [--account <a>] [--since <t>] [--limit <n>] [--only <search|voice|facts>] [--json]
+One CPU pass per conversation: embed it for search, rebuild the owner's voice for that chat and person, then screen it for facts. The graph owner runs it by itself for every room kind and every signed-in account (LOG_INDEX_STREAM=off stops it); this clears a backlog by hand. `log relate owner status` shows its cost line.
+```
+
+#### log facts
+
+Train the fact screen on its corrections, on CPU, and see what it learned Terminal only: fine-tunes a local model on CPU for minutes as its own job; the owner runs it in a terminal, never inside the pass
+
+```text
+log facts train [--epochs <n>] [--json]
+Fine-tunes the fact screen (GLiNER 2.5, CPU) on the corrections log kept: decider rejections, accepted facts and the owner's own. Holds a slice back, reports accuracy before and after, and writes a pinned revision under python/facts/revisions recorded in python/facts/revisions.json. Its own job, never inside the pass.
 ```
 
 #### log kb
