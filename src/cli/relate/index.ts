@@ -6,6 +6,7 @@ import type { GraphCounts, NetworkGraphCounts } from "../../relate/graph/index.t
 import { MACHINE_FORMS, MACHINE_PLATFORMS, MACHINE_VIEWS, machineGenuiBlock, relateMachine } from "../../relate/machine/index.ts";
 import type { MachinePlatform, MachineView } from "../../relate/machine/index.ts";
 import { defaultDbPath, openDatabase } from "../../storage/schema/index.ts";
+import { tickLine } from "../../indexPass/helpers/tick.ts";
 import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuse, refuseInput } from "../runner/helpers/index.ts";
 import { PLATFORMS } from "../runner/helpers/platforms.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
@@ -53,7 +54,7 @@ const countsLine = (c: GraphCounts, n?: NetworkGraphCounts): string => `${c.acco
 const REPO = join(import.meta.dir, "..", "..", "..");
 
 function ownerLine(owner: Awaited<ReturnType<typeof graphOwnerStatus>>): string {
-  if (owner.live) return `graph owner: pid ${owner.live.pid}, generation ${owner.live.generation}, through event ${owner.live.throughSeq} of ${owner.live.head} (${owner.live.behind} events behind), ${owner.live.batches} batches since ${owner.live.startedAt}, polling every ${OWNER_BATCH_MS} ms${owner.live.rebuilding ? ", rebuilding on a snapshot" : ""}`;
+  if (owner.live) return `graph owner: pid ${owner.live.pid}, generation ${owner.live.generation}, through event ${owner.live.throughSeq} of ${owner.live.head} (${owner.live.behind} events behind), ${owner.live.batches} batches since ${owner.live.startedAt}, polling every ${OWNER_BATCH_MS} ms${owner.live.rebuilding ? ", rebuilding on a snapshot" : ""}${owner.live.pass ? `, ${tickLine(owner.live.pass)}` : ""}`;
   if (owner.alive && owner.row) return `graph owner: pid ${owner.row.pid} is ${owner.row.status} (generation ${owner.row.generation})`;
   return `graph owner: not running, so readers use the last graph file (${owner.pointer ? owner.head - owner.pointer.throughSeq : owner.head} events behind); the next prompt or \`log relate owner start\` starts it`;
 }

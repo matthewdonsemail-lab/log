@@ -10,9 +10,10 @@ import { indexStream } from './helpers/stream'
 import { cursorOf, headOf, saveCursor, sliceOf } from './helpers/queue'
 import { runIndexPass } from './client'
 import { chatOffsetOf } from './helpers/facts'
+import { tickLine } from './helpers/tick'
 import { keepCorrection, examplesOf, correctionsOf } from './helpers/corrections'
 import { datasetOf, latestRevision, revisionsOf, recordRevision } from './helpers/train'
-import { PASS_SETTING } from './types'
+import { EMPTY_TICK, PASS_SETTING } from './types'
 
 const NOW = Date.parse('2026-11-22T06:00:00Z')
 const at = (hoursAgo: number): string => new Date(NOW - hoursAgo * 3_600_000).toISOString()
@@ -213,5 +214,16 @@ describe('the corrections the screen learns from', () => {
     recordRevision({ revision: 'abc123', base: 'fastino/gliner2.5-small-v1@b5d42bf', dir: 'python/facts/revisions/abc123/adapter.safetensors', examples: 16, heldOut: 4, accuracyBefore: 0.4, accuracyAfter: 0.9, bytes: 1024, trainedAt: new Date(NOW).toISOString(), epochs: 3 }, file, join(root, 'revisions'))
     expect(revisionsOf(file)[0].accuracyAfter).toBe(0.9)
     expect(latestRevision({}, file)).toBeNull()
+  })
+})
+
+describe('the pass line a person reads', () => {
+  test('it names what the last tick did, and says nothing new when there was nothing', () => {
+    expect(tickLine(null)).toBe('index pass: not in this owner')
+    expect(tickLine({ ...EMPTY_TICK, throughSeq: 7, head: 9, backlog: 2, at: at(1) })).toBe('index pass: nothing new (through event 7 of 9, 2 conversation(s) behind)')
+    const line = tickLine({ ...EMPTY_TICK, chats: 2, embedded: 5, voiced: 3, screened: 40, decided: 2, p50: 12, p95: 30, ms: 200, backlog: 9, overran: 1, at: at(1) })
+    expect(line).toContain('2 conversation(s) queued, 5 embedded, 3 voiced, 40 screened, 2 decided')
+    expect(line).toContain('12 ms p50 / 30 ms p95')
+    expect(line).toContain('9 behind, carried over')
   })
 })

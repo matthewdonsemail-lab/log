@@ -130,11 +130,6 @@ export function passLine(report: PassReport): string {
   return `log index: ${queued} conversation(s) queued, ${report.embedded} embedded for search, ${report.voiced} voice pair(s) rebuilt, ${report.screened} line(s) screened, ${report.decided} fact(s) decided; ${percentile(report.ms, 50).toFixed(0)} ms p50 / ${percentile(report.ms, 95).toFixed(0)} ms p95 a conversation, ${report.backlog} conversation(s) still behind${tail}`
 }
 
-export function tickLine(tick: PassTick | null): string {
-  if (!tick) return 'index pass: not in this owner'
-  if (!tick.chats) return `index pass: nothing new (through event ${tick.throughSeq} of ${tick.head}, ${tick.backlog} conversation(s) behind)`
-  return `index pass: ${tick.chats} conversation(s) queued, ${tick.embedded} embedded, ${tick.voiced} voiced, ${tick.screened} screened, ${tick.decided} decided; ${tick.p50.toFixed(0)} ms p50 / ${tick.p95.toFixed(0)} ms p95, ${tick.ms} ms this tick, ${tick.backlog} behind${tick.overran ? ', carried over' : ''}`
-}
 
 export function indexStreamOn(env: Record<string, string | undefined> = process.env): boolean {
   return env[PASS_SETTING] !== 'off'
