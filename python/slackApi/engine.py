@@ -182,6 +182,35 @@ async def names_for(core: Any, ids: list[str]) -> dict[str, str]:
     return user_names(users)
 
 
+async def members(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
+    ids = [str(i).strip() for i in (spec.get("ids") or []) if str(i).strip()][:200]
+    if not ids:
+        return {"ok": True, "loginState": "loggedIn", "members": [], "read": 0, "stopped": None}
+
+    async def work(core: Any, session: Any) -> dict[str, Any]:
+        found: list[dict[str, Any]] = []
+        read = 0
+        stopped = None
+        for uid in ids:
+            try:
+                answer = await core.call_web_api("users.info", {"user": uid})
+            except Exception as err:
+                mapped = gabriel_error(err)
+                if mapped:
+                    if not found:
+                        return mapped
+                    stopped = str(mapped.get("detail") or "the platform refused the next member")
+                    break
+                raise
+            read += 1
+            user = answer.get("user") or {}
+            if user.get("id"):
+                found.append({"id": str(user["id"]), "bot": user.get("is_bot") is True or bool(user.get("bot_id")), "botId": user.get("bot_id"), "username": user.get("name") or user.get("real_name")})
+        return {"ok": True, "loginState": "loggedIn", "members": found, "read": read, "stopped": stopped}
+
+    return await with_workspace(spec, cookies, work)
+
+
 async def chats(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
     limit = max(1, min(int(spec.get("limit") or 30), 200))
 
@@ -404,7 +433,7 @@ async def name_then_live(core: Any, names: dict[str, str], user: str, row: dict[
     live(row)
 
 
-ACTIONS = {"ping": ping, "workspaces": workspaces, "chats": chats, "read": read, "send": send, "react": react, "voice": voice, "watch": watch}
+ACTIONS = {"ping": ping, "workspaces": workspaces, "chats": chats, "read": read, "send": send, "react": react, "voice": voice, "watch": watch, "members": members}
 
 
 if __name__ == "__main__":

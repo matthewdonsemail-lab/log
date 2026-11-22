@@ -227,7 +227,7 @@ flowchart LR
   agent["Agent (Claude Code, Codex)"]
   owner["the owner, in a terminal"]
   shell["Bash / PowerShell / Monitor"]
-  mcp["MCP server log: 317 command tools + saved flows"]
+  mcp["MCP server log: 318 command tools + saved flows"]
   bin["bin/log.ts"]
   runCli["runCli: 143 commands (COMMANDS)"]
   live[("~/.logCli/mcp/day.log: the live log")]
@@ -328,7 +328,7 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | [`log update`](#log-update) | Update log to the newest release and resume what ran | any (none) | `[--to <v>]` `[--track <stable|nightly>]` `[--approvedBy <who>]` `[--apply]` `[--json]` | none | none | `updateLog`, `updateLogLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 73, 167, 30, 38, 39, 40, 41 |
 | [`log models`](#log-models) | Is each pinned local model here | any (none) | `[--approvedBy <who>]` `[--fetch]` `[--json]` | none | none | `models`, `modelsLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 73, 167, 30, 38, 39, 40, 41 |
 | [`log relate`](#log-relate) | The Relate graph of the owner's people, rooms and network | any (none) | `[--json]` `[--owner <text>]` `[--person <text>]` `[--to <h>]` `[--view <person|route|network>]` `[--platform <all|twitter|discord|instagram|slack|reddit|facebook|linkedin>]` `[--state <s>]` `[--cursor <integer 0..>]` `[--quiet]` `[--limit <integer 1..12>]` `[--form <view|genui>]` | none | none | `relateBuild`, `relateStatus`, `relateVerify`, `relateAsk`, `relateMachine`, `relateQuery` | PreToolUse, PostToolUse · PostToolUse | no | 89, 134, 154, 163, 30, 38, 39, 40, 41 |
-| [`log people`](#log-people) | People across platforms: links, suggestions, cards, facts | any (none) | `[--json]` `[--limit <integer 1..200>]` `[--check]` `[--approvedBy <text>]` `[--name <text>]` `[--evidence <text>]` `[--all]` `[--who <w>]` `[--since <t>]` `[--platform <p>]` | none | none | `people`, `peopleShow`, `peopleSuggest`, `peopleLink`, `peopleUnlink`, `peopleFacts`, `peopleFactsExtract`, `peopleFactsRecall`, `peopleDifferent` | PreToolUse, PostToolUse · PostToolUse | no | 30, 89, 134, 154, 163, 30, 38, 39, 40, 41 |
+| [`log people`](#log-people) | People across platforms: links, suggestions, cards, facts | any (none) | `[--json]` `[--limit <integer 1..200>]` `[--check]` `[--approvedBy <text>]` `[--name <text>]` `[--evidence <text>]` `[--all]` `[--who <w>]` `[--since <t>]` `[--platform <p>]` | none | none | `people`, `peopleShow`, `peopleSuggest`, `peopleLink`, `peopleUnlink`, `peopleFacts`, `peopleFactsExtract`, `peopleFactsRecall`, `peopleBots`, `peopleDifferent` | PreToolUse, PostToolUse · PostToolUse | no | 30, 89, 134, 154, 163, 30, 38, 39, 40, 41 |
 | [`log network`](#log-network) | The owner's network in log.db | any (none) | `[--from <dir>]` `[--account <handle>]` `[--json]` `[--platform <facebook|twitter|reddit|discord|linkedin|slack|instagram|tiktok>]` | none | none | `networkImport`, `networkStatus` | PreToolUse, PostToolUse · PostToolUse | no | 89, 134, 154, 163, 30, 38, 39, 40, 41 |
 | [`log timing`](#log-timing) | Where the time goes: p50, p95, p99 per tool and stage from log.db, one call as a waterfall, or landed to pushed per platform | any (none) | `[--tool <name>]` `[--hours <number>]` `[--stages <number>]` `[--top <number>]` `[--all]` `[--call <callId>]` `[--turns]` `[--landed]` `[--json]` | none | none | `timing` | PreToolUse, PostToolUse · PostToolUse | no | 26, 73, 165, 30, 38, 39, 40, 41 |
 | [`log tool`](#log-tool) | Turn a one-off into a log tool, and see which tools are used | any (none) | `[--summary <text>]` `[--acts]` `[--flags <a,b,…>]` `[--area <f>]` `[--asks <a,b,…>]` `[--guide <g>]` `[--apply]` `[--json]` `[--days <integer 1..90>]` | none | none | `toolScaffold`, `toolScaffoldLive`, `toolHealth` | PreToolUse, PostToolUse · PostToolUse | no | 30, 73, 163, 165, 30, 38, 39, 40, 41 |
@@ -1625,7 +1625,7 @@ The graph is a projection of log.db; a build can be redone (docs/relateGraph.md)
 
 #### log people
 
-People across platforms: links, suggestions, cards, facts MCP tools: `people`, `peopleShow`, `peopleSuggest`, `peopleLink`, `peopleUnlink`, `peopleFacts`, `peopleFactsExtract`, `peopleFactsRecall`, `peopleDifferent`, one per form, with named fields.
+People across platforms: links, suggestions, cards, facts MCP tools: `people`, `peopleShow`, `peopleSuggest`, `peopleLink`, `peopleUnlink`, `peopleFacts`, `peopleFactsExtract`, `peopleFactsRecall`, `peopleBots`, `peopleDifferent`, one per form, with named fields.
 
 ```text
 log people [--json]
@@ -1637,6 +1637,8 @@ log people different <identity> <identity> --approvedBy "<the owner's words>"
 log people facts <who> [--all]
 log people facts extract [--who <w>] [--since <t>] [--limit <n>] [--platform <p>]
 log people facts recall "<q>" [--limit <n>]
+log people bots [--platform <p>] [--json]
+bots: records who each platform itself says is automated (Discord member lists, Slack is_bot), so a bot with an ordinary name leaves the network view; names are never guessed, and a platform with no such flag is skipped and said so.
 <who> is a person id (p_…), a linked person's name, or an identity. An identity is platform:handle or platform:id, e.g. discord:someone, twitter:@someone, twitter:1234567890.
 ```
 

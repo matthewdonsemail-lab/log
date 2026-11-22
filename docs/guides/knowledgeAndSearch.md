@@ -17,6 +17,7 @@ When the owner asks for one of these, follow its page step by step.
 | `getGuide({ useCase: "log/toolFromOneOff" })` | Turning a hand-rolled one-off into a log tool | "turn that one-off into a tool", "make that script a log command", "stop hand-rolling that", "vendor that query into log" |
 | `getGuide({ useCase: "network/relationshipMachine" })` | Relationship state machine | "where am I with <person>", "how do I reach <person>". |
 | `getGuide({ useCase: "network/whoToTalkTo" })` | Who to talk to next | "who in my network should I talk to", "who's in my network", "who do I need to speak to". |
+| `getGuide({ useCase: "people/bots" })` | Bots | "there are bots in my network", "why is MEE6 a person". |
 | `getGuide({ useCase: "people/facts" })` | Person facts | "what did I promise them", "what do I know about them". |
 | `getGuide({ useCase: "twitter/affiliateMarketing" })` | Affiliate marketing through your DMs | "answer the people asking about <tool> in my dms with my affiliate link", "turn the dms about <tool> into affiliate money", "follow up everyone who asked about the tool", "get me onto <company>'s affiliate program and book the call". |
 | `getGuide({ useCase: "twitter/collabMaxxing" })` | Collab maxxing: turn open conversations into collabs | "position a collab first then be like just a few quid so i can make a video about it", "start network maxxing and collab maxxing and trying to see what hes doing get him to reveal it all", "follow up on <someone> and the other people, small commitment from deals, not just new people but already open convos", "respond with the collabmaxxing", "selling the outcome", "let him name it", "check in with <someone> whats good there he is keen but isnt liquid", "just be nice to them there the poor people", "ask <someone> if i could become a contributor", "look on my twitter for missed opportunities". |
@@ -45,6 +46,7 @@ Each tool's own description carries its full usage, notes, live line and rules; 
 | `peopleFacts` | Someone's lasting facts | `log people facts <who> [--all]` |
 | `peopleFactsExtract` | Find facts in new DM lines and record them as events | `log people facts extract [--who <w>] [--since <t>] [--limit <n>] [--platform <p>]` |
 | `peopleFactsRecall` | Recall current facts by meaning, with evidence | `log people facts recall "<q>" [--limit <n>]` |
+| `peopleBots` | Record who each platform itself says is automated, so a bot with an… | `log people bots [--platform <p>] [--json]` |
 | `peopleDifferent` | Record that two identities are not the same person, after the owner… | `log people different <identity> <identity> --approvedBy "<the owner's words>"` |
 | `networkImport` | Read your network into log.db, replacing the last import | `log network import [--from <dir>] [--account <handle>] [--json]` |
 | `networkStatus` | Your network's rings per person, live | `log network status [--platform <p>] [--json]` |

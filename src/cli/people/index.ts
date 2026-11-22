@@ -1,4 +1,5 @@
 import { cardFor, linkIdentities, linkReport, listPeople, markNotLinked, reviewBand, unlinkIdentity } from "../../people/index.ts";
+import { backfillBots, botBackfillText, defaultBotSources } from "../../people/bots/index.ts";
 import type { Cluster, LinkReport, Recheck, Suggestion } from "../../people/index.ts";
 import { localEmbedder } from "../../search/conversations/index.ts";
 import { DEFAULT_DECIDER, extractFacts, factDecider, factLine, factsAbout, gliner2Screener, percentile, promiseLines, resolveWho as whoOf } from "../../people/index.ts";
@@ -21,6 +22,8 @@ export const PEOPLE_USAGE = [
   "       log people facts <who> [--all]",
   "       log people facts extract [--who <w>] [--since <t>] [--limit <n>] [--platform <p>]",
   "       log people facts recall \"<q>\" [--limit <n>]",
+  "       log people bots [--platform <p>] [--json]",
+  "bots: records who each platform itself says is automated (Discord member lists, Slack is_bot), so a bot with an ordinary name leaves the network view; names are never guessed, and a platform with no such flag is skipped and said so.",
   "<who> is a person id (p_…), a linked person's name, or an identity. An identity is platform:handle or platform:id, e.g. discord:someone, twitter:@someone, twitter:1234567890.",
 ].join("\n");
 
@@ -36,6 +39,7 @@ export const PEOPLE_INPUT: CommandInput = {
     { words: ["facts"], summary: "Someone's lasting facts (job, promises, money owed) with date and source", positionals: [{ name: "who", kind: "string", required: true, description: "A person id, a linked person's name, or platform:handle" }], flags: [{ name: "all", kind: "boolean", description: "Also the replaced ones" }, JSON_FLAG] },
     { words: ["facts", "extract"], effect: "write", summary: "Find facts in new DM lines and record them as events (sends nothing)", positionals: [], flags: [{ name: "who", kind: "string", description: "Only this person" }, { name: "since", kind: "string", description: "Only lines since this time" }, { name: "limit", kind: "integer", min: 1, max: 200, description: "How many recent DMs, default 20" }, { name: "platform", kind: "string", description: "One platform" }, JSON_FLAG] },
     { words: ["facts", "recall"], summary: "Recall current facts by meaning, with evidence", positionals: [{ name: "question", kind: "string", required: true, description: "What to recall" }], flags: [{ name: "limit", kind: "integer", min: 1, max: 50, description: "How many, default 5" }, JSON_FLAG] },
+    { words: ["bots"], effect: "write", summary: "Record who each platform itself says is automated, so a bot with an ordinary name leaves the network view", positionals: [], flags: [{ name: "platform", kind: "string", description: "Only this platform (discord, slack, x, instagram, linkedin)" }, JSON_FLAG] },
     { words: ["different"], effect: "write", summary: "Record that two identities are not the same person, after the owner says so, so they are never suggested again", positionals: [{ name: "first", kind: "string", required: true, description: "platform:handle or platform:id" }, { name: "second", kind: "string", required: true, description: "platform:handle or platform:id" }], flags: [APPROVED, JSON_FLAG] },
   ],
 };
@@ -160,6 +164,17 @@ export const peopleCommand: Command = {
       if (json) return { code: 0, stdout: JSON.stringify({ personId: who.personId, identities: who.identities, facts }, null, 2) };
       if (!facts.length) return { code: 0, stdout: `log people facts: no lasting facts about ${rest[0]} yet. log people facts extract --who ${rest[0]} reads their chats for them.` };
       return { code: 0, stdout: [`log people facts: ${rest[0]}, ${facts.length} fact${facts.length === 1 ? "" : "s"}, newest first`, ...facts.map((f) => `  ${factLine(f)}\n    source: "${f.quote.slice(0, 160)}" (${f.source?.sentAt.slice(0, 16).replace("T", " ") ?? "?"})`), ...promiseLines(facts)].join("\n") };
+    }
+    if (sub === "bots" && rest.length === 0) {
+      const asked = typeof parsed.flags["platform"] === "string" ? (parsed.flags["platform"] as string).toLowerCase().replace(/^x$|^twitter$/, "x") : null;
+      try {
+        const report = await backfillBots(handle, defaultBotSources({ handle, twenty: _context.twenty }), { now: _context.now ? _context.now() : new Date(), ...(asked ? { platforms: [asked] } : {}) });
+        const nothing = report.platforms.every((p) => !p.accounts.some((a) => !a.refused));
+        if (nothing && report.refused) return { ...refuse("people bots", "noPlatformSession", report.platforms.flatMap((p) => p.accounts.flatMap((a) => (a.refused ? [`${p.platform} ${a.account}: ${a.refused.detail}`] : []))).join("; ")), stdout: json ? JSON.stringify(report, null, 2) : "" };
+        return { code: 0, stdout: json ? JSON.stringify(report, null, 2) : botBackfillText(report) };
+      } catch (error) {
+        return refuseError("people bots", error);
+      }
     }
     if (sub === "suggest" && rest.length === 0) {
       const limit = numberOf(parsed, "limit") ?? 20;

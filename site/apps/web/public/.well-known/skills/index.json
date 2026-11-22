@@ -301,6 +301,14 @@
       "summary": "Who to talk to next"
     },
     {
+      "name": "log-people-bots",
+      "description": "Bots. A log play (docs/useCases/people/bots.md): log drops bots from the Relate network view and keeps them as people you can still read: a bot is whoever log's own reading of a chat calls automated, a stored profile the platform flagged, a hand label, a name that says bot, or the platform account itself. The flag is written by `markAutomatedIdentity`, which the catch-up path only writes for messages read after it existed, so a backlog can hold bots with no flag at all: @MEE6, @Welcomer, @Discohook Utils and @Hermes-Log are ordinary-looking people there until the platform itself says otherwise. `peopleBots` asks the platforms for their own answer and records it, so nothing is inferred from a name.",
+      "files": [
+        "SKILL.md"
+      ],
+      "summary": "Bots"
+    },
+    {
       "name": "log-people-facts",
       "description": "Person facts. A log play (docs/useCases/people/facts.md): log keeps what people said that stays true (their job, where they work, what they are building, what the owner promised them, money owed) as events in log.db, each with the exact message it came from. A draft that says a promise again is held by the voice gate as already promised, and the person card, the conversation card and the Relate graph show the current facts.",
       "files": [

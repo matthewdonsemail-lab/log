@@ -94,6 +94,7 @@ const SOURCE_COMMAND_RULES: Readonly<Record<string, number[]>> = {
   kb: [13, 26, 30, 93],
   relate: [89, 134, 154, 163],
   people: [30, 89, 134, 154, 163],
+  peopleBots: [30, 89, 94],
   network: [89, 134, 154, 163],
   runtime: [26, 73, 171, 172, 175],
   memelord: [41, 94, 119, 120],

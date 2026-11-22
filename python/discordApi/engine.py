@@ -863,6 +863,65 @@ def servers_of(token: str) -> dict[str, Any]:
     return {"ok": True, "loginState": "loggedIn", "servers": [{"id": g["id"], "name": g.get("name"), "owner": bool(g.get("owner"))} for g in guilds]}
 
 
+MEMBER_PAGE = 1000
+MEMBER_SPACING = 0.35
+
+
+def member_row(raw: dict[str, Any]) -> dict[str, Any] | None:
+    user = raw.get("user") if isinstance(raw.get("user"), dict) else raw
+    if not isinstance(user, dict) or not user.get("id"):
+        return None
+    return {"id": str(user["id"]), "bot": user.get("bot") is True, "username": user.get("username"), "globalName": user.get("global_name")}
+
+
+def members_of(token: str, spec: dict[str, Any]) -> dict[str, Any]:
+    server = str(spec.get("server") or "")
+    if not server.isdigit():
+        return {"ok": False, "code": "sendInvalid", "detail": "members needs a server id", "loginState": "unknown"}
+    pages = max(1, min(int(spec.get("pages") or 1), 20))
+    client, failed = open_client(token)
+    if failed:
+        return failed
+    found: list[dict[str, Any]] = []
+    after = str(spec.get("after") or "0") or "0"
+    read = 0
+    stopped = None
+    for page in range(pages):
+        body, refused = get_json(client, f"/api/v9/guilds/{server}/members?limit={MEMBER_PAGE}&after={after}", f"server {server} members")
+        if refused:
+            if not found:
+                return refused
+            stopped = str(refused.get("detail") or "the platform refused the next page")
+            break
+        read += 1
+        rows = [r for r in (member_row(m) for m in (body or []) if isinstance(m, dict)) if r]
+        found += rows
+        if len(body or []) < MEMBER_PAGE or not rows:
+            break
+        after = rows[-1]["id"]
+        if page + 1 < pages:
+            time.sleep(MEMBER_SPACING)
+    else:
+        stopped = f"the member list is longer than {len(found)}; the next run reads on from the last id"
+    return {"ok": True, "loginState": "loggedIn", "serverId": server, "members": found, "requests": read, "stopped": stopped}
+
+
+def member_of(token: str, spec: dict[str, Any]) -> dict[str, Any]:
+    user = str(spec.get("user") or "")
+    if not user.isdigit():
+        return {"ok": False, "code": "sendInvalid", "detail": "member needs a user id", "loginState": "unknown"}
+    client, failed = open_client(token)
+    if failed:
+        return failed
+    body, refused = get_json(client, f"/api/v9/users/{user}", f"user {user}")
+    if refused:
+        return refused
+    row = member_row(body or {})
+    if not row:
+        return {"ok": False, "code": "platformError", "detail": f"Discord answered nothing readable for user {user}", "loginState": "loggedIn"}
+    return {"ok": True, "loginState": "loggedIn", "members": [row], "requests": 1, "stopped": None}
+
+
 def channels_of(token: str, server: str) -> dict[str, Any]:
     client, failed = open_client(token)
     if failed:
@@ -984,12 +1043,14 @@ def with_token(work: Any) -> Any:
 
 
 servers = with_token(lambda token, spec: servers_of(token))
+members = with_token(lambda token, spec: members_of(token, spec))
+member = with_token(lambda token, spec: member_of(token, spec))
 channels = with_token(lambda token, spec: channels_of(token, str(spec.get("server") or "")) if str(spec.get("server") or "").isdigit() else {"ok": False, "code": "sendInvalid", "detail": "channels needs a server id"})
 posts = with_token(lambda token, spec: posts_of(token, spec) if str(spec.get("channel") or "").isdigit() else {"ok": False, "code": "sendInvalid", "detail": "posts needs a channel id"})
 search = with_token(lambda token, spec: search_of(token, spec) if str(spec.get("server") or "").isdigit() else {"ok": False, "code": "sendInvalid", "detail": "search needs a server id"})
 
 
-ACTIONS = {name: with_identity(action) for name, action in {"ping": ping, "chats": chats, "export": export, "read": read, "send": send, "delete": delete, "react": react, "openDm": open_dm, "friend": friend, "voice": voice, "watch": watch, "voiceNotes": voice_notes, "servers": servers, "channels": channels, "posts": posts, "search": search}.items()}
+ACTIONS = {name: with_identity(action) for name, action in {"ping": ping, "chats": chats, "export": export, "read": read, "send": send, "delete": delete, "react": react, "openDm": open_dm, "friend": friend, "voice": voice, "watch": watch, "voiceNotes": voice_notes, "servers": servers, "members": members, "member": member, "channels": channels, "posts": posts, "search": search}.items()}
 
 
 if __name__ == "__main__":
