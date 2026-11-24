@@ -52,6 +52,7 @@ import { networkCommand } from "../network/index.ts";
 import { timingCommand } from "../timing/index.ts";
 import { toolCommand } from "../tool/index.ts";
 import { inboxCommand } from "../inbox/index.ts";
+import { harnessCommand } from "../harness/index.ts";
 import { mediaCommand } from "../media/index.ts";
 import { browsersCommand } from "../browsers/index.ts";
 import { browserCommand } from "../browser/index.ts";
@@ -125,6 +126,7 @@ export const COMMANDS: Command[] = [
   timingCommand,
   toolCommand,
   inboxCommand,
+  harnessCommand,
   mediaCommand,
   browsersCommand,
   browserCommand,

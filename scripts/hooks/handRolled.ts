@@ -1,7 +1,10 @@
 #!/usr/bin/env bun
 import { classifyCall, handRolledText } from '../../src/agentHooks/handRolled/client'
+import { harnessOff } from '../../src/agentHooks/harness/off/client'
 import { contextOutput, hookHostOf } from '../../src/agentHooks/harness/index'
 import type { HandRolledVerdict } from '../../src/agentHooks/handRolled/types'
+
+if (harnessOff()) process.exit(0)
 
 const raw = await Bun.stdin.text().catch(() => '')
 let input: { tool_name?: string; tool_input?: Record<string, unknown>; cwd?: string } = {}

@@ -1,6 +1,6 @@
 # runsAndEvidence
 
-What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs, every call's timings, log.db's typed tables checked and rebuilt from its events, and the MCP server itself.
+What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs, every call's timings, log.db's typed tables checked and rebuilt from its events, and the MCP server itself, including turning its hooks, pushes and tools off and on from inside a harness.
 
 Written by `bun run docs:build` from the code, the skills and AGENTS.md. Not edited by hand: change the command's usage, its skill or the rule, and rebuild.
 
@@ -45,6 +45,9 @@ Each tool's own description carries its full usage, notes, live line and rules; 
 | `models` | Local models and their pins | `log models [--fetch --approvedBy <who>] [--json]` |
 | `modelsLive` | Local models and their pins, live on the platform | `log models [--fetch --approvedBy <who>] [--json]` |
 | `timing` | How slow log is | `log timing [--tool <name>] [--hours <n>] [--stages <n>] [--top <n>] [--all] [--json]   (p50, p95, p99 per tool and stage; the slowest --top by p99, default 12, or --all; --hours, default 24)` |
+| `harnessOff` | Turn off log's harness hooks, pushes and tools until harness on | `log harness off --by <who> [--json]` |
+| `harnessOn` | Turn log's harness hooks, pushes and tools back on | `log harness on --by <who> [--json]` |
+| `harnessStatus` | Show whether log is on or off in this harness | `log harness status [--json]` |
 | `jobStatus` | A long run's status, the lines after afterLine, and its result once… | `log job status <jobId> [--afterLine <n>] [--waitMs <ms>] [--json]   (a long MCP run: its status, the lines after afterLine, and its result once it ends; waits up to waitMs, default 10000, for something new)` |
 | `jobCancel` | Stop a long run at its next browser step | `log job cancel <jobId>   (stops it at its next browser step; never once Publish is clicked, rule 8)` |
 | `jobList` | The latest jobs | `log job list [--json]   (the latest jobs)` |
@@ -331,6 +334,7 @@ Each by its number and first line. The full text is in AGENTS.md (`log://agents`
 - **Rule 39.** Use only the scope, options and intent The owner stated or implied.
 - **Rule 40.** Do not propose physical infrastructure unless The owner asks.
 - **Rule 41.** Paid work must stay within the authorized task and spend.
+- **Rule 47.** CLI, MCP, hooks and guides share the current instructions.
 - **Rule 66.** Prune recordings only through the existing evidence-aware routine after analysis and documentation requirements are satisfied.
 - **Rule 73.** For an unknown platform state, collate the goal, account/runtime, action, sent requests, answers, timing and page evidence.
 - **Rule 134.** Existing workspace log.db is the native private record/coordination foundation.

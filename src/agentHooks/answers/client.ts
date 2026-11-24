@@ -1,6 +1,7 @@
 import { join } from 'node:path'
 import { getState, putState } from '../../storage/state/index'
 import { AGENT_HOOKS } from '../registry/index'
+import { harnessOff } from '../harness/off/client'
 import type { AgentHook, HookEvent } from '../registry/types'
 import { sessionIdOf } from '../sessionOffsets/index'
 import { accountsFingerprint, freshBlock, numbersOut } from '../sessionBlocks/index'
@@ -299,6 +300,7 @@ const hookName = (hook: AgentHook) => hook.script.replace(/^.*\//, '').replace(/
 const failedAnswer = (name: string, event: HookEvent, error: unknown): HookAnswer => ({ context: `log hook ${name} failed on ${event}: ${error instanceof Error ? error.message : String(error)}` })
 
 export async function answerEvent(event: HookEvent, raw: string, repo: string, route: RouteAsk, hooks: readonly AgentHook[] = AGENT_HOOKS): Promise<EventAnswer> {
+  if (harnessOff()) return { event, body: {}, timings: [] }
   const chosen = hooksForEvent(event, raw, hooks)
   const order = waitingHooksFirst(chosen)
   const timings: HookTiming[] = []

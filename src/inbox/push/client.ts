@@ -1,6 +1,7 @@
 import { existsSync, watch } from 'node:fs'
 import { readPending } from '../pending/index'
 import { deleteState, getState, putState } from '../../storage/state/index'
+import { harnessOff } from '../../agentHooks/harness/off/client'
 import { db } from '../store/index'
 import { inboxRoot } from '../watch/index'
 import { PUSH_FALLBACK_MS, PUSH_LABEL_WAIT_MS, PUSH_MARK_MS, PUSH_SETTLE_MS, type InboxMark, type InboxWait, type PendingReader, type PushBatch, type PushLabel, type PushQuiet, type QuietUntil } from './types'
@@ -85,6 +86,10 @@ export async function pushLoop(
   const quiet = options.quiet ?? quietUntil
   const mark = options.mark === undefined ? (options.read ? null : inboxMark) : options.mark
   for (let round = 0; options.rounds === undefined || round < options.rounds; round++) {
+    if (harnessOff()) {
+      await wait(root, Math.min(5000, options.fallbackMs ?? PUSH_FALLBACK_MS))
+      continue
+    }
     const until = quiet(now())
     if (until) {
       await wait(root, Math.max(1000, Math.min(until - now(), options.fallbackMs ?? PUSH_FALLBACK_MS)))

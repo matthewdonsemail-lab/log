@@ -1,5 +1,8 @@
 #!/usr/bin/env bun
 import { chatNameVerdict } from '../../src/agentHooks/chatNames/index'
+import { harnessOff } from '../../src/agentHooks/harness/off/client'
+
+if (harnessOff()) process.exit(0)
 
 const raw = await Bun.stdin.text().catch(() => '')
 let input: { tool_name?: string; tool_input?: Record<string, unknown> } = {}

@@ -133,6 +133,7 @@ const SOURCE_COMMAND_RULES: Readonly<Record<string, number[]>> = {
   timing: [26, 73, 165],
   tool: [30, 73, 163, 165],
   inbox: [94, 105, 108, 109, 130, 131, 132, 133, 134, 135, 136, 138, 139, 150, 169],
+  harness: [8, 30, 47, 167],
   browsers: [29, 35, 54, 55],
   browser: [8, 19, 35, 94, 105],
   report: [134, 154, 160, 178],

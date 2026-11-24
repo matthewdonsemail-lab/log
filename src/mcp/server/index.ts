@@ -45,10 +45,22 @@ import { hermesClient, MAP_TOOL, MACHINE_TOOL, REPORT_TOOL, reportTool, runMachi
 import { deferredElicitation, isSignInCall, localSignInSurface, SIGN_IN_INPUT_KEY, signInCall } from "../apps/signIn/index.ts";
 import { answeredAction, argumentsDigest, dualEraTransport, hostAllowed, isModernHttp, statelessHttp, urlInputRequired } from "../stateless/index.ts";
 import type { StatelessHandlers } from "../stateless/index.ts";
+import { harnessOff } from "../../agentHooks/harness/off/client.ts";
 
 export * from "./helpers/index.ts";
 export type { GuardResult, LogTool, LogToolInput } from "./types.ts";
 export { MAX_RESULT_CHARS, RESULT_SIZE_META, TOOL_RESULT_SCHEMA } from "./types.ts";
+
+const HARNESS_RESTORE_TOOLS = new Set(["harnessOn", "harnessStatus"]);
+
+function harnessCommands(shell: boolean) {
+  const commands = [...toolsFromCommands(COMMANDS, { shell }), ...toolsFromFlows(savedFlows(), { shell })];
+  return harnessOff() ? commands.filter((tool) => HARNESS_RESTORE_TOOLS.has(tool.name)) : commands;
+}
+
+function harnessRefusal(): CallToolResult {
+  return { isError: true, content: [{ type: "text" as const, text: "log harness is off; call harnessOn { by: \"<who>\" } to restore hooks, pushes and tools" }] };
+}
 
 export type ReadBrowsers = () => BrowserView[];
 
@@ -274,6 +286,7 @@ export async function runToolCall(
 ): Promise<CallToolResult> {
   const handle = handleOf(input);
   const given = withoutHandle(input);
+  if (harnessOff() && !HARNESS_RESTORE_TOOLS.has(name)) return harnessRefusal();
   const again = (tool: string, next: LogToolInput | undefined, app: boolean = appCaller, by: Exclude<GateCaller, "cli"> = caller) => runToolCall(tool, handle && next ? { ...next, [PLAY_HANDLE_FIELD]: handle } : next, context, onLine, readBrowsers, signal, app, scope, shell, by, client);
   if (renamedTool(name)) return withRenamedNote(name, await again(currentToolName(name), input, appCaller, caller === "mcp" ? "alias" : caller));
   if (isAppTool(name)) return runAppTool(name, given, appCaller || caller === "mcp" || caller === "stateless");
@@ -390,7 +403,8 @@ export function createLogMcpServer(context: Partial<CommandContext> = {}, option
   };
   server.setRequestHandler(ListToolsRequestSchema, async () => {
     const shell = hasShell(server.getClientVersion()?.name);
-    const tools = [...toolsFromCommands(COMMANDS, { shell }), ...toolsFromFlows(savedFlows(), { shell })];
+    const tools = harnessCommands(shell);
+    if (harnessOff()) return { tools: tools.map((tool) => ({ ...tool, _meta: { ...RESULT_SIZE_META } as Record<string, unknown> })) };
     const listed = [guideTool(), ...catalogTools(), ...withUseCases(tools, listUseCases(tools.map((t) => t.name)))];
     const capable = uiCapable(server.getClientCapabilities());
     const sized = listed.map((tool) => ({ ...tool, _meta: { ...RESULT_SIZE_META } as Record<string, unknown> }));
@@ -413,6 +427,7 @@ export function createLogMcpServer(context: Partial<CommandContext> = {}, option
     const input = request.params.arguments as LogToolInput | undefined;
     const run = (given: LogToolInput | undefined) => runToolCall(request.params.name, given, context, onLine, options.readBrowsers ?? browserViews, extra.signal, uiCapable(server.getClientCapabilities()), scope, hasShell(server.getClientVersion()?.name), "mcp", server.getClientVersion()?.name ?? "");
     const result = isSignInCall(request.params.name) ? await signInCall(input, run, localSignInSurface(server.getClientCapabilities(), (params) => extra.sendRequest({ method: "elicitation/create", params }, ElicitResultSchema))) : await run(input);
+    if (request.params.name === "harnessOn" || request.params.name === "harnessOff") server.sendToolListChanged().catch(() => {});
     return withCallFooter(request.params.name, input, result, scope);
   });
   if (options.playOwner) {
@@ -450,7 +465,8 @@ export interface StatelessLogOptions extends LogMcpOptions {
 }
 
 export function statelessTools(): Record<string, unknown>[] {
-  const commands = [...toolsFromCommands(COMMANDS, { shell: false }), ...toolsFromFlows(savedFlows(), { shell: false })];
+  const commands = harnessCommands(false);
+  if (harnessOff()) return commands.map((tool) => ({ ...tool, _meta: { ...RESULT_SIZE_META } as Record<string, unknown> })) as unknown as Record<string, unknown>[];
   const listed = [guideTool(), ...catalogTools(), ...withUseCases(commands, listUseCases(commands.map((t) => t.name)))];
   const sized = listed.map((tool) => withCard({ ...tool, _meta: { ...RESULT_SIZE_META } as Record<string, unknown> }));
   return [...sized, withCard({ ...reportTool(), _meta: { ...RESULT_SIZE_META } as Record<string, unknown> }), ...appTools().map((tool) => ({ ...tool, _meta: { ...tool._meta, ...RESULT_SIZE_META } }))] as unknown as Record<string, unknown>[];

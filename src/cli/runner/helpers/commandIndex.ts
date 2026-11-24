@@ -55,6 +55,7 @@ export const COMMAND_INDEX: CommandIndexEntry[] = [
   { name: "timing", platform: "any", module: "src/cli/timing/index.ts", exportName: "timingCommand" },
   { name: "tool", platform: "any", module: "src/cli/tool/index.ts", exportName: "toolCommand" },
   { name: "inbox", platform: "any", module: "src/cli/inbox/index.ts", exportName: "inboxCommand" },
+  { name: "harness", platform: "any", module: "src/cli/harness/index.ts", exportName: "harnessCommand" },
   { name: "media", platform: "any", module: "src/cli/media/index.ts", exportName: "mediaCommand" },
   { name: "browsers", platform: "any", module: "src/cli/browsers/index.ts", exportName: "browsersCommand" },
   { name: "browser", platform: "any", module: "src/cli/browser/index.ts", exportName: "browserCommand" },

@@ -30,6 +30,7 @@ flowchart TB
     c_timing["timing"]
     c_tool["tool"]
     c_inbox["inbox"]
+    c_harness["harness"]
     c_media["media"]
     c_browsers["browsers"]
     c_browser["browser"]
@@ -281,6 +282,8 @@ flowchart TB
   mcp --> c_tool
   cli --> c_inbox
   mcp --> c_inbox
+  cli --> c_harness
+  mcp --> c_harness
   cli --> c_media
   mcp --> c_media
   cli --> c_browsers

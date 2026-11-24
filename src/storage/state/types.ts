@@ -25,6 +25,7 @@ export type StateScope =
   | 'relateGraph'
   | 'relateOwnerStart'
   | 'pushQuiet'
+  | 'harnessOff'
   | 'inboxIgnore'
   | 'inboxLabels'
   | 'pipelineTeach'
