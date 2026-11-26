@@ -111,7 +111,7 @@ const factsForPerson = (rows: FactRow[] | undefined): MachinePersonFact[] =>
   (rows ?? []).slice(0, MACHINE_LIMITS.personFacts).map((f) => ({ slot: f.slot, text: clip(f.text, MACHINE_LIMITS.quote), quote: clip(f.quote, MACHINE_LIMITS.quote), at: f.validFrom }))
 
 export function cellsIn(context: CellContext, standings: readonly PersonStanding[], options: CellOptions = {}, nextOf: (s: PersonStanding) => { event: string; tool?: string } | null = () => null, labelOf: (s: PersonStanding) => string = () => ''): CellPage {
-  const limit = Math.max(1, Math.min(options.limit ?? MACHINE_PAGE, MACHINE_LIMITS.people * 2))
+  const limit = Math.max(1, Math.min(options.limit ?? MACHINE_PAGE, MACHINE_LIMITS.people))
   const cursor = Math.max(0, options.cursor ?? 0)
   const quiet = standings.filter((s) => s.evidence.lastAt !== null && context.now - s.evidence.lastAt > STUCK_AFTER_MS)
   const pool = options.quiet ? quiet : [...standings]

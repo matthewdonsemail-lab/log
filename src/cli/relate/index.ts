@@ -43,7 +43,7 @@ export const RELATE_INPUT: CommandInput = {
         { name: "state", kind: "string", description: "Network view: only this state's cell, for the next page of people" },
         { name: "cursor", kind: "integer", min: 0, description: "Network view: how many people of this state to skip, for the next page" },
         { name: "quiet", kind: "boolean", description: "Network view: the ones gone quiet for 14 days or more" },
-        { name: "limit", kind: "integer", min: 1, max: 12, description: "Network view: how many people per cell, default 6" },
+        { name: "limit", kind: "integer", min: 1, max: 6, description: "Network view: how many people per cell, at most 6 (the default)" },
         { name: "form", kind: "enum", values: MACHINE_FORMS, description: "genui: the block to pass to show_blocks" },
         JSON_FLAG,
       ],

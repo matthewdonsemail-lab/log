@@ -349,6 +349,11 @@ describe('each platform has its own states and moves', () => {
     expect(text).toContain('· next: they replied with discordRead')
   })
 
+  test('a limit above what a cell can hold is capped, so the view still draws', async () => {
+    const block = blockOf(await relateMachine({ view: 'network', platform: 'discord', limit: 12 }, plain, MACHINE_NOW))
+    for (const state of block.states) expect((state.people ?? []).length).toBeLessThanOrEqual(6)
+  })
+
   test('a page of one state asks for the next people with state and cursor, and a quiet page asks for the ones gone quiet', async () => {
     const full = blockOf(await relateMachine({ view: 'network', platform: 'discord' }, plain, MACHINE_NOW))
     const mentioned = full.states.find((s) => s.id === 'mentioned')!
