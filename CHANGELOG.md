@@ -4,6 +4,8 @@ Every release, newest first. release-please writes each new section from the com
 
 ## [0.6.0](https://github.com/matthewdonsemail-lab/log/compare/v0.5.0...v0.6.0) (2026-11-26)
 
+Models: patronus-studio/wolf-defender-prompt-injection-small@2484cc9a13550aa4f2c29b577ff3ef331dc6ba07, Xenova/all-MiniLM-L6-v2@751bff37182d3f1213fa05d7196b954e230abad9, SamLowe/roberta-base-go_emotions-onnx@90ee0c1c4796d370e68968687b8ba51fc11224f4, onnx-community/LFM2.5-VL-450M-ONNX@24e63007ff1aaafbde27c89eb01a0513f4f61482, myuri@5.0.0, fastino/gliner2.5-small-v1@b5d42bf7dc7d01c40304ae4ed43c2f13c325a75b
+
 
 ### Features
 
