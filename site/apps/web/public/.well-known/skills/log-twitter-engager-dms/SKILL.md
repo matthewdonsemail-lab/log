@@ -43,16 +43,18 @@ Never open cold with a line built from their bio. Build the context of the conve
 
 1. **Find one of their own recent tweets that's relevant** (an original post, not a reply or a repost), with treg's posts read for that handle.
 2. **Forward it into the DM:** the tweet's link goes first, so X shows it as a card in the chat.
-3. **Then one informal line:** "saw this", then what's true about how you're connected ("also saw we follow each other but never chatted", or "saw you followed me but we ain't chatted yet" when you don't follow them back; check with `twitterFollows`), then something brief and true about their tweet. Stop there: no ask.
+3. **Then one informal line about their tweet,** in words that fit it alone. There is no stock lead-in: never "saw this" or any phrase that could open every DM in the run, since a set of DMs that all start the same reads as a template. When it's true and worth saying, add how you're connected ("we follow each other but never chatted", or "you followed me but we ain't chatted yet" when you don't follow them back; check with `twitterFollows`). Stop there: no ask.
 4. **No usable original tweet:** use what else they've been posting or reposting lately (treg's posts read gives replies and reposts too), or that they reposted the owner. With nothing relevant to them at all, don't message them yet: a generic opener could go to anyone, and the gate fails it.
 
-Never: "saw you're `<bio thing>`", their name, made-up camaraderie, or "thanks for following".
+Never: "saw this", "saw you're `<bio thing>`", their name, made-up camaraderie, or "thanks for following".
 
-> `https://x.com/<them>/status/<id>` saw this and noticed we follow each other but haven't spoken
+A line may open with a capital letter, the way the owner sometimes types it; everything after the first letter stays lowercase (the house style).
+
+> `https://x.com/<them>/status/<id>`
 > 4249 live ads for one product is insane
 
-> hey we follow each other and havent had a chat yet
-> been seeing you share all the world model stuff genie 4 looked mad
+> we follow each other and havent had a chat yet
+> All the world model stuff you share is class genie 4 looked mad
 
 ## What to know
 

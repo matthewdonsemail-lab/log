@@ -48,7 +48,7 @@ export async function localMedia(entries: readonly string[] | undefined, fetcher
   }
   return out;
 }
-const TEXT: FlagSpec = { name: "text", kind: "string", required: true, description: "The approved copy, in house style (lowercase, no commas, full stops or dashes; urls exempt)" };
+const TEXT: FlagSpec = { name: "text", kind: "string", required: true, description: "The approved copy, in house style (lowercase but a line may open with a capital, no commas, full stops or dashes; urls exempt)" };
 const APPROVED_BY: FlagSpec = { name: "approvedBy", kind: "string", approval: true, description: "Who approved it: needed with --live (rule 8)" };
 const SKIP_STYLE: FlagSpec = { name: "skipStyleCheck", kind: "boolean", description: "Skip the account's copy style check (copyStyle, empty: house), only when the owner asked" };
 export const FORCE: FlagSpec = { name: "force", kind: "boolean", description: "Go past the account's governor (its pause, hourly, daily and write caps) for this call, only when the owner asked (rule 86)" };

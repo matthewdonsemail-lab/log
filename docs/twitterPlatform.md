@@ -37,7 +37,7 @@ Its habits match log's:
 - Finding people and posts is done by a separate search tool, never through twikit.
 - Nothing is sent without a named approver.
 - Cookies come from Twenty `socialAccounts` and are never printed.
-- Copy is checked against the house style before it goes out: lowercase, no commas, no full stops, no em dashes.
+- Copy is checked against the house style before it goes out: lowercase (a capital may open a line), no commas, no full stops, no em dashes.
 
 ### How X answers
 

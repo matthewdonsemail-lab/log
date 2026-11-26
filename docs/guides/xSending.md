@@ -241,7 +241,7 @@ Every send and every queue check holds its copy to the account's
 
 | Style | Rules |
 | --- | --- |
-| `house` | The owner's: lowercase only, no commas, semicolons, full stops, em or en dashes. URLs are exempt |
+| `house` | lowercase (a capital may open a line), no commas, semicolons, full stops or dashes, urls exempt |
 
 To give an account another style, set `copyStyle` in Twenty, or pass
 `--style` to `cookies save`. A send names the style that failed and why.

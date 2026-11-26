@@ -10,10 +10,17 @@ const BANNED: readonly [string, string][] = [
   ['–', 'en dash']
 ]
 
+const LINE_OPENER = /^(\s*)(\p{Lu})/gmu
+
+function isUpper(ch: string): boolean {
+  return ch !== ch.toLowerCase() && ch === ch.toUpperCase()
+}
+
 function houseProblems(text: string): string[] {
   const stripped = text.replace(URL, ' ')
   const problems: string[] = []
-  const upper = [...new Set([...stripped].filter((ch) => ch !== ch.toLowerCase() && ch === ch.toUpperCase()))].sort()
+  const body = stripped.replace(LINE_OPENER, (_, space: string, letter: string) => `${space}${letter.toLowerCase()}`)
+  const upper = [...new Set([...body].filter(isUpper))].sort()
   if (upper.length) problems.push(`uppercase characters: ${upper.join('')}`)
   for (const [ch, label] of BANNED) if (stripped.includes(ch)) problems.push(`${label} (${ch})`)
   return problems
@@ -24,7 +31,7 @@ export const DEFAULT_COPY_STYLE = 'house'
 export const COPY_STYLES: Readonly<Record<string, CopyStyle>> = {
   house: {
     name: 'house',
-    summary: 'lowercase only, no commas, semicolons, full stops, em or en dashes (URLs are exempt)',
+    summary: 'lowercase, except a capital may open a line, no commas, semicolons, full stops, em or en dashes (URLs are exempt)',
     problems: houseProblems
   }
 }

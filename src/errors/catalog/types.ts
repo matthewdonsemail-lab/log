@@ -490,7 +490,7 @@ export const ERROR_CATALOG = {
   },
   styleFailed: {
     layer: 'twitter',
-    meaning: 'The copy breaks the house style: lowercase only, no commas, semicolons, full stops, em or en dashes (urls are exempt).',
+    meaning: 'The copy breaks the house style: lowercase (a capital may open a line), no commas, semicolons, full stops, em or en dashes (urls are exempt).',
     retryable: false,
     raisedIn: ['twitter/post/send', 'twitter/queue/plan'],
     action: 'Rewrite the copy in house style, or pass --skipStyleCheck when the owner asked for it.'

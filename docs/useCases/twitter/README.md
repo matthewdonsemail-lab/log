@@ -31,7 +31,7 @@ DMs are their own pages. Recruiting is public replies only.
 | Copy style | the account's `copyStyle` (empty: house). Every send and queue check holds the copy to it | `src/twitter/copy/style` |
 | Session check | first call of every run, sends nothing | `twitterSessionCheck` / `log twitter session check --account <account>` |
 | Finding people and posts | an outside search, never X itself (rule 53). Say the price before a big sweep | [treg](https://treg.to/?ref=matthewdonse-aebsh)'s X search, profile, posts and comments reads |
-| House style (`house`) | all lowercase, no commas, no full stops, no dashes. Urls are fine. `twitterQueueCheck` refuses anything else | `src/twitter/copy/style` |
+| House style (`house`) | lowercase (a capital may open a line), no commas, no full stops, no dashes. Urls are fine. `twitterQueueCheck` refuses anything else | `src/twitter/copy/style` |
 | One send | dry run, then the `…Live` tool with `approvedBy` | `twitterReply`, `twitterQuote`, `twitterLike`, `twitterDm` (+ `…Live`) |
 | The queue | any send to 2 or more people. Never a hand loop | `twitterQueueBuild` → `Show` → `Check` → `Approve` → `Plan` → `Run` → `RunLive`, `Add`, `Edit`, `Nudge`, `Status` |
 | Pacing | 2 minutes between sends by default (`minGap` 120), the window about 2 minutes per person; only longer when the owner asks. 240 writes a day per account. Any refusal from X (a 429, 226, 344, a soft block, the governor) stops the run, and nothing goes out until the owner starts it again (rule 94) | the account's governor, `~/.logCli/twitter/<account>`; `--force` goes past it only when the owner says so (rule 86) |
