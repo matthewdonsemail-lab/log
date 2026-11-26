@@ -232,7 +232,8 @@ async function runCommand(context: CommandContext, path: string, flags: Record<s
     const who = { userId: item.userId ?? null, handle: item.handle ?? null };
     const held = chatContextOf("twitter", queue.account, who, since);
     const activity = activityOf(held.activity as unknown as TwitterNotification[], who, since);
-    const changed = contextChangesSince(held.messages, activity, since);
+    const ownTexts = queue.items.map((queued) => queued.text).filter((text) => text.trim());
+    const changed = contextChangesSince(held.messages, activity, since, ownTexts);
     if (!changed.length && item.text?.trim()) {
       const voiced = await gateDeps.gate(context, { platform: "twitter", account: queue.account, to: item.handle ? `@${item.handle.replace(/^@/, "")}` : namedLabel("twitter", queue.account, String(item.userId ?? ""), String(item.userId ?? "")), text: item.text, handle: item.handle ?? null, userId: item.userId ?? null, ...(item.postText?.trim() ? { said: item.postText } : {}), ...(item.action === "voice" ? { spoken: true } : {}), ...((item.action ?? "reply") === "reply" || item.action === "quote" ? { publicReply: true } : {}) });
       if (!voiced.ok) {

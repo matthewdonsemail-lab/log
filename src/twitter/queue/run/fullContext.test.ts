@@ -70,6 +70,14 @@ describe('full context before every send (rule 109)', () => {
     expect(changed.join(' ')).toContain("they replied to your post (\"yc deadline is tomorrow\"): \"You're way too cool bro\"")
   })
 
+  test('the queue does not hold an item because of its own earlier send of the same copy', () => {
+    const own = 'done twin'
+    const changed = contextChangesSince([{ id: 'a', conversationId: 'c', senderId: 'me', text: own, time: '2026-11-01T16:05:00Z', fromMe: true }], [], '2026-11-01T16:00:00Z', [own])
+    expect(changed).toHaveLength(0)
+    const external = contextChangesSince([{ id: 'b', conversationId: 'c', senderId: 'me', text: 'sent from my phone', time: '2026-11-01T16:05:00Z', fromMe: true }], [], '2026-11-01T16:00:00Z', [own])
+    expect(external[0]).toContain('you messaged them outside this draft: "sent from my phone"')
+  })
+
   test('an edit keeps the opener tweet link when the new copy leaves it out', () => {
     const link = 'https://x.com/BowTiedBiest/status/2116419830693924891'
     expect(keptLink(`${link}\nsaw this`, 'saw this again')).toBe(`${link}\nsaw this again`)

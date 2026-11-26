@@ -16,6 +16,8 @@ export class ScreenUnavailable extends Error {
 export function gliner2Screener(modelDir: string | null = placeOf(modelByKey(SCREEN_MODEL_KEY)), python: string = process.env.LOG_PYTHON || 'python', revision: string | null = latestRevision()): Screener {
   let child: ChildProcessWithoutNullStreams | null = null
   let buffer = ''
+  let stderr = ''
+  const tailOf = (text: string): string => text.trim().split('\n').slice(-5).join(' | ').slice(-600)
   const waiting: ((line: string) => void)[] = []
   const nextLine = (ms: number): Promise<string> => new Promise((resolve, reject) => {
     const timer = setTimeout(() => reject(new ScreenUnavailable(`factScreenUnavailable: the fact screen gave no answer in ${Math.round(ms / 1000)} s`)), ms)
@@ -39,11 +41,13 @@ export function gliner2Screener(modelDir: string | null = placeOf(modelByKey(SCR
         at = buffer.indexOf('\n')
       }
     })
-    child.stderr.on('data', () => undefined)
-    child.on('error', () => waiting.shift()?.(JSON.stringify({ ok: false, error: 'the fact screen could not start' })))
-    child.on('exit', () => {
+    child.stderr.setEncoding('utf8')
+    child.stderr.on('data', (chunk: string) => { stderr = (stderr + chunk).slice(-4_000) })
+    child.on('error', () => waiting.shift()?.(JSON.stringify({ ok: false, error: `the fact screen could not start: ${stderr}` })))
+    child.on('exit', (code, signal) => {
       child = null
-      while (waiting.length) waiting.shift()?.(JSON.stringify({ ok: false, error: 'the fact screen stopped' }))
+      const why = `the fact screen stopped (code ${code ?? 'null'}, signal ${signal ?? 'none'}): ${tailOf(stderr)}`
+      while (waiting.length) waiting.shift()?.(JSON.stringify({ ok: false, error: why }))
     })
     const ready = JSON.parse(await nextLine(SCREEN_START_MS)) as { ok: boolean; error?: string }
     if (!ready.ok) throw new ScreenUnavailable(`factScreenUnavailable: ${ready.error ?? 'the fact model did not load'}; run log models --fetch and check gliner2 is installed in LOG_PYTHON`)

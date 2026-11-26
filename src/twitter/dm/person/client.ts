@@ -120,10 +120,12 @@ export function activityLine(row: TwitterNotification): string {
   return `${row.at ?? 'unknown time'} they ${ACTIVITY_WORDS[row.kind]}${on}${said}`
 }
 
-export function contextChangesSince(messages: readonly TwitterDmMessage[], activity: readonly TwitterNotification[], since: string): string[] {
+export function contextChangesSince(messages: readonly TwitterDmMessage[], activity: readonly TwitterNotification[], since: string, ownTexts: readonly string[] = []): string[] {
   const after = Date.parse(since)
+  const mine = new Set(ownTexts.map((t) => short(t)).filter(Boolean))
   const said = messages
     .filter((m) => m.time && Date.parse(m.time) > after)
+    .filter((m) => !(m.fromMe && mine.has(short(m.text))))
     .map((m) => `${m.time} ${m.fromMe ? 'you messaged them outside this draft' : 'they messaged you'}: "${short(m.text)}"`)
   return [...said, ...activity.filter((r) => r.at && Date.parse(r.at) > after).map(activityLine)]
 }
