@@ -1,6 +1,21 @@
 name: log
-version: 0.5.0
-description: "log by ListeningKit for Hermes, as one plugin: every play as a log:<play> skill, log's GenUI blocks and report views (tools, recipes, the dashboard tab and the Desktop half), and the hooks. Before each model call, pre_llm_call puts the play the prompt asks for, names it resolves, pending inbox messages and browser states in front of the model; pre_tool_call refuses a script that parses log output and names the flag that narrows it; transform_tool_result adds the messages that landed while a log tool ran and advises turning a hand-rolled read into a log tool; post_llm_call times the turn; a message the account watchers hear between turns starts a turn in that chat through ctx.inject_message (needs plugins.entries.log.allow_gateway_injection: true); on chats that can't draw, transform_llm_output swaps a view's tag for its text. log's tools come from the log MCP server in config.yaml (hermes mcp add log --command logMcp), which a native plugin can't declare; the hook says so when it's missing. Written from src/agentHooks/registry (bun run check:agentHooks --write)."
+version: 0.6.0
+description: >-
+  log by ListeningKit for Hermes, as one plugin: every play as a log:<play>
+  skill, log's GenUI blocks and report views (tools, recipes, the dashboard tab
+  and the Desktop half), and the hooks. Before each model call, pre_llm_call
+  puts the play the prompt asks for, names it resolves, pending inbox messages
+  and browser states in front of the model; pre_tool_call refuses a script that
+  parses log output and names the flag that narrows it; transform_tool_result
+  adds the messages that landed while a log tool ran and advises turning a
+  hand-rolled read into a log tool; post_llm_call times the turn; a message the
+  account watchers hear between turns starts a turn in that chat through
+  ctx.inject_message (needs plugins.entries.log.allow_gateway_injection: true);
+  on chats that can't draw, transform_llm_output swaps a view's tag for its
+  text. log's tools come from the log MCP server in config.yaml (hermes mcp add
+  log --command logMcp), which a native plugin can't declare; the hook says so
+  when it's missing. Written from src/agentHooks/registry (bun run
+  check:agentHooks --write).
 provides_tools:
   - assistant_calendar
   - assistant_ideas

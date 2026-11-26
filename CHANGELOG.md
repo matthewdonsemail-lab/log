@@ -2,6 +2,22 @@
 
 Every release, newest first. release-please writes each new section from the commits; `bun run docs:releases` adds its `Models:` line from `src/models/manifest` and rebuilds the Releases table in the README.
 
+## [0.6.0](https://github.com/matthewdonsemail-lab/log/compare/v0.5.0...v0.6.0) (2026-11-26)
+
+Models: patronus-studio/wolf-defender-prompt-injection-small@2484cc9a13550aa4f2c29b577ff3ef331dc6ba07, Xenova/all-MiniLM-L6-v2@751bff37182d3f1213fa05d7196b954e230abad9, SamLowe/roberta-base-go_emotions-onnx@90ee0c1c4796d370e68968687b8ba51fc11224f4, onnx-community/LFM2.5-VL-450M-ONNX@24e63007ff1aaafbde27c89eb01a0513f4f61482, myuri@5.0.0, fastino/gliner2.5-small-v1@b5d42bf7dc7d01c40304ae4ed43c2f13c325a75b
+
+
+### Features
+
+* **kb:** keep the knowledge base in log.db, searched locally ([#338](https://github.com/matthewdonsemail-lab/log/issues/338)) ([1f925b6](https://github.com/matthewdonsemail-lab/log/commit/1f925b6351eb57d2dc7d6d04ebb2c2f423a5a49b))
+
+
+### Bug Fixes
+
+* batch 1 small bugs ([#336](https://github.com/matthewdonsemail-lab/log/issues/336), [#306](https://github.com/matthewdonsemail-lab/log/issues/306)-[#311](https://github.com/matthewdonsemail-lab/log/issues/311), [#355](https://github.com/matthewdonsemail-lab/log/issues/355)) ([eced791](https://github.com/matthewdonsemail-lab/log/commit/eced791e48e9caa04cc2084b8b7125004b7a81ec))
+* small bugs from the probe and the 11-26 leftovers ([#336](https://github.com/matthewdonsemail-lab/log/issues/336) [#306](https://github.com/matthewdonsemail-lab/log/issues/306) [#307](https://github.com/matthewdonsemail-lab/log/issues/307) [#308](https://github.com/matthewdonsemail-lab/log/issues/308) [#309](https://github.com/matthewdonsemail-lab/log/issues/309) [#310](https://github.com/matthewdonsemail-lab/log/issues/310) [#311](https://github.com/matthewdonsemail-lab/log/issues/311) [#355](https://github.com/matthewdonsemail-lab/log/issues/355)) ([8a0eedb](https://github.com/matthewdonsemail-lab/log/commit/8a0eedb8134112de30382c1a6367dcadf003ceb0))
+* **tests:** CI's 20 s test timeout reaches every file, not just the first ([65f1aea](https://github.com/matthewdonsemail-lab/log/commit/65f1aeac044b48bcd4050306ce4a2f6438bd563b))
+
 ## [0.5.0](https://github.com/matthewdonsemail-lab/log/compare/v0.4.0...v0.5.0) (2026-11-26)
 
 Models: patronus-studio/wolf-defender-prompt-injection-small@2484cc9a13550aa4f2c29b577ff3ef331dc6ba07, Xenova/all-MiniLM-L6-v2@751bff37182d3f1213fa05d7196b954e230abad9, SamLowe/roberta-base-go_emotions-onnx@90ee0c1c4796d370e68968687b8ba51fc11224f4, onnx-community/LFM2.5-VL-450M-ONNX@24e63007ff1aaafbde27c89eb01a0513f4f61482, myuri@5.0.0, fastino/gliner2.5-small-v1@b5d42bf7dc7d01c40304ae4ed43c2f13c325a75b
