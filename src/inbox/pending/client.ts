@@ -1,4 +1,6 @@
 import { inboxTextWithVoiceNotes } from '../../media/voiceNotes/index'
+import { readByHand, sentByLog, sentByLogIds } from '../byHand/index'
+import { db } from '../store/index'
 import { claimContext } from '../claims/index'
 import { chatMessages } from '../dbRead/index'
 import { withoutIgnored } from '../ignore/index'
@@ -7,7 +9,7 @@ import type { DbMessage } from '../dbRead/types'
 import { inboxContext, localTime, placeLabel, storedInboxContext, takeAlerts, takePending, twitterAccounts } from '../watch/index'
 import type { InboxMessage } from '../watch/types'
 import { pipelineLine } from '../pipeline/client'
-import type { ChatRead, PendingRead, WhoLine } from './types'
+import type { ChatRead, LogSent, PendingRead, WhoLine } from './types'
 
 export const ONE_PROCESS_LINE = '>>> ONE PROCESS PER ACCOUNT, NEVER TWO (rule 105): a second watcher tried to start and was refused. Every session shares the one watcher per account through the inbox; another is never started. The owner is told now.'
 
@@ -36,6 +38,23 @@ function safeWhoLine(platform: string, account: string, conversationId: string):
   }
 }
 
+function safeLogSent(platform: string): (id: string) => boolean {
+  try {
+    const ids = sentByLogIds(db(), [platform])
+    return (id) => sentByLog(ids, platform, id)
+  } catch {
+    return () => false
+  }
+}
+
+function safeByHand(reader: string): string | null {
+  try {
+    return readByHand(reader).text
+  } catch {
+    return null
+  }
+}
+
 function rowText(r: DbMessage): string {
   const judged = r.fromMe ? null : judgeText(r.text ?? '')
   if (judged?.verdict === 'held') return heldText(judged, (r.text ?? '').length)
@@ -43,7 +62,7 @@ function rowText(r: DbMessage): string {
   return text.replace(/\s+/g, ' ').slice(0, 240)
 }
 
-export function againstTheDb(messages: readonly InboxMessage[], read: ChatRead = chatMessages, whoLine: WhoLine = safeWhoLine): { fresh: InboxMessage[]; behind: InboxMessage[]; conversations: string[] } {
+export function againstTheDb(messages: readonly InboxMessage[], read: ChatRead = chatMessages, whoLine: WhoLine = safeWhoLine, logSent: LogSent = safeLogSent): { fresh: InboxMessage[]; behind: InboxMessage[]; conversations: string[] } {
   const chats = new Map<string, InboxMessage[]>()
   for (const m of messages) chats.set(chatKeyOf(m), [...(chats.get(chatKeyOf(m)) ?? []), m])
   const fresh: InboxMessage[] = []
@@ -59,9 +78,10 @@ export function againstTheDb(messages: readonly InboxMessage[], read: ChatRead =
     fresh.push(...live)
     if (!live.length || !rows.length) continue
     const { with: who, platform, account, conversationId } = group[0]
+    const byLog = rows.some((r) => r.fromMe) ? logSent(platform) : () => false
     conversations.push([
       `>>> THE CONVERSATION WITH ${who}${placeLabel(group[0])} NOW (${platform} ${account}, chat ${conversationId}), read from the .db as this turn starts, newest last. Answer this, not the single lines above: everything they sent since the owner last wrote is the context.`,
-      ...rows.map((r) => `  ${localTime(r.at)} ${r.fromMe ? 'the owner' : r.from}: ${rowText(r)}`),
+      ...rows.map((r) => `  ${localTime(r.at)} ${r.fromMe ? (byLog(r.id) ? 'the owner (sent by log)' : 'the owner (by hand)') : r.from}: ${rowText(r)}`),
       ...[whoLine(platform, account, conversationId)].filter((l): l is string => Boolean(l)),
     ].join('\n'))
   }
@@ -74,12 +94,13 @@ export function behindLine(behind: readonly InboxMessage[]): string | null {
   return `>>> ALREADY BEHIND THE OWNER'S LAST MESSAGE (${behind.length}): ${who}. They landed late and the owner wrote in that chat after them, so there is nothing to answer and nothing to report one by one.`
 }
 
-export function readPending(reader: string, options: { stored?: boolean; read?: ChatRead } = {}): PendingRead {
+export function readPending(reader: string, options: { stored?: boolean; read?: ChatRead; byHand?: (reader: string) => string | null } = {}): PendingRead {
   const alerts = takeAlerts(reader)
   const judged = judgedMessages(withoutIgnored(takePending(reader)).map((m) => ({ ...m, text: inboxTextWithVoiceNotes(m) })))
   const messages = judged.messages
   const { fresh, behind, conversations } = againstTheDb(messages, options.read)
   const loud = alerts.length ? [ONE_PROCESS_LINE, ...alerts].join('\n') : ''
-  const text = [loud, judged.alerts.join('\n'), inboxContext(fresh), ...conversations, behindLine(behind), claimContext(fresh), options.stored ? storedInboxContext(twitterAccounts()) : null].filter(Boolean).join('\n\n')
+  const hand = (options.byHand ?? safeByHand)(reader)
+  const text = [loud, judged.alerts.join('\n'), inboxContext(fresh), hand, ...conversations, behindLine(behind), claimContext(fresh), options.stored ? storedInboxContext(twitterAccounts()) : null].filter(Boolean).join('\n\n')
   return { reader, messages, alerts, text: text || null }
 }

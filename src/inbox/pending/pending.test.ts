@@ -56,8 +56,23 @@ describe("what the watchers heard, read against the .db", () => {
     expect(behind.map((m) => m.text)).toEqual(["late one"]);
     expect(conversations).toHaveLength(1);
     expect(conversations[0]).toContain("THE CONVERSATION WITH fakeFriend NOW");
-    expect(conversations[0]).toContain("the owner: owner answered");
+    expect(conversations[0]).toContain("the owner (by hand): owner answered");
     expect(behindLine(behind)).toContain("ALREADY BEHIND THE OWNER'S LAST MESSAGE (1)");
+  });
+
+  test("each of the owner's lines says whether log sent it or he typed it himself", () => {
+    const db = () => [row(at(1), true, "queued opener"), row(at(2), true, "typed on the phone"), row(at(3), false, "new one")];
+    const logSent = () => (id: string) => id === at(1);
+    const { conversations } = againstTheDb([{ ...heard("new one"), at: at(3) }], db, () => null, logSent);
+    expect(conversations[0]).toContain("the owner (sent by log): queued opener");
+    expect(conversations[0]).toContain("the owner (by hand): typed on the phone");
+  });
+
+  test("what the owner wrote by hand reaches the reader with the rest", () => {
+    addPending([]);
+    readPending("fakeHand", { byHand: () => null });
+    const read = readPending("fakeHand", { byHand: () => ">>> THE OWNER WROTE BY HAND (1)" });
+    expect(read.text).toContain("THE OWNER WROTE BY HAND (1)");
   });
 
   test("a burst from one person is one conversation block, read once", () => {
